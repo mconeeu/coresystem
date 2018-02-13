@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/bukkit/bukkit.iml" filepath="$PROJECT_DIR$/bukkit/bukkit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bungee/bungee.iml" filepath="$PROJECT_DIR$/bungee/bungee.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lib/lib.iml" filepath="$PROJECT_DIR$/lib/lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mcone-coresystem.iml" filepath="$PROJECT_DIR$/mcone-coresystem.iml" />
+    </modules>
+  </component>
+</project>

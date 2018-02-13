@@ -1,0 +1,67 @@
+name: MCONE-BukkitCoreSystem
+version: 4.0.0-SNAPHOT
+authors: [Domink Lippl, Rufus Maiwald]
+main: eu.mcone.coresystem.bukkit.CoreSystem
+
+commands:
+  bukkit:
+  profil:
+    aliases: profile
+  feed:
+    permission: system.bukkit.feed
+  gamemode:
+    aliases: gm
+    permission: system.bukkit.gamemode
+  heal:
+    permission: system.bukkit.heal
+  stats:
+  fly:
+    permission: system.bukkit.fly
+  tp:
+    aliases: teleport
+    permission: system.bukkit.tp
+  tphere:
+    permissions: system.bukkit.tp.others
+  tpall:
+    permissions: system.bukkit.tp.all
+  tppos:
+    permissions: system.bukkit.tp.pos
+  vanish:
+    permissions: system.bukkit.vanish
+
+permissions:
+  system:
+    description: Bypass all MCONE-System Permissions
+    children:
+      system.bukkit:
+        description: Bypass all MCONE-BukkitCoreSystem Permissions
+        children:
+          system.bukkit.feed:
+            description: FeedCMD the player
+          system.bukkit.gamemode:
+            description: Set the player to a specific gamemode
+          system.bukkit.heal:
+            description: Heal the player
+          system.bukkit.fly:
+            description: Allows the player to fly
+          system.bukkit.tp:
+            description: Teleports the player to another player or a specific location
+            children:
+              system.bukkit.tp.others:
+                desciption: Allows the player to teleport other players
+              system.bukkit.tp.all:
+                description: Allows the player to teleport all online players to a player
+              system.bukkit.tp.pos:
+                description: Allows the player to teleport to a specific postition
+          system.bukkit.vanish:
+            description: Vanishes the player for all other players
+          system.bukkit.reload:
+            description: Reload the CoreSystem
+          system.bukkit.holo:
+            description: Access the holograms
+          system.bukkit.npc:
+            description: Allows to set NonCharacterPlayers
+          system.bukkit.sign:
+            dexcription: Allows to create colored signs
+          system.bukkit.cooldown:
+            description: Allows to bypass the CooldownSystem
