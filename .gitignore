@@ -1,0 +1,7 @@
+.idea/inspectionProfiles/
+.idea/workspace.xml
+bukkit/target/
+bungee/target/
+lib/target/
+out/
+src/
