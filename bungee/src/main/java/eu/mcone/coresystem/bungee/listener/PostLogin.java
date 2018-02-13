@@ -1,6 +1,7 @@
 /*
- * Copyright (c) 2017 Dominik L., Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2018 Dominik L., Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
+ *
  */
 
 package eu.mcone.coresystem.bungee.listener;
@@ -61,7 +62,6 @@ public class PostLogin implements Listener{
         }
 
         if(p.hasPermission("system.bungee.report")) {
-            System.out.println("debug-1");
             CoreSystem.mysql1.select("SELECT `id`, `title` FROM `website_ticket` WHERE `cat`='Spielerreport' AND `state`='pending';", rs -> {
                 try {
                     int desc = 0;
@@ -69,9 +69,7 @@ public class PostLogin implements Listener{
                         desc++;
                     }
 
-                    System.out.println("debug-2");
                     if (desc > 0) {
-                        System.out.println("debug-3");
                         if (desc <= 10) {
                             Messager.send(p, "§4§oFolgende Reports sind noch unbearbeitet!");
                             rs.beforeFirst();
@@ -83,7 +81,6 @@ public class PostLogin implements Listener{
                             Messager.send(p, "§7Es sind noch §c" + desc + " §7Reports offen");
                         }
                     } else {
-                        System.out.println("debug-4");
                         Messager.send(p, "§2Es sind alle Reports erledigt!");
                     }
 
