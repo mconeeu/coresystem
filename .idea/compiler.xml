@@ -19,7 +19,7 @@
       <module name="coresystem" target="1.5" />
       <module name="lib" target="1.8" />
       <module name="MCONE-Coresystem" target="1.5" />
-      <module name="mcone-coresystem" target="1.5" />
+      <module name="mcone-coresystem" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

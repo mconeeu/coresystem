@@ -14,11 +14,58 @@
     <artifactId>mcone-coresystem</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+
     <modules>
         <module>lib</module>
         <module>bukkit</module>
         <module>bungee</module>
     </modules>
 
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.targetEncoding>UTF-8</project.build.targetEncoding>
+    </properties>
+
+    <developers>
+        <developer>
+            <id>dominklippl</id>
+            <name>Dominik Lippl</name>
+            <url>http://twinsterhd.ga</url>
+            <organization>MC ONE</organization>
+            <organizationUrl>https://www.mcone.eu</organizationUrl>
+            <roles>
+                <role>adminstrator</role>
+                <role>developer</role>
+            </roles>
+            <timezone>Europe/Berlin</timezone>
+        </developer>
+        <developer>
+            <id>rufusmaiwald</id>
+            <name>Rufus Maiwald</name>
+            <url>https://rufusmaiwald.de</url>
+            <organization>MC ONE</organization>
+            <organizationUrl>https://www.mcone.eu</organizationUrl>
+            <roles>
+                <role>adminstrator</role>
+                <role>developer</role>
+            </roles>
+            <timezone>Europe/Berlin</timezone>
+        </developer>
+    </developers>
+
+    <organization>
+        <name>MC ONE</name>
+        <url>https://www.mcone.eu</url>
+    </organization>
+
+    <distributionManagement>
+        <repository>
+            <id>mcone-systems</id>
+            <name>MC ONE Repo</name>
+            <url>http://repo.mcone.eu/nexus/content/repositories/system/</url>
+        </repository>
+    </distributionManagement>
 
 </project>
