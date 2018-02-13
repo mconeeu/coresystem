@@ -7,10 +7,7 @@
 package eu.mcone.coresystem.lib.player;
 
 import eu.mcone.coresystem.lib.mysql.MySQL;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftHumanEntity;
-import org.bukkit.entity.Player;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.*;
 
