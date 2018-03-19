@@ -34,6 +34,7 @@ public class StatsAPI {
 		createTable();
     }
 
+
 	/**
 	 * Returns the player's current kill, kill's
 	 * @param uuid >> Player UniqueID
