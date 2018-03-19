@@ -20,6 +20,12 @@ public class StatsAPI {
     private String spielmodus, name;
     private MySQL mysql;
 
+	/**
+	 * Create a new class object with the values, Spielmodus, name, mysql
+	 * @param spielmodus >> Gammemode
+	 * @param name >>
+	 * @param mysql >> Mysql connection
+	 */
 	public StatsAPI(String spielmodus, String name, MySQL mysql) {
         this.spielmodus = spielmodus;
         this.name = name;
@@ -28,6 +34,10 @@ public class StatsAPI {
 		createTable();
     }
 
+	/**
+	 * Returns the player's current kill, kill's
+	 * @param uuid >> Player UniqueID
+	 */
     public int getKills(UUID uuid) {
         return (int) this.mysql.select("SELECT `kill` FROM " + this.spielmodus + " WHERE `uuid`='" + uuid + "'", rs -> {
             int i = 0;
@@ -41,7 +51,11 @@ public class StatsAPI {
             return i;
         });
     }
-	  
+
+	/**
+	 * Returns the player's current win, win's
+	 * @param uuid >> Player UniqueID
+	 */
     public int getWins(UUID uuid) {
 	    return (int) this.mysql.select("SELECT `win` FROM " + this.spielmodus + " WHERE `uuid`='" + uuid + "'", rs -> {
             int i = 0;
@@ -56,7 +70,11 @@ public class StatsAPI {
             return i;
         });
     }
-	  
+
+	/**
+	 * Returns the player's current lose, lose's
+	 * @param uuid >> Player UniqueID
+	 */
     public int getLoses(UUID uuid) {
         return (int) this.mysql.select("SELECT `lose` FROM " + this.spielmodus + " WHERE `uuid`='" + uuid + "'", rs -> {
             int i = 0;
@@ -70,7 +88,11 @@ public class StatsAPI {
             return i;
         });
     }
-	  
+
+	/**
+	 * Returns the player's current death, death's
+	 * @param uuid >> Player UniqueID
+	 */
     public int getDeaths(UUID uuid) {
         return (int) this.mysql.select("SELECT `death` FROM " + this.spielmodus + " WHERE `uuid`='" + uuid + "'", rs -> {
             int i = 0;
@@ -84,77 +106,161 @@ public class StatsAPI {
             return i;
         });
     }
-	  
+
+	/**
+	 * Returns the player's current mined beds, mined bed's
+	 * @param uuid >> Player UniqueID
+	 */
+	public int getMinedbeds(UUID uuid) {
+		return (int) this.mysql.select("SELECT `mined_beds` FROM " + this.spielmodus + " WHERE `uuid`='" + uuid + "'", rs -> {
+			int i = 0;
+			try {
+				if (rs.next()) {
+					i = rs.getInt("mined_beds");
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return i;
+		});
+	}
+
+	/**
+	 * Set the specified integer to the table column kill
+	 * @param uuid >> Player UniqueID
+	 * @param kill >> specified Integer
+	 */
 	public void setKills(UUID uuid, int kill) {
 		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`) VALUES ('" + uuid + "', " + kill + ", 0, 0, 0) ON DUPLICATE KEY UPDATE `kill`='" + kill + "'");
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
-		});
-	}
-	  
-	public void setDeaths(UUID uuid, int death) {
-		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`) VALUES ('" + uuid + "', 0, " + death + ", 0, 0) ON DUPLICATE KEY UPDATE `death`='" + death + "'");
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
-		});
-	}
-	  
-	public void setWins(UUID uuid, int win) {
-		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`) VALUES ('" + uuid + "', 0, 0, " + win + ", 0) ON DUPLICATE KEY UPDATE `win`='" + win + "'");
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
-		});
-	}
-	  
-	public void setLose(UUID uuid, int lose) {
-		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`) VALUES ('" + uuid + "', 0, 0, 0, '" + lose + "') ON DUPLICATE KEY UPDATE `lose`='" + lose + "'");
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
-		});
-	}
-	  
-	public void addKills(UUID uuid, int kill) {
-		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`) VALUES ('" + uuid + "', '" + kill + "', 0, 0, 0) ON DUPLICATE KEY UPDATE `kill`=`kill`+" + kill);
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
-		});
-	}
-	  
-	public void addDeaths(UUID uuid, int death) {
-		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`) VALUES ('" + uuid + "', 0, " + death + ", 0, 0) ON DUPLICATE KEY UPDATE `death`=`death`+" + death);
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
-		});
-	}
-	  
-	public void addWin(UUID uuid, int win) {
-		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`) VALUES ('" + uuid + "', 0, 0, " + win + ", 0) ON DUPLICATE KEY UPDATE `win`=`win`+" + win);
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
-		});
-	}
-	  
-	public void addLose(UUID uuid, int lose) {
-		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`) VALUES ('" + uuid + "', 0, 0, 0, " + lose + ") ON DUPLICATE KEY UPDATE `lose`=`lose`+" + lose);
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
-		});
-	}
-	  
-	public void removeKills(UUID uuid, int kill) {
-		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`) VALUES ('" + uuid + "', " + kill + ", 0, 0, 0) ON DUPLICATE KEY UPDATE `kill`=`kill`-" + kill);
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', " + kill + ", 0, 0, 0, 0) ON DUPLICATE KEY UPDATE `kill`='" + kill + "'");
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
 		});
 	}
 
-	public void removeDeaths(UUID uuid, int death) {
+	/**
+	 * Set the specified integer to the table column death
+	 * @param uuid >> Player UniqueID
+	 * @param death >> specified Integer
+	 */
+	public void setDeaths(UUID uuid, int death) {
 		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`) VALUES ('" + uuid + "', 0, " + death + ", 0, 0) ON DUPLICATE KEY UPDATE `death`=`death`-" + death);
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', 0, " + death + ", 0, 0, 0) ON DUPLICATE KEY UPDATE `death`='" + death + "'");
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
 		});
 	}
-	  
+
+	/**
+	 * Set the specified integer to the table column win
+	 * @param uuid >> Player UniqueID
+	 * @param win >> specified Integer
+	 */
+	public void setWins(UUID uuid, int win) {
+		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', 0, 0, " + win + ", 0, 0) ON DUPLICATE KEY UPDATE `win`='" + win + "'");
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
+		});
+	}
+
+	/**
+	 * Set the specified integer to the table column lose
+	 * @param uuid >> Player UniqueID
+	 * @param lose >> specified Integer
+	 */
+	public void setLose(UUID uuid, int lose) {
+		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose` `mined_bed`) VALUES ('" + uuid + "', 0, 0, 0, '" + lose + "', 0) ON DUPLICATE KEY UPDATE `lose`='" + lose + "'");
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
+		});
+	}
+
+	/**
+	 * Adds the specified integer to the table column mined_bed
+	 * @param uuid >> Player UniqueID
+	 * @param mined_bed >> specified Integer
+	 */
+	public void addMinedbed(UUID uuid, int mined_bed) {
+		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', 0, 0, 0, 0, '" + mined_bed + "') ON DUPLICATE KEY UPDATE `mined_bed`=`mined_bed`+" + mined_bed);
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
+		});
+	}
+
+	/**
+	 * Adds the specified integer to the table column kill
+	 * @param uuid >> Player UniqueID
+	 * @param kill >> specified Integer
+	 */
+	public void addKills(UUID uuid, int kill) {
+		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', '" + kill + "', 0, 0, 0, 0) ON DUPLICATE KEY UPDATE `kill`=`kill`+" + kill);
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
+		});
+	}
+
+	/**
+	 * Adds the specified integer to the table column death
+	 * @param uuid >> Player UniqueID
+	 * @param death >> specified Integer
+	 */
+	public void addDeaths(UUID uuid, int death) {
+		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', 0, " + death + ", 0, 0, 0) ON DUPLICATE KEY UPDATE `death`=`death`+" + death);
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
+		});
+	}
+
+	/**
+	 * Adds the specified integer to the table column win
+	 * @param uuid >> Player UniqueID
+	 * @param win >> specified Integer
+	 */
+	public void addWin(UUID uuid, int win) {
+		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', 0, 0, " + win + ", 0, 0) ON DUPLICATE KEY UPDATE `win`=`win`+" + win);
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
+		});
+	}
+
+	/**
+	 * Adds the specified integer to the table column lose
+	 * @param uuid >> Player UniqueID
+	 * @param lose >> specified Integer
+	 */
+	public void addLose(UUID uuid, int lose) {
+		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', 0, 0, 0, " + lose + ", 0) ON DUPLICATE KEY UPDATE `lose`=`lose`+" + lose);
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
+		});
+	}
+
+	/**
+	 * Removes the specified integer (kill) from the player statistics
+	 * @param uuid >> Player UniqueID
+	 * @param kill >> specified Integer
+	 */
+	public void removeKills(UUID uuid, int kill) {
+		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', " + kill + ", 0, 0, 0, 0) ON DUPLICATE KEY UPDATE `kill`=`kill`-" + kill);
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
+		});
+	}
+
+	/**
+	 * Removes the specified integer (Death) from the player statistics
+	 * @param uuid >> Player UniqueID
+	 * @param death >> specified Integer
+	 */
+	public void removeDeaths(UUID uuid, int death) {
+		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', 0, " + death + ", 0, 0, 0) ON DUPLICATE KEY UPDATE `death`=`death`-" + death);
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
+		});
+	}
+
+	/**
+	 * Returns Ranking place as Integer of the player back
+	 * @param uuid >> Player UniqueID
+	 */
 	public int getUserRanking(final UUID uuid){
 		return (int) this.mysql.select("SELECT uuid FROM " + this.spielmodus + " ORDER BY `kill` DESC", rs -> {
             boolean done = false;
@@ -176,6 +282,38 @@ public class StatsAPI {
         });
 	}
 
+	/**
+	 * Returns the player's current death rate (K.D)
+	 * @param uuid >> Player UniqueID
+	 */
+	public double getKD(UUID uuid) {
+		this.mysql.select("SELECT * FROM " + this.spielmodus + " WHERE `uuid`='" + uuid + "'", rs -> {
+			int kills = 0;
+			int deaths = 0;
+
+			try {
+				if (rs.next()) {
+					kills = rs.getInt("kills");
+					deaths = rs.getInt("deaths");
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			if(kills == 0 && deaths == 0) {
+				return 0.00;
+			} else if(kills == 0) {
+				return 0.00;
+			} else if(deaths == 0) {
+				return kills + .00;
+			} else {
+				return kills / deaths;
+			}
+		});
+
+		return 0.0;
+	}
+
 	public int[] getData(final Player p) {
 		return (int[]) CoreSystem.mysql2.select("SELECT * FROM " + this.spielmodus + " WHERE uuid='" + p.getUniqueId() + "'", rs -> {
 			try {
@@ -189,10 +327,34 @@ public class StatsAPI {
 		});
 	}
 
+	/**
+	 * Creates the table with the specified game mode
+	 *
+	 * Table columns
+	 * uuid >> varchar(100)
+	 * kill >> int(100)
+	 * death >> int(100)
+	 * win >> int(100)
+	 * lose >> int(100)
+	 * mined_beds >> int(100)
+	 */
 	private void createTable() {
-		mysql.update("CREATE TABLE IF NOT EXISTS " + spielmodus + " (`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `uuid` VARCHAR(100) NOT NULL UNIQUE KEY, `kill` int(10) NOT NULL, `death` int(10)  NOT NULL, `win` int(10) NOT NULL, `lose` int(10) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+		mysql.update("CREATE TABLE IF NOT EXISTS " + spielmodus + " " +
+				"(" +
+				"`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+				"`uuid` VARCHAR(100) NOT NULL UNIQUE KEY, " +
+				"`kill` int(100) NOT NULL, " +
+				"`death` int(100)  NOT NULL, " +
+				"`win` int(100) NOT NULL, " +
+				"`lose` int(100) NOT NULL," +
+				"`mined_beds` int(100)" +
+				") " +
+				"ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 	}
 
+	/**
+	 * Returns the name
+	 */
 	public String getName() {
 		return name;
 	}
