@@ -12,7 +12,6 @@ import org.bukkit.Bukkit;
 
 import java.sql.SQLException;
 import java.util.UUID;
-import java.util.concurrent.Executors;
 
 public class CoinsAPI {
 	
@@ -100,4 +99,5 @@ public class CoinsAPI {
             Bukkit.getPluginManager().callEvent(new CoinsChangeEvent(CoreSystem.getCorePlayer(name)));
         });
 	}
+
 }

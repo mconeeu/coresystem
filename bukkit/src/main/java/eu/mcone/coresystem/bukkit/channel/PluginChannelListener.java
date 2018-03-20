@@ -19,9 +19,13 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class PluginChannelListener implements PluginMessageListener {
+
+    public static Map<UUID, FutureTask<String>> tasks = new HashMap<>();
 
     @Override
     public void onPluginMessageReceived(String s, Player p, byte[] bytes) {
@@ -39,7 +43,7 @@ public class PluginChannelListener implements PluginMessageListener {
 
                         if (t != null) {
                             String result = in.readUTF();
-                            FriendsInventory.create(t, result);
+                            tasks.get(t.getUniqueId()).execute(result);
                         }
                     }
                     break;
@@ -52,7 +56,7 @@ public class PluginChannelListener implements PluginMessageListener {
 
                         if (t != null) {
                             String result = in.readUTF();
-                            PartyInventory.create(t, result);
+                            tasks.get(t.getUniqueId()).execute(result);
                         }
                     }
                     break;
@@ -91,6 +95,19 @@ public class PluginChannelListener implements PluginMessageListener {
 
                     Player player = Bukkit.getPlayer(uuid);
                     CoreSystem.getInstance().getNickManager().unnick(player);
+                    break;
+                }
+                case "SERVERS": {
+                    String input = in.readUTF();
+
+                    if (input.equalsIgnoreCase("list")) {
+                        Player t = Bukkit.getPlayer(UUID.fromString(in.readUTF()));
+
+                        if (t != null) {
+                            String result = in.readUTF();
+                            tasks.get(t.getUniqueId()).execute(result);
+                        }
+                    }
                     break;
                 }
             }

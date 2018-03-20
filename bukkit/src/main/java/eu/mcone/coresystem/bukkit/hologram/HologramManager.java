@@ -8,28 +8,52 @@ package eu.mcone.coresystem.bukkit.hologram;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import eu.mcone.coresystem.bukkit.CoreSystem;
+import eu.mcone.coresystem.bukkit.command.HoloCMD;
 import eu.mcone.coresystem.bukkit.util.LocationFactory;
 import eu.mcone.coresystem.lib.mysql.MySQL;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class HologramManager {
+public class HologramManager implements Listener {
 
     private MySQL mysql;
     private String server;
-    private HashMap<String, Hologram> holograms;
+    @Getter
+    private Map<String, Hologram> holograms;
 
     public HologramManager(MySQL mysql, String server) {
         this.mysql = mysql;
         this.server = server;
-        this.createTables();
+
+        CoreSystem.getInstance().getServer().getPluginManager().registerEvents(this, CoreSystem.getInstance());
+        CoreSystem.getInstance().getCommand("holo").setExecutor(new HoloCMD(this));
 
         this.reload();
+    }
+
+    @EventHandler
+    public void on(PlayerJoinEvent e) {
+        setHolograms(e.getPlayer());
+    }
+
+    @EventHandler
+    public void on(PlayerChangedWorldEvent e) {
+        Player p = e.getPlayer();
+
+        this.unsetHolograms(p);
+        this.setHolograms(p);
     }
 
     public void reload() {
@@ -55,10 +79,6 @@ public class HologramManager {
         for (Player p : Bukkit.getOnlinePlayers()) {
             this.setHolograms(p);
         }
-    }
-
-    private void createTables() {
-        this.mysql.update("CREATE TABLE IF NOT EXISTS bukkitsystem_holograms (`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(100) NOT NULL UNIQUE KEY, `location` VARCHAR(100) NOT NULL, `lines` VARCHAR(1000) NOT NULL, `server` varchar(100) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
     }
 
     public void addHologram(String name, Location loc, String line1) {
@@ -102,7 +122,4 @@ public class HologramManager {
         }
     }
 
-    public HashMap<String, Hologram> getHolograms() {
-        return holograms;
-    }
 }

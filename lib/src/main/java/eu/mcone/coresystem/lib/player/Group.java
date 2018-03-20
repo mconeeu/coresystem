@@ -6,6 +6,8 @@
 
 package eu.mcone.coresystem.lib.player;
 
+import lombok.Getter;
+
 public enum Group {
 
     ADMIN(0, "Admin", "§c§oAdmin", "§8[§cA§8] §7", 10),
@@ -22,7 +24,9 @@ public enum Group {
     SPIELER(11, "Spieler", "§f§oSpieler", "§8[§fS§8] §7", 90),
     SPIELVERDERBER(12, "Spielverderber", "§8§oSpielverderber", "§8[SV] §8", 100);
 
+    @Getter
     private int id, score;
+    @Getter
     private String name, label, prefix;
 
     Group(int id, String name, String label, String prefix, int score) {
@@ -40,26 +44,6 @@ public enum Group {
             }
         }
         return null;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public int getScore() {
-        return score;
     }
 
 }

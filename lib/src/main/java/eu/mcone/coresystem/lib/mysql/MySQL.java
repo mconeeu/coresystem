@@ -23,6 +23,7 @@ public class MySQL {
         config.setJdbcUrl("jdbc:mysql://"+host+":"+port+"/"+database);
         config.setUsername(username);
         config.setPassword(password);
+        config.setMaximumPoolSize(2);
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
@@ -35,11 +36,14 @@ public class MySQL {
 	    this.ds.close();
     }
 
-    public void update(String qry) {
+    public void update(String qry, Object... parameters) {
         try {
             Connection con = this.ds.getConnection();
 
             PreparedStatement preparedstatement = con.prepareStatement(qry);
+            for (int i = 0; i < parameters.length; i++) {
+                preparedstatement.setObject(i+1, parameters[i]);
+            }
             preparedstatement.executeUpdate();
 
             preparedstatement.close();
@@ -49,17 +53,20 @@ public class MySQL {
         }
     }
 
-    public int updateWithGetID(String qry){
-        int i = -1;
+    public int updateWithGetID(String qry, Object... parameters){
+        int id = -1;
         try{
             Connection con = this.ds.getConnection();
 
             PreparedStatement preparedStatement = con.prepareStatement(qry, PreparedStatement.RETURN_GENERATED_KEYS);
+            for (int i = 0; i < parameters.length; i++) {
+                preparedStatement.setObject(i+1, parameters[i]);
+            }
             preparedStatement.executeUpdate();
             ResultSet rs = preparedStatement.getGeneratedKeys();
 
             if (rs.next()) {
-                i = rs.getInt(1);
+                id = rs.getInt(1);
             }
 
             rs.close();
@@ -69,7 +76,7 @@ public class MySQL {
             e.printStackTrace();
         }
 
-        return i;
+        return id;
     }
 
     public void select(String qry, Callback<ResultSet> cb){
@@ -135,12 +142,14 @@ public class MySQL {
         return o;
     }
 
-    public interface Callback<rs> {
-        void run(rs rs);
-    }
-
-    public interface CallbackResult<rs> {
-        Object run(rs rs);
+    public Connection getConnection() {
+	    Connection result = null;
+        try {
+            result = ds.getConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
 }

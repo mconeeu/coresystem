@@ -6,8 +6,10 @@
 
 package eu.mcone.coresystem.bungee.friend;
 
+import com.sun.javafx.geom.transform.GeneralTransform3D;
 import eu.mcone.coresystem.bungee.CoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
+import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -16,14 +18,19 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class Party {
 
     public static HashMap<String, Party> parties = new HashMap<>();
 
+    @Getter
     private ProxiedPlayer leader;
-    private ArrayList<ProxiedPlayer> member;
-    private ArrayList<ProxiedPlayer> invites;
+    @Getter
+    private List<ProxiedPlayer> member;
+    @Getter
+    private List<ProxiedPlayer> invites;
+    @Getter
     private long created;
 
     public Party(ProxiedPlayer leader, ProxiedPlayer... member) {
@@ -141,21 +148,6 @@ public class Party {
             Messager.sendParty(p, msg);
         }
     }
-
-
-
-    public long getCreated() {
-        return this.created;
-    }
-
-    public ArrayList<ProxiedPlayer> getMember() {
-        return this.member;
-    }
-
-    public ProxiedPlayer getLeader() {
-        return leader;
-    }
-
 
 
     public static boolean isInParty(ProxiedPlayer p) {

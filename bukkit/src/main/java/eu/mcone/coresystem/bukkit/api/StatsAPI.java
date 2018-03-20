@@ -9,6 +9,7 @@ package eu.mcone.coresystem.bukkit.api;
 import eu.mcone.coresystem.bukkit.CoreSystem;
 import eu.mcone.coresystem.bukkit.event.StatsChangeEvent;
 import eu.mcone.coresystem.lib.mysql.MySQL;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -17,6 +18,7 @@ import java.util.UUID;
 
 public class StatsAPI {
 
+    @Getter
     private String spielmodus, name;
     private MySQL mysql;
 
@@ -109,15 +111,15 @@ public class StatsAPI {
     }
 
 	/**
-	 * Returns the player's current mined beds, mined bed's
+	 * Returns the gamemodes main goal (is set)
 	 * @param uuid >> Player UniqueID
 	 */
-	public int getMinedbeds(UUID uuid) {
-		return (int) this.mysql.select("SELECT `mined_beds` FROM " + this.spielmodus + " WHERE `uuid`='" + uuid + "'", rs -> {
+	public int getGoals(UUID uuid) {
+		return (int) this.mysql.select("SELECT `goal` FROM " + this.spielmodus + " WHERE `uuid`='" + uuid + "'", rs -> {
 			int i = 0;
 			try {
 				if (rs.next()) {
-					i = rs.getInt("mined_beds");
+					i = rs.getInt("goal");
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -126,6 +128,8 @@ public class StatsAPI {
 		});
 	}
 
+
+
 	/**
 	 * Set the specified integer to the table column kill
 	 * @param uuid >> Player UniqueID
@@ -133,7 +137,7 @@ public class StatsAPI {
 	 */
 	public void setKills(UUID uuid, int kill) {
 		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', " + kill + ", 0, 0, 0, 0) ON DUPLICATE KEY UPDATE `kill`='" + kill + "'");
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', " + kill + ", 0, 0, 0, 0) ON DUPLICATE KEY UPDATE `kill`='" + kill + "'");
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
 		});
 	}
@@ -145,7 +149,7 @@ public class StatsAPI {
 	 */
 	public void setDeaths(UUID uuid, int death) {
 		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', 0, " + death + ", 0, 0, 0) ON DUPLICATE KEY UPDATE `death`='" + death + "'");
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, " + death + ", 0, 0, 0) ON DUPLICATE KEY UPDATE `death`='" + death + "'");
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
 		});
 	}
@@ -157,7 +161,7 @@ public class StatsAPI {
 	 */
 	public void setWins(UUID uuid, int win) {
 		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', 0, 0, " + win + ", 0, 0) ON DUPLICATE KEY UPDATE `win`='" + win + "'");
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, 0, " + win + ", 0, 0) ON DUPLICATE KEY UPDATE `win`='" + win + "'");
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
 		});
 	}
@@ -169,22 +173,24 @@ public class StatsAPI {
 	 */
 	public void setLose(UUID uuid, int lose) {
 		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose` `mined_bed`) VALUES ('" + uuid + "', 0, 0, 0, '" + lose + "', 0) ON DUPLICATE KEY UPDATE `lose`='" + lose + "'");
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, 0, 0, " + lose + ", 0) ON DUPLICATE KEY UPDATE `lose`='" + lose + "'");
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
 		});
 	}
 
-	/**
-	 * Adds the specified integer to the table column mined_bed
-	 * @param uuid >> Player UniqueID
-	 * @param mined_bed >> specified Integer
-	 */
-	public void addMinedbed(UUID uuid, int mined_bed) {
-		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', 0, 0, 0, 0, '" + mined_bed + "') ON DUPLICATE KEY UPDATE `mined_bed`=`mined_bed`+" + mined_bed);
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
-		});
-	}
+    /**
+     * Set the specified integer to the table column goal
+     * @param uuid >> Player UniqueID
+     * @param goal >> specified Integer
+     */
+    public void setGoal(UUID uuid, int goal) {
+        Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
+            this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, 0, 0, 0, " + goal + ") ON DUPLICATE KEY UPDATE `goal`='" + goal + "'");
+            Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
+        });
+    }
+
+
 
 	/**
 	 * Adds the specified integer to the table column kill
@@ -193,7 +199,7 @@ public class StatsAPI {
 	 */
 	public void addKills(UUID uuid, int kill) {
 		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', '" + kill + "', 0, 0, 0, 0) ON DUPLICATE KEY UPDATE `kill`=`kill`+" + kill);
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', '" + kill + "', 0, 0, 0, 0) ON DUPLICATE KEY UPDATE `kill`=`kill`+" + kill);
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
 		});
 	}
@@ -205,7 +211,7 @@ public class StatsAPI {
 	 */
 	public void addDeaths(UUID uuid, int death) {
 		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', 0, " + death + ", 0, 0, 0) ON DUPLICATE KEY UPDATE `death`=`death`+" + death);
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, " + death + ", 0, 0, 0) ON DUPLICATE KEY UPDATE `death`=`death`+" + death);
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
 		});
 	}
@@ -217,7 +223,7 @@ public class StatsAPI {
 	 */
 	public void addWin(UUID uuid, int win) {
 		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', 0, 0, " + win + ", 0, 0) ON DUPLICATE KEY UPDATE `win`=`win`+" + win);
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, 0, " + win + ", 0, 0) ON DUPLICATE KEY UPDATE `win`=`win`+" + win);
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
 		});
 	}
@@ -229,10 +235,24 @@ public class StatsAPI {
 	 */
 	public void addLose(UUID uuid, int lose) {
 		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', 0, 0, 0, " + lose + ", 0) ON DUPLICATE KEY UPDATE `lose`=`lose`+" + lose);
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, 0, 0, " + lose + ", 0) ON DUPLICATE KEY UPDATE `lose`=`lose`+" + lose);
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
 		});
 	}
+
+    /**
+     * Adds the specified integer to the table column goal
+     * @param uuid >> Player UniqueID
+     * @param goal >> specified Integer
+     */
+    public void addGoal(UUID uuid, int goal) {
+        Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
+            this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, 0, 0, 0, " + goal + ") ON DUPLICATE KEY UPDATE `goal`=`goal`+" + goal);
+            Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
+        });
+    }
+
+
 
 	/**
 	 * Removes the specified integer (kill) from the player statistics
@@ -241,7 +261,7 @@ public class StatsAPI {
 	 */
 	public void removeKills(UUID uuid, int kill) {
 		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', " + kill + ", 0, 0, 0, 0) ON DUPLICATE KEY UPDATE `kill`=`kill`-" + kill);
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', " + kill + ", 0, 0, 0, 0) ON DUPLICATE KEY UPDATE `kill`=`kill`-" + kill);
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
 		});
 	}
@@ -253,7 +273,7 @@ public class StatsAPI {
 	 */
 	public void removeDeaths(UUID uuid, int death) {
 		Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `mined_bed`) VALUES ('" + uuid + "', 0, " + death + ", 0, 0, 0) ON DUPLICATE KEY UPDATE `death`=`death`-" + death);
+			this.mysql.update("INSERT INTO " + this.spielmodus + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, " + death + ", 0, 0, 0) ON DUPLICATE KEY UPDATE `death`=`death`-" + death);
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(CoreSystem.getCorePlayer(uuid), this));
 		});
 	}
@@ -337,7 +357,7 @@ public class StatsAPI {
 	 * death >> int(100)
 	 * win >> int(100)
 	 * lose >> int(100)
-	 * mined_beds >> int(100)
+	 * goal >> int(100)
 	 */
 	private void createTable() {
 		mysql.update("CREATE TABLE IF NOT EXISTS " + spielmodus + " " +
@@ -348,15 +368,9 @@ public class StatsAPI {
 				"`death` int(100)  NOT NULL, " +
 				"`win` int(100) NOT NULL, " +
 				"`lose` int(100) NOT NULL," +
-				"`mined_beds` int(100)" +
+				"`goal` int(100)" +
 				") " +
 				"ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 	}
 
-	/**
-	 * Returns the name
-	 */
-	public String getName() {
-		return name;
-	}
 }

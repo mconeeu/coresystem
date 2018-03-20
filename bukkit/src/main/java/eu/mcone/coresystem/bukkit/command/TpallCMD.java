@@ -24,21 +24,26 @@ public class TpallCMD implements CommandExecutor{
             if (p.hasPermission("system.bukkit.tp.all")) {
                 if (cmd.getName().equalsIgnoreCase("tpall")) {
                     if (args.length == 0) {
-                        p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze §c/tpall <Spieler>");
+                        for (Player p1 : Bukkit.getOnlinePlayers()) {
+                            p1.teleport(p.getLocation());
+                        }
+                        return true;
+                    } else if (args.length == 1) {
+                        for (Player p1 : Bukkit.getOnlinePlayers()) {
+                            Player target = Bukkit.getServer().getPlayer(args[0]);
+
+                            if (target != null) {
+                                p1.teleport(target.getLocation());
+                            } else {
+                                p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Der Spieler §f" + args[0] + "§4 konnte nicht gefunden werden!");
+                            }
+                        }
                         return true;
                     }
-
-                    for (Player p1 : Bukkit.getOnlinePlayers()) {
-                        Player target = Bukkit.getServer().getPlayer(args[0]);
-                        p1.teleport(target.getLocation());
-
-                        if (target == null) {
-                            p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Der Spieler §f" + args[0] + "§4 konnte nicht gefunden werden!");
-                            return true;
-                        }
-                    }
-                    return true;
                 }
+
+                p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze §c/tpall <Spieler>");
+                return true;
             }
         } else {
             Bukkit.getConsoleSender().sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Dieser Befehl kann nur von einem Spieler ausgeführt werden!");

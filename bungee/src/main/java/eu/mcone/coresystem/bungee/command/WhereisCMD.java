@@ -16,7 +16,7 @@ import net.md_5.bungee.api.plugin.Command;
 
 public class WhereisCMD extends Command{
 	
-     public WhereisCMD(){
+	public WhereisCMD(){
     	 super("Whereis", null, "whois");
      }
 

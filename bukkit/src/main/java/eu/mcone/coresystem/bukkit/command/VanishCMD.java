@@ -29,30 +29,28 @@ public class VanishCMD implements CommandExecutor{
             CoreSystem.getInstance().getCooldownSystem().addPlayer(p.getUniqueId(), this.getClass());
 
 			if (p.hasPermission("system.bukkit.vanish")) {
-				if (cmd.getName().equalsIgnoreCase("vanish")) {
-					if (args.length == 0) {
-						if (!vanish.contains(p.getUniqueId())) {
-							vanish.add(p.getUniqueId());
-							for (Player all : Bukkit.getOnlinePlayers()) {
-								all.hidePlayer(p);
-							}
-							p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
-							p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§2Du bist nun im §fVanish §2Modus!");
-
-							return true;
-						} else {
-							vanish.remove(p.getUniqueId());
-							for (Player all : Bukkit.getOnlinePlayers()) {
-								all.showPlayer(p);
-							}
-							p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
-							p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§2Du bist nun nicht mehr im §fVanish §2Modus!");
-
-							return true;
+				if (args.length == 0) {
+					if (!vanish.contains(p.getUniqueId())) {
+						vanish.add(p.getUniqueId());
+						for (Player all : Bukkit.getOnlinePlayers()) {
+							all.hidePlayer(p);
 						}
+						p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
+						p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§2Du bist nun im §fVanish §2Modus!");
+
+						return true;
 					} else {
-						p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze §c/vanish");
+						vanish.remove(p.getUniqueId());
+						for (Player all : Bukkit.getOnlinePlayers()) {
+							all.showPlayer(p);
+						}
+						p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
+						p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§2Du bist nun nicht mehr im §fVanish §2Modus!");
+
+						return true;
 					}
+				} else {
+					p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze §c/vanish");
 				}
 			} else {
 				p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Berechtigung für diesen Befehl!");

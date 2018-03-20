@@ -22,7 +22,7 @@ public class PlayerJoin implements Listener{
 		CorePlayer p = CoreSystem.getCorePlayer(bp);
 
 		e.setJoinMessage(null);
-        p.setScoreboard(new MainScoreboard(p));
+        p.setScoreboard(new MainScoreboard());
         CoreSystem.getInstance().getNickManager().setNicks(bp);
 
 		if (CoreSystem.cfg.getConfig().getBoolean("Tablist")){
@@ -31,4 +31,5 @@ public class PlayerJoin implements Listener{
 			}
 		}
 	}
+
 }

@@ -21,32 +21,36 @@ import eu.mcone.coresystem.bungee.command.*;
 import eu.mcone.coresystem.bungee.listener.*;
 import eu.mcone.coresystem.lib.mysql.MySQL;
 import eu.mcone.coresystem.lib.mysql.MySQL_Config;
+import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class CoreSystem extends Plugin{
-	
+
+    @Getter
 	private static CoreSystem instance;
 	final public static String MainPrefix = "§8[§3BungeeCore§8] ";
 
 	public static MySQL mysql1;
 	private static MySQL mysql2;
-
 	public static MySQL_Config sqlconfig;
 
+	@Getter
 	private static Map<UUID, CorePlayer> corePlayers;
-	private static Map<UUID, OfflinePlayer> offlinePlayers;
+	@Getter
+	private static Map<String, OfflinePlayer> offlinePlayers;
 
+	@Getter
 	private PermissionManager permissionManager;
+	@Getter
 	private CooldownSystem cooldownSystem;
+	@Getter
 	private FriendSystem friendSystem;
+	@Getter
 	private NickManager nickManager;
 
 	public void onEnable(){
@@ -55,7 +59,19 @@ public class CoreSystem extends Plugin{
         corePlayers = new HashMap<>();
         offlinePlayers = new HashMap<>();
 
-        Messager.console(MainPrefix + "§aMySQL Verbindungen werden hergestellt...");
+        Messager.console("\n"+
+				"      __  _____________  _   ________                                                          \n" +
+				"     /  |/  / ____/ __ \\/ | / / ____/                                                          \n" +
+				"    / /|_/ / /   / / / /  |/ / __/                                                             \n" +
+				"   / /  / / /___/ /_/ / /|  / /___                                                             \n" +
+				"  /_/ _/_/\\____/\\____/_/ |_/_____/      ______               _____            __               \n" +
+				"     / __ )__  ______  ____ ____  ___  / ____/___  ________ / ___/__  _______/ /____  ____ ___ \n" +
+				"    / __  / / / / __ \\/ __ `/ _ \\/ _ \\/ /   / __ \\/ ___/ _ \\\\__ \\/ / / / ___/ __/ _ \\/ __ `__ \\\n" +
+				"   / /_/ / /_/ / / / / /_/ /  __/  __/ /___/ /_/ / /  /  __/__/ / /_/ (__  ) /_/  __/ / / / / /\n" +
+				"  /_____/\\__,_/_/ /_/\\__, /\\___/\\___/\\____/\\____/_/   \\___/____/\\__, /____/\\__/\\___/_/ /_/ /_/ \n" +
+				"                    /____/                                     /____/\n");
+
+        Messager.console(MainPrefix + "§aMySQL Verbindungen werden initialisiert...");
 		mysql1 = new MySQL("78.46.249.195", 3306, "mc1system", "mc1system", "6THk8uDbTtDKf8yUMf2r62MHMZ57EVMBFkMDEgFqz9YF8prKug2q9DXLvTJZEmsa");
 		mysql2 = new MySQL("78.46.249.195", 3306, "mc1config", "mc1config", "q%sZp=6/_wx2M2B.Qzaeya4Kd5;f4W*w*M?3#kM,QPjv6VuG3=TjTJ63CPD)}WV;");
 
@@ -85,26 +101,8 @@ public class CoreSystem extends Plugin{
 
 		Messager.console(MainPrefix + "§aMC ONE Messaging Channel werden registriert...");
 		ProxyServer.getInstance().registerChannel("Return");
-		
-		Messager.console("");
-		Messager.console("§7##################################################################################");
-		Messager.console("§7#                                                                                #");
-		Messager.console("§7# §b#######                                                                        §7#");
-		Messager.console("§7# §b#      #    #       #    #       #     ########     ##########   #########     §7#");
-		Messager.console("§7# §b#      #    #       #    ##      #    #        #    #            #             §7#");
-		Messager.console("§7# §b#      #    #       #    # #     #    #        #    #            #             §7#");
-		Messager.console("§7# §b#######     #       #    #  #    #    #             #            #             §7#");
-		Messager.console("§7# §b#      #    #       #    #   #   #    #    #####    #########    #########     §7#");
-		Messager.console("§7# §b#      #    #       #    #    #  #    #         #   #            #             §7#");
-		Messager.console("§7# §b#      #    #       #    #     # #    #         #   #            #             §7#");
-		Messager.console("§7# §b#######     #########    #      ##     #########    ##########   ##########    §7#");
-		Messager.console("§7#                                                                                #");
-		Messager.console("§7##################################################################################");
-		Messager.console("");
-		Messager.console(" §7» §aAktivert!");
-		Messager.console(" §7» §7plugin Name: §3" + this.getDescription().getName());
-		Messager.console(" §7» §7Plugin version: §3" + this.getDescription().getVersion()+ " §7loaded!");
-		Messager.console("");
+
+		Messager.console(MainPrefix + "§aVersion: §f" + this.getDescription().getVersion()+ "§a wurde aktiviert!");
 	}
 
 	public void onDisable(){
@@ -131,7 +129,6 @@ public class CoreSystem extends Plugin{
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new UnnickCMD());
 
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new LobbyCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new BuildCMD());
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new JumpCMD());
 
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new FriendCMD());
@@ -183,7 +180,7 @@ public class CoreSystem extends Plugin{
 		sqlconfig.createTable();
 
 		//System
-		sqlconfig.insertMySQLConfig("System-Prefix", "§8[§7§l!§8] §fSystem §8» ");
+		sqlconfig.insertMySQLConfig("System-Prefix", "§8[§7§l!§8] §fSystem §8» §7");
 		sqlconfig.insertMySQLConfig("System-Report-Cooldown", 1);
 
 		sqlconfig.insertMySQLConfig("System-Server-Lobby", "Lobby");
@@ -483,39 +480,13 @@ public class CoreSystem extends Plugin{
 		return null;
 	}
 
-	public static OfflinePlayer getOfflinePlayer(UUID uuid) {
-		return offlinePlayers.getOrDefault(uuid, new OfflinePlayer(uuid));
-	}
-
 	public static Collection<CorePlayer> getOnlineCorePlayers() {
 		return corePlayers.values();
 	}
 
-	public static Map<UUID, CorePlayer> getCorePlayers() {
-		return corePlayers;
+	public static OfflinePlayer getOfflinePlayer(String name) {
+		OfflinePlayer o = offlinePlayers.getOrDefault(name, new OfflinePlayer(name));
+		return o.getUuid() != null ? o : null;
 	}
 
-	public static Map<UUID, OfflinePlayer> getOfflinePlayers() {
-		return offlinePlayers;
-	}
-    
-    public static CoreSystem getInstance(){
-		return instance;
-	}
-
-	public PermissionManager getPermissionManager() {
-		return permissionManager;
-	}
-
-	public CooldownSystem getCooldownSystem() {
-		return cooldownSystem;
-	}
-
-	public FriendSystem getFriendSystem() {
-		return friendSystem;
-	}
-
-	public NickManager getNickManager() {
-		return nickManager;
-	}
 }

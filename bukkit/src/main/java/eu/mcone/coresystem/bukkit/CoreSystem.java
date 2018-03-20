@@ -9,24 +9,27 @@ package eu.mcone.coresystem.bukkit;
 import eu.mcone.coresystem.bukkit.api.StatsAPI;
 import eu.mcone.coresystem.bukkit.channel.PluginChannelListener;
 import eu.mcone.coresystem.bukkit.channel.PluginMessage;
-import eu.mcone.coresystem.bukkit.util.CooldownSystem;
+import eu.mcone.coresystem.bukkit.command.*;
 import eu.mcone.coresystem.bukkit.config.YAML_Config;
+import eu.mcone.coresystem.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.bukkit.listener.*;
 import eu.mcone.coresystem.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.bukkit.player.NickManager;
 import eu.mcone.coresystem.bukkit.scoreboard.MainScoreboard;
-import eu.mcone.coresystem.bukkit.util.AFKCheck;
-import eu.mcone.coresystem.bukkit.command.*;
-import eu.mcone.coresystem.bukkit.listener.*;
 import eu.mcone.coresystem.bukkit.scoreboard.Objective;
+import eu.mcone.coresystem.bukkit.util.AFKCheck;
+import eu.mcone.coresystem.bukkit.util.CooldownSystem;
 import eu.mcone.coresystem.lib.mysql.MySQL;
 import eu.mcone.coresystem.lib.mysql.MySQL_Config;
 import eu.mcone.coresystem.lib.player.PermissionManager;
+import lombok.Getter;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.DisplaySlot;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +40,7 @@ import static org.bukkit.Bukkit.getPluginManager;
 
 public class CoreSystem extends JavaPlugin {
 
+    @Getter
 	private static CoreSystem instance;
     public static String MainPrefix = "§8[§fBukkitCore§8] ";
 
@@ -52,27 +56,49 @@ public class CoreSystem extends JavaPlugin {
 	public static MySQL_Config config;
     public static YAML_Config cfg = new YAML_Config("MCONE-BukkitCoreSystem", "config.yml");
 
+    @Getter
 	private PermissionManager permissionManager;
+    @Getter
 	private CooldownSystem cooldownSystem;
+    @Getter
 	private NickManager nickManager;
 
+    @Getter
     private static Map<UUID, CorePlayer> corePlayers;
+    private Map<UUID, CoreInventory> inventories;
 
 	@Override
 	public void onEnable(){
 		instance = this;
+		inventories = new HashMap<>();
         cooldownSystem = new CooldownSystem();
+        createPluginDir("worlds");
 
+        getServer().getConsoleSender().sendMessage("§f\n"+
+                "      __  _____________  _   ________                                                    \n" +
+                "     /  |/  / ____/ __ \\/ | / / ____/                                                    \n" +
+                "    / /|_/ / /   / / / /  |/ / __/                                                       \n" +
+                "   / /  / / /___/ /_/ / /|  / /___                                                       \n" +
+                "  /_/ _/_/\\____/\\____/_/_|_/_____/______               _____            __               \n" +
+                "     / __ )__  __/ /__/ /__(_) /_/ ____/___  ________ / ___/__  _______/ /____  ____ ___ \n" +
+                "    / __  / / / / //_/ //_/ / __/ /   / __ \\/ ___/ _ \\\\__ \\/ / / / ___/ __/ _ \\/ __ `__ \\\n" +
+                "   / /_/ / /_/ / ,< / ,< / / /_/ /___/ /_/ / /  /  __/__/ / /_/ (__  ) /_/  __/ / / / / /\n" +
+                "  /_____/\\__,_/_/|_/_/|_/_/\\__/\\____/\\____/_/   \\___/____/\\__, /____/\\__/\\___/_/ /_/ /_/ \n" +
+                "                                                         /____/  \n"
+        );
+
+        getServer().getConsoleSender().sendMessage(MainPrefix + "§aMySQL Verbindungen werden initialisiert...");
         mysql1 = new MySQL("78.46.249.195", 3306, "mc1system", "mc1system", "6THk8uDbTtDKf8yUMf2r62MHMZ57EVMBFkMDEgFqz9YF8prKug2q9DXLvTJZEmsa");
         mysql2 = new MySQL("78.46.249.195", 3306, "mc1stats", "mc1stats", "qN8FQK.hj)_Lat?uK)-#6F-$3![t;2E6KZ$sb+Am3g!VHRDe&w$nQX)5}VKb@-@[}e");
         mysql3 = new MySQL("78.46.249.195", 3306, "mc1config", "mc1config", "q%sZp=6/_wx2M2B.Qzaeya4Kd5;f4W*w*M?3#kM,QPjv6VuG3=TjTJ63CPD)}WV;");
+        createTables(mysql1);
 
         statsMinewar = new StatsAPI("Minewar", "§5§lMineWar", mysql2);
         statsBedwars = new StatsAPI("Bedwars", "§c§lBedwars", mysql2);
         statsSkypvp = new StatsAPI("Skypvp", "§9§lSkypvp", mysql2);
         statsKnockit = new StatsAPI("Knockit", "§2§lKnockIT", mysql2);
 
-        getServer().getConsoleSender().sendMessage(MainPrefix + "§aMySQL Config wird initiiert");
+        getServer().getConsoleSender().sendMessage(MainPrefix + "§aMySQL Config wird initiiert...");
 		config = new MySQL_Config(mysql3, "BukkitCoreSystem", 800);
 		this.registerMySQLConfig();
 
@@ -80,7 +106,7 @@ public class CoreSystem extends JavaPlugin {
         permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), mysql1);
 
         getServer().getConsoleSender().sendMessage(MainPrefix + "§aNickManager wird gestartet...");
-        nickManager = new NickManager(true);
+        nickManager = new NickManager();
 
         getServer().getConsoleSender().sendMessage(MainPrefix + "§aBefehle, Events, Config & Scheduler werden geladen...");
 		this.setupConfig();
@@ -116,10 +142,10 @@ public class CoreSystem extends JavaPlugin {
             new CorePlayer(p.getUniqueId(), p.getName());
             new PluginMessage(p, "UNNICK");
         }
-        for (CorePlayer p : getOnlineCorePlayers()) p.setScoreboard(new MainScoreboard(p));
+        for (CorePlayer p : getOnlineCorePlayers()) p.setScoreboard(new MainScoreboard());
 	}
 
-	@Override
+    @Override
 	public void onDisable(){
 	    if (CoreSystem.cfg.getConfig().getBoolean("AFK-Manager")) {
 	        for (HashMap.Entry<UUID, Integer> templateEntry : AFKCheck.players.entrySet()) {
@@ -175,14 +201,13 @@ public class CoreSystem extends JavaPlugin {
         getCommand("fly").setExecutor(new FlyCMD());
 		getCommand("gamemode").setExecutor(new GamemodeCMD());
         getCommand("heal").setExecutor(new HealCMD());
-		getCommand("gm").setExecutor(new GamemodeCMD());
 		getCommand("tp").setExecutor(new TpCMD());
 		getCommand("tphere").setExecutor(new TphereCMD());
 		getCommand("tpall").setExecutor(new TpallCMD());
 		getCommand("tppos").setExecutor(new TpposCMD());
 		getCommand("stats").setExecutor(new StatsCMD());
 		getCommand("vanish").setExecutor(new VanishCMD());
-        getCommand("profil").setExecutor(new ProfilCMD());
+        getCommand("profil").setExecutor(new ProfileCMD());
 	}
 
 	private void registerListener() {
@@ -204,6 +229,64 @@ public class CoreSystem extends JavaPlugin {
         }, 20L, 20L);
     }
 
+    private void createTables(MySQL mysql) {
+        mysql.update(
+                "CREATE TABLE IF NOT EXISTS bukkitsystem_npcs " +
+                "(" +
+                    "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+                    "`name` VARCHAR(100) NOT NULL, " +
+                    "`location` VARCHAR(100) NOT NULL, " +
+                    "`texture` VARCHAR(10000) NOT NULL, " +
+                    "`displayname` VARCHAR(1000) NOT NULL, " +
+                    "`server` varchar(100) NOT NULL" +
+                ") " +
+                "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+        );
+
+        mysql.update(
+                "CREATE TABLE IF NOT EXISTS bukkitsystem_textures " +
+                "(" +
+                    "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+                    "`name` VARCHAR(100) NOT NULL UNIQUE KEY REFERENCES bukkitsystem_npcs(`texture`) ON DELETE SET NULL ON UPDATE SET NULL, " +
+                    "`texture_value` VARCHAR(500) NOT NULL, " +
+                    "`texture_signature` VARCHAR(1000) NOT NULL" +
+                ") " +
+                "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+        );
+
+        mysql.update(
+                "CREATE TABLE IF NOT EXISTS bukkitsystem_holograms " +
+                "(" +
+                    "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+                    "`name` VARCHAR(100) NOT NULL UNIQUE KEY, " +
+                    "`location` VARCHAR(100) NOT NULL, " +
+                    "`lines` VARCHAR(1000) NOT NULL, " +
+                    "`server` varchar(100) NOT NULL" +
+                ") " +
+                "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+        );
+
+        mysql.update(
+                "CREATE TABLE IF NOT EXISTS bukkitsystem_worlds" +
+                "(" +
+                    "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY," +
+                    "`name` VARCHAR(100) NOT NULL UNIQUE KEY," +
+                    "`bytes` int NOT NULL," +
+                    "`server` VARCHAR(100) NOT NULL" +
+                ")" +
+                "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+        );
+    }
+
+    private void createPluginDir(String path) {
+        String s = File.separator;
+        File file = new File(System.getProperty("user.dir")+s+"plugins"+s+path);
+
+        if (!file.exists()) {
+            file.mkdir();
+        }
+    }
+
     public static CorePlayer getCorePlayer(Player p) {
 	    return corePlayers.getOrDefault(p.getUniqueId(), null);
     }
@@ -223,23 +306,16 @@ public class CoreSystem extends JavaPlugin {
 	    return corePlayers.values();
     }
 
-    public static Map<UUID, CorePlayer> getCorePlayers() {
-	    return corePlayers;
+    public void registerInventory(CoreInventory inventory) {
+	    inventories.put(inventory.getPlayer().getUniqueId(), inventory);
     }
 
-	public static CoreSystem getInstance(){
-		return instance;
-	}
-
-    public PermissionManager getPermissionManager() {
-        return permissionManager;
+    public Collection<CoreInventory> getInventories() {
+        return inventories.values();
     }
 
-    public CooldownSystem getCooldownSystem() {
-        return cooldownSystem;
+    public void clearPlayerInventories(UUID uuid) {
+	    if (inventories.containsKey(uuid)) inventories.remove(uuid);
     }
 
-    public NickManager getNickManager() {
-        return nickManager;
-    }
 }

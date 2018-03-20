@@ -21,8 +21,6 @@ public class PermissionChange implements Listener {
 
     @EventHandler
     public void on(PermissionChangeEvent e) {
-        final CorePlayer p = e.getPlayer();
-
         if (e.getKind() == PermissionChangeEvent.Kind.GROUP_PERMISSION) {
             ProxyServer.getInstance().getScheduler().runAsync(CoreSystem.getInstance(), () -> {
                 CoreSystem.getInstance().getPermissionManager().reload();
@@ -32,17 +30,19 @@ public class PermissionChange implements Listener {
                         player.reloadPermissions();
                     }
                 }
-                new PluginMessage("Return", p.bungee().getServer().getInfo(), "EVENT", p.getUuid().toString(), "PermissionChangeEvent", "GROUP_PERMISSION;"+e.getGroup()+";");
             });
         } else if (e.getKind() == PermissionChangeEvent.Kind.USER_PERMISSION) {
+            final CorePlayer p = e.getPlayer();
+
             if (p != null) {
                 ProxyServer.getInstance().getScheduler().runAsync(CoreSystem.getInstance(), () -> {
                     CoreSystem.getInstance().getPermissionManager().reload();
                     p.reloadPermissions();
-                    new PluginMessage("Return", p.bungee().getServer().getInfo(), "EVENT", p.getUuid().toString(), "PermissionChangeEvent", "USER_PERMISSION;");
                 });
             }
         } else if (e.getKind() == PermissionChangeEvent.Kind.GROUP_CHANGE) {
+            final CorePlayer p = e.getPlayer();
+
             if (p != null) {
                 p.setGroup(e.getGroup());
                 p.reloadPermissions();

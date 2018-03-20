@@ -9,6 +9,8 @@ package eu.mcone.coresystem.bungee.listener;
 import eu.mcone.coresystem.bungee.CoreSystem;
 import eu.mcone.coresystem.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.utils.Messager;
+import eu.mcone.coresystem.lib.labymod.AntiLabyMod;
+import eu.mcone.coresystem.lib.labymod.LabyPermission;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.Title;
@@ -18,6 +20,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.protocol.packet.PluginMessage;
 
 import java.net.InetSocketAddress;
 import java.sql.SQLException;
@@ -106,8 +109,8 @@ public class PostLogin implements Listener{
 
         title.send(p);
 
-        isNew = false;
 
+        isNew = false;
 
         ProxyServer.getInstance().getScheduler().schedule(CoreSystem.getInstance(), () -> {
             if (p.getServer() != null) {
@@ -116,6 +119,16 @@ public class PostLogin implements Listener{
                         new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', "§7§oPublic Beta 5.0")).create()
                 );
             }
+
+            new AntiLabyMod()
+                    .set(LabyPermission.IMPROVED_LAVA, true)
+                    .set(LabyPermission.CROSSHAIR_SYNC, true)
+                    .set(LabyPermission.REFILL_FIX, true)
+                    .set(LabyPermission.GUI_POTION_EFFECTS, false)
+                    .set(LabyPermission.GUI_ARMOR_HUD, false)
+                    .set(LabyPermission.GUI_ITEM_HUD, false)
+                    .send((channel, bytes) -> p.unsafe().sendPacket(new PluginMessage(channel, bytes, false))
+            );
         },1000L, TimeUnit.MILLISECONDS);
     }
 
@@ -128,15 +141,15 @@ public class PostLogin implements Listener{
 
         if (hours<=4) {
             part = "Nacht";
-        }else if (hours<=11){
+        } else if (hours<=11) {
             part = "Morgen";
-        }else if (hours<=14){
+        } else if (hours<=14) {
             part = "Mittag";
-        }else if (hours<=17){
-            part = "Nachrmittag";
-        }else if (hours<=24) {
+        } else if (hours<=17) {
+            part = "Nachmittag";
+        } else if (hours<=24) {
             part = "Abend";
-        }else {
+        } else {
             part = "Tag";
         }
 

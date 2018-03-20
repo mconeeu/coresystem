@@ -57,7 +57,7 @@ public class PermissionManager {
         });
     }
 
-    private List<Group> getParents(Group group) {
+    public List<Group> getParents(Group group) {
         List<Group> result = new ArrayList<>();
         for (Group parent : this.parents.getOrDefault(group, new ArrayList<>())) {
             result.add(parent);

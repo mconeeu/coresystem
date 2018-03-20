@@ -7,12 +7,14 @@
 package eu.mcone.coresystem.bukkit.event;
 
 import eu.mcone.coresystem.bukkit.player.CorePlayer;
+import lombok.Getter;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 public class CoinsChangeEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
+    @Getter
     private final CorePlayer player;
 
     public CoinsChangeEvent(CorePlayer p) {
@@ -27,7 +29,4 @@ public class CoinsChangeEvent extends Event {
         return handlers;
     }
 
-    public CorePlayer getPlayer() {
-        return player;
-    }
 }

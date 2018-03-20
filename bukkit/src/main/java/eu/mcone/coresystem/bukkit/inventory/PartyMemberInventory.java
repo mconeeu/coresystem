@@ -19,43 +19,29 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 
-public class PartyMemberInventory {
+class PartyMemberInventory extends CoreInventory {
 
     PartyMemberInventory(Player p, String member) {
-        Inventory inv = Bukkit.createInventory(null, 36, "§8» §f§l"+member+" §8| §5Aktionen");
+        super("§8» §f§l"+member+" §8| §5Aktionen", p, 36, Option.FILL_EMPTY_SLOTS);
 
-        for (int i = 0; i <= 35; i++) {
-            inv.setItem(i, ItemFactory.createItem(Material.STAINED_GLASS_PANE, 7, 1, "§8//§oMCONE§8//", true));
-        }
+        setItem(4, ItemFactory.createSkullItem("§f§l"+member, member, 1, new ArrayList<>()));
 
-        inv.setItem(4, ItemFactory.createSkullItem("§f§l"+member, member, 1, new ArrayList<>()));
-        inv.setItem(21, ItemFactory.createItem(Material.NETHER_STAR, 0, 1, "§7Zum §ePartyleader§7 promoten", true));
-        inv.setItem(23, ItemFactory.createItem(Material.BARRIER, 0, 1, "§4Aus der Party kicken", true));
-
-        inv.setItem(27, ItemFactory.createItem(Material.IRON_DOOR, 0, 1, "§7§l↩ Zurück zum Partymenü", true));
-
-        p.openInventory(inv);
-    }
-
-    public static void click(InventoryClickEvent e, Player p) {
-        if ((e.getCurrentItem() == null) || !e.getCurrentItem().hasItemMeta() || e.getSlotType() == InventoryType.SlotType.OUTSIDE) {
-            e.setCancelled(true);
-        } else if (e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§7§l↩ Zurück zum Partymenü")){
-            p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
-            new PartyInventory(p);
-        } else if (e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§7Zum §ePartyleader§7 promoten")) {
-            SkullMeta meta = (SkullMeta) e.getClickedInventory().getItem(4).getItemMeta();
-            String skullOwner = meta.getOwner();
-
-             new PluginMessage(p, "CMD", "party promote "+skullOwner);
+        setItem(21, ItemFactory.createItem(Material.NETHER_STAR, 0, 1, "§7Zum §ePartyleader§7 promoten", true), () -> {
+            new PluginMessage(p, "CMD", "party promote "+member);
             p.closeInventory();
-        } else if (e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("§4Aus der Party kicken")) {
-            SkullMeta meta = (SkullMeta) e.getClickedInventory().getItem(4).getItemMeta();
-            String skullOwner = meta.getOwner();
+        });
 
-             new PluginMessage(p, "CMD", "party kick "+skullOwner);
+        setItem(23, ItemFactory.createItem(Material.BARRIER, 0, 1, "§4Aus der Party kicken", true), () -> {
+            new PluginMessage(p, "CMD", "party kick "+member);
             p.closeInventory();
-        }
+        });
+
+        setItem(27, ItemFactory.createItem(Material.IRON_DOOR, 0, 1, "§7§l↩ Zurück zum Partymenü", true), () -> {
+                    p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
+                    new PartyInventory(p);
+        });
+
+        openInventory();
     }
 
 }

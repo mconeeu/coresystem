@@ -10,6 +10,8 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import eu.mcone.coresystem.bukkit.CoreSystem;
 import eu.mcone.coresystem.bukkit.listener.PlayerDeath;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -23,11 +25,11 @@ import java.util.UUID;
 public class NickManager {
 
     private Map<UUID, TextureData> oldProfiles;
-    private boolean allowNicking;
+    @Getter @Setter
+    private boolean allowNicking = true;
 
-    public NickManager(boolean allowNicking) {
+    public NickManager() {
         this.oldProfiles = new HashMap<>();
-        this.allowNicking = allowNicking;
     }
 
     public void nick(Player p, String name, String value, String signature) {
@@ -113,20 +115,18 @@ public class NickManager {
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
-            connection.sendPacket(new PacketPlayOutEntityDestroy(p.getEntityId()));
             connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, ep));
 
             if (!player.equals(p)) {
+                connection.sendPacket(new PacketPlayOutEntityDestroy(p.getEntityId()));
                 connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ep));
                 connection.sendPacket(new PacketPlayOutNamedEntitySpawn(((CraftPlayer) p).getHandle()));
+
+                CoreSystem.getCorePlayer(player).getScoreboard().reload();
             } else {
                 PlayerDeath.nicking.add(p);
-                p.setHealth(0);
-                p.spigot().respawn();
                 connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ep));
             }
-
-            CoreSystem.getCorePlayer(player).getScoreboard().reload();
         }
 
         p.setDisplayName(name);
@@ -148,21 +148,6 @@ public class NickManager {
         String getSignature() {
             return signature;
         }
-    }
-
-    private class ProfileData {
-        private final double health;
-        private final int foodlevel;
-
-        ProfileData(Player p) {
-            this.health = p.getHealth();
-            this.foodlevel = p.getFoodLevel();
-
-        }
-    }
-
-    public void setAllowNicking(boolean allowNicking) {
-        this.allowNicking = allowNicking;
     }
 
 }

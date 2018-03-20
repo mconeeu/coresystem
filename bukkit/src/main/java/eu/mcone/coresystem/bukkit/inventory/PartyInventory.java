@@ -20,74 +20,63 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.FutureTask;
 
-public class PartyInventory {
+public class PartyInventory extends CoreInventory {
 
     PartyInventory(Player p) {
-        new PluginMessage(p, "PARTY", "member");
-    }
+        super("§8» §5§lMeine Party", p, 54, Option.FILL_EMPTY_SLOTS);
 
-    public static void create(Player p, String member) {
-        Inventory inv = org.bukkit.Bukkit.createInventory(null, 54, "§8» §5§lMeine Party");
+        new PluginMessage(player, member -> {
+            if (!member.equals("false")) {
+                String[] members = member.split(",");
+                boolean isPartyLeader = isPartyLeader(player, members);
 
-        for (int i = 0; i <= 53; i++) {
-            inv.setItem(i, ItemFactory.createItem(Material.STAINED_GLASS_PANE, 7, 1, "§8//§oMCONE§8//", true));
-        }
+                int i = 0;
+                for (String m : members) {
+                    if (m.equals("") || i > 44) continue;
+                    String[] data = m.split(":");
 
-        if (!member.equals("false")) {
-            String[] members = member.split(",");
-            boolean isPartyLeader = isPartyLeader(p, members);
+                    List<String> lores = new ArrayList<>();
+                    if (data.length>2 && data[2].equals("leader")) lores.add("§e\u2600 Leader");
+                    if (isPartyLeader && !data[0].equalsIgnoreCase(player.getName())) lores.addAll(Arrays.asList("", "§8» §f§nRechtsklick§8 | §7§oAktionen"));
 
-            int i = 0;
-            for (String m : members) {
-                if (m.equals("") || i > 44) continue;
-                String[] data = m.split(":");
-
-                List<String> lores = new ArrayList<>();
-                if (data.length>2 && data[2].equals("leader")) lores.add("§e\u2600 Leader");
-                if (isPartyLeader && !data[0].equalsIgnoreCase(p.getName())) lores.addAll(Arrays.asList("", "§8» §f§nRechtsklick§8 | §7§oAktionen"));
-
-                inv.setItem(i, ItemFactory.createSkullItem("§f§l" + data[0], data[0], 1, lores));
-                i++;
-            }
-
-            inv.setItem(45, ItemFactory.createItem(Material.IRON_DOOR, 0, 1, "§7§l↩ Zurück zum Profil", true));
-            if (isPartyLeader) inv.setItem(49, ItemFactory.createItem(Material.BARRIER, 0, 1, "§cParty löschen", true));
-            inv.setItem(53, ItemFactory.createItem(Material.SLIME_BALL, 0, 1, "§4Party verlassen", true));
-        } else {
-            inv.setItem(22, ItemFactory.createItem(Material.CAKE, 0, 1, "§5Party erstellen", true));
-            inv.setItem(45, ItemFactory.createItem(Material.IRON_DOOR, 0, 1, "§7§l↩ Zurück zum Profil", true));
-        }
-
-        p.openInventory(inv);
-    }
-
-    public static void click(InventoryClickEvent e, Player p) {
-        if ((e.getCurrentItem() == null) || !e.getCurrentItem().hasItemMeta() || e.getSlotType() == InventoryType.SlotType.OUTSIDE) {
-            e.setCancelled(true);
-        } else if (e.getCurrentItem().getItemMeta().getDisplayName().equals("§7§l↩ Zurück zum Profil")){
-            p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
-            new ProfileInventory(CoreSystem.getCorePlayer(p));
-        } else if (e.getCurrentItem().getItemMeta().getDisplayName().equals("§4Party verlassen")){
-            p.closeInventory();
-             new PluginMessage(p, "CMD" ,"party leave");
-        } else if (e.getCurrentItem().getItemMeta().getDisplayName().equals("§cParty löschen")){
-            p.closeInventory();
-            new PluginMessage(p, "CMD" ,"party delete");
-        } else if (e.getCurrentItem().getItemMeta().getDisplayName().equals("§5Party erstellen")){
-            p.closeInventory();
-            new PluginMessage(p, "CMD" ,"party create");
-        } else if (e.getCurrentItem().getType().equals(Material.SKULL_ITEM)) {
-            if (e.getCurrentItem().getItemMeta().hasLore() && e.getCurrentItem().getItemMeta().getLore().contains("§8» §f§nRechtsklick§8 | §7§oAktionen")) {
-                SkullMeta meta = (SkullMeta) e.getCurrentItem().getItemMeta();
-                String playerName = meta.getOwner();
-
-                if (!playerName.equalsIgnoreCase(p.getName())) {
-                    new PartyMemberInventory(p, playerName);
-                    p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+                    setItem(i, ItemFactory.createSkullItem("§f§l" + data[0], data[0], 1, lores), () -> {
+                        new PartyMemberInventory(p, data[0]);
+                        p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+                    });
+                    i++;
                 }
+
+                setItem(45, ItemFactory.createItem(Material.IRON_DOOR, 0, 1, "§7§l↩ Zurück zum Profil", true), () -> {
+                    p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
+                    new ProfileInventory(p);
+                });
+
+                if (isPartyLeader)
+                    setItem(49, ItemFactory.createItem(Material.BARRIER, 0, 1, "§cParty löschen", true), () -> {
+                        p.closeInventory();
+                        new PluginMessage(p, "CMD" ,"party delete");
+                    });
+
+                setItem(53, ItemFactory.createItem(Material.SLIME_BALL, 0, 1, "§4Party verlassen", true), () -> {
+                    p.closeInventory();
+                    new PluginMessage(p, "CMD" ,"party leave");
+                });
+            } else {
+                setItem(22, ItemFactory.createItem(Material.CAKE, 0, 1, "§5Party erstellen", true), () -> {
+                    p.closeInventory();
+                    new PluginMessage(p, "CMD" ,"party create");
+                });
+
+                setItem(45, ItemFactory.createItem(Material.IRON_DOOR, 0, 1, "§7§l↩ Zurück zum Profil", true), () -> {
+                    p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
+                    new ProfileInventory(p);
+                });
             }
-        }
+
+            openInventory();
+        }, "PARTY", "member");
     }
 
     private static boolean isPartyLeader(Player p, String[] members) {

@@ -8,13 +8,16 @@ package eu.mcone.coresystem.bukkit.event;
 
 import eu.mcone.coresystem.bukkit.api.StatsAPI;
 import eu.mcone.coresystem.bukkit.player.CorePlayer;
+import lombok.Getter;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 public class StatsChangeEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
+    @Getter
     private final StatsAPI stats;
+    @Getter
     private final CorePlayer player;
 
     public StatsChangeEvent(CorePlayer player, StatsAPI stats) {
@@ -28,14 +31,6 @@ public class StatsChangeEvent extends Event {
 
     public static HandlerList getHandlerList() {
         return handlers;
-    }
-
-    public CorePlayer getPlayer() {
-        return player;
-    }
-
-    public StatsAPI getStats() {
-        return stats;
     }
 
 }

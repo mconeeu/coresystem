@@ -44,13 +44,19 @@ public class BungeecordCMD extends Command{
 
                 Messager.send(sender, "§aPermissions werden neu geladen...");
                 CoreSystem.getInstance().getPermissionManager().reload();
+
+                Messager.send(sender, "§aNicks werden neu geladen...");
+                CoreSystem.getInstance().getNickManager().reload();
             } else if (args.length == 2) {
-                if (args[1].equals("config")) {
+                if (args[1].equalsIgnoreCase("config")) {
                     Messager.send(sender, "§aMySQL-Config wird neu geladen...");
                     CoreSystem.sqlconfig.store();
-                } else if (args[1].equals("permissions")) {
+                } else if (args[1].equalsIgnoreCase("permissions")) {
                     Messager.send(sender, "§aPermissions werden neu geladen...");
                     CoreSystem.getInstance().getPermissionManager().reload();
+                } else if (args[1].equalsIgnoreCase("nick")) {
+                    Messager.send(sender, "§aNicks werden neu geladen...");
+                    CoreSystem.getInstance().getNickManager().reload();
                 }
             }
         }

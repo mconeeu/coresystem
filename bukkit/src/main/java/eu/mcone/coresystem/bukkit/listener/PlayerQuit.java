@@ -26,13 +26,7 @@ public class PlayerQuit implements Listener{
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onMonitor(PlayerQuitEvent e){
-		Player p = e.getPlayer();
-		CorePlayer cp = CoreSystem.getCorePlayer(p);
-
-		AFKCheck.players.remove(p.getUniqueId());
-		AFKCheck.afkPlayers.remove(p.getUniqueId());
-
-		Bukkit.getScheduler().runTask(CoreSystem.getInstance(), cp::unregister);
+		Bukkit.getScheduler().runTask(CoreSystem.getInstance(), CoreSystem.getCorePlayer(e.getPlayer())::unregister);
 	}
 
 }

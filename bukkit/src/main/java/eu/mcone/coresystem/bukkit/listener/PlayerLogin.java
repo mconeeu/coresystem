@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
-import eu.mcone.coresystem.bukkit.CoreSystem;
 import eu.mcone.coresystem.bukkit.permissions.PermissibleBase;
 import eu.mcone.coresystem.bukkit.player.CorePlayer;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftHumanEntity;
@@ -20,7 +19,7 @@ import java.lang.reflect.Field;
 
 public class PlayerLogin implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void on(PlayerLoginEvent e) {
         Player p = e.getPlayer();
         setPermissions(p);

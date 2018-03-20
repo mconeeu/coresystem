@@ -6,6 +6,8 @@
 
 package eu.mcone.coresystem.bungee.ban;
 
+import lombok.Getter;
+
 public enum BanTemplate {
 
     CLIENTMODS("CM", "Clientmods", 10, 0),
@@ -19,7 +21,9 @@ public enum BanTemplate {
     SPAM("SP", "Spam", 0, 2),
     WERBUNG("WB", "Werbung", 0, 2);
 
+    @Getter
     private int banPoints, mutePoints;
+    @Getter
     private String id, name;
 
     BanTemplate(String id, String name, int banPoints, int mutePoints) {
@@ -38,19 +42,4 @@ public enum BanTemplate {
         return null;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public int getBanPoints() {
-        return banPoints;
-    }
-
-    public int getMutePoints() {
-        return mutePoints;
-    }
-
-    public String getName() {
-        return name;
-    }
 }

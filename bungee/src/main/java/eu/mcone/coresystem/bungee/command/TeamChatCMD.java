@@ -35,7 +35,7 @@ public class TeamChatCMD extends Command{
                     }
                     for (ProxiedPlayer all : ProxyServer.getInstance().getPlayers()) {
                         if (all.hasPermission("system.bungee.teamchat") || all.hasPermission("System.bungee.*")) {
-                          all.sendMessage(CoreSystem.sqlconfig.getConfigValue("TeamChat-Prefix").replaceAll("%Playername%", CoreSystem.getCorePlayer(p).getGroup().getPrefix() + p.getDisplayName()) + message);
+                          Messager.sendSimple(all, CoreSystem.sqlconfig.getConfigValue("TeamChat-Prefix").replaceAll("%Playername%", CoreSystem.getCorePlayer(p).getGroup().getPrefix() + p.getDisplayName()) + message);
                         }
                     }
                 }

@@ -33,6 +33,13 @@ public class NickCMD extends Command{
                 } else {
                     CoreSystem.getInstance().getNickManager().unnick(p);
                 }
+            } else if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
+                if (p.hasPermission("group.Developer")) {
+                    Messager.send(p, "§aDie Nicks wurden erfolgreich neu geladen");
+                    CoreSystem.getInstance().getNickManager().reload();
+                } else {
+                    Messager.send(p, "§4Du hast keine Berechtigung für diesen Befehl!");
+                }
             } else {
                 Messager.send(p, "§4Bitte benutze: §c/nick");
             }

@@ -20,48 +20,45 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class ProfileInventory {
+public class ProfileInventory extends CoreInventory {
 
-    public ProfileInventory(CorePlayer p) {
-        CoreSystem.mysql1.select("SELECT status, coins, onlinetime FROM userinfo WHERE uuid='" + p.getUuid().toString() + "'", rs -> {
+    public ProfileInventory(Player p) {
+        super("§8» §8Profil von §3§l"+p.getName(), p, 36, Option.FILL_EMPTY_SLOTS);
+
+        CoreSystem.mysql1.select("SELECT status, coins, onlinetime FROM userinfo WHERE uuid='" + player.getUniqueId().toString() + "'", rs -> {
+            CorePlayer cp = CoreSystem.getCorePlayer(player);
+
             try {
                 if (rs.next()) {
-                    double onlinetime = Math.floor((p.getOnlinetime() / 60) * 100) / 100;
+                    double onlinetime = Math.floor((cp.getOnlinetime() / 60) * 100) / 100;
                     int coins = rs.getInt("coins");
-                    String status = getStatus(p.getStatus());
+                    String status = getStatus(cp.getStatus());
 
-                    Inventory inv = org.bukkit.Bukkit.createInventory(null, 36, "§8» §8Profil von §3§l"+p.getName());
+                    setItem(4, ItemFactory.createSkullItem("§f§l" + player.getName(), player.getName(), 1, new ArrayList<>(Arrays.asList(cp.getGroup().getLabel(), "", "§7Coins: §f" + coins, "§7Onlinetime: §f" + onlinetime + " Stunden", "§7Status: " + status))));
 
-                    for (int i = 0; i <= 35; i++) {
-                        inv.setItem(i, ItemFactory.createItem(Material.STAINED_GLASS_PANE, 7, 1, "§8//§oMCONE§8//", true));
-                    }
-                    inv.setItem(4, ItemFactory.createSkullItem("§f§l" + p.getName(), p.getName(), 1, new ArrayList<>(Arrays.asList(p.getGroup().getLabel(), "","§7Coins: §f" + coins , "§7Onlinetime: §f" + onlinetime + " Stunden", "§7Status: " + status))));
+                    setItem(20, ItemFactory.createItem(Material.NETHER_STAR, 0, 1, "§f§lStats", new ArrayList<>(Arrays.asList("", "§7§oRufe die deine Spielerstatistiken", "§7§oaus allen MC ONE Spielmodi ab!")), true), () -> {
+                        p.performCommand("stats");
+                        p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+                    });
 
-                    inv.setItem(20, ItemFactory.createItem(Material.NETHER_STAR, 0, 1, "§f§lStats", new ArrayList<>(Arrays.asList("", "§7§oRufe die deine Spielerstatistiken", "§7§oaus allen MC ONE Spielmodi ab!")), true));
-                    inv.setItem(22, ItemFactory.createItem(Material.SKULL_ITEM, 3, 1, "§9§lFreunde", new ArrayList<>(Arrays.asList("", "§7§oZeige deine Freunde und", "§7§oFreundschaftsanzeigen", "§7§oan!")), true));
-                    inv.setItem(24, ItemFactory.createItem(Material.CAKE, 0, 1, "§5§lParty", new ArrayList<>(Arrays.asList("", "§7§oZeige infos zu deiner Party", "§7§oan, oder ertselle eine!")), true));
+                    setItem(22, ItemFactory.createItem(Material.SKULL_ITEM, 3, 1, "§9§lFreunde", new ArrayList<>(Arrays.asList("", "§7§oZeige deine Freunde und", "§7§oFreundschaftsanzeigen", "§7§oan!")), true), () -> {
+                        new FriendsInventory(p);
+                        p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+                    });
 
-                    p.bukkit().openInventory(inv);
+                    setItem(24, ItemFactory.createItem(Material.CAKE, 0, 1, "§5§lParty", new ArrayList<>(Arrays.asList("", "§7§oZeige infos zu deiner Party", "§7§oan, oder ertselle eine!")), true), () -> {
+                        new PartyInventory(p);
+                        p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+                    });
+
+                    openInventory();
+                } else {
+                    System.err.println("Player "+player+" is not registred in the database");
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         });
-    }
-
-    public static void click(InventoryClickEvent e, Player p) {
-        if ((e.getCurrentItem() == null) || !e.getCurrentItem().hasItemMeta() || e.getSlotType() == InventoryType.SlotType.OUTSIDE) {
-            e.setCancelled(true);
-        } else if (e.getCurrentItem().getItemMeta().getDisplayName().equals("§f§lStats")){
-            p.performCommand("stats");
-            p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
-        } else if (e.getCurrentItem().getItemMeta().getDisplayName().equals("§9§lFreunde")){
-            new FriendsInventory(p);
-            p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
-        } else if (e.getCurrentItem().getItemMeta().getDisplayName().equals("§5§lParty")){
-            new PartyInventory(p);
-            p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
-        }
     }
 
     private static String getStatus(String status) {
@@ -74,4 +71,5 @@ public class ProfileInventory {
                 return "§aonline";
         }
     }
+
 }

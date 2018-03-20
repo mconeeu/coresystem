@@ -6,6 +6,8 @@
 
 package eu.mcone.coresystem.bungee.report;
 
+import lombok.Getter;
+
 public enum ReportReason {
     FLY("Fly", 2),
     KILLAURA("Killaura", 2),
@@ -22,8 +24,10 @@ public enum ReportReason {
     USERNAME("Nutzername", 1),
     SKIN("Skin", 1),
     BELEIDIGUNG("Beleidigung", 1);
-  
+
+    @Getter
     private String name;
+    @Getter
     private int level;
 
     ReportReason(String name, int level) {
@@ -38,16 +42,6 @@ public enum ReportReason {
             }
         }
         return null;
-    }
-
-    public String getName()
-    {
-    return this.name;
-    }
-
-    public int getLevel()
-    {
-    return this.level;
     }
 
 }

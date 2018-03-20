@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -66,7 +67,7 @@ public class PluginMessage implements Listener {
                             Party party = Party.getParty(p);
 
                             if (party != null) {
-                                ArrayList<ProxiedPlayer> members = party.getMember();
+                                List<ProxiedPlayer> members = party.getMember();
                                 for (ProxiedPlayer member : members) {
                                     result.append(member.getName()).append(":").append(member.getServer().getInfo().getName());
                                     if (member.equals(party.getLeader())) result.append(":leader");
@@ -91,7 +92,7 @@ public class PluginMessage implements Listener {
                                 }
                             }
 
-                            new eu.mcone.coresystem.bungee.utils.PluginMessage("ReturnLobby", server, "SERVERS", "list", p.getUniqueId().toString(), modus, result.toString());
+                            new eu.mcone.coresystem.bungee.utils.PluginMessage("Return", server, "SERVERS", "list", p.getUniqueId().toString(), result.toString());
                         }
                     } else if (subch.equalsIgnoreCase("CONNECT")) {
                         String target = in.readUTF();

@@ -10,6 +10,7 @@ import eu.mcone.coresystem.bungee.CoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import eu.mcone.coresystem.bungee.utils.PluginMessage;
 import eu.mcone.coresystem.lib.mysql.MySQL;
+import eu.mcone.coresystem.lib.player.Skin;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -19,20 +20,20 @@ import java.util.HashMap;
 public class NickManager {
 
     private final MySQL mysql;
-    private HashMap<Nick, ProxiedPlayer> nicks;
+    private HashMap<Skin, ProxiedPlayer> nicks;
 
     public NickManager(MySQL mysql) {
         this.mysql = mysql;
-        loadNicknames();
+        reload();
     }
 
-    private void loadNicknames() {
+    public void reload() {
         nicks = new HashMap<>();
 
         mysql.select("SELECT n.name, t.texture_value, t.texture_signature FROM bungeesystem_nicks n, bukkitsystem_textures t WHERE n.texture = t.name", rs -> {
             try {
                 while (rs.next()) {
-                    nicks.put(new Nick(rs.getString("n.name"), rs.getString("t.texture_value"), rs.getString("t.texture_signature")), null);
+                    nicks.put(new Skin(rs.getString("n.name"), rs.getString("t.texture_value"), rs.getString("t.texture_signature")), null);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -40,11 +41,9 @@ public class NickManager {
         });
     }
 
-    private Nick getNick() {
-        for (HashMap.Entry<Nick, ProxiedPlayer> entry : nicks.entrySet()) {
-            if (entry.getValue() != null || ProxyServer.getInstance().getPlayer(entry.getKey().getName()) != null) {
-                continue;
-            } else {
+    private Skin getNick() {
+        for (HashMap.Entry<Skin, ProxiedPlayer> entry : nicks.entrySet()) {
+            if (entry.getValue() == null && ProxyServer.getInstance().getPlayer(entry.getKey().getName()) == null) {
                 return entry.getKey();
             }
         }
@@ -53,7 +52,7 @@ public class NickManager {
 
     public void nick(ProxiedPlayer p) {
         CorePlayer cp = CoreSystem.getCorePlayer(p);
-        Nick nick = cp.getNick() != null ? cp.getNick() : getNick();
+        Skin nick = cp.getNick() != null ? cp.getNick() : getNick();
         nicks.put(nick, p);
 
         if (nick != null) {
@@ -79,4 +78,5 @@ public class NickManager {
         cp.setNick(null);
         cp.setNicked(false);
     }
+
 }

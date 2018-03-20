@@ -2,6 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -12,13 +13,10 @@
         <module name="lib" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
+    <bytecodeTargetLevel target="1.8">
       <module name="bukkit" target="1.8" />
       <module name="bungee" target="1.8" />
-      <module name="core" target="1.5" />
-      <module name="coresystem" target="1.5" />
       <module name="lib" target="1.8" />
-      <module name="MCONE-Coresystem" target="1.5" />
       <module name="mcone-coresystem" target="1.8" />
     </bytecodeTargetLevel>
   </component>

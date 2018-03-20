@@ -68,7 +68,7 @@ public class HoloCMD implements CommandExecutor{
                     }
                 }
 
-                p.sendMessage("§4Bitte benutze: §c/holo <add | remove | list | reload> [<Name>] [<Erste Zeile>]");
+                p.sendMessage(CoreSystem.config.getConfigValue("Prefix")+"§4Bitte benutze: §c/holo <add | remove | list | reload> [<Name>] [<Erste Zeile>]");
                 return true;
             } else {
                 p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Berechtigung für diesen Befehl");

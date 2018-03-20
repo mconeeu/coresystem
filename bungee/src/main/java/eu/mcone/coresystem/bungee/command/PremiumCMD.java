@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.bungee.CoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
+import eu.mcone.coresystem.bungee.player.OfflinePlayer;
 import eu.mcone.coresystem.lib.player.Group;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import eu.mcone.coresystem.lib.util.UUIDFetcher;
@@ -53,30 +54,30 @@ public class PremiumCMD extends Command implements TabExecutor {
 
             if (p.hasPermission("system.bungee.premium")) {
                 if (args.length == 2) {
-                    String player = args[1];
-                    UUID target = UUIDFetcher.getUuidFromDatabase(CoreSystem.mysql1, player);
+                    String target = args[1];
+                    OfflinePlayer t = CoreSystem.getOfflinePlayer(target).loadPermissions();
 
-                    if (target != null) {
+                    if (t != null) {
                         if (args[0].equalsIgnoreCase("check")) {
-                            CoreSystem.mysql1.select("SELECT * FROM `bungeesystem_premium` WHERE `uuid` = '" + target.toString() + "'", rs -> {
+                            CoreSystem.mysql1.select("SELECT * FROM `bungeesystem_premium` WHERE `uuid` = '" + t.getUuid().toString() + "'", rs -> {
                                 try {
                                     if (rs.next()) {
                                         String rang = rs.getString("group");
                                         long timestamp = Long.parseLong(rs.getString("timestamp"));
 
                                         Messager.sendSimple(p, "");
-                                        Messager.send(p, "§7Der Spieler §f" + player);
+                                        Messager.send(p, "§7Der Spieler §f" + target);
                                         Messager.send(p, "§7hat den Rang §6" + rang);
                                         Messager.send(p, "§7noch " + BanManager.getEndeString(timestamp));
                                     } else {
-                                        Messager.send(p, "§7Der Spieler §f" + player + " §7hat keinen auslaufenden Rang.");
+                                        Messager.send(p, "§7Der Spieler §f" + target + " §7hat keinen auslaufenden Rang.");
                                     }
                                 } catch (SQLException e1) {
                                     e1.printStackTrace();
                                 }
                             });
                         } else if (args[0].equalsIgnoreCase("remove")) {
-                            if (CoreSystem.getOfflinePlayer(target).hasPermission("mcone.premium")) {
+                            if (t.hasPermission("mcone.premium")) {
                                 CoreSystem.mysql1.select("SELECT * FROM bungeesystem_premium WHERE uuid='" + target + "'", rs -> {
                                     try {
                                         if (rs.next()) {
@@ -93,7 +94,7 @@ public class PremiumCMD extends Command implements TabExecutor {
 
                                                         if (value.equalsIgnoreCase("Spieler")) {
                                                             CoreSystem.mysql1.update("DELETE FROM bungeesystem_premium WHERE uuid = '" + uuid + "';");
-                                                            Messager.send(sender, "§2Dem Spieler " + player + " wurde der Rang §f" + group + "§2 erfolgreich entzogen!");
+                                                            Messager.send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group + "§2 erfolgreich entzogen!");
                                                         } else {
                                                             Messager.send(sender, "§7[§cMySQL ERROR§7] §4DER SPIELER KONNTE NICHT GELÖSCHT WERDEN OBWOHL SEIN PREMIUM RANG ABGLAUFEN IST!");
                                                         }
@@ -114,55 +115,55 @@ public class PremiumCMD extends Command implements TabExecutor {
                             }
                         }
                     } else {
-                        Messager.send(sender, "§c" + player + "§4 war noch nie auf MC ONE!");
+                        Messager.send(sender, "§c" + target + "§4 war noch nie auf MC ONE!");
                     }
                     return;
                 } else if (args.length == 3) {
-                    String player = args[1];
+                    String target = args[1];
                     Group group = Group.getGroupbyName(args[2]);
-                    UUID target = UUIDFetcher.getUuidFromDatabase(CoreSystem.mysql1, player);
+                    OfflinePlayer t = CoreSystem.getOfflinePlayer(target).loadPermissions();
 
                     if (group != null) {
-                        if (target != null) {
-                            Group old_group = CoreSystem.getOfflinePlayer(target).getGroup();
+                        if (t != null) {
+                            Group old_group = t.getGroup();
 
                             if (args[0].equalsIgnoreCase("add")) {
-                                if (!CoreSystem.getOfflinePlayer(target).hasPermission("mcone.premium")) {
-                                    CoreSystem.mysql1.update("INSERT INTO `bungeesystem_premium` (`uuid`, `group`, `old_group`, `kosten`, `gekauft`, `timestamp`) VALUES ('" + target.toString() + "', '" + group.getName() + "', '" + old_group.getName() + "', 'free', '" + unixtime + "', " + ((60 * 60 * 24 * 30) + unixtime) + ")");
+                                if (!t.hasPermission("mcone.premium")) {
+                                    CoreSystem.mysql1.update("INSERT INTO `bungeesystem_premium` (`uuid`, `group`, `old_group`, `kosten`, `gekauft`, `timestamp`) VALUES ('" + t.getUuid().toString() + "', '" + group.getName() + "', '" + old_group.getName() + "', 'free', '" + unixtime + "', " + ((60 * 60 * 24 * 30) + unixtime) + ")");
                                     CoreSystem.mysql1.update("UPDAtE userinfo SET gruppe='" + group.getName() + "' WHERE uuid='" + target + "'");
-                                    Messager.send(sender, "§2Dem Spieler " + player + " wurde der Rang §f" + group.getName() + " §2für 1 Monat zugeschrieben!");
+                                    Messager.send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für 1 Monat zugeschrieben!");
                                 } else {
                                     Messager.send(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
                                 }
                             }
                         } else {
-                            Messager.send(sender, "§c" + player + "§4 war noch nie auf MC ONE!");
+                            Messager.send(sender, "§c" + target + "§4 war noch nie auf MC ONE!");
                         }
                     } else {
                         Messager.send(sender, "§4Dieser Rang existiert nicht!");
                     }
                     return;
                 } else if (args.length == 4) {
-                    String player = args[1];
+                    String target = args[1];
                     Group group = Group.getGroupbyName(args[2]);
                     int months = Integer.valueOf(args[3]);
-                    UUID target = UUIDFetcher.getUuidFromDatabase(CoreSystem.mysql1, player);
+                    OfflinePlayer t = CoreSystem.getOfflinePlayer(target).loadPermissions();
 
                     if (group != null) {
-                        if (target != null) {
-                            Group old_group = CoreSystem.getOfflinePlayer(target).getGroup();
+                        if (t != null) {
+                            Group old_group = t.getGroup();
 
                             if (args[0].equalsIgnoreCase("add")) {
-                                if (!CoreSystem.getOfflinePlayer(target).hasPermission("mcone.premium")) {
-                                    CoreSystem.mysql1.update("INSERT INTO `bungeesystem_premium` (`uuid`, `group`, `old_group`, `kosten`, `gekauft`, `timestamp`) VALUES ('" + target.toString() + "', '" + group.getName() + "', '" + old_group.getName() + "', 'free', '" + unixtime + "', " + ((60 * 60 * 24 * 30 * months) + unixtime) + ")");
+                                if (!t.hasPermission("mcone.premium")) {
+                                    CoreSystem.mysql1.update("INSERT INTO `bungeesystem_premium` (`uuid`, `group`, `old_group`, `kosten`, `gekauft`, `timestamp`) VALUES ('" + t.getUuid().toString() + "', '" + group.getName() + "', '" + old_group.getName() + "', 'free', '" + unixtime + "', " + ((60 * 60 * 24 * 30 * months) + unixtime) + ")");
                                     CoreSystem.mysql1.update("UPDAtE userinfo SET gruppe='" + group.getName() + "' WHERE uuid='" + target + "'");
-                                    Messager.send(sender, "§2Dem Spieler " + player + " wurde der Rang §f" + group.getName() + " §2für " + months + " Monat(e) zugeschrieben!");
+                                    Messager.send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für " + months + " Monat(e) zugeschrieben!");
                                 } else {
                                     Messager.send(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
                                 }
                             }
                         } else {
-                            Messager.send(sender, "§c" + player + "§4 war noch nie auf MC ONE!");
+                            Messager.send(sender, "§c" + target + "§4 war noch nie auf MC ONE!");
                         }
                     } else {
                         Messager.send(sender, "§4Dieser Rang existiert nicht!");

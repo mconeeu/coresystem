@@ -9,6 +9,7 @@ package eu.mcone.coresystem.bungee.ban;
 import eu.mcone.coresystem.bungee.CoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.sql.SQLException;
@@ -51,7 +52,7 @@ public class BanManager {
             CoreSystem.mysql1.update("UPDATE userinfo SET status='banned' WHERE uuid='" + gebannt.toString() + "'");
 
             if (p != null) {
-                p.disconnect("§f§lMC ONE §3Minecraftnetzwerk"
+                p.disconnect(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
                         + "\n§7§oDu wurdest vom Netzwerk gebannt"
                         + "\n§r"
                         + "\n§7Gebannt von §8» §e" + tName
@@ -60,7 +61,7 @@ public class BanManager {
                         + "\n§r"
                         + "\n§2Du hast die Möglichkeit auf einer der folgenden Plattformen einen Entbannungsantrag zu stellen:"
                         + "\n§7TS-Server §8» §fts.mcone.eu"
-                        + "\n§7Homepage §8» §fwww.mcone.eu/unban");
+                        + "\n§7Homepage §8» §fwww.mcone.eu/unban")));
             }
         }
 

@@ -8,12 +8,16 @@ package eu.mcone.coresystem.bungee.event;
 
 import eu.mcone.coresystem.bungee.player.CorePlayer;
 import eu.mcone.coresystem.lib.player.Group;
+import lombok.Getter;
 import net.md_5.bungee.api.plugin.Event;
 
 public class PermissionChangeEvent extends Event {
 
+    @Getter
     private Kind kind;
+    @Getter
     private CorePlayer player;
+    @Getter
     private Group group;
 
     public enum Kind {
@@ -33,15 +37,9 @@ public class PermissionChangeEvent extends Event {
         this.group = group;
     }
 
-    public Kind getKind() {
-        return kind;
+    public PermissionChangeEvent(Kind k, Group group) {
+        this.kind = k;
+        this.group = group;
     }
 
-    public Group getGroup() {
-        return group;
-    }
-
-    public CorePlayer getPlayer() {
-        return player;
-    }
 }

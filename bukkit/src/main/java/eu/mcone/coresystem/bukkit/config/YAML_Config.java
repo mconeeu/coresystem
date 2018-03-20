@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.config;
 
+import lombok.Getter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -16,6 +17,7 @@ public class YAML_Config {
 
     private String plugin;
     private String fileName;
+    @Getter
     private FileConfiguration config;
 
     public YAML_Config(String plugin, String fileName) {
@@ -42,10 +44,6 @@ public class YAML_Config {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public FileConfiguration getConfig() {
-        return config;
     }
 
 }

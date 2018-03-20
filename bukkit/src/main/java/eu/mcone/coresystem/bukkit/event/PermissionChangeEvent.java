@@ -8,14 +8,18 @@ package eu.mcone.coresystem.bukkit.event;
 
 import eu.mcone.coresystem.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.lib.player.Group;
+import lombok.Getter;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 public class PermissionChangeEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
+    @Getter
     private Kind kind;
+    @Getter
     private CorePlayer player;
+    @Getter
     private Group group;
 
     public enum Kind {
@@ -40,17 +44,4 @@ public class PermissionChangeEvent extends Event {
     public static HandlerList getHandlerList() {
         return handlers;
     }
-
-    public Kind getKind() {
-        return kind;
-    }
-
-    public CorePlayer getPlayer() {
-        return player;
-    }
-
-    public Group getGroup() {
-        return group;
-    }
-
 }

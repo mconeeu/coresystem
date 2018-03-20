@@ -8,6 +8,8 @@ package eu.mcone.coresystem.bungee.player;
 
 import eu.mcone.coresystem.bungee.CoreSystem;
 import eu.mcone.coresystem.lib.player.Group;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -16,21 +18,29 @@ import java.util.UUID;
 
 public class OfflinePlayer {
 
+    @Getter
     private UUID uuid;
+    @Getter
     private String name;
+    @Getter
     private Group group;
     private long joined, onlinetime;
+    @Getter @Setter
     private List<String> permissions;
+    @Getter
     private Map<UUID, String> friends;
-    private Map<UUID, String> reqests;
+    @Getter @Setter
+    private Map<UUID, String> requests;
+    @Getter
     private List<UUID> blocks;
+    @Getter @Setter
     private boolean requestsToggled;
 
-    public OfflinePlayer(UUID uuid) {
-        CoreSystem.mysql1.select("SELECT name, gruppe, onlinetime FROM userinfo WHERE uuid='"+uuid.toString()+"'", rs -> {
+    public OfflinePlayer(String name) {
+        CoreSystem.mysql1.select("SELECT uuid, gruppe, onlinetime FROM userinfo WHERE name='"+name+"'", rs -> {
             try {
                 if (rs.next()) {
-                    this.name = rs.getString("name");
+                    this.uuid = UUID.fromString(rs.getString("uuid"));
                     this.onlinetime = rs.getLong("onlinetime");
                     this.joined = System.currentTimeMillis() / 1000;
                     this.group = Group.getGroupbyName(rs.getString("gruppe"));
@@ -40,53 +50,29 @@ public class OfflinePlayer {
             }
         });
 
-        if (this.name == null) return;
+        this.name = name;
+        if (this.uuid == null) return;
 
-        CoreSystem.getOfflinePlayers().put(uuid, this);
-        this.uuid = uuid;
-        this.permissions = CoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), group);
+        CoreSystem.getOfflinePlayers().put(name, this);
+    }
 
+    public OfflinePlayer loadFriendData() {
         Object[] friendData = CoreSystem.getInstance().getFriendSystem().getData(uuid);
         this.friends = (Map<UUID, String>) friendData[0];
-        this.reqests = (Map<UUID, String>) friendData[1];
+        this.requests = (Map<UUID, String>) friendData[1];
         this.blocks = (List<UUID>) friendData[2];
         this.requestsToggled = (boolean) friendData[3];
+
+        return this;
+    }
+
+    public OfflinePlayer loadPermissions() {
+        this.permissions = CoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), group);
+        return this;
     }
 
     public boolean hasPermission(String permission) {
         return CoreSystem.getInstance().getPermissionManager().hasPermission(permissions, permission);
-    }
-
-    public Map<UUID, String> getFriends() {
-        return this.friends;
-    }
-
-    public Map<UUID, String> getRequests() {
-        return this.reqests;
-    }
-
-    public List<UUID> getBlocks() {
-        return this.blocks;
-    }
-
-    public boolean hasRequestsToggled() {
-        return requestsToggled;
-    }
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Group getGroup() {
-        return group;
-    }
-
-    public List<String> getPermissions() {
-        return permissions;
     }
 
     public long getOnlinetime() {
@@ -96,14 +82,6 @@ public class OfflinePlayer {
     public void setGroup(Group group) {
         this.group = group;
         permissions = CoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), group);
-    }
-
-    public void setPermissions(List<String> permissions) {
-        this.permissions = permissions;
-    }
-
-    public void setRequestsToggled(boolean toggled) {
-        requestsToggled = toggled;
     }
 
 }

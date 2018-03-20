@@ -13,10 +13,6 @@ import org.bukkit.scoreboard.Team;
 
 public class MainScoreboard extends Scoreboard {
 
-    public MainScoreboard(CorePlayer p) {
-        super(p);
-    }
-
     @Override
     public void setPlayerTeams(CorePlayer p, org.bukkit.scoreboard.Scoreboard sb) {
         Group g = p.isNicked() ? Group.SPIELER : p.getGroup();

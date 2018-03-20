@@ -78,7 +78,7 @@ public class NpcCMD implements CommandExecutor{
                     }
                 }
 
-                p.sendMessage("§4Bitte benutze: §c/npc <add | remove | update | list | reload> [<Name>] [<Texture-Name>] [<Display-Name>]");
+                p.sendMessage(CoreSystem.config.getConfigValue("Prefix")+"§4Bitte benutze: §c/npc <add | remove | update | list | reload> [<Name>] [<Texture-Name>] [<Display-Name>]");
                 return true;
             } else {
                 p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Berechtigung für diesen Befehl");

@@ -15,7 +15,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class ProfilCMD implements CommandExecutor{
+public class ProfileCMD implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
@@ -25,7 +25,7 @@ public class ProfilCMD implements CommandExecutor{
             CoreSystem.getInstance().getCooldownSystem().addPlayer(p.getUniqueId(), this.getClass());
 
             if (args.length == 0) {
-                new ProfileInventory(CoreSystem.getCorePlayer(p));
+                new ProfileInventory(p);
                 p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
             }
         } else {

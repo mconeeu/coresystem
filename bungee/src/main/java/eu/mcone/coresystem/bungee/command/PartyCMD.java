@@ -40,7 +40,7 @@ public class PartyCMD extends Command implements TabExecutor {
                         StringBuilder msg = new StringBuilder();
 
                         if (p.equals(party.getLeader())) {
-                            msg.append("§e\u2600 ").append(p.getName()).append(" §8» §f");
+                            msg.append("§e♔ ").append(p.getName()).append(" §8» §f");
                         } else {
                             msg.append(p.getName()).append(" §8» §f");
                         }
@@ -160,7 +160,7 @@ public class PartyCMD extends Command implements TabExecutor {
                     final Party party = Party.getParty(p);
 
                     if (party != null) {
-                        ArrayList<ProxiedPlayer> member = party.getMember();
+                        List<ProxiedPlayer> member = party.getMember();
 
                         StringBuilder result = new StringBuilder();
                         result.append("§7Die Party hat ").append(member.size()).append(" Mitglieder:\n");
@@ -171,14 +171,14 @@ public class PartyCMD extends Command implements TabExecutor {
 
                             if (i == member.size()) {
                                 if (m.equals(party.getLeader())) {
-                                    result.append("§e\u2600 §o").append(m.getName());
+                                    result.append("§e♔ §o").append(m.getName());
                                 } else {
                                     result.append("§f§o").append(m.getName());
                                 }
                                 continue;
                             }
                             if (m.equals(party.getLeader())) {
-                                result.append("§e\u2600 §o").append(m.getName()).append("§7, ");
+                                result.append("§e♔ §o").append(m.getName()).append("§7, ");
                             } else {
                                 result.append("§f§o").append(m.getName()).append("§7, ");
                             }

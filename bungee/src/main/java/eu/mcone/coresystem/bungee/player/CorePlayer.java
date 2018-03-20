@@ -7,8 +7,11 @@
 package eu.mcone.coresystem.bungee.player;
 
 import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.lib.player.Skin;
 import eu.mcone.coresystem.lib.util.UUIDFetcher;
 import eu.mcone.coresystem.lib.player.Group;
+import lombok.Getter;
+import lombok.Setter;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -19,16 +22,30 @@ import java.util.UUID;
 
 public class CorePlayer {
 
+    @Getter
     private UUID uuid;
+    @Getter
     private String name, status;
+    @Getter
     private Group group;
-    private long joined, onlinetime, mutetime;
+    private long joined, onlinetime;
+    @Getter
+    private long mutetime;
+    @Getter @Setter
     private List<String> permissions;
+    @Getter
     private Map<UUID, String> friends;
-    private Map<UUID, String> reqests;
+    @Getter
+    private Map<UUID, String> requests;
+    @Getter
     private List<UUID> blocks;
-    private boolean requestsToggled, isMuted = false, nicked = false;
-    private Nick nick;
+    @Getter @Setter
+    private boolean requestsToggled;
+    private boolean isMuted = false;
+    @Getter @Setter
+    private Skin nick;
+    @Getter @Setter
+    private boolean nicked = false;
 
     public CorePlayer(String name) {
         CoreSystem.mysql1.select("SELECT uuid, gruppe, onlinetime FROM userinfo WHERE name='"+name+"'", rs -> {
@@ -68,7 +85,7 @@ public class CorePlayer {
 
         Object[] friendData = CoreSystem.getInstance().getFriendSystem().getData(uuid);
         this.friends = (Map<UUID, String>) friendData[0];
-        this.reqests = (Map<UUID, String>) friendData[1];
+        this.requests = (Map<UUID, String>) friendData[1];
         this.blocks = (List<UUID>) friendData[2];
         this.requestsToggled = (boolean) friendData[3];
 
@@ -87,48 +104,9 @@ public class CorePlayer {
         this.permissions = CoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), group);
     }
 
-    public Map<UUID, String> getFriends() {
-        return this.friends;
-    }
-
-    public Map<UUID, String> getRequests() {
-        return this.reqests;
-    }
-
-    public List<UUID> getBlocks() {
-        return this.blocks;
-    }
-
-    public boolean hasRequestsToggled() {
-        return requestsToggled;
-    }
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Group getGroup() {
-        return group;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public List<String> getPermissions() {
-        return permissions;
-    }
 
     public long getOnlinetime() {
         return (((System.currentTimeMillis() / 1000) - joined) / 60) + onlinetime;
-    }
-
-    public Nick getNick() {
-        return nick;
     }
 
     public void setGroup(Group group) {
@@ -139,22 +117,6 @@ public class CorePlayer {
     public void setStatus(final String status) {
         this.status = status;
         ProxyServer.getInstance().getScheduler().runAsync(CoreSystem.getInstance(), () -> CoreSystem.mysql1.update("UPDATE userinfo SET status='"+status+"' WHERE uuid='"+uuid+"'"));
-    }
-
-    public void setPermissions(List<String> permissions) {
-        this.permissions = permissions;
-    }
-
-    public void setRequestsToggled(boolean toggled) {
-        requestsToggled = toggled;
-    }
-
-    public void setNick(Nick nick) {
-        this.nick = nick;
-    }
-
-    public void setNicked(boolean nicked) {
-        this.nicked = nicked;
     }
 
     public boolean isMuted() {
@@ -169,17 +131,9 @@ public class CorePlayer {
         return isMuted;
     }
 
-    public boolean isNicked() {
-        return nicked;
-    }
-
-    public long getMutetime() {
-        return mutetime;
-    }
-
     private void register() {
         CoreSystem.getCorePlayers().put(uuid, this);
-        if (CoreSystem.getOfflinePlayers().get(uuid) != null) CoreSystem.getOfflinePlayers().remove(uuid);
+        if (CoreSystem.getOfflinePlayers().get(name) != null) CoreSystem.getOfflinePlayers().remove(name);
     }
 
     public void unregister() {

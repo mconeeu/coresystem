@@ -8,7 +8,10 @@ package eu.mcone.coresystem.bukkit.player;
 
 import eu.mcone.coresystem.bukkit.CoreSystem;
 import eu.mcone.coresystem.bukkit.scoreboard.Scoreboard;
+import eu.mcone.coresystem.bukkit.util.AFKCheck;
 import eu.mcone.coresystem.lib.player.Group;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -18,12 +21,20 @@ import java.util.UUID;
 
 public class CorePlayer {
 
+    @Getter
     private UUID uuid;
-    private String name, status, nickname;
+    @Getter
+    private String name, status;
+    @Getter @Setter
+    private String nickname;
+    @Getter
     private Group group;
     private long joined, onlinetime;
+    @Getter
     private List<String> permissions;
+    @Getter
     private Scoreboard scoreboard;
+    @Getter @Setter
     private boolean nicked;
 
     public CorePlayer(UUID uuid, String name) {
@@ -60,55 +71,15 @@ public class CorePlayer {
     }
 
     public void setScoreboard(Scoreboard sb) {
-        this.scoreboard = sb;
+        this.scoreboard = sb.set(this);
     }
 
     public void reloadPermissions() {
         this.permissions = CoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), group);
     }
 
-    public UUID getUuid() {
-        return uuid;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Group getGroup() {
-        return group;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public List<String> getPermissions() {
-        return permissions;
-    }
-
     public long getOnlinetime() {
         return (((System.currentTimeMillis() / 1000) - joined) / 60) + onlinetime;
-    }
-
-    public Scoreboard getScoreboard() {
-        return scoreboard;
-    }
-
-    public String getNickname() {
-        return nickname;
-    }
-
-    public boolean isNicked() {
-        return nicked;
-    }
-
-    public void setNickname(String name) {
-        this.nickname = name;
-    }
-
-    public void setNicked(boolean nicked) {
-        this.nicked = nicked;
     }
 
     public void setGroup(Group group) {
@@ -126,6 +97,10 @@ public class CorePlayer {
     }
 
     public void unregister() {
+        CoreSystem.getInstance().clearPlayerInventories(uuid);
+        AFKCheck.players.remove(uuid);
+        AFKCheck.afkPlayers.remove(uuid);
+
         if (CoreSystem.getCorePlayers().containsKey(uuid)) CoreSystem.getCorePlayers().remove(uuid);
         System.out.println("Unloaded player "+name);
     }

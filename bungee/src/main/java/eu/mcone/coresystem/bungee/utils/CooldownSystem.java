@@ -26,7 +26,7 @@ public class CooldownSystem {
         } else if (cmds.getOrDefault(cmd, new HashMap<>()).getOrDefault(p.getUniqueId(), (System.currentTimeMillis() / 1000) - 3) < ((System.currentTimeMillis() / 1000) - 2)) {
             return true;
         } else {
-            p.sendMessage("§8[§7§l!§8] §fSystem §8» §4Bitte warte einen Moment bevor du diesen Befehl wieder ausführst!");
+            Messager.send(p, "§4Bitte warte einen Moment bevor du diesen Befehl wieder ausführst!");
             return false;
         }
     }

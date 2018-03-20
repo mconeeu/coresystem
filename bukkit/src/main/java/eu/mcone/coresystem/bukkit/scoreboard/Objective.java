@@ -7,44 +7,46 @@
 package eu.mcone.coresystem.bukkit.scoreboard;
 
 import eu.mcone.coresystem.bukkit.player.CorePlayer;
+import lombok.Getter;
 import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Scoreboard;
 
 public abstract class Objective {
 
+    protected final String s;
+    protected final String s1;
+    @Getter
+    protected final DisplaySlot slot;
+    @Getter
     protected org.bukkit.scoreboard.Scoreboard scoreboard;
+    @Getter
     protected org.bukkit.scoreboard.Objective objective;
-    private DisplaySlot slot;
+    @Getter
     protected CorePlayer player;
 
-    public Objective(CorePlayer p, DisplaySlot slot, String s, String s1) {
-        this.player = p;
+    public Objective(DisplaySlot slot, String s, String s1) {
         this.slot = slot;
+        this.s = s;
+        this.s1 = s1;
+    }
 
-        scoreboard = p.getScoreboard().bukkit();
+    public Objective set(CorePlayer player, Scoreboard scoreboard) {
+        this.player = player;
+        this.scoreboard = scoreboard;
+
         objective = scoreboard.registerNewObjective(s, s1);
         objective.setDisplaySlot(slot);
         register();
+
+        return this;
     }
 
     public abstract void register();
 
     public abstract void reload();
 
-    public org.bukkit.scoreboard.Scoreboard getScoreboard() {
-        return scoreboard;
-    }
-
     public org.bukkit.scoreboard.Objective bukkit() {
         return objective;
     }
-
-    public DisplaySlot getSlot() {
-        return slot;
-    }
-
-    public CorePlayer getPlayer() {
-        return player;
-    }
-
 
 }

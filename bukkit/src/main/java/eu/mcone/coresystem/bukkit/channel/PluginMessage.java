@@ -24,6 +24,18 @@ public class PluginMessage {
         p.sendPluginMessage(CoreSystem.getInstance(), "BungeeCord", out.toByteArray());
     }
 
+    public PluginMessage(Player p, FutureTask<String> task, String... write) {
+        PluginChannelListener.tasks.put(p.getUniqueId(), task);
+
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("mc1main");
+        for (String w : write) {
+            out.writeUTF(w);
+        }
+
+        p.sendPluginMessage(CoreSystem.getInstance(), "BungeeCord", out.toByteArray());
+    }
+
     public PluginMessage(String... write) {
         System.out.println("sending plugin message "+write[0]);
         ByteArrayDataOutput out = ByteStreams.newDataOutput();

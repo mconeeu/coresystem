@@ -1,33 +1,58 @@
 name: MCONE-BukkitCoreSystem
-version: 4.0.0-SNAPHOT
+version: 5.0.2-SNAPHOT
 authors: [Domink Lippl, Rufus Maiwald]
 main: eu.mcone.coresystem.bukkit.CoreSystem
 
 commands:
   bukkit:
-  profil:
-    aliases: profile
+    description: Shows some information about the plugin and the server
+  profile:
+    aliases: profil
+    description: Opens the profile menu
   feed:
+    description: Sets the food bar to 10
     permission: system.bukkit.feed
   gamemode:
     aliases: gm
+    description: Changes your gamemode
     permission: system.bukkit.gamemode
   heal:
+    description: Sets the heal bar to 10
     permission: system.bukkit.heal
   stats:
+    description: Opens the stats menu
   fly:
+    description: Changes fly mode
     permission: system.bukkit.fly
   tp:
     aliases: teleport
+    description: Teleports you or another player
     permission: system.bukkit.tp
   tphere:
-    permissions: system.bukkit.tp.others
+    description: Teleports another player to yourself
+    permission: system.bukkit.tp.others
   tpall:
-    permissions: system.bukkit.tp.all
+    description: Teleports all players to another player
+    permission: system.bukkit.tp.all
   tppos:
-    permissions: system.bukkit.tp.pos
+    description: Teleports the player to a coordinate
+    permission: system.bukkit.tp.pos
   vanish:
-    permissions: system.bukkit.vanish
+    description: Hides the player from tab and makes him invisible
+    permission: system.bukkit.vanish
+  holo:
+    description: Manage holograms
+    permission: system.bukkit.holo
+  npc:
+    descirption: Spawns an NPC
+    permission: system.bukkit.npc
+  build:
+    description: Allows to bypass build restrictions
+    permission: system.bukkit.build
+  world:
+    aliases: [worlds,w]
+    description: Manage worlds
+    permission: system.bukkit.world
 
 permissions:
   system:
@@ -37,7 +62,7 @@ permissions:
         description: Bypass all MCONE-BukkitCoreSystem Permissions
         children:
           system.bukkit.feed:
-            description: FeedCMD the player
+            description: Feed the player
           system.bukkit.gamemode:
             description: Set the player to a specific gamemode
           system.bukkit.heal:
@@ -63,5 +88,9 @@ permissions:
             description: Allows to set NonCharacterPlayers
           system.bukkit.sign:
             dexcription: Allows to create colored signs
+          system.bukkit.build:
+            description: Allows to bypass build restrictions
           system.bukkit.cooldown:
             description: Allows to bypass the CooldownSystem
+          system.bukkit.world:
+            description: Allows to manage the servers worlds

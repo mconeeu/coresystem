@@ -7,18 +7,22 @@
 package eu.mcone.coresystem.bukkit.npc;
 
 import eu.mcone.coresystem.bukkit.CoreSystem;
+import eu.mcone.coresystem.bukkit.command.NpcCMD;
 import eu.mcone.coresystem.bukkit.npc.NPC;
 import eu.mcone.coresystem.bukkit.util.LocationFactory;
 import eu.mcone.coresystem.lib.mysql.MySQL;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class NpcManager {
+public class NpcManager implements Listener {
 
     private MySQL mysql;
     private String server;
@@ -27,16 +31,18 @@ public class NpcManager {
     public NpcManager(MySQL mysql, String server) {
         this.mysql = mysql;
         this.server = server;
-        this.createTables();
+
+        CoreSystem.getInstance().getServer().getPluginManager().registerEvents(this, CoreSystem.getInstance());
+        CoreSystem.getInstance().getCommand("npc").setExecutor(new NpcCMD(this));
 
         this.reload();
         Bukkit.getScheduler().scheduleSyncRepeatingTask(CoreSystem.getInstance(), () -> {
             for(NPC npc : npcs.values()){
                 for(Player p : Bukkit.getOnlinePlayers()){
-                    if(npc.getLoc().getWorld().equals(p.getWorld())){
-                        if(npc.getLoc().distance(p.getLocation())>60 && npc.getLoadedPlayers().contains(p.getUniqueId())){
+                    if(npc.getLocation().getWorld().equals(p.getWorld())){
+                        if(npc.getLocation().distance(p.getLocation())>60 && npc.getLoadedPlayers().contains(p.getUniqueId())){
                             npc.unset(p);
-                        }else if(npc.getLoc().distance(p.getLocation())<60 && !npc.getLoadedPlayers().contains(p.getUniqueId())){
+                        }else if(npc.getLocation().distance(p.getLocation())<60 && !npc.getLoadedPlayers().contains(p.getUniqueId())){
                             npc.set(p);
                         }
                     }else{
@@ -45,6 +51,11 @@ public class NpcManager {
                 }
             }
         },0,20);
+    }
+
+    @EventHandler
+    public void on(PlayerQuitEvent e) {
+        unsetNPCs(e.getPlayer());
     }
 
     public void reload() {
@@ -59,7 +70,6 @@ public class NpcManager {
             try {
                 while (rs.next()) {
                     if (rs.getString("texture") != null) {
-                        System.out.println("add npc "+rs.getString("name"));
                         this.npcs.put(rs.getString("name"), new NPC(rs.getString("name"), Objects.requireNonNull(LocationFactory.getLocationfromJSON(rs.getString("location"))), rs.getString("texture"), rs.getString("displayname")));
                     } else {
                         System.err.println("NPC "+rs.getString("name")+" besitzt keine Textur!");
@@ -69,11 +79,6 @@ public class NpcManager {
                 e.printStackTrace();
             }
         });
-    }
-
-    private void createTables() {
-        this.mysql.update("CREATE TABLE IF NOT EXISTS bukkitsystem_npcs (`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(100) NOT NULL, `location` VARCHAR(100) NOT NULL, `texture` VARCHAR(10000) NOT NULL, `displayname` VARCHAR(1000) NOT NULL, `server` varchar(100) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-        this.mysql.update("CREATE TABLE IF NOT EXISTS bukkitsystem_textures (`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, `name` VARCHAR(100) NOT NULL UNIQUE KEY REFERENCES bukkitsystem_npcs(`texture`) ON DELETE SET NULL ON UPDATE SET NULL, `texture_value` VARCHAR(500) NOT NULL, `texture_signature` VARCHAR(1000) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
     }
 
     public void addNPC(String name, Location loc, String texture, String displayname) {
@@ -99,7 +104,7 @@ public class NpcManager {
     }
 
     public void removeNPC(String name) {
-        this.mysql.update("DELETE FROM bukkitsystem_npcs WHERE `name`='"+name+"'");
+        this.mysql.update("DELETE FROM bukkitsystem_npcs WHERE `name`='"+name+"' AND `server`='"+this.server+"'");
         if (this.npcs.containsKey(name)) {
             this.npcs.get(name).unsetAll();
             this.npcs.get(name).destroy();

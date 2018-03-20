@@ -16,7 +16,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class Messager {
 
     public static void send(final ProxiedPlayer pp, final String message) {
-        pp.sendMessage(new ComponentBuilder("").append(TextComponent.fromLegacyText(CoreSystem.sqlconfig.getConfigValue("System-Prefix"))).append(TextComponent.fromLegacyText(message)).create());
+        pp.sendMessage(new TextComponent(TextComponent.fromLegacyText(CoreSystem.sqlconfig.getConfigValue("System-Prefix") + message)));
     }
 
     public static void send(final ProxiedPlayer pp, final TextComponent tc) {
@@ -26,11 +26,11 @@ public class Messager {
     }
 
     public static void send(final CommandSender sender, final String message) {
-        sender.sendMessage(new ComponentBuilder("").append(TextComponent.fromLegacyText(CoreSystem.sqlconfig.getConfigValue("System-Prefix"))).append(TextComponent.fromLegacyText(message)).create());
+        sender.sendMessage(new TextComponent(TextComponent.fromLegacyText(CoreSystem.sqlconfig.getConfigValue("System-Prefix") + message)));
     }
 
     public static void sendSimple(final ProxiedPlayer pp, final String message) {
-        pp.sendMessage(new ComponentBuilder("").append(TextComponent.fromLegacyText(message)).create());
+        pp.sendMessage(new TextComponent(TextComponent.fromLegacyText(message)));
     }
 
     public static void sendSimple(final ProxiedPlayer pp, final TextComponent tc) {
@@ -38,7 +38,7 @@ public class Messager {
     }
 
     public static void sendSimple(final CommandSender sender, final String message) {
-        sender.sendMessage(new ComponentBuilder("").append(TextComponent.fromLegacyText(message)).create());
+        sender.sendMessage(new TextComponent(TextComponent.fromLegacyText(message)));
     }
 
     public static void sendSimple(final CommandSender sender, final TextComponent tc) {
@@ -46,11 +46,11 @@ public class Messager {
     }
 
     public static void sendParty(final ProxiedPlayer pp, final String message) {
-        pp.sendMessage(new ComponentBuilder("").append(TextComponent.fromLegacyText(CoreSystem.sqlconfig.getConfigValue("Party-Prefix"))).append(TextComponent.fromLegacyText(message)).create());
+        pp.sendMessage(new TextComponent(TextComponent.fromLegacyText(CoreSystem.sqlconfig.getConfigValue("Party-Prefix") + message)));
     }
 
     public static void sendFriend(final ProxiedPlayer pp, final String message) {
-        pp.sendMessage(new ComponentBuilder("").append(TextComponent.fromLegacyText(CoreSystem.sqlconfig.getConfigValue("Friend-Prefix"))).append(TextComponent.fromLegacyText(message)).create());
+        pp.sendMessage(new TextComponent(TextComponent.fromLegacyText(CoreSystem.sqlconfig.getConfigValue("Friend-Prefix") + message)));
     }
 
     public static void console(final String message) {
