@@ -15,9 +15,9 @@ public class PermissionManager {
 
     private String servername;
     private MySQL mysql;
-    private HashMap<Group, List<String>> groups;
-    private HashMap<Group, List<Group>> parents;
-    private HashMap<String, List<String>> permissions;
+    private HashMap<Group, Set<String>> groups;
+    private HashMap<Group, Set<Group>> parents;
+    private HashMap<String, Set<String>> permissions;
 
     public PermissionManager(String servername, MySQL mysql) {
         this.servername = servername != null ? servername : "unknownserver";
@@ -40,7 +40,7 @@ public class PermissionManager {
                 while (rs.next()) {
                     switch (rs.getString("key")) {
                         case "group":
-                            groups.put(Group.getGroupbyName(rs.getString("name")), groups.getOrDefault(Group.getGroupbyName(rs.getString("name")), new ArrayList<>()));
+                            groups.put(Group.getGroupbyName(rs.getString("name")), groups.getOrDefault(Group.getGroupbyName(rs.getString("name")), new HashSet<>()));
                         case "permission":
                             addPermission(Group.getGroupbyName(rs.getString("name")), rs.getString("value"));
                             break;
@@ -57,18 +57,18 @@ public class PermissionManager {
         });
     }
 
-    public List<Group> getParents(Group group) {
-        List<Group> result = new ArrayList<>();
-        for (Group parent : this.parents.getOrDefault(group, new ArrayList<>())) {
+    public Set<Group> getParents(Group group) {
+        Set<Group> result = new HashSet<>();
+        for (Group parent : this.parents.getOrDefault(group, new HashSet<>())) {
             result.add(parent);
             result.addAll(getParents(parent));
         }
         return result;
     }
 
-    public List<Group> getChildren(Group group) {
-        List<Group> result = new ArrayList<>();
-        for (HashMap.Entry<Group, List<Group>> entry : this.parents.entrySet()) {
+    public Set<Group> getChildren(Group group) {
+        Set<Group> result = new HashSet<>();
+        for (HashMap.Entry<Group, Set<Group>> entry : this.parents.entrySet()) {
             if (entry.getValue().contains(group)) {
                 result.add(entry.getKey());
                 result.addAll(getChildren(entry.getKey()));
@@ -77,21 +77,23 @@ public class PermissionManager {
         return result;
     }
 
-    public List<String> getPermissions(String uuid, Group group) {
-        group = group != null ? group : Group.SPIELER;
-        List<String> permissions = new ArrayList<>();
+    public Set<String> getPermissions(String uuid, Set<Group> groups) {
+        if (groups.size() == 0) groups.add(Group.SPIELER);
+        Set<String> permissions = new HashSet<>();
 
-        permissions.add("group."+group.getName());
-        permissions.addAll(this.groups.getOrDefault(group, new ArrayList<>()));
-        permissions.addAll(this.permissions.getOrDefault(uuid, new ArrayList<>()));
-        for (Group parent : getParents(group)) {
-            permissions.addAll(this.groups.get(parent));
+        for (Group g : groups) {
+            permissions.add("group." + g.getName());
+            permissions.addAll(this.groups.getOrDefault(g, new HashSet<>()));
+            permissions.addAll(this.permissions.getOrDefault(uuid, new HashSet<>()));
+            for (Group parent : getParents(g)) {
+                permissions.addAll(this.groups.get(parent));
+            }
         }
 
         return permissions;
     }
 
-    public boolean hasPermission(List<String> permissions, String permission) {
+    public boolean hasPermission(Set<String> permissions, String permission) {
         if(permissions.contains(permission) || permissions.contains("*") || permission == null) {
             return true;
         } else {
@@ -111,7 +113,7 @@ public class PermissionManager {
         return groups.keySet();
     }
 
-    public List<String> getGroupPermissions(Group group) {
+    public Set<String> getGroupPermissions(Group group) {
         return groups.getOrDefault(group, null);
     }
 
@@ -130,7 +132,7 @@ public class PermissionManager {
         if (this.groups.containsKey(group)) {
             this.groups.get(group).add(permission);
         } else {
-            this.groups.put(group, new ArrayList<>(Collections.singletonList(permission)));
+            this.groups.put(group, new HashSet<>(Collections.singletonList(permission)));
         }
     }
 
@@ -138,7 +140,7 @@ public class PermissionManager {
         if (permissions.containsKey(uuid)) {
             permissions.get(uuid).add(permission);
         } else {
-            permissions.put(uuid, new ArrayList<>(Collections.singletonList(permission)));
+            permissions.put(uuid, new HashSet<>(Collections.singletonList(permission)));
         }
     }
 
@@ -146,7 +148,7 @@ public class PermissionManager {
         if (this.parents.containsKey(group)) {
             this.parents.get(group).add(parent);
         } else {
-            this.parents.put(group, new ArrayList<>(Collections.singletonList(parent)));
+            this.parents.put(group, new HashSet<>(Collections.singletonList(parent)));
         }
     }
 

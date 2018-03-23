@@ -49,10 +49,15 @@ commands:
   build:
     description: Allows to bypass build restrictions
     permission: system.bukkit.build
+  spawn:
+    description: Allows to teleport to several registered spawns
   world:
     aliases: [worlds,w]
     description: Manage worlds
     permission: system.bukkit.world
+  speed:
+    description: in- or decreases the walk or fly speed
+    permission: system.bukkit.speed
 
 permissions:
   system:
@@ -94,3 +99,7 @@ permissions:
             description: Allows to bypass the CooldownSystem
           system.bukkit.world:
             description: Allows to manage the servers worlds
+          system.bukkit.setspawn:
+            description: Allows to manage the spawn points
+          system.bukkit.speed:
+            description: Allows to use the speed cmd

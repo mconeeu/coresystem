@@ -11,7 +11,6 @@ import eu.mcone.coresystem.bungee.ban.BanManager;
 import eu.mcone.coresystem.bungee.player.OfflinePlayer;
 import eu.mcone.coresystem.lib.player.Group;
 import eu.mcone.coresystem.bungee.utils.Messager;
-import eu.mcone.coresystem.lib.util.UUIDFetcher;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -27,7 +26,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 public class PremiumCMD extends Command implements TabExecutor {
     public PremiumCMD() {
@@ -125,11 +123,9 @@ public class PremiumCMD extends Command implements TabExecutor {
 
                     if (group != null) {
                         if (t != null) {
-                            Group old_group = t.getGroup();
-
                             if (args[0].equalsIgnoreCase("add")) {
                                 if (!t.hasPermission("mcone.premium")) {
-                                    CoreSystem.mysql1.update("INSERT INTO `bungeesystem_premium` (`uuid`, `group`, `old_group`, `kosten`, `gekauft`, `timestamp`) VALUES ('" + t.getUuid().toString() + "', '" + group.getName() + "', '" + old_group.getName() + "', 'free', '" + unixtime + "', " + ((60 * 60 * 24 * 30) + unixtime) + ")");
+                                    CoreSystem.mysql1.update("INSERT INTO `bungeesystem_premium` (`uuid`, `group`, `old_group`, `kosten`, `gekauft`, `timestamp`) VALUES ('" + t.getUuid().toString() + "', '" + group.getName() + "', '" + Group.getJson(t.getGroups()) + "', 'free', '" + unixtime + "', " + ((60 * 60 * 24 * 30) + unixtime) + ")");
                                     CoreSystem.mysql1.update("UPDAtE userinfo SET gruppe='" + group.getName() + "' WHERE uuid='" + target + "'");
                                     Messager.send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für 1 Monat zugeschrieben!");
                                 } else {
@@ -151,11 +147,9 @@ public class PremiumCMD extends Command implements TabExecutor {
 
                     if (group != null) {
                         if (t != null) {
-                            Group old_group = t.getGroup();
-
                             if (args[0].equalsIgnoreCase("add")) {
                                 if (!t.hasPermission("mcone.premium")) {
-                                    CoreSystem.mysql1.update("INSERT INTO `bungeesystem_premium` (`uuid`, `group`, `old_group`, `kosten`, `gekauft`, `timestamp`) VALUES ('" + t.getUuid().toString() + "', '" + group.getName() + "', '" + old_group.getName() + "', 'free', '" + unixtime + "', " + ((60 * 60 * 24 * 30 * months) + unixtime) + ")");
+                                    CoreSystem.mysql1.update("INSERT INTO `bungeesystem_premium` (`uuid`, `group`, `old_group`, `kosten`, `gekauft`, `timestamp`) VALUES ('" + t.getUuid().toString() + "', '" + group.getName() + "', '" + Group.getJson(t.getGroups()) + "', 'free', '" + unixtime + "', " + ((60 * 60 * 24 * 30 * months) + unixtime) + ")");
                                     CoreSystem.mysql1.update("UPDAtE userinfo SET gruppe='" + group.getName() + "' WHERE uuid='" + target + "'");
                                     Messager.send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für " + months + " Monat(e) zugeschrieben!");
                                 } else {

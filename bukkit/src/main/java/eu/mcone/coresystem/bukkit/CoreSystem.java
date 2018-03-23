@@ -16,9 +16,9 @@ import eu.mcone.coresystem.bukkit.listener.*;
 import eu.mcone.coresystem.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.bukkit.player.NickManager;
 import eu.mcone.coresystem.bukkit.scoreboard.MainScoreboard;
-import eu.mcone.coresystem.bukkit.scoreboard.Objective;
 import eu.mcone.coresystem.bukkit.util.AFKCheck;
 import eu.mcone.coresystem.bukkit.util.CooldownSystem;
+import eu.mcone.coresystem.lib.gamemode.Gamemode;
 import eu.mcone.coresystem.lib.mysql.MySQL;
 import eu.mcone.coresystem.lib.mysql.MySQL_Config;
 import eu.mcone.coresystem.lib.player.PermissionManager;
@@ -27,13 +27,9 @@ import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.DisplaySlot;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.bukkit.Bukkit.getMessenger;
 import static org.bukkit.Bukkit.getPluginManager;
@@ -42,16 +38,11 @@ public class CoreSystem extends JavaPlugin {
 
     @Getter
 	private static CoreSystem instance;
-    public static String MainPrefix = "§8[§fBukkitCore§8] ";
+    private static String MainPrefix = "§8[§fBukkitCore§8] ";
 
     public static MySQL mysql1;
     public static MySQL mysql2;
     public static MySQL mysql3;
-
-    public static StatsAPI statsBedwars;
-    public static StatsAPI statsSkypvp;
-    public static StatsAPI statsKnockit;
-    public static StatsAPI statsMinewar;
 	
 	public static MySQL_Config config;
     public static YAML_Config cfg = new YAML_Config("MCONE-BukkitCoreSystem", "config.yml");
@@ -65,12 +56,17 @@ public class CoreSystem extends JavaPlugin {
 
     @Getter
     private static Map<UUID, CorePlayer> corePlayers;
+    @Getter
+    private HashSet<CoreCommand> commands;
+
     private Map<UUID, CoreInventory> inventories;
+    private Map<Gamemode, StatsAPI> stats;
 
 	@Override
 	public void onEnable(){
 		instance = this;
 		inventories = new HashMap<>();
+		commands = new HashSet<>();
         cooldownSystem = new CooldownSystem();
         createPluginDir("worlds");
 
@@ -93,10 +89,10 @@ public class CoreSystem extends JavaPlugin {
         mysql3 = new MySQL("78.46.249.195", 3306, "mc1config", "mc1config", "q%sZp=6/_wx2M2B.Qzaeya4Kd5;f4W*w*M?3#kM,QPjv6VuG3=TjTJ63CPD)}WV;");
         createTables(mysql1);
 
-        statsMinewar = new StatsAPI("Minewar", "§5§lMineWar", mysql2);
-        statsBedwars = new StatsAPI("Bedwars", "§c§lBedwars", mysql2);
-        statsSkypvp = new StatsAPI("Skypvp", "§9§lSkypvp", mysql2);
-        statsKnockit = new StatsAPI("Knockit", "§2§lKnockIT", mysql2);
+        stats = new HashMap<>();
+        for (Gamemode gamemode : Gamemode.values()) {
+            stats.put(gamemode, new StatsAPI(gamemode, mysql2));
+        }
 
         getServer().getConsoleSender().sendMessage(MainPrefix + "§aMySQL Config wird initiiert...");
 		config = new MySQL_Config(mysql3, "BukkitCoreSystem", 800);
@@ -151,8 +147,6 @@ public class CoreSystem extends JavaPlugin {
 	        for (HashMap.Entry<UUID, Integer> templateEntry : AFKCheck.players.entrySet()) {
 	            AFKCheck.players.put(templateEntry.getKey(), 0);
 	            mysql1.update("UPDATE userinfo SET status='online' WHERE uuid='" + templateEntry.getKey() + "'");
-	            Objective o = getCorePlayer(templateEntry.getKey()).getScoreboard().getObjective(DisplaySlot.BELOW_NAME);
-	            if (o != null) o.bukkit().unregister();
             }
         }
 
@@ -206,6 +200,7 @@ public class CoreSystem extends JavaPlugin {
 		getCommand("tpall").setExecutor(new TpallCMD());
 		getCommand("tppos").setExecutor(new TpposCMD());
 		getCommand("stats").setExecutor(new StatsCMD());
+        getCommand("speed").setExecutor(new SpeedCMD());
 		getCommand("vanish").setExecutor(new VanishCMD());
         getCommand("profil").setExecutor(new ProfileCMD());
 	}
@@ -231,7 +226,7 @@ public class CoreSystem extends JavaPlugin {
 
     private void createTables(MySQL mysql) {
         mysql.update(
-                "CREATE TABLE IF NOT EXISTS bukkitsystem_npcs " +
+                "CREATE TABLE IF NOT EXISTS `bukkitsystem_npcs`" +
                 "(" +
                     "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
                     "`name` VARCHAR(100) NOT NULL, " +
@@ -244,7 +239,7 @@ public class CoreSystem extends JavaPlugin {
         );
 
         mysql.update(
-                "CREATE TABLE IF NOT EXISTS bukkitsystem_textures " +
+                "CREATE TABLE IF NOT EXISTS `bukkitsystem_textures`" +
                 "(" +
                     "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
                     "`name` VARCHAR(100) NOT NULL UNIQUE KEY REFERENCES bukkitsystem_npcs(`texture`) ON DELETE SET NULL ON UPDATE SET NULL, " +
@@ -255,7 +250,7 @@ public class CoreSystem extends JavaPlugin {
         );
 
         mysql.update(
-                "CREATE TABLE IF NOT EXISTS bukkitsystem_holograms " +
+                "CREATE TABLE IF NOT EXISTS `bukkitsystem_holograms`" +
                 "(" +
                     "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
                     "`name` VARCHAR(100) NOT NULL UNIQUE KEY, " +
@@ -267,7 +262,7 @@ public class CoreSystem extends JavaPlugin {
         );
 
         mysql.update(
-                "CREATE TABLE IF NOT EXISTS bukkitsystem_worlds" +
+                "CREATE TABLE IF NOT EXISTS `bukkitsystem_worlds`" +
                 "(" +
                     "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY," +
                     "`name` VARCHAR(100) NOT NULL UNIQUE KEY," +
@@ -275,6 +270,17 @@ public class CoreSystem extends JavaPlugin {
                     "`server` VARCHAR(100) NOT NULL" +
                 ")" +
                 "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+        );
+
+        mysql.update(
+                "CREATE TABLE IF NOT EXISTS `bukkitsystem_locations`" +
+                        "(" +
+                        "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY," +
+                        "`name` VARCHAR(100) NOT NULL," +
+                        "`location` VARCHAR(100) NOT NULL," +
+                        "`server` VARCHAR(100) NOT NULL" +
+                        ")" +
+                        "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
         );
     }
 
@@ -316,6 +322,24 @@ public class CoreSystem extends JavaPlugin {
 
     public void clearPlayerInventories(UUID uuid) {
 	    if (inventories.containsKey(uuid)) inventories.remove(uuid);
+    }
+
+    public StatsAPI getStatsAPI(Gamemode gamemode) {
+	    return stats.getOrDefault(gamemode, null);
+    }
+
+    public void registerCommand(CoreCommand command) {
+	    commands.add(command);
+    }
+
+    public CoreCommand getCoreCommand(String name) {
+        for (CoreCommand command : commands) {
+            if (command.getCommand().equalsIgnoreCase(name)) {
+                return command;
+            }
+        }
+
+        return null;
     }
 
 }

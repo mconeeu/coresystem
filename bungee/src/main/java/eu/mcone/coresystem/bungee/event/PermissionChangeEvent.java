@@ -11,6 +11,10 @@ import eu.mcone.coresystem.lib.player.Group;
 import lombok.Getter;
 import net.md_5.bungee.api.plugin.Event;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 public class PermissionChangeEvent extends Event {
 
     @Getter
@@ -18,7 +22,7 @@ public class PermissionChangeEvent extends Event {
     @Getter
     private CorePlayer player;
     @Getter
-    private Group group;
+    private Set<Group> groups;
 
     public enum Kind {
         USER_PERMISSION,
@@ -31,15 +35,15 @@ public class PermissionChangeEvent extends Event {
         this.player = p;
     }
 
-    public PermissionChangeEvent(Kind k, CorePlayer p, Group group) {
+    public PermissionChangeEvent(Kind k, CorePlayer p, Set<Group> groups) {
         this.kind = k;
         this.player = p;
-        this.group = group;
+        this.groups = groups;
     }
 
     public PermissionChangeEvent(Kind k, Group group) {
         this.kind = k;
-        this.group = group;
+        this.groups = new HashSet<>(Collections.singletonList(group));
     }
 
 }

@@ -12,6 +12,8 @@ import lombok.Getter;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import java.util.Set;
+
 public class PermissionChangeEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
@@ -20,7 +22,7 @@ public class PermissionChangeEvent extends Event {
     @Getter
     private CorePlayer player;
     @Getter
-    private Group group;
+    private Set<Group> groups;
 
     public enum Kind {
         USER_PERMISSION,
@@ -33,7 +35,7 @@ public class PermissionChangeEvent extends Event {
 
         if (data.length >= 1) {
             kind = Kind.valueOf(data[0]);
-            if (!kind.equals(Kind.USER_PERMISSION)) group = Group.getGroupbyName(data[1]);
+            if (!kind.equals(Kind.USER_PERMISSION)) groups = Group.getGroups(data[1]);
         }
     }
 

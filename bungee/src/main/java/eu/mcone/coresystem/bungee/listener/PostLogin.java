@@ -11,10 +11,8 @@ import eu.mcone.coresystem.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import eu.mcone.coresystem.lib.labymod.AntiLabyMod;
 import eu.mcone.coresystem.lib.labymod.LabyPermission;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.Title;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -52,7 +50,7 @@ public class PostLogin implements Listener{
                     CoreSystem.mysql1.update("UPDATE `userinfo` SET `name` = '" + p.getName() + "', `ip` = '" + ip + "' , status = 'online', `timestamp` = '" + millis / 1000 + "' WHERE `uuid`='" + p.getUniqueId().toString() + "';");
                 } else {
                     isNew = true;
-                    CoreSystem.mysql1.update("INSERT INTO `userinfo` (`uuid`, `name`, `gruppe`, `coins`, `status`, `ip`, `timestamp`, `onlinetime`) VALUES ('" +  p.getUniqueId().toString() + "', '" +  p.getName() + "', 'Spieler', 20, 'online', '" + ip + "', '" +  millis / 1000 + "' , 0)");
+                    CoreSystem.mysql1.update("INSERT INTO `userinfo` (`uuid`, `name`, `groups`, `coins`, `status`, `ip`, `timestamp`, `onlinetime`) VALUES ('" +  p.getUniqueId().toString() + "', '" +  p.getName() + "', '[11]', 20, 'online', '" + ip + "', '" +  millis / 1000 + "' , 0)");
                 }
             }catch (SQLException e1){
                 e1.printStackTrace();
@@ -113,12 +111,12 @@ public class PostLogin implements Listener{
         isNew = false;
 
         ProxyServer.getInstance().getScheduler().schedule(CoreSystem.getInstance(), () -> {
-            if (p.getServer() != null) {
+            /*if (p.getServer() != null) {
                 p.setTabHeader(
                         new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', "§f§lMC ONE §3Minecraftnetzwerk §8» §7" + e.getPlayer().getServer().getInfo().getName())).create(),
                         new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', "§7§oPublic Beta 5.0")).create()
                 );
-            }
+            }*/
 
             new AntiLabyMod()
                     .set(LabyPermission.IMPROVED_LAVA, true)

@@ -6,20 +6,11 @@
 
 package eu.mcone.coresystem.bukkit.inventory;
 
-import eu.mcone.coresystem.bukkit.CoreSystem;
-import eu.mcone.coresystem.bukkit.channel.FutureTask;
 import eu.mcone.coresystem.bukkit.channel.PluginMessage;
-import eu.mcone.coresystem.bukkit.util.ItemFactory;
+import eu.mcone.coresystem.bukkit.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.meta.SkullMeta;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class FriendsInventory extends CoreInventory {
 
@@ -32,7 +23,7 @@ public class FriendsInventory extends CoreInventory {
                 if (friend.equals("") || i > 44) continue;
 
                 String[] data = friend.split(":");
-                setItem(i, ItemFactory.createSkullItem("§f§l"+data[1], data[1], 1, new ArrayList<>(Arrays.asList(data[2], "", "§8» §f§nRechtsklick§8 | §7§oAktionen"))), () -> {
+                setItem(i, ItemBuilder.createSkullItem(data[1], 1).displayName("§f§l"+data[1]).lore(data[2], "", "§8» §f§nRechtsklick§8 | §7§oAktionen").create(), () -> {
                     new FriendInventory(p, data[1]);
                     p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
                 });
@@ -40,7 +31,7 @@ public class FriendsInventory extends CoreInventory {
                 i++;
             }
 
-            setItem(45, ItemFactory.createItem(Material.IRON_DOOR, 0, 1, "§7§l↩ Zurück zum Profil", true), () -> {
+            setItem(45, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), () -> {
                 p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
                 new ProfileInventory(p);
             });

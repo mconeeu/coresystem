@@ -8,8 +8,7 @@ package eu.mcone.coresystem.bukkit.npc;
 
 import eu.mcone.coresystem.bukkit.CoreSystem;
 import eu.mcone.coresystem.bukkit.command.NpcCMD;
-import eu.mcone.coresystem.bukkit.npc.NPC;
-import eu.mcone.coresystem.bukkit.util.LocationFactory;
+import eu.mcone.coresystem.bukkit.util.LocationManager;
 import eu.mcone.coresystem.lib.mysql.MySQL;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -45,7 +44,7 @@ public class NpcManager implements Listener {
                         }else if(npc.getLocation().distance(p.getLocation())<60 && !npc.getLoadedPlayers().contains(p.getUniqueId())){
                             npc.set(p);
                         }
-                    }else{
+                    }else if (npc.getLoadedPlayers().contains(p.getUniqueId())){
                         npc.unset(p);
                     }
                 }
@@ -63,14 +62,16 @@ public class NpcManager implements Listener {
             for (Player p : Bukkit.getOnlinePlayers()) {
                 this.unsetNPCs(p);
             }
+        } else {
+            this.npcs = new HashMap<>();
         }
 
-        this.npcs = new HashMap<>();
+        this.npcs.clear();
         this.mysql.select("SELECT * FROM bukkitsystem_npcs WHERE server='"+this.server+"'", rs -> {
             try {
                 while (rs.next()) {
                     if (rs.getString("texture") != null) {
-                        this.npcs.put(rs.getString("name"), new NPC(rs.getString("name"), Objects.requireNonNull(LocationFactory.getLocationfromJSON(rs.getString("location"))), rs.getString("texture"), rs.getString("displayname")));
+                        this.npcs.put(rs.getString("name"), new NPC(rs.getString("name"), Objects.requireNonNull(LocationManager.fromJson(rs.getString("location"))), rs.getString("texture"), rs.getString("displayname")));
                     } else {
                         System.err.println("NPC "+rs.getString("name")+" besitzt keine Textur!");
                     }
@@ -84,7 +85,7 @@ public class NpcManager implements Listener {
     public void addNPC(String name, Location loc, String texture, String displayname) {
         NPC npc = new NPC(name, loc, texture, displayname);
 
-        String json = LocationFactory.getJSONLocation(loc);
+        String json = LocationManager.toJson(loc);
         this.mysql.update("INSERT INTO bukkitsystem_npcs (`name`, `location`, `displayname`, `texture`, `server`) VALUES ('"+name+"', '"+json+"', '"+displayname+"', '"+texture+"', '"+this.server+"') " +
                 "ON DUPLICATE KEY UPDATE `location`='"+json+"'");
         this.npcs.put(name, npc);
@@ -96,7 +97,7 @@ public class NpcManager implements Listener {
             getNPCs().get(name).unsetAll();
             NPC npc = new NPC(name, loc, texture, displayname);
 
-            String json = LocationFactory.getJSONLocation(loc);
+            String json = LocationManager.toJson(loc);
             this.mysql.update("UPDATE bukkitsystem_npcs SET `location`='"+json+"', `displayname`='"+displayname+"', `texture`='"+texture+"' WHERE `name`='"+name+"' AND `server`='"+this.server+"'");
             this.npcs.put(name, npc);
             this.updateNPCs();
@@ -114,7 +115,7 @@ public class NpcManager implements Listener {
 
     public boolean isNPC(String playerName) {
         for (NPC npc : npcs.values()) {
-            if (npc.getDisplayname().equalsIgnoreCase(playerName)) {
+            if (npc.getName().equalsIgnoreCase(playerName)) {
                 return true;
             }
         }
@@ -144,6 +145,15 @@ public class NpcManager implements Listener {
         for (Player p : Bukkit.getOnlinePlayers()) {
             unsetNPCs(p);
         }
+    }
+
+    public NPC getNPC(String name) {
+        for (NPC npc : npcs.values()) {
+            if (npc.getName().equals(name)) {
+                return npc;
+            }
+        }
+        return null;
     }
 
     public HashMap<String, NPC> getNPCs() {

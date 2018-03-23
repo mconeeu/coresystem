@@ -6,15 +6,16 @@
 
 package eu.mcone.coresystem.bungee.player;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import eu.mcone.coresystem.bungee.CoreSystem;
 import eu.mcone.coresystem.lib.player.Group;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class OfflinePlayer {
 
@@ -23,10 +24,10 @@ public class OfflinePlayer {
     @Getter
     private String name;
     @Getter
-    private Group group;
+    private Set<Group> groups;
     private long joined, onlinetime;
     @Getter @Setter
-    private List<String> permissions;
+    private Set<String> permissions;
     @Getter
     private Map<UUID, String> friends;
     @Getter @Setter
@@ -43,7 +44,12 @@ public class OfflinePlayer {
                     this.uuid = UUID.fromString(rs.getString("uuid"));
                     this.onlinetime = rs.getLong("onlinetime");
                     this.joined = System.currentTimeMillis() / 1000;
-                    this.group = Group.getGroupbyName(rs.getString("gruppe"));
+                    this.groups = new HashSet<>();
+                    JsonArray array = new JsonParser().parse(rs.getString("groups")).getAsJsonArray();
+
+                    for (JsonElement e : array) {
+                        groups.add(Group.getGroupById(e.getAsInt()));
+                    }
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -67,7 +73,7 @@ public class OfflinePlayer {
     }
 
     public OfflinePlayer loadPermissions() {
-        this.permissions = CoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), group);
+        this.permissions = CoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), groups);
         return this;
     }
 
@@ -77,11 +83,6 @@ public class OfflinePlayer {
 
     public long getOnlinetime() {
         return (((System.currentTimeMillis() / 1000) - joined) / 60) + onlinetime;
-    }
-
-    public void setGroup(Group group) {
-        this.group = group;
-        permissions = CoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), group);
     }
 
 }

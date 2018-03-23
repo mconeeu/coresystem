@@ -7,8 +7,7 @@
 package eu.mcone.coresystem.bukkit.inventory;
 
 import eu.mcone.coresystem.bukkit.CoreSystem;
-import eu.mcone.coresystem.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.bukkit.util.ItemFactory;
+import eu.mcone.coresystem.bukkit.util.ItemBuilder;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -41,7 +40,7 @@ public abstract class CoreInventory {
         List<Option> options = new ArrayList<>(Arrays.asList(args));
         if (options.contains(Option.FILL_EMPTY_SLOTS)) {
             for (int i = 0; i < size; i++) {
-                inventory.setItem(i, ItemFactory.createItem(Material.STAINED_GLASS_PANE, 7, 1, "§8//§oMCONE§8//", true));
+                inventory.setItem(i, new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 7).displayName("§8//§oMCONE§8//").create());
             }
         }
     }

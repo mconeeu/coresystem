@@ -7,36 +7,29 @@
 package eu.mcone.coresystem.bukkit.inventory;
 
 import eu.mcone.coresystem.bukkit.channel.PluginMessage;
-import eu.mcone.coresystem.bukkit.util.ItemFactory;
-import org.bukkit.Bukkit;
+import eu.mcone.coresystem.bukkit.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.meta.SkullMeta;
-
-import java.util.ArrayList;
 
 class PartyMemberInventory extends CoreInventory {
 
     PartyMemberInventory(Player p, String member) {
         super("§8» §f§l"+member+" §8| §5Aktionen", p, 36, Option.FILL_EMPTY_SLOTS);
 
-        setItem(4, ItemFactory.createSkullItem("§f§l"+member, member, 1, new ArrayList<>()));
+        setItem(4, ItemBuilder.createSkullItem(member, 1).displayName("§f§l"+member).create());
 
-        setItem(21, ItemFactory.createItem(Material.NETHER_STAR, 0, 1, "§7Zum §ePartyleader§7 promoten", true), () -> {
+        setItem(21, new ItemBuilder(Material.NETHER_STAR, 1, 0).displayName("§7Zum §ePartyleader§7 promoten").create(), () -> {
             new PluginMessage(p, "CMD", "party promote "+member);
             p.closeInventory();
         });
 
-        setItem(23, ItemFactory.createItem(Material.BARRIER, 0, 1, "§4Aus der Party kicken", true), () -> {
+        setItem(23, new ItemBuilder(Material.BARRIER, 1, 0).displayName("§4Aus der Party kicken").create(), () -> {
             new PluginMessage(p, "CMD", "party kick "+member);
             p.closeInventory();
         });
 
-        setItem(27, ItemFactory.createItem(Material.IRON_DOOR, 0, 1, "§7§l↩ Zurück zum Partymenü", true), () -> {
+        setItem(27, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Partymenü").create(), () -> {
                     p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
                     new PartyInventory(p);
         });

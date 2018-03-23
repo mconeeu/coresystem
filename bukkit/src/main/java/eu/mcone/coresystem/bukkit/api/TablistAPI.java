@@ -8,7 +8,6 @@ package eu.mcone.coresystem.bukkit.api;
 
 import eu.mcone.coresystem.bukkit.CoreSystem;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
-import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerListHeaderFooter;
 import net.minecraft.server.v1_8_R3.PlayerConnection;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -24,16 +23,14 @@ public class TablistAPI {
             if (footer == null) footer = "";
             PlayerConnection connection = ((CraftPlayer) p).getHandle().playerConnection;
 
-            IChatBaseComponent Title = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + header + MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name") + "\"}");
+            IChatBaseComponent head = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + header + "\"}");
             IChatBaseComponent Foot = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + footer + "\"}");
 
-            PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(Title);
+            PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(head);
             try {
-
                 Field field = headerPacket.getClass().getDeclaredField("b");
                 field.setAccessible(true);
                 field.set(headerPacket, Foot);
-
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {

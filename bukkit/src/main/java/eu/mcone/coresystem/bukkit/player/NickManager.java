@@ -10,6 +10,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import eu.mcone.coresystem.bukkit.CoreSystem;
 import eu.mcone.coresystem.bukkit.listener.PlayerDeath;
+import eu.mcone.coresystem.lib.player.Skin;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_8_R3.*;
@@ -24,7 +25,7 @@ import java.util.UUID;
 
 public class NickManager {
 
-    private Map<UUID, TextureData> oldProfiles;
+    private Map<UUID, Skin> oldProfiles;
     @Getter @Setter
     private boolean allowNicking = true;
 
@@ -37,7 +38,7 @@ public class NickManager {
             CorePlayer cp = CoreSystem.getCorePlayer(p);
 
             if (!cp.isNicked()) {
-                setNick(p, name, new TextureData(value, signature));
+                setNick(p, name, new Skin(name, value, signature));
 
                 cp.setNickname(name);
                 cp.setNicked(true);
@@ -89,17 +90,17 @@ public class NickManager {
         }
     }
 
-    private void setNick(Player p, String name, TextureData data) {
-        if (data == null) return;
+    private void setNick(Player p, String name, Skin skin) {
+        if (skin == null) return;
         EntityPlayer ep = ((CraftPlayer) p).getHandle();
 
         GameProfile gp = ((CraftPlayer) p).getProfile();
         for (Property pr : gp.getProperties().values()) {
             if (pr.getName().equalsIgnoreCase("textures"))
-                oldProfiles.put(p.getUniqueId(), new TextureData(pr.getValue(), pr.getSignature()));
+                oldProfiles.put(p.getUniqueId(), new Skin(name, pr.getValue(), pr.getSignature()));
         }
         gp.getProperties().removeAll("textures");
-        gp.getProperties().put("textures", new Property("textures", data.getValue(), data.getSignature()));
+        gp.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
         try {
             final Field nameField = gp.getClass().getDeclaredField("name");
             nameField.setAccessible(true);
@@ -131,23 +132,6 @@ public class NickManager {
 
         p.setDisplayName(name);
         CoreSystem.getCorePlayer(p).getScoreboard().reload();
-    }
-
-    private class TextureData {
-        private String value;
-        private String signature;
-
-        TextureData(String value, String signature) {
-            this.value = value;
-            this.signature = signature;
-        }
-
-        String getValue() {
-            return value;
-        }
-        String getSignature() {
-            return signature;
-        }
     }
 
 }

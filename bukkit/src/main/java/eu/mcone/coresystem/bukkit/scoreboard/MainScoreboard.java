@@ -11,11 +11,11 @@ import eu.mcone.coresystem.lib.player.Group;
 import eu.mcone.coresystem.lib.util.RandomString;
 import org.bukkit.scoreboard.Team;
 
-public class MainScoreboard extends Scoreboard {
+public class MainScoreboard extends CoreScoreboard {
 
     @Override
     public void setPlayerTeams(CorePlayer p, org.bukkit.scoreboard.Scoreboard sb) {
-        Group g = p.isNicked() ? Group.SPIELER : p.getGroup();
+        Group g = p.isNicked() ? Group.SPIELER : p.getMainGroup();
 
         Team t = sb.registerNewTeam(g.getScore()+new RandomString(6).nextString());
         t.setPrefix(g.getPrefix());

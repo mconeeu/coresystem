@@ -7,18 +7,16 @@
 package eu.mcone.coresystem.bungee.player;
 
 import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.lib.player.Group;
 import eu.mcone.coresystem.lib.player.Skin;
 import eu.mcone.coresystem.lib.util.UUIDFetcher;
-import eu.mcone.coresystem.lib.player.Group;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class CorePlayer {
 
@@ -27,12 +25,11 @@ public class CorePlayer {
     @Getter
     private String name, status;
     @Getter
-    private Group group;
-    private long joined, onlinetime;
+    private Set<Group> groups;
     @Getter
     private long mutetime;
     @Getter @Setter
-    private List<String> permissions;
+    private Set<String> permissions;
     @Getter
     private Map<UUID, String> friends;
     @Getter
@@ -48,18 +45,14 @@ public class CorePlayer {
     private boolean nicked = false;
 
     public CorePlayer(String name) {
-        CoreSystem.mysql1.select("SELECT uuid, gruppe, onlinetime FROM userinfo WHERE name='"+name+"'", rs -> {
+        CoreSystem.mysql1.select("SELECT uuid, groups, onlinetime FROM userinfo WHERE name='"+name+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.uuid = UUID.fromString(rs.getString("uuid"));
-                    this.onlinetime = rs.getLong("onlinetime");
-                    this.joined = System.currentTimeMillis() / 1000;
-                    this.group = Group.getGroupbyName(rs.getString("gruppe"));
+                    this.groups = Group.getGroups(rs.getString("groups"));
                 } else {
                     this.uuid = UUIDFetcher.getUuid(name);
-                    this.onlinetime = 0;
-                    this.joined = System.currentTimeMillis() / 1000;
-                    this.group = Group.SPIELER;
+                    this.groups = new HashSet<>(Collections.singletonList(Group.SPIELER));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -101,22 +94,29 @@ public class CorePlayer {
     }
 
     public void reloadPermissions() {
-        this.permissions = CoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), group);
+        this.permissions = CoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), groups);
     }
 
+    public Group getMainGroup() {
+        HashMap<Integer, Group> groups = new HashMap<>();
+        this.groups.forEach(g -> groups.put(g.getId(), g));
 
-    public long getOnlinetime() {
-        return (((System.currentTimeMillis() / 1000) - joined) / 60) + onlinetime;
+        return Collections.min(groups.entrySet(), HashMap.Entry.comparingByValue()).getValue();
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
-        permissions = CoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), group);
+    public void setGroups(Set<Group> groups) {
+        this.groups = groups;
+        reloadPermissions();
     }
 
-    public void setStatus(final String status) {
-        this.status = status;
-        ProxyServer.getInstance().getScheduler().runAsync(CoreSystem.getInstance(), () -> CoreSystem.mysql1.update("UPDATE userinfo SET status='"+status+"' WHERE uuid='"+uuid+"'"));
+    public void addGroup(Group group) {
+        this.groups.add(group);
+        reloadPermissions();
+    }
+
+    public void removeGroup(Group group) {
+        this.groups.remove(group);
+        reloadPermissions();
     }
 
     public boolean isMuted() {

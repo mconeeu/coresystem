@@ -6,7 +6,13 @@
 
 package eu.mcone.coresystem.lib.player;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import lombok.Getter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public enum Group {
 
@@ -44,6 +50,33 @@ public enum Group {
             }
         }
         return null;
+    }
+
+    public static Group getGroupById(int id) {
+        for (Group group : values()) {
+            if (group.getId() == id) {
+                return group;
+            }
+        }
+        return null;
+    }
+
+    public static Set<Group> getGroups(String json) {
+        Set<Group> groups = new HashSet<>();
+        JsonArray array = new JsonParser().parse(json).getAsJsonArray();
+
+        for (JsonElement e : array) {
+            groups.add(Group.getGroupById(e.getAsInt()));
+        }
+
+        return groups;
+    }
+
+    public static String getJson(Set<Group> groups) {
+        JsonArray array = new JsonArray();
+        for (Group group : groups) array.add(group.getId());
+
+        return array.getAsString();
     }
 
 }

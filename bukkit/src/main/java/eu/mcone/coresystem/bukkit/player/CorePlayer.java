@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.bukkit.player;
 
 import eu.mcone.coresystem.bukkit.CoreSystem;
-import eu.mcone.coresystem.bukkit.scoreboard.Scoreboard;
+import eu.mcone.coresystem.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.bukkit.util.AFKCheck;
 import eu.mcone.coresystem.lib.player.Group;
 import lombok.Getter;
@@ -16,7 +16,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Set;
 import java.util.UUID;
 
 public class CorePlayer {
@@ -28,12 +30,12 @@ public class CorePlayer {
     @Getter @Setter
     private String nickname;
     @Getter
-    private Group group;
+    private Set<Group> groups;
     private long joined, onlinetime;
     @Getter
-    private List<String> permissions;
+    private Set<String> permissions;
     @Getter
-    private Scoreboard scoreboard;
+    private CoreScoreboard scoreboard;
     @Getter @Setter
     private boolean nicked;
 
@@ -44,12 +46,12 @@ public class CorePlayer {
 
         register();
 
-        CoreSystem.mysql1.select("SELECT gruppe, onlinetime FROM userinfo WHERE uuid='"+uuid.toString()+"'", rs -> {
+        CoreSystem.mysql1.select("SELECT groups, onlinetime FROM userinfo WHERE uuid='"+uuid.toString()+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.onlinetime = rs.getLong("onlinetime");
                     this.joined = System.currentTimeMillis() / 1000;
-                    this.group = Group.getGroupbyName(rs.getString("gruppe"));
+                    this.groups = Group.getGroups(rs.getString("groups"));
                 } else {
                     bukkit().kickPlayer("Du bist nicht im System registriert!");
                 }
@@ -70,21 +72,28 @@ public class CorePlayer {
         return CoreSystem.getInstance().getPermissionManager().hasPermission(permissions, permission);
     }
 
-    public void setScoreboard(Scoreboard sb) {
+    public void setScoreboard(CoreScoreboard sb) {
         this.scoreboard = sb.set(this);
     }
 
     public void reloadPermissions() {
-        this.permissions = CoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), group);
+        this.permissions = CoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), groups);
     }
 
     public long getOnlinetime() {
         return (((System.currentTimeMillis() / 1000) - joined) / 60) + onlinetime;
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
-        permissions = CoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), group);
+    public Group getMainGroup() {
+        HashMap<Integer, Group> groups = new HashMap<>();
+        this.groups.forEach(g -> groups.put(g.getId(), g));
+
+        return Collections.min(groups.entrySet(), HashMap.Entry.comparingByValue()).getValue();
+    }
+
+    public void setGroups(Set<Group> groups) {
+        this.groups = groups;
+        reloadPermissions();
     }
 
     public void setStatus(final String status) {

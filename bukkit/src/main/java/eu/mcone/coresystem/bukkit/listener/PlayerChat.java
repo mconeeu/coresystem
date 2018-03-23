@@ -30,12 +30,7 @@ public class PlayerChat implements Listener{
             if (cp.isNicked()) {
                 prefix = Group.SPIELER.getPrefix() + CoreSystem.config.getConfigValue("Chat-Design").replaceAll("%Player%", p.getName());
             } else {
-                Group g = cp.getGroup();
-                if (g != null) {
-                    prefix = g.getPrefix() + CoreSystem.config.getConfigValue("Chat-Design").replaceAll("%Player%", p.getName());
-                } else {
-                    prefix = "§8[§4§le§8]" + CoreSystem.config.getConfigValue("Chat-Design").replaceAll("%Player%", p.getName());
-                }
+				prefix = cp.getMainGroup().getPrefix() + CoreSystem.config.getConfigValue("Chat-Design").replaceAll("%Player%", p.getName());
             }
 
 			for (Player receiver : Bukkit.getOnlinePlayers()) {

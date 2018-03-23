@@ -21,7 +21,6 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -39,10 +38,11 @@ public class NPC {
     @Getter
     private UUID uuid;
     @Getter
-    private String displayname;
+    private String name, displayname;
 
     public NPC(String name, Location location, String skinName, String displayname){
-        this.displayname = name;
+        this.name = name;
+        this.displayname = displayname;
         this.uuid = UUID.randomUUID();
         this.location = location;
         this.loadedPlayers = new ArrayList<>();
@@ -81,6 +81,22 @@ public class NPC {
             }
         }.runTaskLater(CoreSystem.getInstance(), 26);
     }
+
+    public void setSkin(Skin skin, Player p) {
+        GameProfile gp = ((CraftPlayer) p).getProfile();
+
+        gp.getProperties().removeAll("textures");
+        gp.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
+
+        PlayerConnection connection = ((CraftPlayer) p).getHandle().playerConnection;
+        connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, npc));
+
+        connection.sendPacket(new PacketPlayOutEntityDestroy(npc.getId()));
+        connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, npc));
+        connection.sendPacket(new PacketPlayOutNamedEntitySpawn(npc));
+    }
+
+
 
     public void unset(Player p) {
         PlayerConnection connection = ((CraftPlayer)p).getHandle().playerConnection;

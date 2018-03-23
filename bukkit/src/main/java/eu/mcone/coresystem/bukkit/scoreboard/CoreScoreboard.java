@@ -17,22 +17,22 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Scoreboard {
+public abstract class CoreScoreboard {
 
     @Getter
     protected org.bukkit.scoreboard.Scoreboard scoreboard;
-    protected Map<DisplaySlot, Objective> objectives;
+    protected Map<DisplaySlot, CoreObjective> objectives;
     @Getter
     protected CorePlayer player;
 
-    public Scoreboard() {
+    public CoreScoreboard() {
         ScoreboardManager sm = Bukkit.getScoreboardManager();
 
         this.scoreboard = sm.getNewScoreboard();
         this.objectives = new HashMap<>();
     }
 
-    public Scoreboard set(CorePlayer p) {
+    public CoreScoreboard set(CorePlayer p) {
         this.player = p;
 
         for (CorePlayer player : CoreSystem.getOnlineCorePlayers()) {
@@ -51,10 +51,10 @@ public abstract class Scoreboard {
         }
         player.bukkit().setScoreboard(bukkit());
 
-        for (Objective o : objectives.values()) o.reload();
+        for (CoreObjective o : objectives.values()) o.reload();
     }
 
-    public void setNewObjective(Objective objective) {
+    public void setNewObjective(CoreObjective objective) {
         objectives.put(objective.getSlot(), objective.set(player, scoreboard));
     }
 
@@ -62,7 +62,7 @@ public abstract class Scoreboard {
         return scoreboard;
     }
 
-    public Objective getObjective(DisplaySlot slot) {
+    public CoreObjective getObjective(DisplaySlot slot) {
         return objectives.getOrDefault(slot, null);
     }
 

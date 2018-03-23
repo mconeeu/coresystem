@@ -14,6 +14,7 @@ import org.bukkit.Location;
 
 import java.util.List;
 
+@Deprecated
 public class LocationFactory {
 
     public static void updateConfigLocation(Location loc, MySQL_Config config, String key){

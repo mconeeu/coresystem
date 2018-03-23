@@ -8,17 +8,12 @@ package eu.mcone.coresystem.bukkit.inventory;
 
 import eu.mcone.coresystem.bukkit.CoreSystem;
 import eu.mcone.coresystem.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.bukkit.util.ItemFactory;
+import eu.mcone.coresystem.bukkit.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ProfileInventory extends CoreInventory {
 
@@ -34,19 +29,26 @@ public class ProfileInventory extends CoreInventory {
                     int coins = rs.getInt("coins");
                     String status = getStatus(cp.getStatus());
 
-                    setItem(4, ItemFactory.createSkullItem("§f§l" + player.getName(), player.getName(), 1, new ArrayList<>(Arrays.asList(cp.getGroup().getLabel(), "", "§7Coins: §f" + coins, "§7Onlinetime: §f" + onlinetime + " Stunden", "§7Status: " + status))));
+                    setItem(4, ItemBuilder.createSkullItem(player.getName(), 1).displayName("§f§l" + player.getName()).lore(
+                                cp.getMainGroup().getLabel(),
+                                "",
+                                "§7Coins: §f" + coins,
+                                "§7Onlinetime: §f" + onlinetime + " Stunden",
+                                "§7Status: " + status
+                            ).create()
+                    );
 
-                    setItem(20, ItemFactory.createItem(Material.NETHER_STAR, 0, 1, "§f§lStats", new ArrayList<>(Arrays.asList("", "§7§oRufe die deine Spielerstatistiken", "§7§oaus allen MC ONE Spielmodi ab!")), true), () -> {
+                    setItem(20, new ItemBuilder(Material.NETHER_STAR, 1, 0).displayName("§f§lStats").lore("", "§7§oRufe die deine Spielerstatistiken", "§7§oaus allen MC ONE Spielmodi ab!").create(), () -> {
                         p.performCommand("stats");
                         p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
                     });
 
-                    setItem(22, ItemFactory.createItem(Material.SKULL_ITEM, 3, 1, "§9§lFreunde", new ArrayList<>(Arrays.asList("", "§7§oZeige deine Freunde und", "§7§oFreundschaftsanzeigen", "§7§oan!")), true), () -> {
+                    setItem(22, new ItemBuilder(Material.SKULL_ITEM, 1, 3).displayName("§9§lFreunde").lore("", "§7§oZeige deine Freunde und", "§7§oFreundschaftsanzeigen", "§7§oan!").create(), () -> {
                         new FriendsInventory(p);
                         p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
                     });
 
-                    setItem(24, ItemFactory.createItem(Material.CAKE, 0, 1, "§5§lParty", new ArrayList<>(Arrays.asList("", "§7§oZeige infos zu deiner Party", "§7§oan, oder ertselle eine!")), true), () -> {
+                    setItem(24, new ItemBuilder(Material.CAKE, 1, 0).displayName("§5§lParty").lore("", "§7§oZeige infos zu deiner Party", "§7§oan, oder ertselle eine!").create(), () -> {
                         new PartyInventory(p);
                         p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
                     });

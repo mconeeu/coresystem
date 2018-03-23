@@ -10,7 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import eu.mcone.coresystem.bukkit.CoreSystem;
 import eu.mcone.coresystem.bukkit.command.HoloCMD;
-import eu.mcone.coresystem.bukkit.util.LocationFactory;
+import eu.mcone.coresystem.bukkit.util.LocationManager;
 import eu.mcone.coresystem.lib.mysql.MySQL;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -69,7 +69,7 @@ public class HologramManager implements Listener {
                 while (rs.next()) {
                     String json = rs.getString("lines").replaceAll("&", "§");
                     List<String> lines = new Gson().fromJson(json, new TypeToken<List<String>>() {}.getType());
-                    this.holograms.put(rs.getString("name"), new Hologram(lines.toArray(new String[lines.size()]), LocationFactory.getLocationfromJSON(rs.getString("location"))));
+                    this.holograms.put(rs.getString("name"), new Hologram(lines.toArray(new String[lines.size()]), LocationManager.fromJson(rs.getString("location"))));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -82,7 +82,7 @@ public class HologramManager implements Listener {
     }
 
     public void addHologram(String name, Location loc, String line1) {
-        String json = LocationFactory.getJSONLocation(loc);
+        String json = LocationManager.toJson(loc);
         this.mysql.update("INSERT INTO bukkitsystem_holograms (`name`, `location`, `lines`, `server`) VALUES ('"+name+"', '"+json+"', '[\""+line1+"\"]', '"+this.server+"') " +
                 "ON DUPLICATE KEY UPDATE `location`='"+json+"'");
         this.holograms.put(name, new Hologram(new String[]{line1.replaceAll("&", "§")}, loc));

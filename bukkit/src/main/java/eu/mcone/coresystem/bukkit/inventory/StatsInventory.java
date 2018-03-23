@@ -7,32 +7,32 @@
 package eu.mcone.coresystem.bukkit.inventory;
 
 import eu.mcone.coresystem.bukkit.CoreSystem;
-import eu.mcone.coresystem.bukkit.util.ItemFactory;
+import eu.mcone.coresystem.bukkit.util.ItemBuilder;
+import eu.mcone.coresystem.lib.gamemode.Gamemode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 
 public class StatsInventory extends CoreInventory {
 
     public StatsInventory(Player p) {
         super("§8» §3MCONE-Stats", p, 27, Option.FILL_EMPTY_SLOTS);
 
-        setItem(11, ItemFactory.createItem(Material.FEATHER, 0, 1, CoreSystem.statsSkypvp.getName(), true), () -> {
-            new StatsCategoryInventory(p, CoreSystem.statsSkypvp);
+        setItem(11, new ItemBuilder(Material.FEATHER, 1, 0).displayName(Gamemode.SKYPVP.getLabel()).create(), () -> {
+            new StatsCategoryInventory(p, CoreSystem.getInstance().getStatsAPI(Gamemode.SKYPVP));
             p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
         });
-        setItem(13, ItemFactory.createEnchantedItem(Material.STICK, Enchantment.KNOCKBACK, 1, 0, 1, CoreSystem.statsKnockit.getName(), true), () -> {
-            new StatsCategoryInventory(p, CoreSystem.statsKnockit);
+        setItem(13, new ItemBuilder(Material.STICK, 1, 0).enchantment(Enchantment.KNOCKBACK, 1).displayName(Gamemode.KNOCKIT.getLabel()).create(), () -> {
+            new StatsCategoryInventory(p, CoreSystem.getInstance().getStatsAPI(Gamemode.KNOCKIT));
             p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
         });
-        setItem(15, ItemFactory.createItem(Material.BED, 0, 1, CoreSystem.statsBedwars.getName(), true), () -> {
-            new StatsCategoryInventory(p, CoreSystem.statsBedwars);
+        setItem(15, new ItemBuilder(Material.BED, 1, 0).displayName(Gamemode.BEDWARS.getLabel()).create(), () -> {
+            new StatsCategoryInventory(p, CoreSystem.getInstance().getStatsAPI(Gamemode.BEDWARS));
             p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
         });
 
-        setItem(18, ItemFactory.createItem(Material.IRON_DOOR, 0, 1, "§7§l↩ Zurück zum Profil", true), () -> {
+        setItem(18, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), () -> {
             new ProfileInventory(p);
             p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
         });

@@ -11,7 +11,7 @@ import lombok.Getter;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Scoreboard;
 
-public abstract class Objective {
+public abstract class CoreObjective {
 
     protected final String s;
     protected final String s1;
@@ -24,13 +24,13 @@ public abstract class Objective {
     @Getter
     protected CorePlayer player;
 
-    public Objective(DisplaySlot slot, String s, String s1) {
+    public CoreObjective(DisplaySlot slot, String s, String s1) {
         this.slot = slot;
         this.s = s;
         this.s1 = s1;
     }
 
-    public Objective set(CorePlayer player, Scoreboard scoreboard) {
+    public CoreObjective set(CorePlayer player, Scoreboard scoreboard) {
         this.player = player;
         this.scoreboard = scoreboard;
 

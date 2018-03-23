@@ -14,7 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import java.util.List;
+import java.util.Set;
 
 public class PermissionChange implements Listener {
 
@@ -24,13 +24,14 @@ public class PermissionChange implements Listener {
 
         if (e.getKind() == PermissionChangeEvent.Kind.GROUP_PERMISSION) {
             Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-                p.setGroup(e.getGroup());
                 CoreSystem.getInstance().getPermissionManager().reload();
-                List<Group> groups = CoreSystem.getInstance().getPermissionManager().getChildren(e.getGroup());
+                Set<Group> groups = CoreSystem.getInstance().getPermissionManager().getChildren((Group) e.getGroups().toArray()[0]);
                 for (CorePlayer player : CoreSystem.getOnlineCorePlayers()) {
-                    if (groups.contains(player.getGroup())) {
-                        player.reloadPermissions();
-                        player.bukkit().sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§7§oDeine Permissions wurden upgedated!");
+                    for (Group g : player.getGroups()) {
+                        if (groups.contains(g)) {
+                            player.reloadPermissions();
+                            break;
+                        }
                     }
                 }
             });
@@ -44,9 +45,9 @@ public class PermissionChange implements Listener {
             }
         } else if (e.getKind() == PermissionChangeEvent.Kind.GROUP_CHANGE) {
             if (p != null) {
-                p.setGroup(e.getGroup());
+                p.setGroups(e.getGroups());
                 p.reloadPermissions();
-                p.bukkit().sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§7Deine Permission-Gruppe wurde zu §f"+e.getGroup()+" §7geändert!");
+                p.bukkit().sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§7Deine Permission-Gruppe wurde zu §f"+e.getGroups()+" §7geändert!");
                 for (CorePlayer player : CoreSystem.getOnlineCorePlayers()) {
                     player.getScoreboard().reload();
                 }

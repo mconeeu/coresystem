@@ -6,21 +6,15 @@
 
 package eu.mcone.coresystem.bukkit.inventory;
 
-import eu.mcone.coresystem.bukkit.CoreSystem;
 import eu.mcone.coresystem.bukkit.channel.PluginMessage;
-import eu.mcone.coresystem.bukkit.util.ItemFactory;
+import eu.mcone.coresystem.bukkit.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.FutureTask;
 
 public class PartyInventory extends CoreInventory {
 
@@ -41,35 +35,35 @@ public class PartyInventory extends CoreInventory {
                     if (data.length>2 && data[2].equals("leader")) lores.add("§e\u2600 Leader");
                     if (isPartyLeader && !data[0].equalsIgnoreCase(player.getName())) lores.addAll(Arrays.asList("", "§8» §f§nRechtsklick§8 | §7§oAktionen"));
 
-                    setItem(i, ItemFactory.createSkullItem("§f§l" + data[0], data[0], 1, lores), () -> {
+                    setItem(i, ItemBuilder.createSkullItem(data[0], 1).displayName("§f§l" + data[0]).lore((String[]) lores.toArray()).create(), () -> {
                         new PartyMemberInventory(p, data[0]);
                         p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
                     });
                     i++;
                 }
 
-                setItem(45, ItemFactory.createItem(Material.IRON_DOOR, 0, 1, "§7§l↩ Zurück zum Profil", true), () -> {
+                setItem(45, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), () -> {
                     p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
                     new ProfileInventory(p);
                 });
 
                 if (isPartyLeader)
-                    setItem(49, ItemFactory.createItem(Material.BARRIER, 0, 1, "§cParty löschen", true), () -> {
+                    setItem(49, new ItemBuilder(Material.BARRIER, 1, 0).displayName("§cParty löschen").create(), () -> {
                         p.closeInventory();
                         new PluginMessage(p, "CMD" ,"party delete");
                     });
 
-                setItem(53, ItemFactory.createItem(Material.SLIME_BALL, 0, 1, "§4Party verlassen", true), () -> {
+                setItem(53, new ItemBuilder(Material.SLIME_BALL, 1, 0).displayName("§4Party verlassen").create(), () -> {
                     p.closeInventory();
                     new PluginMessage(p, "CMD" ,"party leave");
                 });
             } else {
-                setItem(22, ItemFactory.createItem(Material.CAKE, 0, 1, "§5Party erstellen", true), () -> {
+                setItem(22, new ItemBuilder(Material.CAKE, 1, 0).displayName("§5Party erstellen").create(), () -> {
                     p.closeInventory();
                     new PluginMessage(p, "CMD" ,"party create");
                 });
 
-                setItem(45, ItemFactory.createItem(Material.IRON_DOOR, 0, 1, "§7§l↩ Zurück zum Profil", true), () -> {
+                setItem(45, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), () -> {
                     p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
                     new ProfileInventory(p);
                 });

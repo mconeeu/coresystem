@@ -20,6 +20,8 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.lang.reflect.Field;
 import java.util.*;
 
+/** @Deprecated */
+@Deprecated
 public class ItemFactory {
 
     public static ItemStack createItem(Material material, int subid, int amount, String displayname, boolean unbreakable){
