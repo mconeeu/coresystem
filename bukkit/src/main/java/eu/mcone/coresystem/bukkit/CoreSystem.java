@@ -18,6 +18,7 @@ import eu.mcone.coresystem.bukkit.player.NickManager;
 import eu.mcone.coresystem.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.bukkit.util.AFKCheck;
 import eu.mcone.coresystem.bukkit.util.CooldownSystem;
+import eu.mcone.coresystem.lib.exception.CoreException;
 import eu.mcone.coresystem.lib.gamemode.Gamemode;
 import eu.mcone.coresystem.lib.mysql.MySQL;
 import eu.mcone.coresystem.lib.mysql.MySQL_Config;
@@ -135,8 +136,12 @@ public class CoreSystem extends JavaPlugin {
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             PlayerLogin.setPermissions(p);
-            new CorePlayer(p.getUniqueId(), p.getName());
-            new PluginMessage(p, "UNNICK");
+            try {
+                new CorePlayer(p.getUniqueId(), p.getName());
+                new PluginMessage(p, "UNNICK");
+            } catch (CoreException e) {
+                e.printStackTrace();
+            }
         }
         for (CorePlayer p : getOnlineCorePlayers()) p.setScoreboard(new MainScoreboard());
 	}
@@ -146,7 +151,6 @@ public class CoreSystem extends JavaPlugin {
 	    if (CoreSystem.cfg.getConfig().getBoolean("AFK-Manager")) {
 	        for (HashMap.Entry<UUID, Integer> templateEntry : AFKCheck.players.entrySet()) {
 	            AFKCheck.players.put(templateEntry.getKey(), 0);
-	            mysql1.update("UPDATE userinfo SET status='online' WHERE uuid='" + templateEntry.getKey() + "'");
             }
         }
 

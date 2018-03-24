@@ -11,6 +11,7 @@ import eu.mcone.coresystem.bungee.event.PermissionChangeEvent;
 import eu.mcone.coresystem.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.player.OfflinePlayer;
 import eu.mcone.coresystem.bungee.utils.Messager;
+import eu.mcone.coresystem.lib.exception.CoreException;
 import eu.mcone.coresystem.lib.player.Group;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -30,23 +31,67 @@ public class PermsCMD extends Command implements TabExecutor {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length >= 3 && args[0].equalsIgnoreCase("user")) {
-            OfflinePlayer p = CoreSystem.getOfflinePlayer(args[1]).loadPermissions();
+            try {
+                OfflinePlayer p = new OfflinePlayer(args[1]).loadPermissions();
 
-            if (p != null) {
-                if (args.length == 5 && args[2].equalsIgnoreCase("group") && args[3].equalsIgnoreCase("set")) {
+                if (args.length == 5 && args[2].equalsIgnoreCase("group")) {
                     Group g = Group.getGroupbyName(args[4]);
 
                     if (g != null) {
-                        CoreSystem.mysql1.update("UPDATE userinfo SET gruppe='" + g.getName() + "' WHERE uuid='"+p.getUuid()+"'");
-                        Messager.send(sender, "§2Die Gruppe von " + args[1] + " wurde erfolgreich auf §f" + g.getLabel() + "§2 geändert!");
+                        if (args[3].equalsIgnoreCase("set")) {
+                            CoreSystem.mysql1.update("UPDATE userinfo SET groups='[" + g.getId() + "]' WHERE uuid='" + p.getUuid() + "'");
+                            Messager.send(sender, "§2Die Gruppe von " + args[1] + " wurde erfolgreich auf §f" + g.getLabel() + "§2 geändert!");
 
-                        CorePlayer cp = CoreSystem.getCorePlayer(p.getUuid());
-                        if (cp != null) ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.GROUP_CHANGE, cp, new HashSet<>(Collections.singletonList(g))));
-                        Messager.console(CoreSystem.MainPrefix + "§f" + sender.getName() + "§7 hat die Gruppe von §2" + args[1] + "§7 auf §f" + g.getLabel() + "§7 geändert!");
+                            CorePlayer cp = CoreSystem.getCorePlayer(p.getUuid());
+                            if (cp != null)
+                                ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.GROUP_CHANGE, cp, new HashSet<>(Collections.singletonList(g))));
+                            Messager.console(CoreSystem.MainPrefix + "§f" + sender.getName() + "§7 hat die Gruppe von §2" + args[1] + "§7 auf §f" + g.getLabel() + "§7 geändert!");
+                            return;
+                        } else if (args[3].equalsIgnoreCase("add")) {
+                            Set<Group> groups = p.getGroups();
+
+                            if (!groups.contains(g)) {
+                                groups.add(g);
+
+                                StringBuilder sb = new StringBuilder();
+                                groups.forEach(group -> sb.append(group.getLabel()).append(" "));
+
+                                CoreSystem.mysql1.update("UPDATE userinfo SET groups='" + Group.getJson(groups) + "' WHERE uuid='" + p.getUuid() + "'");
+                                Messager.send(sender, "§2Der User " + args[1] + " besitzt nun die Gruppen: " + sb.toString() + "§7(Gruppe " + g.getName() + " gelöscht)");
+
+                                CorePlayer cp = CoreSystem.getCorePlayer(p.getUuid());
+                                if (cp != null)
+                                    ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.GROUP_CHANGE, cp, groups));
+                                Messager.console(CoreSystem.MainPrefix + "§f" + sender.getName() + "§7 hat die Gruppen von §2" + args[1] + "§7 geändert: " + sb.toString() + "§7(Gruppe " + g.getName() + " hinzugefügt)");
+                            } else {
+                                Messager.send(sender, "§4Der Spieler " + p.getName() + " hat die Gruppe " + g.getLabel() + "§4 bereits!");
+                            }
+                            return;
+                        } else if (args[3].equalsIgnoreCase("remove")) {
+                            Set<Group> groups = p.getGroups();
+
+                            if (groups.contains(g)) {
+                                groups.remove(g);
+
+                                StringBuilder sb = new StringBuilder();
+                                groups.forEach(group -> sb.append(group.getLabel()).append(" "));
+
+                                CoreSystem.mysql1.update("UPDATE userinfo SET groups='" + Group.getJson(groups) + "' WHERE uuid='" + p.getUuid() + "'");
+                                Messager.send(sender, "§2Der User " + args[1] + " besitzt nun die Gruppen: " + sb.toString() + "§7(Gruppe " + g.getName() + " gelöscht)");
+
+                                CorePlayer cp = CoreSystem.getCorePlayer(p.getUuid());
+                                if (cp != null)
+                                    ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.GROUP_CHANGE, cp, groups));
+                                Messager.console(CoreSystem.MainPrefix + "§f" + sender.getName() + "§7 hat die Gruppen von §2" + args[1] + "§7 geändert: " + sb.toString() + "§7(Gruppe " + g.getName() + " hinzugefügt)");
+                            } else {
+                                Messager.send(sender, "§4Der Spieler " + p.getName() + " hat die Gruppe " + g.getLabel() + "§4 nicht!");
+                            }
+                            return;
+                        }
                     } else {
                         Messager.send(sender, "§4Diese Gruppe existiert nicht!");
+                        return;
                     }
-                    return;
                 } else if (args[2].equalsIgnoreCase("addperm") || args[2].equalsIgnoreCase("add")) {
                     String permission = args[3];
 
@@ -115,33 +160,7 @@ public class PermsCMD extends Command implements TabExecutor {
                         });
                         return;
                     }
-                }/* else if (args.length <= 4 && args[2].equalsIgnoreCase("list")) {
-                    List<String> permissions = p.getPermissions();
-                    StringBuilder sb = new StringBuilder();
-                    int index = 0;
-
-                    sb.append("§7Der Spieler ").append(p.getName()).append("§7 hat folgende Permissions §8[§fSeite ");
-                    if (args.length == 4) {
-                        index = Integer.valueOf(args[3]);
-                        sb.append(args[3]).append("§8]");
-
-                        if (index == 1) {
-                            index = 0;
-                        } else {
-                            index = (index-1)*20;
-                        }
-                    } else {
-                        sb.append("1§8]");
-                    }
-
-                    while (index < 20 && index < permissions.size()) {
-                        sb.append("\n§f§o").append(permissions.get(index));
-                        index++;
-                    }
-
-                    Messager.send(sender, sb.toString());
-                    return;
-                }*/ else if (args.length == 4 && args[2].equalsIgnoreCase("check")) {
+                } else if (args.length == 4 && args[2].equalsIgnoreCase("check")) {
                     String permission = args[3];
 
                     CoreSystem.mysql1.select("SELECT `value`, `server` FROM `bungeesystem_permissions` WHERE `name`='" + p.getUuid() + "' AND `key`='player-permission' AND `value`='" + permission + "'", rs -> {
@@ -157,8 +176,8 @@ public class PermsCMD extends Command implements TabExecutor {
                     });
                     return;
                 }
-            } else {
-                Messager.send(sender, "§4Dieser Spieler war noch nie auf MC ONE!");
+            } catch (CoreException e) {
+                Messager.send(sender, "§4Der Spieler "+args[1]+" war noch nie auf MC ONE!");
                 return;
             }
         } else if (args.length >=3 && args[0].equalsIgnoreCase("group")) {
@@ -229,37 +248,7 @@ public class PermsCMD extends Command implements TabExecutor {
                         });
                         return;
                     }
-                } /*else if (args.length <= 4 && args[2].equalsIgnoreCase("list")) {
-                    List<String> permissions = new ArrayList<>(CoreSystem.getInstance().getPermissionManager().getGroupPermissions(g));
-                    for (Group group : CoreSystem.getInstance().getPermissionManager().getParents(g)) {
-                        permissions.addAll(CoreSystem.getInstance().getPermissionManager().getGroupPermissions(group));
-                    }
-
-                    StringBuilder sb = new StringBuilder();
-                    int index = 0;
-
-                    sb.append("§7Die Gruppe ").append(g.getLabel()).append("§7 hat folgende Permissions §8[§fSeite ");
-                    if (args.length == 4) {
-                        index = Integer.valueOf(args[3]);
-                        sb.append(args[3]).append("§8]");
-
-                        if (index == 1) {
-                            index = 0;
-                        } else {
-                            index = (index-1)*20;
-                        }
-                    } else {
-                        sb.append("1§8]");
-                    }
-
-                    while (index < 20 && index < permissions.size()) {
-                        sb.append("\n§f§o").append(permissions.get(index));
-                        index++;
-                    }
-
-                    Messager.send(sender, sb.toString());
-                    return;
-                }*/ else if (args.length == 4 && args[2].equalsIgnoreCase("check")) {
+                } else if (args.length == 4 && args[2].equalsIgnoreCase("check")) {
                     final String permission = args[3];
 
                     CoreSystem.mysql1.select("SELECT `value`, `server` FROM `bungeesystem_permissions` WHERE `name`='" + g.getName() + "' AND `key`='permission' AND `value`='" + permission + "'", rs -> {
@@ -283,7 +272,7 @@ public class PermsCMD extends Command implements TabExecutor {
 
         Messager.send(sender,
                 "§4Bitte benutze: " +
-                "\n§c/perms user <user> <group set | addperm | removeperm | check> [<group | permission>] §4oder" +
+                        "\n§c/perms user <user> <group [set, add, remove] | addperm | removeperm | check> [<group | permission>] §4oder" +
                 "\n§c/perms group <group> <addperm | removeperm | check> [<permission>]"
         );
     }
@@ -306,7 +295,7 @@ public class PermsCMD extends Command implements TabExecutor {
             result.addAll(Arrays.asList("addperm", "removeperm", "check", "list"));
         } else if (args.length == 4) {
             if (args[2].equalsIgnoreCase("group")) {
-                result.add("set");
+                result.addAll(Arrays.asList("set", "add", "remove"));
             }
         } else if (args.length == 5) {
             if (args[3].equalsIgnoreCase("set")) {

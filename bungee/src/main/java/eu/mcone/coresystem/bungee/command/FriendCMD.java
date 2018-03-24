@@ -10,6 +10,7 @@ import eu.mcone.coresystem.bungee.CoreSystem;
 import eu.mcone.coresystem.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.player.OfflinePlayer;
 import eu.mcone.coresystem.bungee.utils.Messager;
+import eu.mcone.coresystem.lib.exception.CoreException;
 import eu.mcone.coresystem.lib.util.UUIDFetcher;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -114,9 +115,9 @@ public class FriendCMD extends Command implements TabExecutor {
                     return;
                 } else if (!p.getName().equalsIgnoreCase(args[1])) {
                     String target = args[1];
-                    OfflinePlayer t = CoreSystem.getOfflinePlayer(target).loadFriendData().loadPermissions();
+                    try {
+                        OfflinePlayer t = new OfflinePlayer(target).loadFriendData().loadPermissions();
 
-                    if (t != null) {
                         switch (args[0]) {
                             case "add": {
                                 if (!cp.getFriends().containsKey(t.getUuid())) {
@@ -262,8 +263,8 @@ public class FriendCMD extends Command implements TabExecutor {
                                 return;
                             }
                         }
-                    } else {
-                        Messager.sendFriend(p, "§4Dieser Spieler war noch nie auf MC ONE!");
+                    } catch (CoreException e) {
+                        Messager.send(sender, "§4Der Spieler " + target + " war noch nie auf MC ONE!");
                         return;
                     }
                 } else {

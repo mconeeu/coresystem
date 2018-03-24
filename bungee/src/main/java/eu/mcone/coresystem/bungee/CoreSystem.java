@@ -6,27 +6,28 @@
 
 package eu.mcone.coresystem.bungee;
 
-import eu.mcone.coresystem.bungee.command.BanCMD;
+import eu.mcone.coresystem.bungee.command.*;
 import eu.mcone.coresystem.bungee.friend.FriendSystem;
+import eu.mcone.coresystem.bungee.listener.*;
 import eu.mcone.coresystem.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.player.NickManager;
-import eu.mcone.coresystem.bungee.player.OfflinePlayer;
-import eu.mcone.coresystem.lib.player.PermissionManager;
 import eu.mcone.coresystem.bungee.runnable.Broadcast;
 import eu.mcone.coresystem.bungee.runnable.OnlineTime;
 import eu.mcone.coresystem.bungee.runnable.PremiumCheck;
 import eu.mcone.coresystem.bungee.utils.CooldownSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
-import eu.mcone.coresystem.bungee.command.*;
-import eu.mcone.coresystem.bungee.listener.*;
 import eu.mcone.coresystem.lib.mysql.MySQL;
 import eu.mcone.coresystem.lib.mysql.MySQL_Config;
+import eu.mcone.coresystem.lib.player.PermissionManager;
 import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class CoreSystem extends Plugin{
@@ -41,8 +42,6 @@ public class CoreSystem extends Plugin{
 
 	@Getter
 	private static Map<UUID, CorePlayer> corePlayers;
-	@Getter
-	private static Map<String, OfflinePlayer> offlinePlayers;
 
 	@Getter
 	private PermissionManager permissionManager;
@@ -57,7 +56,6 @@ public class CoreSystem extends Plugin{
         instance = this;
         cooldownSystem = new CooldownSystem();
         corePlayers = new HashMap<>();
-        offlinePlayers = new HashMap<>();
 
         Messager.console("\n"+
 				"      __  _____________  _   ________                                                          \n" +
@@ -120,7 +118,7 @@ public class CoreSystem extends Plugin{
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new TeamChatCMD());
 		ProxyServer.getInstance().getPluginManager().registerCommand(this, new PermsCMD());
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new BanCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new WhereisCMD());
+        ProxyServer.getInstance().getPluginManager().registerCommand(this, new WhoisCMD());
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new RestartCMD());
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new WartungCMD());
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new CoinsCMD());
@@ -482,11 +480,6 @@ public class CoreSystem extends Plugin{
 
 	public static Collection<CorePlayer> getOnlineCorePlayers() {
 		return corePlayers.values();
-	}
-
-	public static OfflinePlayer getOfflinePlayer(String name) {
-		OfflinePlayer o = offlinePlayers.getOrDefault(name, new OfflinePlayer(name));
-		return o.getUuid() != null ? o : null;
 	}
 
 }

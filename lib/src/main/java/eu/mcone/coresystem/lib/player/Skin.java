@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.lib.player;
 
+import eu.mcone.coresystem.lib.exception.CoreException;
 import eu.mcone.coresystem.lib.mysql.MySQL;
 import lombok.Getter;
 
@@ -28,7 +29,7 @@ public class Skin {
         this.name = name;
     }
 
-    public Skin downloadSkinData() {
+    public Skin downloadSkinData() throws CoreException {
         mySQL.select("SELECT * FROM bukkitsystem_textures WHERE name='"+name+"'", rs -> {
             try {
                 if (rs.next()) {
@@ -39,6 +40,7 @@ public class Skin {
                 e.printStackTrace();
             }
         });
+        if (value == null || signature == null) throw new CoreException("Skin "+name+" does not exist in the database!");
 
         return this;
     }

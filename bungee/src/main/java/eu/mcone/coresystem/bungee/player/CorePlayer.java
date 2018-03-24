@@ -63,7 +63,7 @@ public class CorePlayer {
             try {
                 if (rs.next()) {
                     this.isMuted = true;
-                    this.mutetime = rs.getInt("end");
+                    this.mutetime = rs.getLong("end");
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -73,7 +73,7 @@ public class CorePlayer {
         this.name = name;
         this.status = "online";
 
-        register();
+        CoreSystem.getCorePlayers().put(uuid, this);
         reloadPermissions();
 
         Object[] friendData = CoreSystem.getInstance().getFriendSystem().getData(uuid);
@@ -129,11 +129,6 @@ public class CorePlayer {
         }
 
         return isMuted;
-    }
-
-    private void register() {
-        CoreSystem.getCorePlayers().put(uuid, this);
-        if (CoreSystem.getOfflinePlayers().get(name) != null) CoreSystem.getOfflinePlayers().remove(name);
     }
 
     public void unregister() {

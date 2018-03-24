@@ -9,6 +9,7 @@ package eu.mcone.coresystem.bukkit.player;
 import eu.mcone.coresystem.bukkit.CoreSystem;
 import eu.mcone.coresystem.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.bukkit.util.AFKCheck;
+import eu.mcone.coresystem.lib.exception.CoreException;
 import eu.mcone.coresystem.lib.player.Group;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +40,7 @@ public class CorePlayer {
     @Getter @Setter
     private boolean nicked;
 
-    public CorePlayer(UUID uuid, String name) {
+    public CorePlayer(UUID uuid, String name) throws CoreException {
         this.uuid = uuid;
         this.name = name;
         this.status = "online";
@@ -52,13 +53,13 @@ public class CorePlayer {
                     this.onlinetime = rs.getLong("onlinetime");
                     this.joined = System.currentTimeMillis() / 1000;
                     this.groups = Group.getGroups(rs.getString("groups"));
-                } else {
-                    bukkit().kickPlayer("Du bist nicht im System registriert!");
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         });
+
+        if (this.groups == null) throw new CoreException("Database does not contain player "+name+"!");
 
         reloadPermissions();
         System.out.println("Loaded Player "+name+"!");

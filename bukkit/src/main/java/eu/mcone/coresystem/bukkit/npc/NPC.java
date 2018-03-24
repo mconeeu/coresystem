@@ -9,6 +9,7 @@ package eu.mcone.coresystem.bukkit.npc;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import eu.mcone.coresystem.bukkit.CoreSystem;
+import eu.mcone.coresystem.lib.exception.CoreException;
 import eu.mcone.coresystem.lib.player.Skin;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.*;
@@ -41,24 +42,28 @@ public class NPC {
     private String name, displayname;
 
     public NPC(String name, Location location, String skinName, String displayname){
-        this.name = name;
-        this.displayname = displayname;
-        this.uuid = UUID.randomUUID();
-        this.location = location;
-        this.loadedPlayers = new ArrayList<>();
-        this.skin = new Skin(CoreSystem.mysql1, skinName).downloadSkinData();
+        try {
+            this.name = name;
+            this.displayname = displayname;
+            this.uuid = UUID.randomUUID();
+            this.location = location;
+            this.loadedPlayers = new ArrayList<>();
+            this.skin = new Skin(CoreSystem.mysql1, skinName).downloadSkinData();
 
-        MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
-        WorldServer world = ((CraftWorld) Bukkit.getWorlds().get(0)).getHandle();
+            MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
+            WorldServer world = ((CraftWorld) Bukkit.getWorlds().get(0)).getHandle();
 
-        GameProfile gameprofile = new GameProfile(uuid, ChatColor.translateAlternateColorCodes('&', displayname));
-        gameprofile.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
+            GameProfile gameprofile = new GameProfile(uuid, ChatColor.translateAlternateColorCodes('&', displayname));
+            gameprofile.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
 
-        npc = new EntityPlayer(server, world, gameprofile, new PlayerInteractManager(world));
+            npc = new EntityPlayer(server, world, gameprofile, new PlayerInteractManager(world));
 
-        npc.playerConnection = new PlayerConnection(MinecraftServer.getServer(), new NPCNetworkManager(), npc);
-        npc.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
-        ((CraftWorld) location.getWorld()).getHandle().addEntity(npc);
+            npc.playerConnection = new PlayerConnection(MinecraftServer.getServer(), new NPCNetworkManager(), npc);
+            npc.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+            ((CraftWorld) location.getWorld()).getHandle().addEntity(npc);
+        } catch (CoreException e) {
+            e.printStackTrace();
+        }
     }
 
     public void set(Player p) {

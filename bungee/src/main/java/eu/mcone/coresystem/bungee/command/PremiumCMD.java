@@ -9,6 +9,7 @@ package eu.mcone.coresystem.bungee.command;
 import eu.mcone.coresystem.bungee.CoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
 import eu.mcone.coresystem.bungee.player.OfflinePlayer;
+import eu.mcone.coresystem.lib.exception.CoreException;
 import eu.mcone.coresystem.lib.player.Group;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.CommandSender;
@@ -53,116 +54,128 @@ public class PremiumCMD extends Command implements TabExecutor {
             if (p.hasPermission("system.bungee.premium")) {
                 if (args.length == 2) {
                     String target = args[1];
-                    OfflinePlayer t = CoreSystem.getOfflinePlayer(target).loadPermissions();
+                    try {
+                        OfflinePlayer t = new OfflinePlayer(target).loadPermissions();
 
-                    if (t != null) {
-                        if (args[0].equalsIgnoreCase("check")) {
-                            CoreSystem.mysql1.select("SELECT * FROM `bungeesystem_premium` WHERE `uuid` = '" + t.getUuid().toString() + "'", rs -> {
-                                try {
-                                    if (rs.next()) {
-                                        String rang = rs.getString("group");
-                                        long timestamp = Long.parseLong(rs.getString("timestamp"));
-
-                                        Messager.sendSimple(p, "");
-                                        Messager.send(p, "§7Der Spieler §f" + target);
-                                        Messager.send(p, "§7hat den Rang §6" + rang);
-                                        Messager.send(p, "§7noch " + BanManager.getEndeString(timestamp));
-                                    } else {
-                                        Messager.send(p, "§7Der Spieler §f" + target + " §7hat keinen auslaufenden Rang.");
-                                    }
-                                } catch (SQLException e1) {
-                                    e1.printStackTrace();
-                                }
-                            });
-                        } else if (args[0].equalsIgnoreCase("remove")) {
-                            if (t.hasPermission("mcone.premium")) {
-                                CoreSystem.mysql1.select("SELECT * FROM bungeesystem_premium WHERE uuid='" + target + "'", rs -> {
+                        if (t != null) {
+                            if (args[0].equalsIgnoreCase("check")) {
+                                CoreSystem.mysql1.select("SELECT * FROM `bungeesystem_premium` WHERE `uuid` = '" + t.getUuid().toString() + "'", rs -> {
                                     try {
                                         if (rs.next()) {
-                                            String uuid = rs.getString("uuid");
-                                            String group = rs.getString("group");
-                                            String old_group = rs.getString("old_group");
+                                            String rang = rs.getString("group");
+                                            long timestamp = Long.parseLong(rs.getString("timestamp"));
 
-                                            CoreSystem.mysql1.update("UPDATE userinfo SET gruppe='" + old_group + "' WHERE uuid='" + uuid + "'");
-
-                                            CoreSystem.mysql1.select("SELECT gruppe FROM `userinfo` WHERE uuid='" + uuid + "'", rs_info -> {
-                                                try {
-                                                    if (rs_info.next()) {
-                                                        String value = rs_info.getString("gruppe");
-
-                                                        if (value.equalsIgnoreCase("Spieler")) {
-                                                            CoreSystem.mysql1.update("DELETE FROM bungeesystem_premium WHERE uuid = '" + uuid + "';");
-                                                            Messager.send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group + "§2 erfolgreich entzogen!");
-                                                        } else {
-                                                            Messager.send(sender, "§7[§cMySQL ERROR§7] §4DER SPIELER KONNTE NICHT GELÖSCHT WERDEN OBWOHL SEIN PREMIUM RANG ABGLAUFEN IST!");
-                                                        }
-                                                    }
-                                                } catch (SQLException e) {
-                                                    e.printStackTrace();
-                                                }
-                                            });
+                                            Messager.sendSimple(p, "");
+                                            Messager.send(p, "§7Der Spieler §f" + target);
+                                            Messager.send(p, "§7hat den Rang §6" + rang);
+                                            Messager.send(p, "§7noch " + BanManager.getEndeString(timestamp));
                                         } else {
-                                            Messager.send(sender, "§4Dieser Spieler hat keinen auslaufenden Rang!");
+                                            Messager.send(p, "§7Der Spieler §f" + target + " §7hat keinen auslaufenden Rang.");
                                         }
-                                    } catch (SQLException e) {
-                                        e.printStackTrace();
+                                    } catch (SQLException e1) {
+                                        e1.printStackTrace();
                                     }
                                 });
-                            } else {
-                                Messager.send(sender, "§4Dieser Spieler hat keinen Premium Rang!");
-                            }
-                        }
-                    } else {
-                        Messager.send(sender, "§c" + target + "§4 war noch nie auf MC ONE!");
-                    }
-                    return;
-                } else if (args.length == 3) {
-                    String target = args[1];
-                    Group group = Group.getGroupbyName(args[2]);
-                    OfflinePlayer t = CoreSystem.getOfflinePlayer(target).loadPermissions();
+                            } else if (args[0].equalsIgnoreCase("remove")) {
+                                if (t.hasPermission("mcone.premium")) {
+                                    CoreSystem.mysql1.select("SELECT * FROM bungeesystem_premium WHERE uuid='" + target + "'", rs -> {
+                                        try {
+                                            if (rs.next()) {
+                                                String uuid = rs.getString("uuid");
+                                                String group = rs.getString("group");
+                                                String old_group = rs.getString("old_group");
 
-                    if (group != null) {
-                        if (t != null) {
-                            if (args[0].equalsIgnoreCase("add")) {
-                                if (!t.hasPermission("mcone.premium")) {
-                                    CoreSystem.mysql1.update("INSERT INTO `bungeesystem_premium` (`uuid`, `group`, `old_group`, `kosten`, `gekauft`, `timestamp`) VALUES ('" + t.getUuid().toString() + "', '" + group.getName() + "', '" + Group.getJson(t.getGroups()) + "', 'free', '" + unixtime + "', " + ((60 * 60 * 24 * 30) + unixtime) + ")");
-                                    CoreSystem.mysql1.update("UPDAtE userinfo SET gruppe='" + group.getName() + "' WHERE uuid='" + target + "'");
-                                    Messager.send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für 1 Monat zugeschrieben!");
+                                                CoreSystem.mysql1.update("UPDATE userinfo SET gruppe='" + old_group + "' WHERE uuid='" + uuid + "'");
+
+                                                CoreSystem.mysql1.select("SELECT gruppe FROM `userinfo` WHERE uuid='" + uuid + "'", rs_info -> {
+                                                    try {
+                                                        if (rs_info.next()) {
+                                                            String value = rs_info.getString("gruppe");
+
+                                                            if (value.equalsIgnoreCase("Spieler")) {
+                                                                CoreSystem.mysql1.update("DELETE FROM bungeesystem_premium WHERE uuid = '" + uuid + "';");
+                                                                Messager.send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group + "§2 erfolgreich entzogen!");
+                                                            } else {
+                                                                Messager.send(sender, "§7[§cMySQL ERROR§7] §4DER SPIELER KONNTE NICHT GELÖSCHT WERDEN OBWOHL SEIN PREMIUM RANG ABGLAUFEN IST!");
+                                                            }
+                                                        }
+                                                    } catch (SQLException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                });
+                                            } else {
+                                                Messager.send(sender, "§4Dieser Spieler hat keinen auslaufenden Rang!");
+                                            }
+                                        } catch (SQLException e) {
+                                            e.printStackTrace();
+                                        }
+                                    });
                                 } else {
-                                    Messager.send(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
+                                    Messager.send(sender, "§4Dieser Spieler hat keinen Premium Rang!");
                                 }
                             }
                         } else {
                             Messager.send(sender, "§c" + target + "§4 war noch nie auf MC ONE!");
                         }
-                    } else {
-                        Messager.send(sender, "§4Dieser Rang existiert nicht!");
+                        return;
+                    } catch (CoreException e) {
+                        Messager.send(p, "§4Der Spieler "+target+" war noch nie auf MC ONE!");
                     }
-                    return;
+                } else if (args.length == 3) {
+                    String target = args[1];
+                    Group group = Group.getGroupbyName(args[2]);
+                    try {
+                        OfflinePlayer t = new OfflinePlayer(target).loadPermissions();
+
+                        if (group != null) {
+                            if (t != null) {
+                                if (args[0].equalsIgnoreCase("add")) {
+                                    if (!t.hasPermission("mcone.premium")) {
+                                        CoreSystem.mysql1.update("INSERT INTO `bungeesystem_premium` (`uuid`, `group`, `old_group`, `kosten`, `gekauft`, `timestamp`) VALUES ('" + t.getUuid().toString() + "', '" + group.getName() + "', '" + Group.getJson(t.getGroups()) + "', 'free', '" + unixtime + "', " + ((60 * 60 * 24 * 30) + unixtime) + ")");
+                                        CoreSystem.mysql1.update("UPDAtE userinfo SET gruppe='" + group.getName() + "' WHERE uuid='" + target + "'");
+                                        Messager.send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für 1 Monat zugeschrieben!");
+                                    } else {
+                                        Messager.send(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
+                                    }
+                                }
+                            } else {
+                                Messager.send(sender, "§c" + target + "§4 war noch nie auf MC ONE!");
+                            }
+                        } else {
+                            Messager.send(sender, "§4Dieser Rang existiert nicht!");
+                        }
+                        return;
+                    } catch (CoreException e) {
+                        Messager.send(p, "§4Der Spieler "+target+" war noch nie auf MC ONE!");
+                    }
                 } else if (args.length == 4) {
                     String target = args[1];
                     Group group = Group.getGroupbyName(args[2]);
                     int months = Integer.valueOf(args[3]);
-                    OfflinePlayer t = CoreSystem.getOfflinePlayer(target).loadPermissions();
+                    try {
+                        OfflinePlayer t = new OfflinePlayer(target).loadPermissions();
 
-                    if (group != null) {
-                        if (t != null) {
-                            if (args[0].equalsIgnoreCase("add")) {
-                                if (!t.hasPermission("mcone.premium")) {
-                                    CoreSystem.mysql1.update("INSERT INTO `bungeesystem_premium` (`uuid`, `group`, `old_group`, `kosten`, `gekauft`, `timestamp`) VALUES ('" + t.getUuid().toString() + "', '" + group.getName() + "', '" + Group.getJson(t.getGroups()) + "', 'free', '" + unixtime + "', " + ((60 * 60 * 24 * 30 * months) + unixtime) + ")");
-                                    CoreSystem.mysql1.update("UPDAtE userinfo SET gruppe='" + group.getName() + "' WHERE uuid='" + target + "'");
-                                    Messager.send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für " + months + " Monat(e) zugeschrieben!");
-                                } else {
-                                    Messager.send(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
+                        if (group != null) {
+                            if (t != null) {
+                                if (args[0].equalsIgnoreCase("add")) {
+                                    if (!t.hasPermission("mcone.premium")) {
+                                        CoreSystem.mysql1.update("INSERT INTO `bungeesystem_premium` (`uuid`, `group`, `old_group`, `kosten`, `gekauft`, `timestamp`) VALUES ('" + t.getUuid().toString() + "', '" + group.getName() + "', '" + Group.getJson(t.getGroups()) + "', 'free', '" + unixtime + "', " + ((60 * 60 * 24 * 30 * months) + unixtime) + ")");
+                                        CoreSystem.mysql1.update("UPDAtE userinfo SET gruppe='" + group.getName() + "' WHERE uuid='" + target + "'");
+                                        Messager.send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für " + months + " Monat(e) zugeschrieben!");
+                                    } else {
+                                        Messager.send(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
+                                    }
                                 }
+                            } else {
+                                Messager.send(sender, "§c" + target + "§4 war noch nie auf MC ONE!");
                             }
                         } else {
-                            Messager.send(sender, "§c" + target + "§4 war noch nie auf MC ONE!");
+                            Messager.send(sender, "§4Dieser Rang existiert nicht!");
                         }
-                    } else {
-                        Messager.send(sender, "§4Dieser Rang existiert nicht!");
+                        return;
+                    } catch (CoreException e) {
+                        Messager.send(p, "§4Der Spieler "+target+" war noch nie auf MC ONE!");
                     }
-                    return;
                 }
 
                 Messager.send(p, "§4Bitte benutze: §c/premium add <player> <group> [<Anzahl der Monate>] §4oder §c/premium <check | remove> <player>");
