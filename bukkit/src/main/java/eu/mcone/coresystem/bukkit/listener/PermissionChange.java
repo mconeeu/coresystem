@@ -47,7 +47,11 @@ public class PermissionChange implements Listener {
             if (p != null) {
                 p.setGroups(e.getGroups());
                 p.reloadPermissions();
-                p.bukkit().sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§7Deine Permission-Gruppe wurde zu §f"+e.getGroups()+" §7geändert!");
+
+                StringBuilder sb = new StringBuilder();
+                e.getGroups().forEach(g -> sb.append(g.getLabel()).append(" "));
+
+                p.bukkit().sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§7Deine Permissions wurden geändert! Du besitzt nun folgende Permissions-Gruppen: "+sb.toString());
                 for (CorePlayer player : CoreSystem.getOnlineCorePlayers()) {
                     player.getScoreboard().reload();
                 }

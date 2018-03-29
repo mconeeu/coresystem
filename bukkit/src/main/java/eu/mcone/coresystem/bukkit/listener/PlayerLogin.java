@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
-import eu.mcone.coresystem.bukkit.permissions.PermissibleBase;
+import eu.mcone.coresystem.bukkit.player.PermissibleBase;
 import eu.mcone.coresystem.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.lib.exception.CoreException;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftHumanEntity;

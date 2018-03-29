@@ -59,6 +59,8 @@ public class CoreSystem extends JavaPlugin {
     private static Map<UUID, CorePlayer> corePlayers;
     @Getter
     private HashSet<CoreCommand> commands;
+    @Getter
+    private boolean cloudsystem;
 
     private Map<UUID, CoreInventory> inventories;
     private Map<Gamemode, StatsAPI> stats;
@@ -93,6 +95,14 @@ public class CoreSystem extends JavaPlugin {
         stats = new HashMap<>();
         for (Gamemode gamemode : Gamemode.values()) {
             stats.put(gamemode, new StatsAPI(gamemode, mysql2));
+        }
+
+        try {
+            Class.forName("eu.mcone.cloud.plugin.CloudPlugin");
+            cloudsystem = true;
+        } catch (ClassNotFoundException e) {
+            cloudsystem = false;
+            getServer().getConsoleSender().sendMessage(MainPrefix + "§cCloudSystem nicht verfügbar!");
         }
 
         getServer().getConsoleSender().sendMessage(MainPrefix + "§aMySQL Config wird initiiert...");
@@ -207,6 +217,7 @@ public class CoreSystem extends JavaPlugin {
         getCommand("speed").setExecutor(new SpeedCMD());
 		getCommand("vanish").setExecutor(new VanishCMD());
         getCommand("profil").setExecutor(new ProfileCMD());
+        getCommand("world").setExecutor(new WorldCMD());
 	}
 
 	private void registerListener() {
@@ -266,25 +277,14 @@ public class CoreSystem extends JavaPlugin {
         );
 
         mysql.update(
-                "CREATE TABLE IF NOT EXISTS `bukkitsystem_worlds`" +
+                "CREATE TABLE IF NOT EXISTS `bukkitsystem_locations`" +
                 "(" +
                     "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY," +
-                    "`name` VARCHAR(100) NOT NULL UNIQUE KEY," +
-                    "`bytes` int NOT NULL," +
+                    "`name` VARCHAR(100) NOT NULL," +
+                    "`location` VARCHAR(100) NOT NULL," +
                     "`server` VARCHAR(100) NOT NULL" +
                 ")" +
                 "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
-        );
-
-        mysql.update(
-                "CREATE TABLE IF NOT EXISTS `bukkitsystem_locations`" +
-                        "(" +
-                        "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY," +
-                        "`name` VARCHAR(100) NOT NULL," +
-                        "`location` VARCHAR(100) NOT NULL," +
-                        "`server` VARCHAR(100) NOT NULL" +
-                        ")" +
-                        "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
         );
     }
 

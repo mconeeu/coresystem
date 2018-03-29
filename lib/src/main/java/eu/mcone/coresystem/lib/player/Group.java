@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.lib.player;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -76,7 +77,7 @@ public enum Group {
         JsonArray array = new JsonArray();
         for (Group group : groups) array.add(group.getId());
 
-        return array.getAsString();
+        return new Gson().toJson(array);
     }
 
 }

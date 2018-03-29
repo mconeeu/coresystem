@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bukkit.npc;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import com.mojang.authlib.properties.PropertyMap;
 import eu.mcone.coresystem.bukkit.CoreSystem;
 import eu.mcone.coresystem.lib.exception.CoreException;
 import eu.mcone.coresystem.lib.player.Skin;
@@ -88,20 +89,27 @@ public class NPC {
     }
 
     public void setSkin(Skin skin, Player p) {
-        GameProfile gp = ((CraftPlayer) p).getProfile();
+        GameProfile gp = npc.getProfile();
 
         gp.getProperties().removeAll("textures");
         gp.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
 
         PlayerConnection connection = ((CraftPlayer) p).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, npc));
-
         connection.sendPacket(new PacketPlayOutEntityDestroy(npc.getId()));
-        connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, npc));
-        connection.sendPacket(new PacketPlayOutNamedEntitySpawn(npc));
+
+        set(p);
+
+        gp.getProperties().removeAll("textures");
+        gp.getProperties().put("textures", new Property("textures", this.skin.getValue(), this.skin.getSignature()));
     }
 
+    public void setName(String displayname, Player p) {
+        PropertyMap oldProperties = npc.getProfile().getProperties();
 
+        GameProfile gp = new GameProfile(uuid, displayname);
+        gp.getProperties().put("textures", new Property("textures", this.skin.getValue(), this.skin.getSignature()));
+    }
 
     public void unset(Player p) {
         PlayerConnection connection = ((CraftPlayer)p).getHandle().playerConnection;

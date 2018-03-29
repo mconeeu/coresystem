@@ -28,7 +28,6 @@ public class LocationManager {
         this.server = server;
 
         locations.put("spawn", null);
-
         CoreSystem.getInstance().getCommand("spawn").setExecutor(new SpawnCMD(this));
     }
 
@@ -46,7 +45,7 @@ public class LocationManager {
                     if (locations.containsKey(name)) {
                         locations.put(name, fromJson(rs.getString("location")));
                     } else {
-                        CoreSystem.mysql1.update("DELETE FROM `bukkitsystem_spawns` WHERE `id`='"+rs.getInt("id")+"'");
+                        CoreSystem.mysql1.update("DELETE FROM `bukkitsystem_locations` WHERE `id`='"+rs.getInt("id")+"'");
                     }
                 }
             } catch (SQLException e) {
@@ -58,7 +57,16 @@ public class LocationManager {
 
     public boolean putLocation(String name, Location location) {
         if (locations.containsKey(name)) {
-            if (locations.get(name) != null) {
+            if ((boolean) CoreSystem.mysql1.select("SELECT `id` FROM `bukkitsystem_locations` WHERE `name`='' AND `server`=''", rs -> {
+                try {
+                    if (rs.next()) {
+                        return true;
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                return false;
+            })) {
                 CoreSystem.mysql1.update("UPDATE `bukkitsystem_locations` SET `location`='" + toJson(location) + "' WHERE `name`='" + name + "' AND `server`='" + server + "'");
             } else {
                 CoreSystem.mysql1.update("INSERT INTO `bukkitsystem_locations` (`name`, `location`, `server`) VALUES ('"+name+"', '"+ toJson(location)+"', '"+server+"')");

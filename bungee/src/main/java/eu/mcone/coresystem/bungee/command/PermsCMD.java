@@ -57,7 +57,7 @@ public class PermsCMD extends Command implements TabExecutor {
                                 groups.forEach(group -> sb.append(group.getLabel()).append(" "));
 
                                 CoreSystem.mysql1.update("UPDATE userinfo SET groups='" + Group.getJson(groups) + "' WHERE uuid='" + p.getUuid() + "'");
-                                Messager.send(sender, "§2Der User " + args[1] + " besitzt nun die Gruppen: " + sb.toString() + "§7(Gruppe " + g.getName() + " gelöscht)");
+                                Messager.send(sender, "§2Der User " + args[1] + " besitzt nun die Gruppen: " + sb.toString() + "§7(Gruppe " + g.getName() + " hinzugefügt)");
 
                                 CorePlayer cp = CoreSystem.getCorePlayer(p.getUuid());
                                 if (cp != null)
@@ -82,7 +82,7 @@ public class PermsCMD extends Command implements TabExecutor {
                                 CorePlayer cp = CoreSystem.getCorePlayer(p.getUuid());
                                 if (cp != null)
                                     ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.GROUP_CHANGE, cp, groups));
-                                Messager.console(CoreSystem.MainPrefix + "§f" + sender.getName() + "§7 hat die Gruppen von §2" + args[1] + "§7 geändert: " + sb.toString() + "§7(Gruppe " + g.getName() + " hinzugefügt)");
+                                Messager.console(CoreSystem.MainPrefix + "§f" + sender.getName() + "§7 hat die Gruppen von §2" + args[1] + "§7 geändert: " + sb.toString() + "§7(Gruppe " + g.getName() + " gelöscht)");
                             } else {
                                 Messager.send(sender, "§4Der Spieler " + p.getName() + " hat die Gruppe " + g.getLabel() + "§4 nicht!");
                             }
