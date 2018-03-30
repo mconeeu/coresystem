@@ -53,6 +53,7 @@ public class WorldUploader {
         }
 
         String generator = world.getGenerator() != null ? world.getGenerator().toString() : null;
+        FileInputStream fis = new FileInputStream(zipFile);
 
         send.setInt(1, ++build);
         send.setString(2, world.getName());
@@ -62,9 +63,10 @@ public class WorldUploader {
         send.setString(6, "[" + (int) world.getSpawnLocation().getX() + "," + (int) world.getSpawnLocation().getY() + "," + (int) world.getSpawnLocation().getZ() + "]");
         send.setString(7, generator);
         send.setString(8, new Gson().toJson(new WorldProperties(world.getPVP(), world.canGenerateStructures(), world.getAllowAnimals(), world.getAllowMonsters(), world.getKeepSpawnInMemory()), WorldProperties.class));
-        send.setBytes(9, IOUtils.toByteArray(new FileInputStream(zipFile)));
+        send.setBytes(9, IOUtils.toByteArray(fis));
         send.executeUpdate();
 
+        fis.close();
         send.close();
         ps.close();
         con.close();
