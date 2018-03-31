@@ -43,6 +43,9 @@ public class SpawnCMD implements CommandExecutor {
                     p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Berechtigung für diesen Befehl!");
                 }
                 return true;
+            } else if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
+                locationManager.downloadLocations();
+                p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§2Der LocationManager wurde erfolgreich neu geladen!");
             }
 
             p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Benutze §c/spawn §4um dich zum Spawn zu teleportieren");

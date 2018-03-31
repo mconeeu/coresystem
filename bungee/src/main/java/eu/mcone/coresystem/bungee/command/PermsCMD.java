@@ -188,7 +188,7 @@ public class PermsCMD extends Command implements TabExecutor {
                     String permission = args[3];
 
                     if (args.length == 4) {
-                        CoreSystem.mysql1.update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`) VALUES ('" + g.getName() + "', 'permission', '" + permission + "')");
+                        CoreSystem.mysql1.update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`) VALUES ('" + g.getId() + "', 'permission', '" + permission + "')");
                         Messager.send(sender, "§2Der Gruppe " + g.getLabel() + "§2 wurde die Permission §f" + permission + "§2 hinzugefügt!");
                         Messager.send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
 
@@ -198,7 +198,7 @@ public class PermsCMD extends Command implements TabExecutor {
                     } else if (args.length == 5) {
                         String server = args[4];
 
-                        CoreSystem.mysql1.update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`, `server`) VALUES ('" + g.getName() + "', 'permission', '" + permission + "', '" + server + "')");
+                        CoreSystem.mysql1.update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`, `server`) VALUES ('" + g.getId() + "', 'permission', '" + permission + "', '" + server + "')");
                         Messager.send(sender, "§2Der Gruppe " + g.getLabel() + "§2 wurde die Permission §f" + permission + "§2 auf dem Server §f" + server + "§2 hinzugefügt!");
                         Messager.send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
 
@@ -210,12 +210,12 @@ public class PermsCMD extends Command implements TabExecutor {
                     String permission = args[3];
 
                     if (args.length == 4) {
-                        CoreSystem.mysql1.select("SELECT `id` FROM `bungeesystem_permissions` WHERE `name`='" + g.getName() + "' AND `key`='permission' AND `value`='" + permission + "'", rs -> {
+                        CoreSystem.mysql1.select("SELECT `id` FROM `bungeesystem_permissions` WHERE `name`='" + g.getId() + "' AND `key`='permission' AND `value`='" + permission + "'", rs -> {
                             try {
                                 if (rs.next()) {
-                                    CoreSystem.mysql1.update("DELETE FROM `bungeesystem_permissions` WHERE `name`='" + g.getName() + "' AND `key`='permission' AND `value`='" + permission + "'");
+                                    CoreSystem.mysql1.update("DELETE FROM `bungeesystem_permissions` WHERE `name`='" + g.getId() + "' AND `key`='permission' AND `value`='" + permission + "'");
                                 } else {
-                                    CoreSystem.mysql1.update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`) VALUES ('" + g.getName() + "', 'player-permission', '-" + permission + "')");
+                                    CoreSystem.mysql1.update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`) VALUES ('" + g.getId() + "', 'permission', '-" + permission + "')");
                                 }
                                 Messager.send(sender, "§2Der Gruppe " + g.getLabel() + "§2 wurde die Permission §f" + permission + "§2 entzogen!");
                                 Messager.send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
@@ -230,12 +230,12 @@ public class PermsCMD extends Command implements TabExecutor {
                     } else if (args.length == 5) {
                         String server = args[4];
 
-                        CoreSystem.mysql1.select("SELECT `id` FROM `bungeesystem_permissions` WHERE `name`='" + g.getName() + "' AND `key`='permission' AND `value`='" + permission + "' AND `server`='" + server + "'", rs -> {
+                        CoreSystem.mysql1.select("SELECT `id` FROM `bungeesystem_permissions` WHERE `name`='" + g.getId() + "' AND `key`='permission' AND `value`='" + permission + "' AND `server`='" + server + "'", rs -> {
                             try {
                                 if (rs.next()) {
-                                    CoreSystem.mysql1.update("DELETE FROM `bungeesystem_permissions` WHERE `name`='" + g.getName() + "' AND `key`='permission' AND `value`='" + permission + "' AND `server`='" + server + "'");
+                                    CoreSystem.mysql1.update("DELETE FROM `bungeesystem_permissions` WHERE `name`='" + g.getId() + "' AND `key`='permission' AND `value`='" + permission + "' AND `server`='" + server + "'");
                                 } else {
-                                    CoreSystem.mysql1.update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`, `server`) VALUES ('" + g.getName() + "', 'player-permission', '-" + permission + "', '" + server + "')");
+                                    CoreSystem.mysql1.update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`, `server`) VALUES ('" + g.getId() + "', 'permission', '-" + permission + "', '" + server + "')");
                                 }
                                 Messager.send(sender, "§2Der Gruppe " + g.getLabel() + "§2 wurde die Permission §f" + permission + " auf dem Server §f" + server + "§2 entzogen!");
                                 Messager.send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
@@ -251,7 +251,7 @@ public class PermsCMD extends Command implements TabExecutor {
                 } else if (args.length == 4 && args[2].equalsIgnoreCase("check")) {
                     final String permission = args[3];
 
-                    CoreSystem.mysql1.select("SELECT `value`, `server` FROM `bungeesystem_permissions` WHERE `name`='" + g.getName() + "' AND `key`='permission' AND `value`='" + permission + "'", rs -> {
+                    CoreSystem.mysql1.select("SELECT `value`, `server` FROM `bungeesystem_permissions` WHERE `name`='" + g.getId() + "' AND `key`='permission' AND `value`='" + permission + "'", rs -> {
                         try {
                             if (rs.next()) {
                                 Messager.send(sender, "§2Die Gruppe " + g.getLabel() + "§2 hat die Permission §f" + rs.getString("value") + "§2 auf dem Server §7" + rs.getString("server"));

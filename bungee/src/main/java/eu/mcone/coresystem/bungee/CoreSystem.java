@@ -341,14 +341,14 @@ public class CoreSystem extends Plugin{
 				"`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
 				"`uuid` varchar(100) NOT NULL UNIQUE KEY, " +
 				"`name` varchar(20) NOT NULL, " +
-				"`gruppe` varchar(20), " +
+				"`groups` varchar(20), " +
 				"`coins` int(100), " +
 				"`about` varchar(500), " +
 				"`status` varchar(200), " +
 				"`email` varchar(100), " +
 				"`ip` varchar(100), " +
 				"`timestamp` varchar(100), " +
-				"`passwort` varchar(100), " +
+				"`password` varchar(100), " +
 				"`onlinetime` int(10) NOT NULL, " +
 				"`msg_toggle` boolean" +
 				") ENGINE=InnoDB DEFAULT CHARSET=utf8;");

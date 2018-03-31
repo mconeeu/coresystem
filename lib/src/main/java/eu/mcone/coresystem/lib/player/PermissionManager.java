@@ -40,12 +40,12 @@ public class PermissionManager {
                 while (rs.next()) {
                     switch (rs.getString("key")) {
                         case "group":
-                            groups.put(Group.getGroupbyName(rs.getString("name")), groups.getOrDefault(Group.getGroupbyName(rs.getString("name")), new HashSet<>()));
+                            groups.put(Group.getGroupById(rs.getInt("name")), groups.getOrDefault(Group.getGroupById(rs.getInt("name")), new HashSet<>()));
                         case "permission":
-                            addPermission(Group.getGroupbyName(rs.getString("name")), rs.getString("value"));
+                            addPermission(Group.getGroupById(rs.getInt("name")), rs.getString("value"));
                             break;
                         case "parent":
-                            addParent(Group.getGroupbyName(rs.getString("name")), Group.getGroupbyName(rs.getString("value")));
+                            addParent(Group.getGroupById(rs.getInt("name")), Group.getGroupById(rs.getInt("value")));
                             break;
                         case "player-permission":
                             addPermissiontoPlayer(rs.getString("name"), rs.getString("value"));
@@ -79,12 +79,11 @@ public class PermissionManager {
 
     public Set<String> getPermissions(String uuid, Set<Group> groups) {
         if (groups.size() == 0) groups.add(Group.SPIELER);
-        Set<String> permissions = new HashSet<>();
+        Set<String> permissions = new HashSet<>(this.permissions.getOrDefault(uuid, new HashSet<>()));
 
         for (Group g : groups) {
             permissions.add("group." + g.getName());
             permissions.addAll(this.groups.getOrDefault(g, new HashSet<>()));
-            permissions.addAll(this.permissions.getOrDefault(uuid, new HashSet<>()));
             for (Group parent : getParents(g)) {
                 permissions.addAll(this.groups.get(parent));
             }
