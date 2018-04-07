@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2018 Dominik L., Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  *
  */
@@ -60,7 +60,7 @@ public class CoreSystem extends JavaPlugin {
     @Getter
     private HashSet<CoreCommand> commands;
     @Getter
-    private boolean cloudsystem;
+    private boolean cloudsystemAvailable;
 
     private Map<UUID, CoreInventory> inventories;
     private Map<Gamemode, StatsAPI> stats;
@@ -99,9 +99,9 @@ public class CoreSystem extends JavaPlugin {
 
         try {
             Class.forName("eu.mcone.cloud.plugin.CloudPlugin");
-            cloudsystem = true;
+            cloudsystemAvailable = true;
         } catch (ClassNotFoundException e) {
-            cloudsystem = false;
+            cloudsystemAvailable = false;
             getServer().getConsoleSender().sendMessage(MainPrefix + "§cCloudSystem nicht verfügbar!");
         }
 
@@ -232,11 +232,11 @@ public class CoreSystem extends JavaPlugin {
 	}
 
 	private void startScheduler() {
-        org.bukkit.Bukkit.getScheduler().runTaskTimer(this, () -> {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
             if (CoreSystem.cfg.getConfig().getBoolean("AFK-Manager")){
                 AFKCheck.check();
             }
-        }, 20L, 20L);
+        }, 25, 15);
     }
 
     private void createTables(MySQL mysql) {

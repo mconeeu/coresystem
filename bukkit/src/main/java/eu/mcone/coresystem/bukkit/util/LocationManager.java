@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2018 Dominik L., Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  *
  */
@@ -11,6 +11,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import eu.mcone.coresystem.bukkit.CoreSystem;
 import eu.mcone.coresystem.bukkit.command.SpawnCMD;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -22,10 +23,13 @@ public class LocationManager {
 
     private Map<String, Location> locations;
     private String server;
+    @Getter
+    private boolean allowSpawnCMD;
 
     public LocationManager(String server) {
         this.locations = new HashMap<>();
         this.server = server;
+        this.allowSpawnCMD = true;
 
         locations.put("spawn", null);
         CoreSystem.getInstance().getCommand("spawn").setExecutor(new SpawnCMD(this));
@@ -52,6 +56,11 @@ public class LocationManager {
                 e.printStackTrace();
             }
         });
+        return this;
+    }
+
+    public LocationManager preventSpawnCommand() {
+        allowSpawnCMD = false;
         return this;
     }
 

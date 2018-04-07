@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2018 Dominik L., Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  *
  */
@@ -9,15 +9,18 @@ package eu.mcone.coresystem.lib.util;
 import java.security.SecureRandom;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Random;
 
-public class RandomString {
+public class Random {
 
     //Generate a random string.
     public String nextString() {
         for (int idx = 0; idx < buf.length; ++idx)
             buf[idx] = symbols[random.nextInt(symbols.length)];
         return new String(buf);
+    }
+
+    public static int randomInt(int min, int max) {
+        return min + (int)(Math.random() * ((max - min) + 1));
     }
 
     private static final String upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -28,13 +31,13 @@ public class RandomString {
 
     private static final String alphanum = upper + lower + digits;
 
-    private final Random random;
+    private final java.util.Random random;
 
     private final char[] symbols;
 
     private final char[] buf;
 
-    public RandomString(int length, Random random, String symbols) {
+    public Random(int length, java.util.Random random, String symbols) {
         if (length < 1) throw new IllegalArgumentException();
         if (symbols.length() < 2) throw new IllegalArgumentException();
         this.random = Objects.requireNonNull(random);
@@ -42,16 +45,12 @@ public class RandomString {
         this.buf = new char[length];
     }
 
-    public RandomString(int length, Random random) {
+    public Random(int length, java.util.Random random) {
         this(length, random, alphanum);
     }
 
-    public RandomString(int length) {
+    public Random(int length) {
         this(length, new SecureRandom());
-    }
-
-    public RandomString() {
-        this(21);
     }
 
 }

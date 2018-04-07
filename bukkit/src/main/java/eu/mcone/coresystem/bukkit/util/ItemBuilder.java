@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2018 Dominik L., Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  *
  */
@@ -10,12 +10,14 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import eu.mcone.coresystem.lib.player.Skin;
 import org.apache.commons.codec.binary.Base64;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
@@ -78,6 +80,13 @@ public class ItemBuilder {
         } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e1) {
             e1.printStackTrace();
         }
+
+        return factory;
+    }
+
+    public static ItemBuilder createLeatherArmorItem(Material material, Color color) {
+        ItemBuilder factory = new ItemBuilder(material, 1, (short) 0);
+        ((LeatherArmorMeta) factory.itemMeta).setColor(color);
 
         return factory;
     }

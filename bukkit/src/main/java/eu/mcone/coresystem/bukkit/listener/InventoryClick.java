@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2018 Dominik L., Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  *
  */
@@ -7,11 +7,9 @@
 package eu.mcone.coresystem.bukkit.listener;
 
 import eu.mcone.coresystem.bukkit.CoreSystem;
-import eu.mcone.coresystem.bukkit.inventory.*;
+import eu.mcone.coresystem.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.bukkit.inventory.CoreItemEvent;
 import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.block.Skull;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -36,17 +34,17 @@ public class InventoryClick implements Listener{
                             ItemStack itemStack = entry.getKey();
                             CoreItemEvent event = entry.getValue();
 
-                            if (itemStack.equals(item)) {
-                                if (event != null) {
+                            if (event != null) {
+                                if (itemStack.equals(item)) {
                                     e.setCancelled(true);
                                     event.onClick();
-                                }
-                            } else if (itemStack.getType().equals(Material.SKULL_ITEM) && item.getType().equals(Material.SKULL_ITEM)) {
-                                SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
-                                SkullMeta clickedMeta = (SkullMeta) item.getItemMeta();
+                                } else if (itemStack.getType().equals(Material.SKULL_ITEM) && item.getType().equals(Material.SKULL_ITEM)) {
+                                    SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
+                                    SkullMeta clickedMeta = (SkullMeta) item.getItemMeta();
 
-                                if (meta.getOwner().equals(clickedMeta.getOwner())) {
-                                    event.onClick();
+                                    if (meta.equals(clickedMeta)) {
+                                        event.onClick();
+                                    }
                                 }
                             }
                         }

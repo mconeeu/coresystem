@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2018 Dominik L., Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  *
  */
@@ -29,7 +29,7 @@ public class SpawnCMD implements CommandExecutor {
             if (!CoreSystem.getInstance().getCooldownSystem().canExecute(this.getClass(), p)) return true;
             CoreSystem.getInstance().getCooldownSystem().addPlayer(p.getUniqueId(), this.getClass());
 
-            if (args.length == 0) {
+            if (args.length == 0 && locationManager.isAllowSpawnCMD()) {
                 locationManager.teleport(p, "spawn");
                 return true;
             } else if (args.length == 2 && args[0].equalsIgnoreCase("set")) {

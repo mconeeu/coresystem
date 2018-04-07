@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2018 Dominik L., Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  *
  */
@@ -20,7 +20,7 @@ import java.util.*;
 public class Chat implements Listener {
 
     final private static ArrayList<String> cmds = new ArrayList<>(Arrays.asList("/greload", "/glist", "/alertraw", "/end", "/alert", "/alertraw", "/me", "/send", "/plugins", "/pl", "/demote", "/promote", "/permissionsex:", "/pex", "/pl", "/?", "/bungee", "/me", "/bukkit:plugins", "/bukkit:pl", "/bukkit:?", "/bukkit:help", "/bukkit:me", "/bukkit:mE", "/", "/version", "/tell", "/me", "/minecraft:me"));
-    final private static ArrayList<String> forbiddenWords = new ArrayList<>(Arrays.asList("nazi", "Nazi", "Hitler", "HURENSOHN!", "pedo", "köter", "scheiss", "scheiß", "huan", "opfer", "opfa", "ez", "fotze", "l2p", "Anal", "Sex", "fick", "Fick", "Vagina", "Penis", "Arsch", "Kanacke", "ez", "eZ", "easy", "eazy", "noob", "nab", "nob", "n00b", "n0b", "bastard", "bastard", "Pimmel", "Misset", "Misstgeburt", "Missgeburt", "Popo", "Po", "Penetrant", "porno", "schlampen", "nutten", "transen", "blowjob", "sexy", "kotzen", "kaka", "orin", "scheiße", "kot", "kacken", "fettsack", "affenkind", "Hurensohn", "Du Zigeuner", "Du Tonne", "Du Müllsack", "Du Mülltonne", "Mutterficker", "spasst", "spast", "motherfucker", "Hoe", "Bitch", "Slut", "Bl�dmann", "Pussy", "Pu*sy", "Dick", "Porno", "ddos", "dos", "nippel", "lappen", "lapen", "huso", "l4ppen", "Missthaufen", "nippelsauger", "Plauge", "Knackfuck", "Knackfuss", "cock", "sandler", "sandla", "fuppa"));
+    final private static ArrayList<String> forbiddenWords = new ArrayList<>(Arrays.asList("nazi", "Nazi", "Hitler", "HURENSOHN!", "pedo", "köter", "scheiss", "scheiß", "huan", "opfer", "opfa", "ez", "fotze", "l2p", "Anal", "Sex", "fick", "Fick", "Vagina", "Penis", "Arsch", "Kanacke", "ez", "e2", "easy", "eazy", "noob", "n00b", "nab", "nob", "n00b", "n0b", "bastard", "bastard", "Pimmel", "Misset", "Misstgeburt", "Missgeburt", "Popo", "Po", "Penetrant", "porno", "schlampen", "nutten", "transen", "blowjob", "sexy", "kotzen", "kaka", "orin", "scheiße", "kot", "kacken", "fettsack", "affenkind", "Hurensohn", "Du Zigeuner", "Du Tonne", "Du Müllsack", "Du Mülltonne", "Mutterficker", "spasst", "spast", "motherfucker", "Hoe", "Bitch", "Slut", "Bl�dmann", "Pussy", "Pu*sy", "Dick", "Porno", "ddos", "dos", "nippel", "lappen", "lapen", "huso", "l4ppen", "Missthaufen", "nippelsauger", "Plauge", "Knackfuck", "Knackfuss", "cock", "sandler", "sandla", "fuppa"));
 
     public static Map<ProxiedPlayer, HashMap<Integer, HashMap<Long, String>>> playerhashmap = new HashMap<>();
 

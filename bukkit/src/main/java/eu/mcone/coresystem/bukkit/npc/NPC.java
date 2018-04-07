@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2018 Dominik L., Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  *
  */
@@ -21,7 +21,6 @@ import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,12 +79,9 @@ public class NPC {
 
         loadedPlayers.add(p.getUniqueId());
 
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, npc));
-            }
-        }.runTaskLater(CoreSystem.getInstance(), 26);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreSystem.getInstance(), () ->
+                connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, npc))
+        , 26);
     }
 
     public void setSkin(Skin skin, Player p) {
@@ -100,8 +96,10 @@ public class NPC {
 
         set(p);
 
-        gp.getProperties().removeAll("textures");
-        gp.getProperties().put("textures", new Property("textures", this.skin.getValue(), this.skin.getSignature()));
+        Bukkit.getScheduler().runTaskLaterAsynchronously(CoreSystem.getInstance(), () -> {
+            gp.getProperties().removeAll("textures");
+            gp.getProperties().put("textures", new Property("textures", this.skin.getValue(), this.skin.getSignature()));
+        }, 50);
     }
 
     public void setName(String displayname, Player p) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2018 Dominik L., Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  *
  */
@@ -8,7 +8,7 @@ package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.bungee.CoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
-import eu.mcone.coresystem.lib.util.RandomString;
+import eu.mcone.coresystem.lib.util.Random;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -36,7 +36,7 @@ public class RegisterCMD extends Command{
                             Messager.send(p, "§4Du hast dich bereits registriert!");
                         } else {
                             CoreSystem.mysql1.select("SELECT `uuid` FROM `website_account_token` WHERE `uuid`= '" + p.getUniqueId().toString() + "' AND `type`='register'", rs -> {
-                                String token = new RandomString(16).nextString();
+                                String token = new Random(16).nextString();
 
                                 try{
                                     if (rs.next()) {
