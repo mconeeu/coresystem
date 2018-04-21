@@ -8,15 +8,22 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="bukkit" />
+        <module name="bukkit-api" />
         <module name="bungee" />
+        <module name="bungee-api" />
         <module name="core" />
-        <module name="lib" />
+        <module name="core-api" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
       <module name="bukkit" target="1.8" />
+      <module name="bukkit-api" target="1.8" />
       <module name="bungee" target="1.8" />
-      <module name="lib" target="1.8" />
+      <module name="bungee-api" target="1.8" />
+      <module name="core" target="1.8" />
+      <module name="core-api" target="1.8" />
+      <module name="lib (1)" target="1.8" />
+      <module name="lib (2)" target="1.8" />
       <module name="mcone-coresystem" target="1.8" />
     </bytecodeTargetLevel>
   </component>

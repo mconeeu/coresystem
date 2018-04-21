@@ -6,8 +6,8 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
-import eu.mcone.coresystem.bungee.player.CorePlayer;
+import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.PluginMessage;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -21,7 +21,7 @@ public class ServerSwitch implements Listener {
     @EventHandler
     public void on(ServerSwitchEvent e) {
         ProxiedPlayer p = e.getPlayer();
-        CorePlayer cp = CoreSystem.getCorePlayer(p);
+        BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p);
 
         if (cp.isNicked()) new PluginMessage("Return", p.getServer().getInfo(), "NICK", p.getUniqueId().toString());
         e.getPlayer().setTabHeader(

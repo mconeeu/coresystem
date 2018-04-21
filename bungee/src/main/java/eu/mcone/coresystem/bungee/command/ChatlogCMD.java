@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.listener.Chat;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.CommandSender;
@@ -31,8 +31,7 @@ public class ChatlogCMD extends Command{
                 final ProxiedPlayer t = ProxyServer.getInstance().getPlayer(args[0]);
                 long millis = System.currentTimeMillis() / 1000;
 
-                if (!CoreSystem.getInstance().getCooldownSystem().canExecute(this.getClass(), p)) return;
-                CoreSystem.getInstance().getCooldownSystem().addPlayer(p.getUniqueId(), this.getClass());
+                if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
 
                 if (t != null) {
                     if (t != p) {
@@ -41,7 +40,7 @@ public class ChatlogCMD extends Command{
 
                             if (playerhashmap.size() >= 1) {
                                 Messager.send(p, "§2Dein Chatlog wird unter §fhttps://www.mcone.eu/chatlog.php?uuid=" + p.getUniqueId() + "&time=" + millis + "§2 erstellt!");
-                                ProxyServer.getInstance().getScheduler().runAsync(CoreSystem.getInstance(), () -> {
+                                ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
                                     int i = 0;
                                     for (Map.Entry<Integer, HashMap<Long, String>> messages : Chat.playerhashmap.get(t).entrySet()) {
                                         i++;
@@ -51,7 +50,7 @@ public class ChatlogCMD extends Command{
                                             String msg = msgEntry.getValue();
                                             String time = String.valueOf(msgEntry.getKey());
 
-                                            CoreSystem.mysql1.update("INSERT INTO bungeesystem_chatlog (uuid, nachricht, timestamp) VALUES ('" + t.getUniqueId().toString() + "', '" + msg + "', " + time + ")");
+                                            BungeeCoreSystem.getInstance().getMySQL(1).update("INSERT INTO bungeesystem_chatlog (uuid, nachricht, timestamp) VALUES ('" + t.getUniqueId().toString() + "', '" + msg + "', " + time + ")");
                                         } else {
                                             break;
                                         }
@@ -73,7 +72,7 @@ public class ChatlogCMD extends Command{
                 Messager.send(sender, "§cBitte benutze /chatlog <Spieler>");
             }
         } else {
-            Messager.sendSimple(sender, CoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
+            Messager.sendSimple(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
         }
     }
 

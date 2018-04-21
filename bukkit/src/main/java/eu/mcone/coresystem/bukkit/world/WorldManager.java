@@ -6,23 +6,29 @@
 
 package eu.mcone.coresystem.bukkit.world;
 
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.apache.commons.io.FileUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 
 import java.io.IOException;
 
-public class WorldManager {
+public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldManager {
 
-    public static void addWorld(String name, World.Environment environment) {
+    private BukkitCoreSystem instance;
+
+    public WorldManager(BukkitCoreSystem instance) {
+        this.instance = instance;
+    }
+
+    public void addWorld(String name, World.Environment environment) {
         WorldCreator wc = new WorldCreator(name).environment(environment);
         wc.createWorld();
     }
 
-    public static boolean removeWorld(World world) {
+    public boolean removeWorld(World world) {
         try {
-            Bukkit.unloadWorld(world, false);
+            instance.getServer().unloadWorld(world, false);
             FileUtils.deleteDirectory(world.getWorldFolder());
 
             return true;

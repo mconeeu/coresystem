@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -31,8 +31,7 @@ public class BungeecordCMD extends Command{
         } else if (args[0].equals("reload")) {
             if (sender instanceof ProxiedPlayer) {
                 ProxiedPlayer p = (ProxiedPlayer)sender;
-                if (!CoreSystem.getInstance().getCooldownSystem().canExecute(this.getClass(), p)) return;
-                CoreSystem.getInstance().getCooldownSystem().addPlayer(p.getUniqueId(), this.getClass());
+                if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
                 if (!p.hasPermission("system.bungee.reload")) {
                     return;
                 }
@@ -40,23 +39,23 @@ public class BungeecordCMD extends Command{
 
             if (args.length == 1) {
                 Messager.send(sender, "§aMySQL-Config wird neu geladen...");
-                CoreSystem.sqlconfig.store();
+                BungeeCoreSystem.sqlconfig.store();
 
                 Messager.send(sender, "§aPermissions werden neu geladen...");
-                CoreSystem.getInstance().getPermissionManager().reload();
+                BungeeCoreSystem.getInstance().getPermissionManager().reload();
 
                 Messager.send(sender, "§aNicks werden neu geladen...");
-                CoreSystem.getInstance().getNickManager().reload();
+                BungeeCoreSystem.getInstance().getNickManager().reload();
             } else if (args.length == 2) {
                 if (args[1].equalsIgnoreCase("config")) {
                     Messager.send(sender, "§aMySQL-Config wird neu geladen...");
-                    CoreSystem.sqlconfig.store();
+                    BungeeCoreSystem.sqlconfig.store();
                 } else if (args[1].equalsIgnoreCase("permissions")) {
                     Messager.send(sender, "§aPermissions werden neu geladen...");
-                    CoreSystem.getInstance().getPermissionManager().reload();
+                    BungeeCoreSystem.getInstance().getPermissionManager().reload();
                 } else if (args[1].equalsIgnoreCase("nick")) {
                     Messager.send(sender, "§aNicks werden neu geladen...");
-                    CoreSystem.getInstance().getNickManager().reload();
+                    BungeeCoreSystem.getInstance().getNickManager().reload();
                 }
             }
         }

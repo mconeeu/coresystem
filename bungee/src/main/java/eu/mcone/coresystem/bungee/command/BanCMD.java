@@ -6,11 +6,10 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
 import eu.mcone.coresystem.bungee.ban.BanTemplate;
 import eu.mcone.coresystem.bungee.utils.Messager;
-import eu.mcone.coresystem.lib.util.UUIDFetcher;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -31,8 +30,7 @@ public class BanCMD extends Command implements TabExecutor {
 	    if (sender instanceof ProxiedPlayer) {
             ProxiedPlayer p = (ProxiedPlayer) sender;
 
-            if (!CoreSystem.getInstance().getCooldownSystem().canExecute(this.getClass(), p)) return;
-            CoreSystem.getInstance().getCooldownSystem().addPlayer(p.getUniqueId(), this.getClass());
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
 
             if (p.hasPermission("system.bungee.ban")) {
                 if (args.length == 1) {
@@ -60,7 +58,7 @@ public class BanCMD extends Command implements TabExecutor {
                         Messager.send(p, "§4Bitte benutze §c/ban help");
                     }
                 } else if (args.length == 2) {
-                    UUID t = UUIDFetcher.getUuid(args[1]);
+                    UUID t = BungeeCoreSystem.getInstance().getPlayerUtils().fetchUuid(args[1]);
 
                     if (t != null) {
                         if (args[0].equalsIgnoreCase("unban")) {
@@ -145,7 +143,7 @@ public class BanCMD extends Command implements TabExecutor {
                 Messager.send(p, "§4Du hast keine Berechtigung für diesen Befehl!");
             }
         } else {
-            Messager.sendSimple(sender, CoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
+            Messager.sendSimple(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
         }
     }
 

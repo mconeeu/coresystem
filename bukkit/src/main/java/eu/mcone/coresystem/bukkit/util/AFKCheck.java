@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.util;
 
-import eu.mcone.coresystem.bukkit.CoreSystem;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -25,7 +25,7 @@ public class AFKCheck {
     public static void check() {
         Collection<? extends Player> online = Bukkit.getOnlinePlayers();
 
-        Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
             for (Player p : online) {
                 if (locations.getOrDefault(p.getUniqueId(), new Location(p.getWorld(), 0, 0, 0)).equals(p.getLocation())) {
                     players.put(p.getUniqueId(), players.getOrDefault(p.getUniqueId(), 0) + 1);
@@ -37,14 +37,14 @@ public class AFKCheck {
                 if (afkPlayers.contains(p.getUniqueId())) {
                     if (i<150) {
                         afkPlayers.remove(p.getUniqueId());
-                        p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§2Du bist nun nicht mehr AFK!");
-                        CoreSystem.getCorePlayer(p).setStatus("online");
+                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Du bist nun nicht mehr AFK!");
+                        BukkitCoreSystem.getInstance().getCorePlayer(p).setStatus("online");
                     }
                 } else {
                     if (i>150) {
                         afkPlayers.add(p.getUniqueId());
-                        p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§2Du bist nun AFK!");
-                        CoreSystem.getCorePlayer(p).setStatus("afk");
+                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Du bist nun AFK!");
+                        BukkitCoreSystem.getInstance().getCorePlayer(p).setStatus("afk");
                     }
                 }
 

@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bungee.ban;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -46,10 +46,10 @@ public class BanManager {
 
 	    if (banTime > millis && template.getBanPoints() > 0) {
 
-            CoreSystem.mysql1.update("INSERT INTO `bungeesystem_bansystem_ban` (`id`, `uuid`, `template`, `reason`, `end`, `timestamp`, `team_member`) VALUES (NULL, '"+gebannt.toString()+"', '"+templateName+"', '"+grund+"', '"+banTime+"', '"+millis+"', '"+tName+"') " +
+            BungeeCoreSystem.getInstance().getMySQL(1).update("INSERT INTO `bungeesystem_bansystem_ban` (`id`, `uuid`, `template`, `reason`, `end`, `timestamp`, `team_member`) VALUES (NULL, '"+gebannt.toString()+"', '"+templateName+"', '"+grund+"', '"+banTime+"', '"+millis+"', '"+tName+"') " +
                     "ON DUPLICATE KEY UPDATE `template`='"+templateName+"', `reason`='"+grund+"', `end`='"+banTime+"', `timestamp`='"+millis+"', `team_member`='"+tName+"';");
-            CoreSystem.mysql1.update("INSERT INTO `bungeesystem_bansystem_banhistory` (`id`, `uuid`, `template`, `reason`, `end`, `timestamp`, `team_member`) VALUES (NULL, '" + gebannt.toString() + "', '" + templateName + "', '" + grund + "', " + banTime + ", " + millis + ", '" + tName + "')");
-            CoreSystem.mysql1.update("UPDATE userinfo SET status='banned' WHERE uuid='" + gebannt.toString() + "'");
+            BungeeCoreSystem.getInstance().getMySQL(1).update("INSERT INTO `bungeesystem_bansystem_banhistory` (`id`, `uuid`, `template`, `reason`, `end`, `timestamp`, `team_member`) VALUES (NULL, '" + gebannt.toString() + "', '" + templateName + "', '" + grund + "', " + banTime + ", " + millis + ", '" + tName + "')");
+            BungeeCoreSystem.getInstance().getMySQL(1).update("UPDATE userinfo SET status='banned' WHERE uuid='" + gebannt.toString() + "'");
 
             if (p != null) {
                 p.disconnect(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
@@ -67,9 +67,9 @@ public class BanManager {
 
         if (muteTime > millis && template.getMutePoints() > 0) {
 
-            CoreSystem.mysql1.update("INSERT INTO `bungeesystem_bansystem_mute` (`id`, `uuid`, `template`, `reason`, `end`, `timestamp`, `team_member`) VALUES (NULL, '"+gebannt.toString()+"', '"+templateName+"', '"+grund+"', '"+muteTime+"', '"+millis+"', '"+tName+"') " +
+            BungeeCoreSystem.getInstance().getMySQL(1).update("INSERT INTO `bungeesystem_bansystem_mute` (`id`, `uuid`, `template`, `reason`, `end`, `timestamp`, `team_member`) VALUES (NULL, '"+gebannt.toString()+"', '"+templateName+"', '"+grund+"', '"+muteTime+"', '"+millis+"', '"+tName+"') " +
                     "ON DUPLICATE KEY UPDATE `template`='"+templateName+"', `reason`='"+grund+"', `end`='"+muteTime+"', `timestamp`='"+millis+"', `team_member`='"+tName+"';");
-            CoreSystem.mysql1.update("INSERT INTO `bungeesystem_bansystem_mutehistory` (`id`, `uuid`, `template`, `reason`, `end`, `timestamp`, `team_member`) VALUES (NULL, '" + gebannt.toString() + "', '" + templateName + "', '" + grund + "', " + muteTime + ", " + millis + ", '" + tName + "')");
+            BungeeCoreSystem.getInstance().getMySQL(1).update("INSERT INTO `bungeesystem_bansystem_mutehistory` (`id`, `uuid`, `template`, `reason`, `end`, `timestamp`, `team_member`) VALUES (NULL, '" + gebannt.toString() + "', '" + templateName + "', '" + grund + "', " + muteTime + ", " + millis + ", '" + tName + "')");
 
             if (p != null) {
                 Messager.sendSimple(p, "\n§8§m----------------§r§8 [§7§l!§8] §fSystem §8§m----------------"
@@ -89,17 +89,17 @@ public class BanManager {
 	}
 	
 	public static void unban(UUID uuid){
-		CoreSystem.mysql1.update("DELETE FROM bungeesystem_bansystem_ban WHERE uuid ='" + uuid.toString() + "'");
+		BungeeCoreSystem.getInstance().getMySQL(1).update("DELETE FROM bungeesystem_bansystem_ban WHERE uuid ='" + uuid.toString() + "'");
 	}
 
 	public static void unmute(UUID uuid) {
-		CoreSystem.mysql1.update("DELETE FROM bungeesystem_bansystem_mute WHERE uuid ='" + uuid.toString() + "'");
+		BungeeCoreSystem.getInstance().getMySQL(1).update("DELETE FROM bungeesystem_bansystem_mute WHERE uuid ='" + uuid.toString() + "'");
 	}
 	
     public static boolean isBanned(UUID uuid){
         long millis = System.currentTimeMillis() / 1000;
-        CoreSystem.mysql1.update("DELETE FROM `bungeesystem_bansystem_ban` WHERE end<="+millis);
-		return (boolean) CoreSystem.mysql1.select("SELECT `template` FROM `bungeesystem_bansystem_ban` WHERE `uuid`='" + uuid.toString() + "'", rs -> {
+        BungeeCoreSystem.getInstance().getMySQL(1).update("DELETE FROM `bungeesystem_bansystem_ban` WHERE end<="+millis);
+		return (boolean) BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT `template` FROM `bungeesystem_bansystem_ban` WHERE `uuid`='" + uuid.toString() + "'", rs -> {
             try {
                 return rs.next();
             }catch (SQLException e){
@@ -111,8 +111,8 @@ public class BanManager {
 
 	public static boolean isMuted(UUID uuid){
         long millis = System.currentTimeMillis() / 1000;
-        CoreSystem.mysql1.update("DELETE FROM `bungeesystem_bansystem_mute` WHERE end<="+millis);
-		return (boolean) CoreSystem.mysql1.select("SELECT `template` FROM `bungeesystem_bansystem_mute` WHERE `uuid` ='" + uuid.toString() + "'", rs -> {
+        BungeeCoreSystem.getInstance().getMySQL(1).update("DELETE FROM `bungeesystem_bansystem_mute` WHERE end<="+millis);
+		return (boolean) BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT `template` FROM `bungeesystem_bansystem_mute` WHERE `uuid` ='" + uuid.toString() + "'", rs -> {
             try {
                 return rs.next();
             }catch (SQLException e){
@@ -123,7 +123,7 @@ public class BanManager {
 	}
 
 	private static boolean hasPoints(UUID uuid) {
-        return (boolean) CoreSystem.mysql1.select("SELECT `banpoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='" + uuid.toString() + "'", rs -> {
+        return (boolean) BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT `banpoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='" + uuid.toString() + "'", rs -> {
             try{
                 return rs.next();
             }catch (SQLException e){
@@ -134,7 +134,7 @@ public class BanManager {
     }
 
 	private static Map<String, Integer> getPoints(UUID uuid) {
-        return (Map<String, Integer>) CoreSystem.mysql1.select("SELECT `banpoints`, `mutepoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='" + uuid.toString() + "'", rs -> {
+        return (Map<String, Integer>) BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT `banpoints`, `mutepoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='" + uuid.toString() + "'", rs -> {
             Map<String, Integer> result = new HashMap<>();
             try{
                 if (rs.next()) {
@@ -150,9 +150,9 @@ public class BanManager {
 
     private static void addPoints(UUID uuid, int banpoints, int mutepoints) {
 	    if (hasPoints(uuid)) {
-            CoreSystem.mysql1.update("UPDATE `bungeesystem_bansystem_points` SET banpoints=banpoints+" + banpoints + ", mutepoints=mutepoints+" + mutepoints + " WHERE `uuid`='" + uuid.toString() + "'");
+            BungeeCoreSystem.getInstance().getMySQL(1).update("UPDATE `bungeesystem_bansystem_points` SET banpoints=banpoints+" + banpoints + ", mutepoints=mutepoints+" + mutepoints + " WHERE `uuid`='" + uuid.toString() + "'");
         } else {
-            CoreSystem.mysql1.update("INSERT INTO `bungeesystem_bansystem_points` (`id`, `uuid`, `banpoints`, `mutepoints`) VALUES (NULL, '" + uuid.toString() + "', " + banpoints + ", " + mutepoints + ")");
+            BungeeCoreSystem.getInstance().getMySQL(1).update("INSERT INTO `bungeesystem_bansystem_points` (`id`, `uuid`, `banpoints`, `mutepoints`) VALUES (NULL, '" + uuid.toString() + "', " + banpoints + ", " + mutepoints + ")");
         }
     }
 

@@ -6,12 +6,12 @@
 
 package eu.mcone.coresystem.bukkit.hologram;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import eu.mcone.coresystem.bukkit.CoreSystem;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.HoloCMD;
 import eu.mcone.coresystem.bukkit.util.LocationManager;
-import eu.mcone.coresystem.lib.mysql.MySQL;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,23 +22,24 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HologramManager implements Listener {
+public class HologramManager implements Listener, eu.mcone.coresystem.api.bukkit.hologram.HologramManager {
 
-    private MySQL mysql;
+    private BukkitCoreSystem instance;
     private String server;
     @Getter
     private Map<String, Hologram> holograms;
 
-    public HologramManager(MySQL mysql, String server) {
-        this.mysql = mysql;
+    public HologramManager(BukkitCoreSystem instance, String server) {
+        this.instance = instance;
         this.server = server;
 
-        CoreSystem.getInstance().getServer().getPluginManager().registerEvents(this, CoreSystem.getInstance());
-        CoreSystem.getInstance().getCommand("holo").setExecutor(new HoloCMD(this));
+        instance.getServer().getPluginManager().registerEvents(this, BukkitCoreSystem.getInstance());
+        instance.getCommand("holo").setExecutor(new HoloCMD(this));
 
         this.reload();
     }
@@ -63,13 +64,17 @@ public class HologramManager implements Listener {
             }
         }
 
-        this.holograms = new HashMap<>();
-        this.mysql.select("SELECT * FROM bukkitsystem_holograms WHERE server='"+this.server+"'", rs -> {
+        holograms = new HashMap<>();
+        instance.getMySQL(1).select("SELECT * FROM bukkitsystem_holograms WHERE server='"+this.server+"'", rs -> {
             try {
                 while (rs.next()) {
-                    String json = rs.getString("lines").replaceAll("&", "§");
-                    List<String> lines = new Gson().fromJson(json, new TypeToken<List<String>>() {}.getType());
-                    this.holograms.put(rs.getString("name"), new Hologram(lines.toArray(new String[lines.size()]), LocationManager.fromJson(rs.getString("location"))));
+                    JsonArray array = new JsonParser().parse(rs.getString("lines").replaceAll("&", "§")).getAsJsonArray();
+                    List<String> lines = new ArrayList<>();
+                    for (JsonElement jsonElement : array) {
+                        lines.add(jsonElement.getAsString());
+                    }
+
+                    this.holograms.put(rs.getString("name"), new Hologram(lines.toArray(new String[0]), LocationManager.fromJson(rs.getString("location"))));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -83,14 +88,14 @@ public class HologramManager implements Listener {
 
     public void addHologram(String name, Location loc, String line1) {
         String json = LocationManager.toJson(loc);
-        this.mysql.update("INSERT INTO bukkitsystem_holograms (`name`, `location`, `lines`, `server`) VALUES ('"+name+"', '"+json+"', '[\""+line1+"\"]', '"+this.server+"') " +
+        instance.getMySQL(1).update("INSERT INTO bukkitsystem_holograms (`name`, `location`, `lines`, `server`) VALUES ('"+name+"', '"+json+"', '[\""+line1+"\"]', '"+this.server+"') " +
                 "ON DUPLICATE KEY UPDATE `location`='"+json+"'");
         this.holograms.put(name, new Hologram(new String[]{line1.replaceAll("&", "§")}, loc));
         this.updateHolograms();
     }
 
     public void removeHologram(String name) {
-        this.mysql.update("DELETE FROM bukkitsystem_holograms WHERE `name`='"+name+"'");
+        instance.getMySQL(1).update("DELETE FROM bukkitsystem_holograms WHERE `name`='"+name+"'");
         if (this.holograms.containsKey(name)) {
             this.holograms.get(name).hideAll();
             this.holograms.remove(name);

@@ -6,9 +6,9 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
-import eu.mcone.coresystem.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
@@ -29,7 +29,7 @@ public class Chat implements Listener {
         final long millis = System.currentTimeMillis() / 1000;
         final String msg = e.getMessage();
         final ProxiedPlayer p = (ProxiedPlayer) e.getSender();
-        final CorePlayer cp = CoreSystem.getCorePlayer(p.getUniqueId());
+        final BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUniqueId());
 
         if (p.hasPermission("system.bungee.cmd.bypass")) {
             return;
@@ -50,7 +50,7 @@ public class Chat implements Listener {
         } else {
             if (cp.isMuted()) {
                 e.setCancelled(true);
-                Messager.send(p, "§4Du bist noch für " + BanManager.getEndeString(cp.getMutetime()) + "§4 gemutet!");
+                Messager.send(p, "§4Du bist noch für " + BanManager.getEndeString(cp.getMuteTime()) + "§4 gemutet!");
                 return;
             }
 

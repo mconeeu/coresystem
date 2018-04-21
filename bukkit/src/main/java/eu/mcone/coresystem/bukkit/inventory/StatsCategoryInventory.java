@@ -6,8 +6,9 @@
 
 package eu.mcone.coresystem.bukkit.inventory;
 
-import eu.mcone.coresystem.bukkit.api.StatsAPI;
-import eu.mcone.coresystem.bukkit.util.ItemBuilder;
+import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.stats.StatsAPI;
+import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -17,7 +18,7 @@ class StatsCategoryInventory extends CoreInventory {
     StatsCategoryInventory(Player p, StatsAPI stats) {
         super("§8» §3MCONE-Stats", p, 27, Option.FILL_EMPTY_SLOTS);
 
-        int[] result = stats.getData(player);
+        int[] result = stats.getData(player.getUniqueId());
 
         setItem(13, new ItemBuilder(Material.ITEM_FRAME, 1, 0).displayName("§3§l" + stats.getGamemode().getLabel() + " §8| §7Global Stats").lore(
                         "§7Platz: §f" + result[0],

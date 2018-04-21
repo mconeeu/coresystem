@@ -6,19 +6,19 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
-import eu.mcone.coresystem.bungee.player.CorePlayer;
+import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.api.core.labymod.LabyPermission;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
-import eu.mcone.coresystem.lib.labymod.AntiLabyMod;
-import eu.mcone.coresystem.lib.labymod.LabyPermission;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.Title;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import net.md_5.bungee.protocol.packet.PluginMessage;
 
 import java.net.InetSocketAddress;
 import java.sql.SQLException;
@@ -32,7 +32,7 @@ public class PostLogin implements Listener{
     @EventHandler
     public void on(PostLoginEvent e){
         final ProxiedPlayer p = e.getPlayer();
-        final CorePlayer cp = CoreSystem.getCorePlayer(p.getUniqueId());
+        final BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUniqueId());
 
         final InetSocketAddress IPAdressPlayer = p.getAddress();
         String sfullip = IPAdressPlayer.toString();
@@ -44,13 +44,13 @@ public class PostLogin implements Listener{
         String ip = ipandport[0];
         final long millis = System.currentTimeMillis();
 
-        CoreSystem.mysql1.select("SELECT `uuid` FROM `userinfo` WHERE `uuid` = '" + p.getUniqueId().toString() + "'", rs -> {
+        BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT `uuid` FROM `userinfo` WHERE `uuid` = '" + p.getUniqueId().toString() + "'", rs -> {
             try {
                 if (rs.next()) {
-                    CoreSystem.mysql1.update("UPDATE `userinfo` SET `name` = '" + p.getName() + "', `ip` = '" + ip + "' , status = 'online', `timestamp` = '" + millis / 1000 + "' WHERE `uuid`='" + p.getUniqueId().toString() + "';");
+                    BungeeCoreSystem.getInstance().getMySQL(1).update("UPDATE `userinfo` SET `name` = '" + p.getName() + "', `ip` = '" + ip + "' , status = 'online', `timestamp` = '" + millis / 1000 + "' WHERE `uuid`='" + p.getUniqueId().toString() + "';");
                 } else {
                     isNew = true;
-                    CoreSystem.mysql1.update("INSERT INTO `userinfo` (`uuid`, `name`, `groups`, `coins`, `status`, `ip`, `timestamp`, `onlinetime`) VALUES ('" +  p.getUniqueId().toString() + "', '" +  p.getName() + "', '[11]', 20, 'online', '" + ip + "', '" +  millis / 1000 + "' , 0)");
+                    BungeeCoreSystem.getInstance().getMySQL(1).update("INSERT INTO `userinfo` (`uuid`, `name`, `groups`, `coins`, `status`, `ip`, `timestamp`, `onlinetime`) VALUES ('" +  p.getUniqueId().toString() + "', '" +  p.getName() + "', '[11]', 20, 'online', '" + ip + "', '" +  millis / 1000 + "' , 0)");
                 }
             }catch (SQLException e1){
                 e1.printStackTrace();
@@ -63,7 +63,7 @@ public class PostLogin implements Listener{
         }
 
         if(p.hasPermission("system.bungee.report")) {
-            CoreSystem.mysql1.select("SELECT `id`, `title` FROM `website_ticket` WHERE `cat`='Spielerreport' AND `state`='pending';", rs -> {
+            BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT `id`, `title` FROM `website_ticket` WHERE `cat`='Spielerreport' AND `state`='pending';", rs -> {
                 try {
                     int desc = 0;
                     while (rs.next()) {
@@ -91,7 +91,7 @@ public class PostLogin implements Listener{
             });
         }
 
-        Map<UUID, String> requests = cp.getRequests();
+        Map<UUID, String> requests = cp.getFriendRequests();
         if (requests.size() >= 1) {
             Messager.sendSimple(p, "");
             Messager.send(p, "§7Du hast noch §f"+requests.size()+" §7offene Freundschaftsanfrage(n)!");
@@ -110,23 +110,24 @@ public class PostLogin implements Listener{
 
         isNew = false;
 
-        ProxyServer.getInstance().getScheduler().schedule(CoreSystem.getInstance(), () -> {
-            /*if (p.getServer() != null) {
+        ProxyServer.getInstance().getScheduler().schedule(BungeeCoreSystem.getInstance(), () -> {
+            if (p.getServer() != null) {
                 p.setTabHeader(
                         new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', "§f§lMC ONE §3Minecraftnetzwerk §8» §7" + e.getPlayer().getServer().getInfo().getName())).create(),
                         new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', "§7§oPublic Beta 5.0")).create()
                 );
-            }*/
+            }
 
-            new AntiLabyMod()
-                    .set(LabyPermission.IMPROVED_LAVA, true)
-                    .set(LabyPermission.CROSSHAIR_SYNC, true)
-                    .set(LabyPermission.REFILL_FIX, true)
-                    .set(LabyPermission.GUI_POTION_EFFECTS, false)
-                    .set(LabyPermission.GUI_ARMOR_HUD, false)
-                    .set(LabyPermission.GUI_ITEM_HUD, false)
-                    .send((channel, bytes) -> p.unsafe().sendPacket(new PluginMessage(channel, bytes, false))
-            );
+            HashMap<LabyPermission, Boolean> labyPermissions = new HashMap<>();
+
+            labyPermissions.put(LabyPermission.IMPROVED_LAVA, true);
+            labyPermissions.put(LabyPermission.CROSSHAIR_SYNC, true);
+            labyPermissions.put(LabyPermission.REFILL_FIX, true);
+            labyPermissions.put(LabyPermission.GUI_POTION_EFFECTS, false);
+            labyPermissions.put(LabyPermission.GUI_ARMOR_HUD, false);
+            labyPermissions.put(LabyPermission.GUI_ITEM_HUD, false);
+
+            BungeeCoreSystem.getInstance().getLabyModAPI().setLabyModPermissions(BungeeCoreSystem.getInstance().getCorePlayer(p), labyPermissions);
         },1000L, TimeUnit.MILLISECONDS);
     }
 

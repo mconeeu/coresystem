@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -66,9 +66,9 @@ public class RestartCMD extends Command{
 					title.send(p);
 				}
 
-				t = ProxyServer.getInstance().getScheduler().schedule(CoreSystem.getInstance(), () -> {
+				t = ProxyServer.getInstance().getScheduler().schedule(BungeeCoreSystem.getInstance(), () -> {
 					AtomicInteger i = new AtomicInteger(5);
-					ProxyServer.getInstance().getScheduler().schedule(CoreSystem.getInstance(), () -> {
+					ProxyServer.getInstance().getScheduler().schedule(BungeeCoreSystem.getInstance(), () -> {
 						if (i.get() == 0) ProxyServer.getInstance().stop();
 
 						for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
@@ -82,7 +82,7 @@ public class RestartCMD extends Command{
 				Messager.send(sender, "§4§oDas Netzwerk wird in " + getTime(seconds) + "§4§o neustarten...");
 			}
 		} else {
-			Messager.send(sender, CoreSystem.sqlconfig.getConfigValue("System-NoPerm"));
+			Messager.send(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-NoPerm"));
 		}
 	}
 

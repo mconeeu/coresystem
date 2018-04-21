@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.AbstractReconnectHandler;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -24,8 +24,8 @@ public class ServerKick implements Listener {
         if (e.getPlayer().getServer() != null) {
             s = e.getPlayer().getServer().getInfo();
         }
-        else if (CoreSystem.getInstance().getProxy().getReconnectHandler() != null) {
-            s = CoreSystem.getInstance().getProxy().getReconnectHandler().getServer(e.getPlayer());
+        else if (BungeeCoreSystem.getInstance().getProxy().getReconnectHandler() != null) {
+            s = BungeeCoreSystem.getInstance().getProxy().getReconnectHandler().getServer(e.getPlayer());
         }
         else {
             s = AbstractReconnectHandler.getForcedHost(e.getPlayer().getPendingConnection());
@@ -33,7 +33,7 @@ public class ServerKick implements Listener {
                 s = ProxyServer.getInstance().getServerInfo(e.getPlayer().getPendingConnection().getListener().getDefaultServer());
             }
         }
-        final ServerInfo kickTo = ProxyServer.getInstance().getServerInfo(CoreSystem.sqlconfig.getConfigValue("System-Server-Lobby"));
+        final ServerInfo kickTo = ProxyServer.getInstance().getServerInfo(BungeeCoreSystem.sqlconfig.getConfigValue("System-Server-Lobby"));
         if (s != null && s.equals(kickTo)) {
             return;
         }

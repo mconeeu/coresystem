@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.bukkit.CoreSystem;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,10 +24,10 @@ public class SpeedCMD implements CommandExecutor {
 
                 if (p.isFlying()) {
                     p.setFlySpeed(speed);
-                    p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§2Deine Fluggeschwindigkeit wurde auf §f"+speed+"§2 gesetzt!");
+                    p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Deine Fluggeschwindigkeit wurde auf §f"+speed+"§2 gesetzt!");
                 } else {
                     p.setWalkSpeed(speed);
-                    p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§2Deine Laufgeschwindigkeit wurde auf §f"+speed+"§2 gesetzt!");
+                    p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Deine Laufgeschwindigkeit wurde auf §f"+speed+"§2 gesetzt!");
                 }
             }
             return true;

@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -22,8 +22,7 @@ public class TeamChatCMD extends Command{
     public void execute(final CommandSender sender, final String[] args){
         if (sender instanceof ProxiedPlayer){
             final ProxiedPlayer p = (ProxiedPlayer)sender;
-            if (!CoreSystem.getInstance().getCooldownSystem().canExecute(this.getClass(), p)) return;
-            CoreSystem.getInstance().getCooldownSystem().addPlayer(p.getUniqueId(), this.getClass());
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
 
             if (p.hasPermission("system.bungee.teamchat")){
                 if (args.length == 0){
@@ -35,15 +34,15 @@ public class TeamChatCMD extends Command{
                     }
                     for (ProxiedPlayer all : ProxyServer.getInstance().getPlayers()) {
                         if (all.hasPermission("system.bungee.teamchat") || all.hasPermission("System.bungee.*")) {
-                          Messager.sendSimple(all, CoreSystem.sqlconfig.getConfigValue("TeamChat-Prefix").replaceAll("%Playername%", CoreSystem.getCorePlayer(p).getMainGroup().getPrefix() + p.getDisplayName()) + message);
+                          Messager.sendSimple(all, BungeeCoreSystem.sqlconfig.getConfigValue("TeamChat-Prefix").replaceAll("%Playername%", BungeeCoreSystem.getInstance().getCorePlayer(p).getMainGroup().getPrefix() + p.getDisplayName()) + message);
                         }
                     }
                 }
             }else{
-                Messager.sendSimple(p, CoreSystem.sqlconfig.getConfigValue("System-NoPerm"));
+                Messager.sendSimple(p, BungeeCoreSystem.sqlconfig.getConfigValue("System-NoPerm"));
             }
         }else{
-          Messager.sendSimple(sender, CoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
+          Messager.sendSimple(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
         }
     }
 }

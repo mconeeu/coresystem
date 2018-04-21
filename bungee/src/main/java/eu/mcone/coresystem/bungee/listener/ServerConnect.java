@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.friend.Party;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.ProxyServer;
@@ -48,19 +48,19 @@ public class ServerConnect implements Listener {
                         }
                     }
 
-                    //If target player is in Party
+                    //If target eu.mcone.coresystem.api.core.player is in Party
                     if (Party.isInParty(p)) {
                         //Check if server is not Lobby
-                        if (!target.getName().contains(CoreSystem.sqlconfig.getConfigValue("System-Server-Lobby"))) {
+                        if (!target.getName().contains(BungeeCoreSystem.sqlconfig.getConfigValue("System-Server-Lobby"))) {
                             Party party = Party.getParty(p);
 
                             assert party != null;
                             int partyMember = party.getMember().size();
 
-                            //If target player is the Party leader
+                            //If target eu.mcone.coresystem.api.core.player is the Party leader
                             if (party.getLeader().equals(p)) {
                                 if (current + partyMember > max) {
-                                    //If target player is allowed to kick other
+                                    //If target eu.mcone.coresystem.api.core.player is allowed to kick other
                                     if (p.hasPermission("mcone.premium")) {
                                         //If party member count is greater then the server slots
                                         if (partyMember > (kickable.size() + free)) {
@@ -73,7 +73,7 @@ public class ServerConnect implements Listener {
 
                                             for (ProxiedPlayer kick : kickable) {
                                                 if (toKick == 0) break;
-                                                kick.connect(ProxyServer.getInstance().getServerInfo(CoreSystem.sqlconfig.getConfigValue("System-Server-Lobby")));
+                                                kick.connect(ProxyServer.getInstance().getServerInfo(BungeeCoreSystem.sqlconfig.getConfigValue("System-Server-Lobby")));
                                                 Messager.send(kick, "§4Du wurdest aus der Runde gekickt, da ein höher rangiger Spieler den Server betreten hat!" +
                                                         "\n§7Hol' dir den §6Premium Rang §7um nicht mehr gekickt zu werden! Benutze §f/premium §7 für mehr Infos!");
                                                 toKick--;
@@ -106,7 +106,7 @@ public class ServerConnect implements Listener {
                         }
                     } else {
                         if (current + 1 > max) {
-                            //If target player is allowed to kick other
+                            //If target eu.mcone.coresystem.api.core.player is allowed to kick other
                             if (p.hasPermission("mcone.premium")) {
                                 //If is someone suitable for kick
                                 if ((kickable.size() + free) < 1) {
@@ -115,11 +115,11 @@ public class ServerConnect implements Listener {
                                     return;
                                 }
 
-                                //Kick one player
+                                //Kick one eu.mcone.coresystem.api.core.player
                                 int i = 1;
                                 for (ProxiedPlayer kick : kickable) {
                                     if (i < 1) break;
-                                    kick.connect(ProxyServer.getInstance().getServerInfo(CoreSystem.sqlconfig.getConfigValue("System-Server-Lobby")));
+                                    kick.connect(ProxyServer.getInstance().getServerInfo(BungeeCoreSystem.sqlconfig.getConfigValue("System-Server-Lobby")));
                                     Messager.send(kick, "§4Du wurdest aus der Runde gekickt, da ein höher rangiger Spieler den Server betreten hat!" +
                                             "\n§7Hol' dir den §6Premium Rang §7um nicht mehr gekickt zu werden! Benutze §f/premium §7 für mehr Infos!");
                                     i--;

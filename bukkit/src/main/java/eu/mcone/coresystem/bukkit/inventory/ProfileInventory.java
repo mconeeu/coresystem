@@ -6,9 +6,10 @@
 
 package eu.mcone.coresystem.bukkit.inventory;
 
-import eu.mcone.coresystem.bukkit.CoreSystem;
-import eu.mcone.coresystem.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.bukkit.util.ItemBuilder;
+import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -20,8 +21,8 @@ public class ProfileInventory extends CoreInventory {
     public ProfileInventory(Player p) {
         super("§8» §3§l"+p.getName()+"'s Profil", p, 36, Option.FILL_EMPTY_SLOTS);
 
-        CoreSystem.mysql1.select("SELECT status, coins, onlinetime FROM userinfo WHERE uuid='" + player.getUniqueId().toString() + "'", rs -> {
-            CorePlayer cp = CoreSystem.getCorePlayer(player);
+        BukkitCoreSystem.getInstance().getMySQL(1).select("SELECT status, coins, onlinetime FROM userinfo WHERE uuid='" + player.getUniqueId().toString() + "'", rs -> {
+            BukkitCorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(player);
 
             try {
                 if (rs.next()) {

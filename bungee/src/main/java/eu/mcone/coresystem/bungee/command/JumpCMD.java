@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -24,15 +24,14 @@ public class JumpCMD extends Command{
     public void execute(final CommandSender sender, final String[] args) {
         if (sender instanceof ProxiedPlayer) {
             final ProxiedPlayer p = (ProxiedPlayer) sender;
-            if (!CoreSystem.getInstance().getCooldownSystem().canExecute(this.getClass(), p)) return;
-            CoreSystem.getInstance().getCooldownSystem().addPlayer(p.getUniqueId(), this.getClass());
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
 
             if (p.hasPermission("system.bungee.jump")) {
                 if (args.length == 1) {
                     ProxiedPlayer t = ProxyServer.getInstance().getPlayer(args[0]);
 
                     if (t != null) {
-                        if (CoreSystem.getCorePlayer(p).getFriends().containsKey(t.getUniqueId())) {
+                        if (BungeeCoreSystem.getInstance().getCorePlayer(p).getFriends().containsKey(t.getUniqueId())) {
                             ServerInfo tserver = t.getServer().getInfo();
 
                             if (t.getServer().getInfo() != p.getServer().getInfo()) {
@@ -46,16 +45,16 @@ public class JumpCMD extends Command{
                             Messager.send(p, "§4Du kannst nur zu Spielern springen die deine Freunde sind!");
                         }
                     } else {
-                        Messager.send(p, CoreSystem.sqlconfig.getConfigValue("System-No-Online-Player"));
+                        Messager.send(p, BungeeCoreSystem.sqlconfig.getConfigValue("System-No-Online-Player"));
                     }
                 } else {
                     Messager.send(p, "§cBenutze: /jump <Name>!");
                 }
             } else {
-                Messager.sendSimple(p, new TextComponent(CoreSystem.sqlconfig.getConfigValue("System-No-Perm")));
+                Messager.sendSimple(p, new TextComponent(BungeeCoreSystem.sqlconfig.getConfigValue("System-No-Perm")));
             }
         } else {
-            Messager.sendSimple(sender, CoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
+            Messager.sendSimple(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
         }
     }
 }

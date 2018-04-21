@@ -6,9 +6,9 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
-import eu.mcone.coresystem.bukkit.CoreSystem;
-import eu.mcone.coresystem.bukkit.inventory.CoreInventory;
-import eu.mcone.coresystem.bukkit.inventory.CoreItemEvent;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.inventory.CoreItemEvent;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,7 +25,7 @@ public class InventoryClick implements Listener{
 	public void on(InventoryClickEvent e){
 		if((e.getRawSlot() < e.getInventory().getSize()) && (e.getCurrentItem() != null)) {
 			if (e.getCurrentItem() != null && !e.getSlotType().equals(InventoryType.SlotType.OUTSIDE)) {
-                for (CoreInventory inv : CoreSystem.getInstance().getInventories()) {
+                for (CoreInventory inv : BukkitCoreSystem.getInstance().getInventories()) {
                     if (e.getInventory().equals(inv.getInventory())) {
                         ItemStack item = e.getCurrentItem();
                         e.setCancelled(true);

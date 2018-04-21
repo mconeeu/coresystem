@@ -6,9 +6,10 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
+import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.bukkit.player.BukkitCorePlayer;
 import eu.mcone.coresystem.bukkit.player.PermissibleBase;
-import eu.mcone.coresystem.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.lib.exception.CoreException;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftHumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,9 +26,9 @@ public class PlayerLogin implements Listener {
         Player p = e.getPlayer();
         setPermissions(p);
         try {
-            new CorePlayer(p.getUniqueId(), p.getName());
+            new BukkitCorePlayer((BukkitCoreSystem) BukkitCoreSystem.getInstance(), p.getName());
             p.setDisplayName(p.getName());
-        } catch (CoreException e1) {
+        } catch (PlayerNotFoundException e1) {
             e1.printStackTrace();
         }
     }

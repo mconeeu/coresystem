@@ -6,12 +6,11 @@
 
 package eu.mcone.coresystem.bukkit.channel;
 
-import eu.mcone.coresystem.bukkit.CoreSystem;
-import eu.mcone.coresystem.bukkit.event.CoinsChangeEvent;
-import eu.mcone.coresystem.bukkit.event.PermissionChangeEvent;
-import eu.mcone.coresystem.bukkit.inventory.FriendsInventory;
-import eu.mcone.coresystem.bukkit.inventory.PartyInventory;
-import eu.mcone.coresystem.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.bukkit.channel.FutureTask;
+import eu.mcone.coresystem.api.bukkit.event.CoinsChangeEvent;
+import eu.mcone.coresystem.api.bukkit.event.PermissionChangeEvent;
+import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -62,7 +61,7 @@ public class PluginChannelListener implements PluginMessageListener {
                     break;
                 }
                 case "EVENT": {
-                    CorePlayer cp = CoreSystem.getCorePlayer(UUID.fromString(in.readUTF()));
+                    BukkitCorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(UUID.fromString(in.readUTF()));
                     String event = in.readUTF();
                     String data = in.readUTF();
 
@@ -76,7 +75,7 @@ public class PluginChannelListener implements PluginMessageListener {
                     break;
                 }
                 case "COINS": {
-                    CorePlayer cp = CoreSystem.getCorePlayer(UUID.fromString(in.readUTF()));
+                    BukkitCorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(UUID.fromString(in.readUTF()));
                     Bukkit.getPluginManager().callEvent(new CoinsChangeEvent(cp));
                     break;
                 }
@@ -87,14 +86,14 @@ public class PluginChannelListener implements PluginMessageListener {
                     String signature = in.readUTF();
 
                     Player player = Bukkit.getPlayer(uuid);
-                    CoreSystem.getInstance().getNickManager().nick(player, nickname, value, signature);
+                    BukkitCoreSystem.getInstance().getNickManager().nick(player, nickname, value, signature);
                     break;
                 }
                 case "UNNICK": {
                     UUID uuid = UUID.fromString(in.readUTF());
 
                     Player player = Bukkit.getPlayer(uuid);
-                    CoreSystem.getInstance().getNickManager().unnick(player);
+                    BukkitCoreSystem.getInstance().getNickManager().unnick(player);
                     break;
                 }
                 case "SERVERS": {

@@ -6,10 +6,10 @@
 
 package eu.mcone.coresystem.bukkit.npc;
 
-import eu.mcone.coresystem.bukkit.CoreSystem;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.NpcCMD;
 import eu.mcone.coresystem.bukkit.util.LocationManager;
-import eu.mcone.coresystem.lib.mysql.MySQL;
+import eu.mcone.coresystem.core.mysql.MySQL;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -19,9 +19,10 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
-public class NpcManager implements Listener {
+public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.NpcManager {
 
     private MySQL mysql;
     private String server;
@@ -31,11 +32,11 @@ public class NpcManager implements Listener {
         this.mysql = mysql;
         this.server = server;
 
-        CoreSystem.getInstance().getServer().getPluginManager().registerEvents(this, CoreSystem.getInstance());
-        CoreSystem.getInstance().getCommand("npc").setExecutor(new NpcCMD(this));
+        BukkitCoreSystem.getInstance().getServer().getPluginManager().registerEvents(this, BukkitCoreSystem.getInstance());
+        BukkitCoreSystem.getInstance().getCommand("npc").setExecutor(new NpcCMD(this));
 
         this.reload();
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(CoreSystem.getInstance(), () -> {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(BukkitCoreSystem.getInstance(), () -> {
             for(NPC npc : npcs.values()){
                 for(Player p : Bukkit.getOnlinePlayers()){
                     if(npc.getLocation().getWorld().equals(p.getWorld())){
@@ -82,6 +83,7 @@ public class NpcManager implements Listener {
         });
     }
 
+    @Override
     public void addNPC(String name, Location loc, String texture, String displayname) {
         NPC npc = new NPC(name, loc, texture, displayname);
 
@@ -156,7 +158,12 @@ public class NpcManager implements Listener {
         return null;
     }
 
-    public HashMap<String, NPC> getNPCs() {
-        return npcs;
+    public Map<String, eu.mcone.coresystem.api.bukkit.npc.NPC> getNPCs() {
+        Map<String, eu.mcone.coresystem.api.bukkit.npc.NPC> result = new HashMap<>();
+        for (HashMap.Entry<String, NPC> e : npcs.entrySet()) {
+            result.put(e.getKey(), e.getValue());
+        }
+
+        return result;
     }
 }

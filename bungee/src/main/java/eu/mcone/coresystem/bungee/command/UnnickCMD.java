@@ -6,8 +6,8 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
-import eu.mcone.coresystem.bungee.player.CorePlayer;
+import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -23,11 +23,11 @@ public class UnnickCMD extends Command{
     public void execute(CommandSender sender, String[] args) {
         if (sender instanceof ProxiedPlayer) {
             ProxiedPlayer p = (ProxiedPlayer) sender;
-            CorePlayer cp = CoreSystem.getCorePlayer(p);
+            BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p);
 
             if (args.length == 0) {
                 if (cp.isNicked()) {
-                    CoreSystem.getInstance().getNickManager().unnick(p);
+                    BungeeCoreSystem.getInstance().getNickManager().unnick(p);
                 } else {
                     Messager.send(p, "§4Du bist nicht genickt!");
                 }

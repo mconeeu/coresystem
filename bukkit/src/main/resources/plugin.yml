@@ -1,7 +1,7 @@
 name: MCONE-BukkitCoreSystem
-version: 5.1.1-SNAPHOT
+version: 5.2.0-SNAPHOT
 authors: [Domink Lippl, Rufus Maiwald]
-main: eu.mcone.coresystem.bukkit.CoreSystem
+main: eu.mcone.coresystem.bukkit.BukkitCoreSystem
 
 commands:
   bukkit:
@@ -26,19 +26,19 @@ commands:
     permission: system.bukkit.fly
   tp:
     aliases: teleport
-    description: Teleports you or another player
+    description: Teleports you or another eu.mcone.coresystem.api.core.player
     permission: system.bukkit.tp
   tphere:
-    description: Teleports another player to yourself
+    description: Teleports another eu.mcone.coresystem.api.core.player to yourself
     permission: system.bukkit.tp.others
   tpall:
-    description: Teleports all players to another player
+    description: Teleports all players to another eu.mcone.coresystem.api.core.player
     permission: system.bukkit.tp.all
   tppos:
-    description: Teleports the player to a coordinate
+    description: Teleports the eu.mcone.coresystem.api.core.player to a coordinate
     permission: system.bukkit.tp.pos
   vanish:
-    description: Hides the player from tab and makes him invisible
+    description: Hides the eu.mcone.coresystem.api.core.player from tab and makes him invisible
     permission: system.bukkit.vanish
   holo:
     description: Manage holograms
@@ -67,24 +67,24 @@ permissions:
         description: Bypass all MCONE-BukkitCoreSystem Permissions
         children:
           system.bukkit.feed:
-            description: Feed the player
+            description: Feed the eu.mcone.coresystem.api.core.player
           system.bukkit.gamemode:
-            description: Set the player to a specific gamemode
+            description: Set the eu.mcone.coresystem.api.core.player to a specific gamemode
           system.bukkit.heal:
-            description: Heal the player
+            description: Heal the eu.mcone.coresystem.api.core.player
           system.bukkit.fly:
-            description: Allows the player to fly
+            description: Allows the eu.mcone.coresystem.api.core.player to fly
           system.bukkit.tp:
-            description: Teleports the player to another player or a specific location
+            description: Teleports the eu.mcone.coresystem.api.core.player to another eu.mcone.coresystem.api.core.player or a specific location
             children:
               system.bukkit.tp.others:
-                desciption: Allows the player to teleport other players
+                desciption: Allows the eu.mcone.coresystem.api.core.player to teleport other players
               system.bukkit.tp.all:
-                description: Allows the player to teleport all online players to a player
+                description: Allows the eu.mcone.coresystem.api.core.player to teleport all online players to a eu.mcone.coresystem.api.core.player
               system.bukkit.tp.pos:
-                description: Allows the player to teleport to a specific postition
+                description: Allows the eu.mcone.coresystem.api.core.player to teleport to a specific postition
           system.bukkit.vanish:
-            description: Vanishes the player for all other players
+            description: Vanishes the eu.mcone.coresystem.api.core.player for all other players
           system.bukkit.reload:
             description: Reload the CoreSystem
           system.bukkit.holo:

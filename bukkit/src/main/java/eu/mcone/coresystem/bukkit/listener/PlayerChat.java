@@ -6,9 +6,9 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
-import eu.mcone.coresystem.bukkit.CoreSystem;
-import eu.mcone.coresystem.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.lib.player.Group;
+import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.api.core.player.Group;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -18,19 +18,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class PlayerChat implements Listener{
-	
+
 	@EventHandler
 	public void on(AsyncPlayerChatEvent e){
 		Player p = e.getPlayer();
-		CorePlayer cp = CoreSystem.getCorePlayer(p);
+		BukkitCorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(p);
 		String msg = e.getMessage();
 		String prefix;
 
-		if (CoreSystem.cfg.getConfig().getBoolean("UserChat")){
+		if (BukkitCoreSystem.cfg.getConfig().getBoolean("UserChat")){
             if (cp.isNicked()) {
-                prefix = Group.SPIELER.getPrefix() + CoreSystem.config.getConfigValue("Chat-Design").replaceAll("%Player%", p.getName());
+                prefix = Group.SPIELER.getPrefix() + BukkitCoreSystem.config.getConfigValue("Chat-Design").replaceAll("%Player%", p.getName());
             } else {
-				prefix = cp.getMainGroup().getPrefix() + CoreSystem.config.getConfigValue("Chat-Design").replaceAll("%Player%", p.getName());
+				prefix = cp.getMainGroup().getPrefix() + BukkitCoreSystem.config.getConfigValue("Chat-Design").replaceAll("%Player%", p.getName());
             }
 
 			for (Player receiver : Bukkit.getOnlinePlayers()) {

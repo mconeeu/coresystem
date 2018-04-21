@@ -13,12 +13,15 @@
     <groupId>eu.mcone.coresystem</groupId>
     <artifactId>mcone-coresystem</artifactId>
     <packaging>pom</packaging>
-    <version>1.0-SNAPSHOT</version>
+    <version>10.0.0-SNAPSHOT</version>
 
     <modules>
-        <module>lib</module>
+        <module>core</module>
         <module>bukkit</module>
         <module>bungee</module>
+        <module>bukkit-api</module>
+        <module>core-api</module>
+        <module>bungee-api</module>
     </modules>
 
     <properties>
@@ -59,13 +62,5 @@
         <name>MC ONE</name>
         <url>https://www.mcone.eu</url>
     </organization>
-
-    <distributionManagement>
-        <repository>
-            <id>mcone-systems</id>
-            <name>MC ONE Repo</name>
-            <url>http://repo.mcone.eu/nexus/content/repositories/system/</url>
-        </repository>
-    </distributionManagement>
 
 </project>

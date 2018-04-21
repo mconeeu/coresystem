@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.bukkit.world;
 
 import com.google.gson.Gson;
-import eu.mcone.coresystem.lib.util.Zip;
+import eu.mcone.coresystem.api.core.util.Zip;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.World;
 

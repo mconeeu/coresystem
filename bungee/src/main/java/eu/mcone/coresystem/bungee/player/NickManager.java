@@ -6,24 +6,26 @@
 
 package eu.mcone.coresystem.bungee.player;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.api.core.mysql.MySQL;
+import eu.mcone.coresystem.api.core.player.SkinInfo;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import eu.mcone.coresystem.bungee.utils.PluginMessage;
-import eu.mcone.coresystem.lib.mysql.MySQL;
-import eu.mcone.coresystem.lib.player.Skin;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 
-public class NickManager {
+public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickManager {
 
+    private final BungeeCoreSystem instance;
     private final MySQL mysql;
-    private HashMap<Skin, ProxiedPlayer> nicks;
+    private HashMap<SkinInfo, ProxiedPlayer> nicks;
 
-    public NickManager(MySQL mysql) {
-        this.mysql = mysql;
+    public NickManager(BungeeCoreSystem instance) {
+        this.instance = instance;
+        this.mysql = instance.getMySQL(1);
         reload();
     }
 
@@ -33,7 +35,7 @@ public class NickManager {
         mysql.select("SELECT n.name, t.texture_value, t.texture_signature FROM bungeesystem_nicks n, bukkitsystem_textures t WHERE n.texture = t.name", rs -> {
             try {
                 while (rs.next()) {
-                    nicks.put(new Skin(rs.getString("n.name"), rs.getString("t.texture_value"), rs.getString("t.texture_signature")), null);
+                    nicks.put(instance.getPlayerUtils().constructSkinInfo(rs.getString("n.name"), rs.getString("t.texture_value"), rs.getString("t.texture_signature")), null);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -41,8 +43,8 @@ public class NickManager {
         });
     }
 
-    private Skin getNick() {
-        for (HashMap.Entry<Skin, ProxiedPlayer> entry : nicks.entrySet()) {
+    private SkinInfo getNick() {
+        for (HashMap.Entry<SkinInfo, ProxiedPlayer> entry : nicks.entrySet()) {
             if (entry.getValue() == null && ProxyServer.getInstance().getPlayer(entry.getKey().getName()) == null) {
                 return entry.getKey();
             }
@@ -51,13 +53,13 @@ public class NickManager {
     }
 
     public void nick(ProxiedPlayer p) {
-        CorePlayer cp = CoreSystem.getCorePlayer(p);
-        Skin nick = cp.getNick() != null ? cp.getNick() : getNick();
+        eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer cp = instance.getCorePlayer(p);
+        SkinInfo nick = cp.getNickedSkin() != null ? cp.getNickedSkin() : getNick();
         nicks.put(nick, p);
 
         if (nick != null) {
             new PluginMessage("Return", p.getServer().getInfo(), "NICK", p.getUniqueId().toString(), nick.getName(), nick.getValue(), nick.getSignature());
-            cp.setNick(nick);
+            cp.setNickedSkin(nick);
             cp.setNicked(true);
         } else {
             Messager.send(p, "§4Es ist kein Nickname mehr verfügbar!");
@@ -65,17 +67,17 @@ public class NickManager {
     }
 
     public void unnick(ProxiedPlayer p) {
-        CorePlayer cp = CoreSystem.getCorePlayer(p);
+        eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer cp = instance.getCorePlayer(p);
         new PluginMessage("Return", p.getServer().getInfo(), "UNNICK", p.getUniqueId().toString());
-        nicks.put(cp.getNick(), null);
-        cp.setNick(null);
+        nicks.put(cp.getNickedSkin(), null);
+        cp.setNickedSkin(null);
         cp.setNicked(false);
     }
 
     public void destroy(ProxiedPlayer p) {
-        CorePlayer cp = CoreSystem.getCorePlayer(p);
-        nicks.put(cp.getNick(), null);
-        cp.setNick(null);
+        eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer cp = instance.getCorePlayer(p);
+        nicks.put(cp.getNickedSkin(), null);
+        cp.setNickedSkin(null);
         cp.setNicked(false);
     }
 

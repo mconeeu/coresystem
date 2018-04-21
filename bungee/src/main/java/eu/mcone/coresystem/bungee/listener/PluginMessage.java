@@ -6,9 +6,9 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.friend.Party;
-import eu.mcone.coresystem.bungee.player.CorePlayer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -19,7 +19,6 @@ import net.md_5.bungee.event.EventHandler;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -31,7 +30,7 @@ public class PluginMessage implements Listener {
         if (e.getTag().equalsIgnoreCase("BungeeCord")) {
             final DataInputStream in = new DataInputStream(new ByteArrayInputStream(e.getData()));
             final ProxiedPlayer p = ProxyServer.getInstance().getPlayer(e.getReceiver().toString());
-            final CorePlayer cp = CoreSystem.getCorePlayer(p);
+            final BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p);
             final ServerInfo server = p.getServer().getInfo();
 
             try {
@@ -102,7 +101,7 @@ public class PluginMessage implements Listener {
                             p.connect(si);
                         }
                     } else if (subch.equalsIgnoreCase("UNNICK")) {
-                        CoreSystem.getInstance().getNickManager().destroy(p);
+                        BungeeCoreSystem.getInstance().getNickManager().destroy(p);
                     }
                 }
             } catch (IOException e1) {

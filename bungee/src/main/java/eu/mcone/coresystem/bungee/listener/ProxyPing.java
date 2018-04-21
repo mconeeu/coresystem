@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.ProxyPingEvent;
@@ -33,7 +33,7 @@ public class ProxyPing implements Listener {
         }*/
 
         if (con.getVersion() < 47) {
-            ping.setDescription(CoreSystem.sqlconfig.getConfigValue("ProxyPing-Protocol-Motd"));
+            ping.setDescription(BungeeCoreSystem.sqlconfig.getConfigValue("ProxyPing-Protocol-Motd"));
 
             version.setProtocol(2);
             version.setName("§4Alte Minecraft-Version!");
@@ -55,12 +55,12 @@ public class ProxyPing implements Listener {
             ping.setVersion(version);
 
             return;
-        } else if (CoreSystem.sqlconfig.getBooleanConfigValue("Wartungs-Modus")) {
+        } else if (BungeeCoreSystem.sqlconfig.getBooleanConfigValue("Wartungs-Modus")) {
             version.setName("§c§oWartungsarbeiten");
             version.setProtocol(2);
             players.getOnline();
             players.getMax();
-            ping.setDescription(CoreSystem.sqlconfig.getConfigValue("ProxyPing-Wartung-Motd"));
+            ping.setDescription(BungeeCoreSystem.sqlconfig.getConfigValue("ProxyPing-Wartung-Motd"));
 
             ServerPing.PlayerInfo[] sample = new ServerPing.PlayerInfo[] {
                     new ServerPing.PlayerInfo("§3§lMC ONE §7ist gerade nicht verfügbar,", UUID.randomUUID()),
@@ -76,7 +76,7 @@ public class ProxyPing implements Listener {
             return;
         }
 
-        ping.setDescription(CoreSystem.sqlconfig.getConfigValue("ProxyPing-Motd"));
+        ping.setDescription(BungeeCoreSystem.sqlconfig.getConfigValue("ProxyPing-Motd"));
         players.getOnline();
         players.getMax();
 

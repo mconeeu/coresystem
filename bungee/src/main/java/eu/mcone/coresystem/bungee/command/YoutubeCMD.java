@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -25,7 +25,7 @@ public class YoutubeCMD extends Command{
     public void execute(final CommandSender sender, final String[] args){
         if (args.length == 0){
             if(sender instanceof ProxiedPlayer){
-                String[] parts = CoreSystem.sqlconfig.getConfigValue("CMD-YT").split("%button%");
+                String[] parts = BungeeCoreSystem.sqlconfig.getConfigValue("CMD-YT").split("%button%");
 
                 sender.sendMessage(
                     new ComponentBuilder("")
@@ -37,7 +37,7 @@ public class YoutubeCMD extends Command{
                         .create()
                 );
             } else {
-                Messager.sendSimple(sender, CoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
+                Messager.sendSimple(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
             }
         }
     }

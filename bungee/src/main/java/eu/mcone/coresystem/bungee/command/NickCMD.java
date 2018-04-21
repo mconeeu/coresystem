@@ -6,8 +6,8 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
-import eu.mcone.coresystem.bungee.player.CorePlayer;
+import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -23,20 +23,19 @@ public class NickCMD extends Command{
     public void execute(CommandSender sender, String[] args) {
         if (sender instanceof ProxiedPlayer) {
             ProxiedPlayer p = (ProxiedPlayer) sender;
-            CorePlayer cp = CoreSystem.getCorePlayer(p);
-            if (!CoreSystem.getInstance().getCooldownSystem().canExecute(this.getClass(), p)) return;
-            CoreSystem.getInstance().getCooldownSystem().addPlayer(p.getUniqueId(), this.getClass());
+            BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p);
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
 
             if (args.length == 0) {
                 if (!cp.isNicked()) {
-                    CoreSystem.getInstance().getNickManager().nick(p);
+                    BungeeCoreSystem.getInstance().getNickManager().nick(p);
                 } else {
-                    CoreSystem.getInstance().getNickManager().unnick(p);
+                    BungeeCoreSystem.getInstance().getNickManager().unnick(p);
                 }
             } else if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
                 if (p.hasPermission("group.Developer")) {
                     Messager.send(p, "§aDie Nicks wurden erfolgreich neu geladen");
-                    CoreSystem.getInstance().getNickManager().reload();
+                    BungeeCoreSystem.getInstance().getNickManager().reload();
                 } else {
                     Messager.send(p, "§4Du hast keine Berechtigung für diesen Befehl!");
                 }

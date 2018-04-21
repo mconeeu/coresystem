@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bungee.report;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -31,7 +31,7 @@ public class Report {
         long millis = System.currentTimeMillis() / 1000;
         Messager.send(reporter, "§2Du hast erfolgreich den Spieler §f" + reportedPlayer.getName() + "§2 erfolgreich reportet.");
 
-        id = CoreSystem.mysql1.updateWithGetID("INSERT INTO `website_ticket` (`cat`, `title`, `uuid`, `target_uuid`, `state`, `created`, `changed`, `team_member`) VALUES ('Spielerreport', 'Report gegen " + reportedPlayer.getName() + " mit dem Grund " + reason.getName() + "', '" + reporter.getUniqueId() + "', '" + reportedPlayer.getUniqueId().toString() + "', 'pending', '" + millis + "', '" + millis + "', NULL)");
+        id = BungeeCoreSystem.getInstance().getMySQL(1).updateWithGetId("INSERT INTO `website_ticket` (`cat`, `title`, `uuid`, `target_uuid`, `state`, `created`, `changed`, `team_member`) VALUES ('Spielerreport', 'Report gegen " + reportedPlayer.getName() + " mit dem Grund " + reason.getName() + "', '" + reporter.getUniqueId() + "', '" + reportedPlayer.getUniqueId().toString() + "', 'pending', '" + millis + "', '" + millis + "', NULL)");
         Messager.send(reporter, "§2Du kannst den Status deines Reports auf dieser Seite einsehen: §fhttps://www.mcone.eu/dashboard/ticket.php?id=" + id);
     }
 

@@ -9,9 +9,9 @@ package eu.mcone.coresystem.bungee.player;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import eu.mcone.coresystem.bungee.CoreSystem;
-import eu.mcone.coresystem.lib.exception.CoreException;
-import eu.mcone.coresystem.lib.player.Group;
+import eu.mcone.coresystem.api.core.exception.CoreException;
+import eu.mcone.coresystem.api.core.player.Group;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -45,7 +45,7 @@ public class OfflinePlayer {
     private long banTime, muteTime;
 
     public OfflinePlayer(String name) throws CoreException {
-        CoreSystem.mysql1.select("SELECT uuid, groups, status, onlinetime FROM userinfo WHERE name='"+name+"'", rs -> {
+        BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT uuid, groups, status, onlinetime FROM userinfo WHERE name='"+name+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.uuid = UUID.fromString(rs.getString("uuid"));
@@ -64,12 +64,12 @@ public class OfflinePlayer {
             }
         });
 
-        if (this.uuid == null) throw new CoreException("Database does not contain player "+name+"!");
+        if (this.uuid == null) throw new CoreException("Database does not contain eu.mcone.coresystem.api.core.player "+name+"!");
         this.name = name;
     }
 
     public OfflinePlayer loadFriendData() {
-        Object[] friendData = CoreSystem.getInstance().getFriendSystem().getData(uuid);
+        Object[] friendData = BungeeCoreSystem.getInstance().getFriendSystem().getData(uuid);
         this.friends = (Map<UUID, String>) friendData[0];
         this.requests = (Map<UUID, String>) friendData[1];
         this.blocks = (List<UUID>) friendData[2];
@@ -79,12 +79,12 @@ public class OfflinePlayer {
     }
 
     public OfflinePlayer loadPermissions() {
-        this.permissions = CoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), groups);
+        this.permissions = BungeeCoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), groups);
         return this;
     }
 
     public OfflinePlayer loadBanData() {
-        CoreSystem.mysql1.select("SELECT `end` FROM `bungeesystem_bansystem_mute` WHERE `uuid`='"+getUuid()+"'", rs -> {
+        BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT `end` FROM `bungeesystem_bansystem_mute` WHERE `uuid`='"+getUuid()+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.muted = true;
@@ -97,7 +97,7 @@ public class OfflinePlayer {
             }
         });
 
-        CoreSystem.mysql1.select("SELECT `end` FROM `bungeesystem_bansystem_ban` WHERE `uuid`='"+getUuid()+"'", rs -> {
+        BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT `end` FROM `bungeesystem_bansystem_ban` WHERE `uuid`='"+getUuid()+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.banned = true;
@@ -110,7 +110,7 @@ public class OfflinePlayer {
             }
         });
 
-        CoreSystem.mysql1.select("SELECT `banpoints`, `mutepoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='"+getUuid()+"'", rs -> {
+        BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT `banpoints`, `mutepoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='"+getUuid()+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.banPoints = rs.getInt("banpoints");
@@ -128,7 +128,7 @@ public class OfflinePlayer {
     }
 
     public boolean hasPermission(String permission) {
-        return CoreSystem.getInstance().getPermissionManager().hasPermission(permissions, permission);
+        return BungeeCoreSystem.getInstance().getPermissionManager().hasPermission(permissions, permission);
     }
 
     public long getOnlinetime() {

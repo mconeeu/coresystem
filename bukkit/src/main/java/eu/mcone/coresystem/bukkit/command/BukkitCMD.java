@@ -6,8 +6,8 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.bukkit.CoreSystem;
-import eu.mcone.coresystem.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -30,42 +30,41 @@ public class BukkitCMD implements CommandExecutor {
         } else if (args[0].equals("reload")) {
             if (sender instanceof Player) {
                 Player p = (Player)sender;
-                if (!CoreSystem.getInstance().getCooldownSystem().canExecute(this.getClass(), p)) return true;
-                CoreSystem.getInstance().getCooldownSystem().addPlayer(p.getUniqueId(), this.getClass());
+                if (!BukkitCoreSystem.getInstance().getCooldownSystem().addAndCheck(BukkitCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return false;
 
                 if (!p.hasPermission("system.bukkit.reload")) {
-                    p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Berechtigung für diesen Befehl!");
+                    p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Berechtigung für diesen Befehl!");
                     return true;
                 }
             }
 
             if (args.length == 1) {
-                sender.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§aMySQL-Config wird neu geladen...");
-                CoreSystem.config.store();
+                sender.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§aMySQL-Config wird neu geladen...");
+                BukkitCoreSystem.config.store();
 
-                sender.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§aPermissions werden neu geladen...");
-                CoreSystem.getInstance().getPermissionManager().reload();
+                sender.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§aPermissions werden neu geladen...");
+                BukkitCoreSystem.getInstance().getPermissionManager().reload();
 
-                sender.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§aScorebard wird neu geladen...");
-                for (CorePlayer cp : CoreSystem.getOnlineCorePlayers()) {
-                    cp.getScoreboard().reload();
+                sender.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§aScorebard wird neu geladen...");
+                for (BukkitCorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
+                    cp.getScoreboard().reload(BukkitCoreSystem.getInstance());
                 }
             } else if (args.length == 2) {
                 if (args[1].equalsIgnoreCase("config")) {
-                    sender.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§aMySQL-Config wird neu geladen...");
-                    CoreSystem.config.store();
+                    sender.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§aMySQL-Config wird neu geladen...");
+                    BukkitCoreSystem.config.store();
                 } else if (args[1].equalsIgnoreCase("permissions")) {
-                    sender.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§aPermissions werden neu geladen...");
-                    Bukkit.getScheduler().runTaskAsynchronously(CoreSystem.getInstance(), () -> {
-                        CoreSystem.getInstance().getPermissionManager().reload();
-                        for (CorePlayer cp : CoreSystem.getOnlineCorePlayers()) {
+                    sender.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§aPermissions werden neu geladen...");
+                    Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
+                        BukkitCoreSystem.getInstance().getPermissionManager().reload();
+                        for (BukkitCorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
                             cp.reloadPermissions();
                         }
                     });
                 } else if (args[1].equalsIgnoreCase("scoreboard")) {
-                    sender.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§aScorebard wird neu geladen...");
-                    for (CorePlayer cp : CoreSystem.getOnlineCorePlayers()) {
-                        cp.getScoreboard().reload();
+                    sender.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§aScorebard wird neu geladen...");
+                    for (BukkitCorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
+                        cp.getScoreboard().reload(BukkitCoreSystem.getInstance());
                     }
                 }
             }

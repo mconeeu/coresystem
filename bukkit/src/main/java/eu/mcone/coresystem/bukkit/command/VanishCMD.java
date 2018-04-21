@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.bukkit.CoreSystem;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -25,8 +25,7 @@ public class VanishCMD implements CommandExecutor{
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender instanceof Player) {
 			Player p = (Player) sender;
-            if (!CoreSystem.getInstance().getCooldownSystem().canExecute(this.getClass(), p)) return true;
-            CoreSystem.getInstance().getCooldownSystem().addPlayer(p.getUniqueId(), this.getClass());
+			if (!BukkitCoreSystem.getInstance().getCooldownSystem().addAndCheck(BukkitCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return false;
 
 			if (p.hasPermission("system.bukkit.vanish")) {
 				if (args.length == 0) {
@@ -36,7 +35,7 @@ public class VanishCMD implements CommandExecutor{
 							all.hidePlayer(p);
 						}
 						p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
-						p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§2Du bist nun im §fVanish §2Modus!");
+						p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Du bist nun im §fVanish §2Modus!");
 
 						return true;
 					} else {
@@ -45,18 +44,18 @@ public class VanishCMD implements CommandExecutor{
 							all.showPlayer(p);
 						}
 						p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
-						p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§2Du bist nun nicht mehr im §fVanish §2Modus!");
+						p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Du bist nun nicht mehr im §fVanish §2Modus!");
 
 						return true;
 					}
 				} else {
-					p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze §c/vanish");
+					p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze §c/vanish");
 				}
 			} else {
-				p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Berechtigung für diesen Befehl!");
+				p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Berechtigung für diesen Befehl!");
 			}
 		} else {
-			Bukkit.getConsoleSender().sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Dieser Befehl kann nur von einem Spieler ausgeführt werden!");
+			Bukkit.getConsoleSender().sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Dieser Befehl kann nur von einem Spieler ausgeführt werden!");
 			return true;
 		}
 		return false;

@@ -6,8 +6,9 @@
 
 package eu.mcone.coresystem.bukkit.inventory;
 
-import eu.mcone.coresystem.bukkit.channel.PluginMessage;
-import eu.mcone.coresystem.bukkit.util.ItemBuilder;
+import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -17,7 +18,7 @@ public class FriendsInventory extends CoreInventory {
     FriendsInventory(Player p) {
         super("§8» §3§lMeine Freunde", p, 54, Option.FILL_EMPTY_SLOTS);
 
-        new PluginMessage(player, friends -> {
+        BukkitCoreSystem.getInstance().getChannelHandler().sendPluginMessage(player, friends -> {
             int i = 0;
             for (String friend : friends.split(",")) {
                 if (friend.equals("") || i > 44) continue;

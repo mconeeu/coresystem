@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -28,7 +28,7 @@ public class TeamCMD
   public void execute(final CommandSender sender, final String[] args){
       if(sender instanceof ProxiedPlayer) {
           if (args.length == 0) {
-              String[] parts = CoreSystem.sqlconfig.getConfigValue("CMD-YT").split("%button%");
+              String[] parts = BungeeCoreSystem.sqlconfig.getConfigValue("CMD-YT").split("%button%");
 
               sender.sendMessage(
                       new ComponentBuilder("")
@@ -41,7 +41,7 @@ public class TeamCMD
               );
           }
       } else {
-          Messager.sendSimple(sender, CoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
+          Messager.sendSimple(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
       }
   }
 }

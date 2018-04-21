@@ -6,8 +6,9 @@
 
 package eu.mcone.coresystem.bukkit.inventory;
 
-import eu.mcone.coresystem.bukkit.channel.PluginMessage;
-import eu.mcone.coresystem.bukkit.util.ItemBuilder;
+import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -21,7 +22,7 @@ public class PartyInventory extends CoreInventory {
     PartyInventory(Player p) {
         super("§8» §5§lMeine Party", p, 54, Option.FILL_EMPTY_SLOTS);
 
-        new PluginMessage(player, member -> {
+        BukkitCoreSystem.getInstance().getChannelHandler().sendPluginMessage(player, member -> {
             if (!member.equals("false")) {
                 String[] members = member.split(",");
                 boolean isPartyLeader = isPartyLeader(player, members);
@@ -50,17 +51,17 @@ public class PartyInventory extends CoreInventory {
                 if (isPartyLeader)
                     setItem(49, new ItemBuilder(Material.BARRIER, 1, 0).displayName("§cParty löschen").create(), () -> {
                         p.closeInventory();
-                        new PluginMessage(p, "CMD" ,"party delete");
+                        BukkitCoreSystem.getInstance().getChannelHandler().sendPluginMessage(p, "CMD" ,"party delete");
                     });
 
                 setItem(53, new ItemBuilder(Material.SLIME_BALL, 1, 0).displayName("§4Party verlassen").create(), () -> {
                     p.closeInventory();
-                    new PluginMessage(p, "CMD" ,"party leave");
+                    BukkitCoreSystem.getInstance().getChannelHandler().sendPluginMessage(p, "CMD" ,"party leave");
                 });
             } else {
                 setItem(22, new ItemBuilder(Material.CAKE, 1, 0).displayName("§5Party erstellen").create(), () -> {
                     p.closeInventory();
-                    new PluginMessage(p, "CMD" ,"party create");
+                    BukkitCoreSystem.getInstance().getChannelHandler().sendPluginMessage(p, "CMD" ,"party create");
                 });
 
                 setItem(45, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), () -> {

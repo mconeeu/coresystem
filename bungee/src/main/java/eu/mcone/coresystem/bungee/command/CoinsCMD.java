@@ -6,8 +6,8 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
-import eu.mcone.coresystem.bungee.api.CoinsAPI;
+import eu.mcone.coresystem.api.core.player.CoinsAPI;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -22,12 +22,13 @@ public class CoinsCMD extends Command{
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (sender instanceof ProxiedPlayer) {
+            CoinsAPI coinsAPI = BungeeCoreSystem.getInstance().getCoinsAPI();
+
             ProxiedPlayer p = (ProxiedPlayer) sender;
-            if (!CoreSystem.getInstance().getCooldownSystem().canExecute(this.getClass(), p)) return;
-            CoreSystem.getInstance().getCooldownSystem().addPlayer(p.getUniqueId(), this.getClass());
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
 
             if (args.length == 0) {
-                int coins = CoinsAPI.getCoins(p.getUniqueId());
+                int coins = coinsAPI.getCoins(p.getUniqueId());
                 Messager.send(p, "§7Du hast momentan §a" + coins + " Coins!");
             } else if (p.hasPermission("system.bungee.coins")) {
                 if (args.length == 1) {
@@ -39,8 +40,8 @@ public class CoinsCMD extends Command{
                         Messager.send(p, "§4Bitte benutze: §c/coins set <Spieler> <Anzahl>");
                     } else {
                         String name = args[0];
-                        if (CoinsAPI.isRegistered(name)) {
-                            int coins = CoinsAPI.getCoins(name);
+                        if (coinsAPI.isRegistered(name)) {
+                            int coins = coinsAPI.getCoins(name);
                             Messager.send(p, "§7Der Spieler §f" + name + "§7 hat momentan §a" + coins + " Coins!");
                         } else {
                             Messager.send(p, "§4Dieser Spieler war noch nie auf MC ONE");
@@ -59,22 +60,22 @@ public class CoinsCMD extends Command{
                 } else if (args.length == 3) {
                     if (args[0].equalsIgnoreCase("add")) {
                         String name = args[1];
-                        if (CoinsAPI.isRegistered(name)) {
+                        if (coinsAPI.isRegistered(name)) {
                             int coins = Integer.valueOf(args[2]);
-                            CoinsAPI.addCoins(name, coins);
+                            coinsAPI.addCoins(name, coins);
                             Messager.send(p, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins§2 hinzugefügt");
                         } else {
                             Messager.send(p, "§4Dieser Spieler war noch nie auf MC ONE");
                         }
                     } else if (args[0].equalsIgnoreCase("remove")) {
                         String name = args[1];
-                        if (CoinsAPI.isRegistered(name)) {
+                        if (coinsAPI.isRegistered(name)) {
                             int coins = Integer.valueOf(args[2]);
-                            int coins2 = CoinsAPI.getCoins(p.getUniqueId());
+                            int coins2 = coinsAPI.getCoins(p.getUniqueId());
                             if (coins2 <= 0) {
                                 Messager.send(p, " §4Du kannst dem Spieler §f" + name + " §4keine Coins mehr wegnehmen");
                             } else {
-                                CoinsAPI.removeCoins(name, coins);
+                                coinsAPI.removeCoins(name, coins);
                                 Messager.send(p, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins §2abgezogen");
                             }
                         } else {
@@ -82,9 +83,9 @@ public class CoinsCMD extends Command{
                         }
                     } else if (args[0].equalsIgnoreCase("set")) {
                         String name = args[1];
-                        if (CoinsAPI.isRegistered(name)) {
+                        if (coinsAPI.isRegistered(name)) {
                             int coins = Integer.valueOf(args[2]);
-                            CoinsAPI.setCoins(name, coins);
+                            coinsAPI.setCoins(name, coins);
                             Messager.send(p, "§f" + name + "§2 hat nun §a" + coins + " Coins§2!");
                         } else {
                             Messager.send(p, "§4Dieser Spieler war noch nie auf MC ONE");

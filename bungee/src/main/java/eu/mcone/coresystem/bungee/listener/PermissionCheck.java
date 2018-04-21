@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PermissionCheckEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -22,7 +22,11 @@ public class PermissionCheck implements Listener {
             final ProxiedPlayer p = (ProxiedPlayer) e.getSender();
             final String permission = e.getPermission();
 
-            e.setHasPermission(p.getUniqueId().equals(UUID.fromString("44b8a5d6-c2c3-4576-997f-71b94f5eb7e0")) || p.getUniqueId().equals(UUID.fromString("5139fcd7-7c3f-4cd4-8d76-5f365c36d9e5")) || CoreSystem.getCorePlayer(p).hasPermission(permission));
+            e.setHasPermission(
+                    p.getUniqueId().equals(UUID.fromString("44b8a5d6-c2c3-4576-997f-71b94f5eb7e0")) ||
+                    p.getUniqueId().equals(UUID.fromString("5139fcd7-7c3f-4cd4-8d76-5f365c36d9e5")) ||
+                    BungeeCoreSystem.getInstance().getCorePlayer(p).hasPermission(permission)
+            );
         }
     }
 

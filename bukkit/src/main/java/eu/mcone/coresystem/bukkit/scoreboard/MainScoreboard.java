@@ -6,15 +6,16 @@
 
 package eu.mcone.coresystem.bukkit.scoreboard;
 
-import eu.mcone.coresystem.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.lib.player.Group;
-import eu.mcone.coresystem.lib.util.Random;
+import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
+import eu.mcone.coresystem.api.core.player.Group;
+import eu.mcone.coresystem.api.core.util.Random;
 import org.bukkit.scoreboard.Team;
 
 public class MainScoreboard extends CoreScoreboard {
 
     @Override
-    public void setPlayerTeams(CorePlayer p, org.bukkit.scoreboard.Scoreboard sb) {
+    public void setPlayerTeams(BukkitCorePlayer p, org.bukkit.scoreboard.Scoreboard sb) {
         Group g = p.isNicked() ? Group.SPIELER : p.getMainGroup();
 
         Team t = sb.registerNewTeam(g.getScore()+new Random(6).nextString());

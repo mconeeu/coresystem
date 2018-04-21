@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.hologram;
 
-import eu.mcone.coresystem.bukkit.CoreSystem;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Hologram {
+public class Hologram implements eu.mcone.coresystem.api.bukkit.hologram.Hologram {
 
     private List<EntityArmorStand> entitylist;
     private String[] Text;
@@ -35,12 +35,12 @@ public class Hologram {
 
     public void showPlayerTemp(final Player p, final int Time) {
         this.showPlayer(p);
-        Bukkit.getScheduler().runTaskLater(CoreSystem.getInstance(), () -> Hologram.this.hidePlayer(p), (long)Time);
+        Bukkit.getScheduler().runTaskLater(BukkitCoreSystem.getInstance(), () -> Hologram.this.hidePlayer(p), (long)Time);
     }
 
     public void showAllTemp(final int Time) {
         this.showAll();
-        Bukkit.getScheduler().runTaskLater(CoreSystem.getInstance(), Hologram.this::hideAll, (long)Time);
+        Bukkit.getScheduler().runTaskLater(BukkitCoreSystem.getInstance(), Hologram.this::hideAll, (long)Time);
     }
 
     public void showPlayer(final Player p) {

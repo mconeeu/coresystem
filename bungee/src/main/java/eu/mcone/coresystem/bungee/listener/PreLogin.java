@@ -6,9 +6,10 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
-import eu.mcone.coresystem.bungee.player.CorePlayer;
+import eu.mcone.coresystem.bungee.player.BungeeCorePlayer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -35,10 +36,10 @@ public class PreLogin implements Listener {
             }
         }
 
-        final CorePlayer p = new CorePlayer(e.getConnection().getName());
+		try {
+			BungeeCorePlayer p = new BungeeCorePlayer(BungeeCoreSystem.getInstance(), e.getConnection().getName());
 
-		if (p.getUuid() != null) {
-			CoreSystem.mysql1.select("SELECT * FROM `bungeesystem_bansystem_ban` WHERE `uuid` = '" + p.getUuid().toString() + "'", rs -> {
+			BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT * FROM `bungeesystem_bansystem_ban` WHERE `uuid` = '" + p.getUuid().toString() + "'", rs -> {
 				try {
 					if (rs.next()) {
 						String team_member = rs.getString("team_member");
@@ -64,8 +65,8 @@ public class PreLogin implements Listener {
 				}
 			});
 
-			if (CoreSystem.sqlconfig.getBooleanConfigValue("BetaKey-System")) {
-				CoreSystem.mysql1.select("SELECT `timestamp` FROM `bungeesystem_betakey` WHERE `uuid`='" + p.getUuid().toString() + "'", rs -> {
+			if (BungeeCoreSystem.sqlconfig.getBooleanConfigValue("BetaKey-System")) {
+				BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT `timestamp` FROM `bungeesystem_betakey` WHERE `uuid`='" + p.getUuid().toString() + "'", rs -> {
 					try {
 						if (!p.hasPermission("group.team")) {
 							if (!rs.next()) {
@@ -85,15 +86,15 @@ public class PreLogin implements Listener {
 				});
 			}
 
-			if (CoreSystem.sqlconfig.getBooleanConfigValue("Wartungs-Modus")) {
+			if (BungeeCoreSystem.sqlconfig.getBooleanConfigValue("Wartungs-Modus")) {
 				if (p.hasPermission("system.bungee.*") || p.hasPermission("system.bungee.wartung.join") || p.hasPermission("system.*")) {
 					e.setCancelled(false);
 				} else {
 					e.setCancelled(true);
-					e.setCancelReason(new TextComponent(TextComponent.fromLegacyText(CoreSystem.sqlconfig.getConfigValue("Wartung-KickNachricht"))));
+					e.setCancelReason(new TextComponent(TextComponent.fromLegacyText(BungeeCoreSystem.sqlconfig.getConfigValue("Wartung-KickNachricht"))));
 					p.unregister();
 				}
 			}
-		}
+		} catch (PlayerNotFoundException ignored) {}
 	}
 }

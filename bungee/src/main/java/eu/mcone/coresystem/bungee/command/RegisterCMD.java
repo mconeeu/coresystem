@@ -6,9 +6,9 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.bungee.CoreSystem;
+import eu.mcone.coresystem.api.core.util.Random;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.Messager;
-import eu.mcone.coresystem.lib.util.Random;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -26,24 +26,23 @@ public class RegisterCMD extends Command{
             final ProxiedPlayer p = (ProxiedPlayer)sender;
             final long millis = System.currentTimeMillis();
 
-            if (!CoreSystem.getInstance().getCooldownSystem().canExecute(this.getClass(), p)) return;
-            CoreSystem.getInstance().getCooldownSystem().addPlayer(p.getUniqueId(), this.getClass());
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
 
-            CoreSystem.mysql1.selectAsync("SELECT passwort FROM userinfo WHERE uuid = '" + p.getUniqueId().toString() + "'", rs_main -> {
+            BungeeCoreSystem.getInstance().getMySQL(1).selectAsync("SELECT password FROM userinfo WHERE uuid = '" + p.getUniqueId().toString() + "'", rs_main -> {
                 try{
                     if (rs_main.next()){
-                        if (rs_main.getObject("passwort") != null){
+                        if (rs_main.getObject("password") != null){
                             Messager.send(p, "§4Du hast dich bereits registriert!");
                         } else {
-                            CoreSystem.mysql1.select("SELECT `uuid` FROM `website_account_token` WHERE `uuid`= '" + p.getUniqueId().toString() + "' AND `type`='register'", rs -> {
+                            BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT `uuid` FROM `website_account_token` WHERE `uuid`= '" + p.getUniqueId().toString() + "' AND `type`='register'", rs -> {
                                 String token = new Random(16).nextString();
 
                                 try{
                                     if (rs.next()) {
-                                        CoreSystem.mysql1.update("UPDATE `website_account_token` SET `timestamp` = '" + millis / 1000 + "', `token` = '" + token + "' WHERE `uuid`='" + p.getUniqueId().toString() + "' AND `type`='register';");
+                                        BungeeCoreSystem.getInstance().getMySQL(1).update("UPDATE `website_account_token` SET `timestamp` = '" + millis / 1000 + "', `token` = '" + token + "' WHERE `uuid`='" + p.getUniqueId().toString() + "' AND `type`='register';");
                                         Messager.send(p, "§2Du kannst dich nun auf §fhttps://www.mcone.eu/register.php?token=" + token + " §2registrieren!");
                                     } else {
-                                        CoreSystem.mysql1.update("INSERT INTO `website_account_token` (uuid, token, timestamp, type) VALUES ('" +  p.getUniqueId().toString() + "', '" +  token + "', '" +  millis / 1000 + "', 'register')");
+                                        BungeeCoreSystem.getInstance().getMySQL(1).update("INSERT INTO `website_account_token` (uuid, token, timestamp, type) VALUES ('" +  p.getUniqueId().toString() + "', '" +  token + "', '" +  millis / 1000 + "', 'register')");
                                         Messager.send(p, "§2Du kannst dich nun auf §fhttps://www.mcone.eu/register.php?token=" + token + " §2registrieren!");
                                     }
                                 }catch (SQLException e){
@@ -58,7 +57,7 @@ public class RegisterCMD extends Command{
                 }
             });
         } else {
-            Messager.sendSimple(sender, CoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
+            Messager.sendSimple(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
         }
 
     }

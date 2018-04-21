@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.bukkit.CoreSystem;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.hologram.HologramManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -26,8 +26,7 @@ public class HoloCMD implements CommandExecutor{
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
         if (sender instanceof Player) {
             Player p = (Player) sender;
-            if (!CoreSystem.getInstance().getCooldownSystem().canExecute(this.getClass(), p)) return true;
-            CoreSystem.getInstance().getCooldownSystem().addPlayer(p.getUniqueId(), this.getClass());
+            if (!BukkitCoreSystem.getInstance().getCooldownSystem().addAndCheck(BukkitCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return false;
 
             if (p.hasPermission("system.bukkit.holo")) {
                 if (args.length >= 3) {
@@ -39,19 +38,19 @@ public class HoloCMD implements CommandExecutor{
                         }
 
                         api.addHologram(args[1], p.getLocation(), line.toString());
-                        p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§2Hologramm §f" + args[1] + "§2 erfolgreich hinzugefügt!");
+                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Hologramm §f" + args[1] + "§2 erfolgreich hinzugefügt!");
                         return true;
                     }
                 } else if (args.length == 2) {
                     if (args[0].equalsIgnoreCase("remove")) {
                         api.removeHologram(args[1]);
-                        p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§2Hologramm §f" + args[1] + "§2 erfolgreich gelöscht!");
+                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Hologramm §f" + args[1] + "§2 erfolgreich gelöscht!");
                         return true;
                     }
                 } else if (args.length == 1) {
                     if (args[0].equalsIgnoreCase("list")) {
                         StringBuilder result = new StringBuilder();
-                        result.append(CoreSystem.config.getConfigValue("Prefix")).append("§7Diese Hologramme sind gerade geladen:\n");
+                        result.append(BukkitCoreSystem.config.getConfigValue("Prefix")).append("§7Diese Hologramme sind gerade geladen:\n");
                         int i = api.getHolograms().keySet().size();
                         for (String h : api.getHolograms().keySet()) {
                             result.append("§3§o").append(h);
@@ -63,19 +62,19 @@ public class HoloCMD implements CommandExecutor{
                         return true;
                     } else if (args[0].equalsIgnoreCase("reload")) {
                         api.reload();
-                        p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§2Hologramme erfolgreich neu geladen!");
+                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Hologramme erfolgreich neu geladen!");
                         return true;
                     }
                 }
 
-                p.sendMessage(CoreSystem.config.getConfigValue("Prefix")+"§4Bitte benutze: §c/holo <add | remove | list | reload> [<Name>] [<Erste Zeile>]");
+                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix")+"§4Bitte benutze: §c/holo <add | remove | list | reload> [<Name>] [<Erste Zeile>]");
                 return true;
             } else {
-                p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Berechtigung für diesen Befehl");
+                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Berechtigung für diesen Befehl");
                 return true;
             }
         } else {
-            Bukkit.getConsoleSender().sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Dieser Befehl kann nur von einem Spieler ausgeführt werden!");
+            Bukkit.getConsoleSender().sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Dieser Befehl kann nur von einem Spieler ausgeführt werden!");
             return true;
         }
     }

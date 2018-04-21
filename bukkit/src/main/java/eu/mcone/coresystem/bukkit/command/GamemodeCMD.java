@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.bukkit.CoreSystem;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Sound;
@@ -21,8 +21,7 @@ public class GamemodeCMD implements CommandExecutor{
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (sender instanceof Player) {
 			Player p = (Player) sender;
-			if (!CoreSystem.getInstance().getCooldownSystem().canExecute(this.getClass(), p)) return true;
-			CoreSystem.getInstance().getCooldownSystem().addPlayer(p.getUniqueId(), this.getClass());
+			if (!BukkitCoreSystem.getInstance().getCooldownSystem().addAndCheck(BukkitCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return false;
 
 			if (p.hasPermission("system.bukkit.gamemode")) {
 				if (args.length == 1) {
@@ -39,12 +38,12 @@ public class GamemodeCMD implements CommandExecutor{
 						p.setGameMode(GameMode.SPECTATOR);
 						p.setAllowFlight(true);
 					} else {
-						p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze: §c/gm §4oder §c/gamemode <Gamemode>");
+						p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze: §c/gm §4oder §c/gamemode <Gamemode>");
 						p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
 						return true;
 					}
 
-					p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§2Du hast deinen Spielmodus auf §f" + p.getGameMode() + " §2gesetzt!");
+					p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Du hast deinen Spielmodus auf §f" + p.getGameMode() + " §2gesetzt!");
 					p.playSound(p.getLocation(), Sound.BLAZE_HIT, 1, 1);
 					return true;
 
@@ -65,34 +64,34 @@ public class GamemodeCMD implements CommandExecutor{
 							t.setGameMode(GameMode.SPECTATOR);
 							p.setAllowFlight(true);
 						} else {
-							p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze: §c/gm §4oder §c/gamemode <Gamemode> [<Spieler>]");
+							p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze: §c/gm §4oder §c/gamemode <Gamemode> [<Spieler>]");
 							p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
 							return true;
 						}
 
-						t.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§7Dein Spielmodus wurde auf §f" + t.getGameMode() + " §7gesetzt.");
-						p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§2Du hast den Spielmodus von §f" + t.getName() + " §2auf §a" + t.getGameMode() + "§2 gesetzt.");
+						t.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§7Dein Spielmodus wurde auf §f" + t.getGameMode() + " §7gesetzt.");
+						p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Du hast den Spielmodus von §f" + t.getName() + " §2auf §a" + t.getGameMode() + "§2 gesetzt.");
 						t.playSound(t.getLocation(), Sound.BLAZE_HIT, 1, 1);
 						p.playSound(p.getLocation(), Sound.BLAZE_HIT, 1, 1);
 						return true;
 
 					} catch (NullPointerException d) {
-						p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Dieser Spieler ist nicht Online oder existiert nicht!");
+						p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Dieser Spieler ist nicht Online oder existiert nicht!");
 						return true;
 					}
 
 				} else {
-					p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze: §c/gm §4oder §c/gamemode <GamemodeCMD> [<Spieler>]");
+					p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze: §c/gm §4oder §c/gamemode <GamemodeCMD> [<Spieler>]");
 					p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
 					return true;
 				}
 			} else {
-				p.sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Rechte für den Befehl §cgamemode");
+				p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Rechte für den Befehl §cgamemode");
 				p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
 				return true;
 			}
 		} else {
-			Bukkit.getConsoleSender().sendMessage(CoreSystem.config.getConfigValue("Prefix") + "§4Dieser Befehl kann nur von einem Spieler ausgeführt werden!");
+			Bukkit.getConsoleSender().sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Dieser Befehl kann nur von einem Spieler ausgeführt werden!");
 			return true;
 		}
 	}
