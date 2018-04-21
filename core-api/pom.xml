@@ -19,15 +19,15 @@
 
     <repositories>
         <repository>
-            <id>mcone-cloud</id>
-            <url>http://repo.mcone.eu/nexus/content/repositories/cloud/</url>
+            <id>mcone-systems</id>
+            <url>http://repo.mcone.eu/nexus/content/repositories/system/</url>
         </repository>
     </repositories>
 
     <dependencies>
         <dependency>
             <groupId>eu.mcone.cloud</groupId>
-            <artifactId>plugin</artifactId>
+            <artifactId>plugin-api</artifactId>
             <version>1.1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
