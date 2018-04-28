@@ -8,5 +8,11 @@
     <file url="file://$PROJECT_DIR$/bungee-api" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/core" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/core-api" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mcone-coresystem-bukkit" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mcone-coresystem-bukkit-api" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mcone-coresystem-bungee" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mcone-coresystem-bungee-api" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mcone-coresystem-core" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mcone-coresystem-core-api" charset="UTF-8" />
   </component>
 </project>

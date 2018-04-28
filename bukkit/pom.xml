@@ -16,6 +16,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>bukkit</artifactId>
+    <packaging>jar</packaging>
+
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
 
     <build>
         <plugins>
@@ -52,13 +57,11 @@
                 <configuration>
                     <options>
                         <option>-ignorewarnings</option>
-                        <option>-allowaccessmodification</option>
                         <option>-dontnote</option>
                         <option>-keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,LocalVariable*Table,*Annotation*,Synthetic,EnclosingMethod,EventHandler,Override</option>
                         <option>-keepclassmembers class ** { @org.bukkit.event.EventHandler *; }</option>
                         <option>-keep class eu.mcone.coresystem.api.** { *; }</option>
                         <option>-keep class ** extends org.bukkit.plugin.java.JavaPlugin { public void onEnable(); public void onDisable(); }</option>
-                        <option>-keep class !eu.mcone.coresystem.** { *; }</option>
                     </options>
                     <obfuscate>true</obfuscate>
                     <libs>

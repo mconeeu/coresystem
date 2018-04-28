@@ -16,6 +16,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>bungee</artifactId>
+    <packaging>jar</packaging>
+
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+    </properties>
 
     <build>
         <plugins>
@@ -52,13 +57,12 @@
                 <configuration>
                     <options>
                         <option>-ignorewarnings</option>
-                        <option>-allowaccessmodification</option>
+                        <!--<option>-allowaccessmodification</option>-->
                         <option>-dontnote</option>
                         <option>-keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,LocalVariable*Table,*Annotation*,Synthetic,EnclosingMethod,EventHandler,Override</option>
                         <option>-keepclassmembers class ** { @net.md_5.bungee.event.EventHandler *; }</option>
                         <option>-keep class eu.mcone.coresystem.api.** { *; }</option>
                         <option>-keep class ** extends net.md_5.bungee.api.plugin.Plugin { public void onEnable(); public void onDisable(); }</option>
-                        <option>-keep class !eu.mcone.coresystem.** { *; }</option>
                     </options>
                     <obfuscate>true</obfuscate>
                     <libs>

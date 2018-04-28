@@ -26,10 +26,6 @@ public abstract class CoreInventory {
     @Getter
     private Map<ItemStack, CoreItemEvent> events;
 
-    public enum Option {
-        FILL_EMPTY_SLOTS
-    }
-
     public CoreInventory(String name, Player player, int size, Option... args) {
         this.inventory = Bukkit.createInventory(null, size, name);
         this.player = player;
@@ -40,6 +36,21 @@ public abstract class CoreInventory {
         List<Option> options = new ArrayList<>(Arrays.asList(args));
         if (options.contains(Option.FILL_EMPTY_SLOTS)) {
             for (int i = 0; i < size; i++) {
+                inventory.setItem(i, new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 7).displayName("§8//§oMCONE§8//").create());
+            }
+        }
+    }
+
+    public CoreInventory(String name, Player player, CoreInventorySize size, Option... args) {
+        this.inventory = Bukkit.createInventory(null, size.getValue(), name);
+        this.player = player;
+        this.events = new HashMap<>();
+
+        CoreSystem.getInstance().registerInventory(this);
+
+        List<Option> options = new ArrayList<>(Arrays.asList(args));
+        if (options.contains(Option.FILL_EMPTY_SLOTS)) {
+            for (int i = 0; i < size.getValue(); i++) {
                 inventory.setItem(i, new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 7).displayName("§8//§oMCONE§8//").create());
             }
         }
@@ -56,6 +67,10 @@ public abstract class CoreInventory {
 
     protected void openInventory() {
         player.openInventory(inventory);
+    }
+
+    public enum Option {
+        FILL_EMPTY_SLOTS
     }
 
 }

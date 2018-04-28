@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.core.labymod;
 
-import com.google.gson.JsonObject;
 import eu.mcone.coresystem.api.core.exception.LabyModAPIException;
 import eu.mcone.coresystem.api.core.labymod.LabyPermission;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
@@ -32,17 +31,16 @@ public abstract class LabyModAPI implements eu.mcone.coresystem.api.core.labymod
 
     public static byte[] getBytesToSend(Map<LabyPermission, Boolean> permissions)
     {
-        JsonObject object = new JsonObject();
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        int i = 0;
         for (Map.Entry<LabyPermission, Boolean> permissionEntry : permissions.entrySet()) {
-            object.addProperty(permissionEntry.getKey().toString(), permissionEntry.getValue());
+            sb.append("\"").append(permissionEntry.getKey()).append("\"").append(":").append("\"").append(permissionEntry.getValue().toString()).append("\"");
+            if (i != permissions.size()) sb.append(",");
         }
+        sb.append("}");
 
-        return getBytesToSend("PERMISSIONS", object.toString());
-    }
-
-    public static byte[] getBytesToSend(String key, JsonObject object)
-    {
-        return getBytesToSend(key, object.toString());
+        return getBytesToSend("PERMISSIONS", sb.toString());
     }
 
     private static byte[] getBytesToSend(String messageKey, String messageContents)
