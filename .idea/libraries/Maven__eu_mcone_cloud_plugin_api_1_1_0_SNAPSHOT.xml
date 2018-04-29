@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: eu.mcone.cloud:plugin-api:1.1.0-SNAPSHOT">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/eu/mcone/cloud/plugin-api/1.1.0-SNAPSHOT/plugin-api-1.1.0-20180428.170732-1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/eu/mcone/cloud/plugin-api/1.1.0-SNAPSHOT/plugin-api-1.1.0-SNAPSHOT.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/eu/mcone/cloud/plugin-api/1.1.0-SNAPSHOT/plugin-api-1.1.0-20180428.170732-1-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/eu/mcone/cloud/plugin-api/1.1.0-SNAPSHOT/plugin-api-1.1.0-SNAPSHOT-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/eu/mcone/cloud/plugin-api/1.1.0-SNAPSHOT/plugin-api-1.1.0-20180428.170732-1-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/eu/mcone/cloud/plugin-api/1.1.0-SNAPSHOT/plugin-api-1.1.0-SNAPSHOT-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
