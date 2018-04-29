@@ -77,7 +77,6 @@ public abstract class LabyModAPI implements eu.mcone.coresystem.api.core.labymod
         buf.writeBytes(abyte);
     }
 
-    @Override
     public int readVarIntFromBuffer(ByteBuf buf)
     {
         int i = 0;
@@ -94,7 +93,6 @@ public abstract class LabyModAPI implements eu.mcone.coresystem.api.core.labymod
         return i;
     }
 
-    @Override
     public String readString(ByteBuf buf, int maxLength)
     {
         int i = readVarIntFromBuffer(buf);

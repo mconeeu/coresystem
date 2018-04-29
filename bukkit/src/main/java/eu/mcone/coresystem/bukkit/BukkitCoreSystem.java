@@ -30,6 +30,7 @@ import eu.mcone.coresystem.bukkit.player.NickManager;
 import eu.mcone.coresystem.bukkit.player.StatsAPI;
 import eu.mcone.coresystem.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.bukkit.util.AFKCheck;
+import eu.mcone.coresystem.bukkit.world.WorldLocation;
 import eu.mcone.coresystem.bukkit.world.WorldManager;
 import eu.mcone.coresystem.bukkit.world.WorldUploader;
 import eu.mcone.coresystem.core.mysql.MySQL;

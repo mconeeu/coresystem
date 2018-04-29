@@ -1,6 +1,5 @@
 <component name="ArtifactManager">
   <artifact type="jar" build-on-make="true" name="MCONE-BungeeCoreSystem:jar">
-    <output-path />
     <root id="archive" name="MCONE-BungeeCoreSystem.jar">
       <element id="module-output" name="bungee" />
       <element id="module-output" name="core" />

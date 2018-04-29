@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.api.core.gamemode;
 
+
 import lombok.Getter;
 
 public enum Gamemode {
