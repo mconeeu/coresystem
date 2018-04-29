@@ -59,6 +59,7 @@ public abstract class CoreInventory {
     public void setItem(int slot, ItemStack item, CoreItemEvent event) {
         inventory.setItem(slot, item);
         events.put(item, event);
+
     }
 
     public void setItem(int slot, ItemStack item) {
