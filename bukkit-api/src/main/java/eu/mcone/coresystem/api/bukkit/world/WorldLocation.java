@@ -7,6 +7,7 @@
 package eu.mcone.coresystem.api.bukkit.world;
 
 import org.bukkit.Location;
+import org.bukkit.configuration.file.FileConfiguration;
 
 public interface WorldLocation {
 
@@ -15,4 +16,10 @@ public interface WorldLocation {
     void addLocation(String key, Location location);
 
     Location getLocation(String key);
+
+    String fromJsonAsString(String key);
+
+    boolean isUseJson();
+
+    FileConfiguration getConfig();
 }
