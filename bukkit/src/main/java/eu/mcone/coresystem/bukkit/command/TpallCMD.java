@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -26,7 +27,6 @@ public class TpallCMD implements CommandExecutor{
                         for (Player p1 : Bukkit.getOnlinePlayers()) {
                             p1.teleport(p.getLocation());
                         }
-                        return true;
                     } else if (args.length == 1) {
                         for (Player p1 : Bukkit.getOnlinePlayers()) {
                             Player target = Bukkit.getServer().getPlayer(args[0]);
@@ -34,20 +34,20 @@ public class TpallCMD implements CommandExecutor{
                             if (target != null) {
                                 p1.teleport(target.getLocation());
                             } else {
-                                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Der Spieler §f" + args[0] + "§4 konnte nicht gefunden werden!");
+                                Messager.send(p, "§4Der Spieler §f" + args[0] + "§4 konnte nicht gefunden werden!");
                             }
                         }
-                        return true;
                     }
                 }
 
-                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze §c/tpall <Spieler>");
-                return true;
+                Messager.send(p, "§4Bitte benutze §c/tpall <Spieler>");
+            } else {
+                Messager.sendTransl(p, "system.command.noperm");
             }
         } else {
-            Bukkit.getConsoleSender().sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Dieser Befehl kann nur von einem Spieler ausgeführt werden!");
-            return true;
+            Messager.sendTransl(sender, "system.command.consolesender");
         }
-        return false;
+
+        return true;
 	}
 }

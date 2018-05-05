@@ -8,7 +8,7 @@ package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.friend.Party;
-import eu.mcone.coresystem.bungee.utils.Messager;
+import eu.mcone.coresystem.api.bungee.util.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -206,7 +206,7 @@ public class PartyCMD extends Command implements TabExecutor {
 
             Messager.sendParty(p, "§4Bitte benutze: §c/party <create | invite | msg | kick | promote | delete | leave> [<Player>]");
         } else {
-            Messager.sendSimple(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
+            Messager.sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 
@@ -216,7 +216,7 @@ public class PartyCMD extends Command implements TabExecutor {
         if (args.length == 1) {
             result.addAll(Arrays.asList("create", "invite", "msg", "kick", "promote", "delete", "leave"));
         } else if (args.length == 2) {
-            if (!args[0].equalsIgnoreCase("msg") || args[0].equalsIgnoreCase("leave")) {
+            if (!args[0].equalsIgnoreCase("msg")) {
                 for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
                     result.add(p.getName());
                 }

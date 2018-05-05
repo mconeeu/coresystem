@@ -6,8 +6,9 @@
 
 package eu.mcone.coresystem.bungee.friend;
 
+import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.utils.Messager;
+import eu.mcone.coresystem.api.bungee.util.Messager;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -53,9 +54,9 @@ public class Party {
                         Messager.sendParty(leader, "§f" + m.getName() + "§7 wurde in die Party eingeladen!");
                         m.sendMessage(
                             new ComponentBuilder("")
-                                .append(TextComponent.fromLegacyText(BungeeCoreSystem.sqlconfig.getConfigValue("Party-Prefix")))
+                                .append(TextComponent.fromLegacyText(BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.party", CoreSystem.getInstance().getCorePlayer(m))))
                                 .append(TextComponent.fromLegacyText("§f"+this.leader.getName()+"§2 hat dich in seine Party eingeladen!\n"))
-                                .append(TextComponent.fromLegacyText(BungeeCoreSystem.sqlconfig.getConfigValue("Party-Prefix")))
+                                .append(BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.party", CoreSystem.getInstance().getCorePlayer(m)))
                                 .append("§a[ANNEHMEN]")
                                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7§o/party accept "+this.leader.getName()).create()))
                                     .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept "+this.leader.getName()))
@@ -73,9 +74,9 @@ public class Party {
         this.invites.add(p);
         p.sendMessage(
             new ComponentBuilder("")
-                .append(TextComponent.fromLegacyText(BungeeCoreSystem.sqlconfig.getConfigValue("Party-Prefix")))
+                .append(TextComponent.fromLegacyText(BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.party", CoreSystem.getInstance().getCorePlayer(p))))
                 .append(TextComponent.fromLegacyText("§f"+this.leader.getName()+"§2 hat dich in seine Party eingeladen!\n"))
-                .append(TextComponent.fromLegacyText(BungeeCoreSystem.sqlconfig.getConfigValue("Party-Prefix")))
+                .append(TextComponent.fromLegacyText(BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.party", CoreSystem.getInstance().getCorePlayer(p))))
                 .append("§a[ANNEHMEN]")
                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7§o/party accept "+this.leader.getName()).create()))
                     .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept "+this.leader.getName()))

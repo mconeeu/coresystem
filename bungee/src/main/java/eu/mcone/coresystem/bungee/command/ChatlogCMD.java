@@ -8,7 +8,8 @@ package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.listener.Chat;
-import eu.mcone.coresystem.bungee.utils.Messager;
+import eu.mcone.coresystem.api.bungee.util.Messager;
+import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -50,7 +51,7 @@ public class ChatlogCMD extends Command{
                                             String msg = msgEntry.getValue();
                                             String time = String.valueOf(msgEntry.getKey());
 
-                                            BungeeCoreSystem.getInstance().getMySQL(1).update("INSERT INTO bungeesystem_chatlog (uuid, nachricht, timestamp) VALUES ('" + t.getUniqueId().toString() + "', '" + msg + "', " + time + ")");
+                                            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO bungeesystem_chatlog (uuid, nachricht, timestamp) VALUES ('" + t.getUniqueId().toString() + "', '" + msg + "', " + time + ")");
                                         } else {
                                             break;
                                         }
@@ -72,7 +73,7 @@ public class ChatlogCMD extends Command{
                 Messager.send(sender, "§cBitte benutze /chatlog <Spieler>");
             }
         } else {
-            Messager.sendSimple(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
+            Messager.sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 

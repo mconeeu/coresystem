@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
+import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import org.bukkit.Bukkit;
@@ -35,12 +36,12 @@ public class PlayerCommandPreprocess implements Listener {
                 if (p.hasPermission(command.getPermission())) {
                     command.execute(p, Arrays.copyOfRange(line, 1, line.length));
                 } else {
-                    p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Berechtigung für diesen Befehl!");
+                    Messager.send(p, "§4Du hast keine Berechtigung für diesen Befehl!");
                 }
             } else {
                 HelpTopic topic = Bukkit.getServer().getHelpMap().getHelpTopic(cmd);
                 if (topic == null) {
-                    p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Der Befehl §c" + cmd + "§4 existiert nicht!");
+                    Messager.send(p, "§4Der Befehl §c" + cmd + "§4 existiert nicht!");
                     e.setCancelled(true);
                 }
             }

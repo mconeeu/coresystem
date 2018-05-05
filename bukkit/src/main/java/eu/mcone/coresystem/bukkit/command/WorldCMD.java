@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.world.WorldUploader;
 import org.bukkit.Bukkit;
@@ -29,7 +30,7 @@ public class WorldCMD implements CommandExecutor {
             if (p.hasPermission("system.bukkit.world")) {
                 if (args.length == 1) {
                     if (args[0].equalsIgnoreCase("list")) {
-                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§7Im Moment sind folgende Welten geladen:");
+                        Messager.send(p, "§7Im Moment sind folgende Welten geladen:");
                         StringBuilder sb = new StringBuilder();
 
                         List<World> worlds = Bukkit.getWorlds();
@@ -59,23 +60,23 @@ public class WorldCMD implements CommandExecutor {
                                     "\n§7Monsters allowed: §f" + w.getAllowMonsters()
                             );
                         } else {
-                            p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Diese Welt existiert nicht!");
+                            Messager.send(p, "§4Diese Welt existiert nicht!");
                         }
                         return true;
                     } else if (args[0].equalsIgnoreCase("store")) {
                         World w = Bukkit.getWorld(args[1]);
 
                         if (w != null) {
-                            p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§7Die Welt wird hochgeladen...");
+                            Messager.send(p, "§7Die Welt wird hochgeladen...");
                             try {
                                 new WorldUploader(w).upload();
-                                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Die Welt wurde erfolgreich abgespeichert und kann nun wieder modifiziert werden!");
+                                Messager.send(p, "§2Die Welt wurde erfolgreich abgespeichert und kann nun wieder modifiziert werden!");
                             } catch (SQLException | IOException e) {
-                                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Es ist ein Fehler beim speichern der Welt aufgetreten!");
+                                Messager.send(p, "§4Es ist ein Fehler beim speichern der Welt aufgetreten!");
                                 e.printStackTrace();
                             }
                         } else {
-                            p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Die Welt §c"+args[1]+"§4 existiert nicht!");
+                            Messager.send(p, "§4Die Welt §c"+args[1]+"§4 existiert nicht!");
                         }
                         return true;
                     } else if (args[0].equalsIgnoreCase("delete")) {
@@ -83,9 +84,9 @@ public class WorldCMD implements CommandExecutor {
 
                         if (w != null) {
                             if (BukkitCoreSystem.getInstance().getWorldManager().removeWorld(w)) {
-                                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Die Welt wurde erfolgreich gelöscht!");
+                                Messager.send(p, "§2Die Welt wurde erfolgreich gelöscht!");
                             } else {
-                                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Es ist ein Fehler beim löschen der Welt aufgetreten!");
+                                Messager.send(p, "§4Es ist ein Fehler beim löschen der Welt aufgetreten!");
                             }
                         }
                     }
@@ -103,12 +104,12 @@ public class WorldCMD implements CommandExecutor {
 
                             if (env != null) {
                                 BukkitCoreSystem.getInstance().getWorldManager().addWorld(args[1], World.Environment.valueOf(args[2]));
-                                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Die Welt " + args[1] + " wurde erfolgreich geladen!");
+                                Messager.send(p, "§2Die Welt " + args[1] + " wurde erfolgreich geladen!");
                             } else {
-                                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Es existieren nur diese Environments: §cNORMAL§4, §cNETHER§4, §cTHE_END");
+                                Messager.send(p, "§4Es existieren nur diese Environments: §cNORMAL§4, §cNETHER§4, §cTHE_END");
                             }
                         } else {
-                            p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Eine Welt mit dem Namen §c"+args[1]+"§4 ist bereits geladen!");
+                            Messager.send(p, "§4Eine Welt mit dem Namen §c"+args[1]+"§4 ist bereits geladen!");
                         }
                         return true;
                     } else if (args[0].equalsIgnoreCase("create")) {
@@ -124,23 +125,23 @@ public class WorldCMD implements CommandExecutor {
 
                             if (env != null) {
                                 BukkitCoreSystem.getInstance().getWorldManager().addWorld(args[1], World.Environment.valueOf(args[2]));
-                                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Die Welt " + args[1] + " wurde erfolgreich erstellt!");
+                                Messager.send(p, "§2Die Welt " + args[1] + " wurde erfolgreich erstellt!");
                             } else {
-                                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Es existieren nur diese Environments: §cNORMAL§4, §cNETHER§4, §cTHE_END");
+                                Messager.send(p, "§4Es existieren nur diese Environments: §cNORMAL§4, §cNETHER§4, §cTHE_END");
                             }
                         } else {
-                            p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Eine Welt mit dem Namen §c"+args[1]+"§4 ist bereits geladen!");
+                            Messager.send(p, "§4Eine Welt mit dem Namen §c"+args[1]+"§4 ist bereits geladen!");
                         }
                     }
                 }
 
                 p.sendMessage("§4Bitte benutze: §c/world <list | load> [<name>] [<NORMAL | NETHER | THE_END>]");
             } else {
-                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Berechtigung für diesen Befehl!");
-                return true;
+                Messager.sendTransl(p, "system.command.noperm");
             }
         }
-        return false;
+
+        return true;
     }
 
 }

@@ -10,7 +10,7 @@ import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.player.OfflinePlayer;
-import eu.mcone.coresystem.bungee.utils.Messager;
+import eu.mcone.coresystem.api.bungee.util.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -145,9 +145,9 @@ public class FriendCMD extends Command implements TabExecutor {
                                                     if (f != null) {
                                                         f.sendMessage(
                                                                 new ComponentBuilder("")
-                                                                        .append(TextComponent.fromLegacyText(BungeeCoreSystem.sqlconfig.getConfigValue("Friend-Prefix")))
+                                                                        .append(TextComponent.fromLegacyText(BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.friend")))
                                                                         .append(TextComponent.fromLegacyText("§f" + p.getName() + "§7 hat dir eine Freundschaftanfrage geschickt!\n"))
-                                                                        .append(TextComponent.fromLegacyText(BungeeCoreSystem.sqlconfig.getConfigValue("Friend-Prefix")))
+                                                                        .append(TextComponent.fromLegacyText(BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.friend")))
                                                                         .append(TextComponent.fromLegacyText("§a[ANNEHMEN]"))
                                                                         .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7§o/friend add " + p.getName()).create()))
                                                                         .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/friend add " + p.getName()))
@@ -273,7 +273,7 @@ public class FriendCMD extends Command implements TabExecutor {
 
             Messager.sendFriend(p, "§4Bitte benutze: §c/friend <list | requests | accept | deny | add | remove | block | unblock> §c[<name>] §4oder §c/friend request toggle");
         } else {
-            Messager.sendSimple(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
+            Messager.sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 
@@ -283,7 +283,7 @@ public class FriendCMD extends Command implements TabExecutor {
         if (args.length == 1) {
             result.addAll(Arrays.asList("list", "requests", "accept", "deny", "add", "remove", "block", "unblock"));
         } else if (args.length == 2) {
-            if (!args[0].equalsIgnoreCase("list") || !args[0].equalsIgnoreCase("requests") || !args[0].equalsIgnoreCase("req") || !args[0].equalsIgnoreCase("request")) {
+            if (!(args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("requests") || args[0].equalsIgnoreCase("req") || args[0].equalsIgnoreCase("request"))) {
                 for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
                     result.add(p.getName());
                 }

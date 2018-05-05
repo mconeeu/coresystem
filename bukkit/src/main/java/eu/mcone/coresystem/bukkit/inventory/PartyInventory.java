@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class PartyInventory extends CoreInventory {
+class PartyInventory extends CoreInventory {
 
     PartyInventory(Player p) {
         super("§8» §5§lMeine Party", p, 54, Option.FILL_EMPTY_SLOTS);

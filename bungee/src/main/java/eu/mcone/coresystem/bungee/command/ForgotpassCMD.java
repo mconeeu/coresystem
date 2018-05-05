@@ -6,9 +6,10 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -20,53 +21,50 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-public class ForgotpassCMD extends Command{
+public class ForgotpassCMD extends Command {
 
-	public ForgotpassCMD(){
-	super("forgotpass", null, "passwortvergessen");
-	}
+    public ForgotpassCMD() {
+        super("forgotpass", null, "passwortvergessen");
+    }
 
-	public void execute(final CommandSender sender, final String[] args) {
-		if (sender instanceof ProxiedPlayer) {
-			final ProxiedPlayer p = (ProxiedPlayer) sender;
-			if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
+    public void execute(final CommandSender sender, final String[] args) {
+        if (sender instanceof ProxiedPlayer) {
+            final ProxiedPlayer p = (ProxiedPlayer) sender;
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId()))
+                return;
 
-			if (args.length == 0) {
-				ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
-					String https_url = "https://api.mcone.eu/forgotpass.php?access_token=ahmyC@aSp6F,6MPaF]f.kXpn,h6CBc-&uuid=" + p.getUniqueId().toString();
-					URL url;
+            if (args.length == 0) {
+                ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
+                    String https_url = "https://api.mcone.eu/forgotpass.php?access_token=ahmyC@aSp6F,6MPaF]f.kXpn,h6CBc-&uuid=" + p.getUniqueId().toString();
+                    URL url;
 
-					try {
-						Messager.send(p, "§7Bitte warten...");
-						url = new URL(https_url);
-						HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-						con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
-						BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
-						String rtn = br.readLine();
+                    try {
+                        Messager.send(p, "§7Bitte warten...");
+                        url = new URL(https_url);
+                        HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+                        con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
+                        BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                        String rtn = br.readLine();
 
-						result rs = new Gson().fromJson(rtn, result.class);
-						//System.out.println("Msg: " + rs.msg);
-						if (rs.result.equalsIgnoreCase("success")) {
-							Messager.send(sender, "§2" + rs.msg);
-						} else if (rs.result.equalsIgnoreCase("error")) {
-							Messager.send(sender, "§4" + rs.msg);
-						} else {
-							Messager.send(sender, "§4Es ist ein Fehler aufgetreten!");
-						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				});
-			} else {
-				Messager.send(sender, "§cBitte benutze /forgotpass");
-			}
-		} else {
-			Messager.sendSimple(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
-		}
-	}
 
-	public class result {
-	  String result;
-	  String msg;
-	}
+                        JsonObject result = new JsonParser().parse(rtn).getAsJsonObject();
+                        if (result.get("result").getAsString().equalsIgnoreCase("success")) {
+                            Messager.send(sender, "§2" + result.get("msg").getAsString());
+                        } else if (result.get("result").getAsString().equalsIgnoreCase("error")) {
+                            Messager.send(sender, "§4" + result.get("msg").getAsString());
+                        } else {
+                            Messager.send(sender, "§4Es ist ein Fehler aufgetreten!");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            } else {
+                Messager.send(sender, "§cBitte benutze /forgotpass");
+            }
+        } else {
+            Messager.sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+        }
+    }
+
 }

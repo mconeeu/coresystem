@@ -33,7 +33,7 @@ public class ServerKick implements Listener {
                 s = ProxyServer.getInstance().getServerInfo(e.getPlayer().getPendingConnection().getListener().getDefaultServer());
             }
         }
-        final ServerInfo kickTo = ProxyServer.getInstance().getServerInfo(BungeeCoreSystem.sqlconfig.getConfigValue("System-Server-Lobby"));
+        final ServerInfo kickTo = ProxyServer.getInstance().getServerInfo("Lobby");
         if (s != null && s.equals(kickTo)) {
             return;
         }

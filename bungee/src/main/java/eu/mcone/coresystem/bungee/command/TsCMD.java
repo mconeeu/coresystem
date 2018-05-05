@@ -7,7 +7,6 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ClickEvent.Action;
@@ -22,23 +21,19 @@ public class TsCMD extends Command {
         super("ts", null, "teamspeak");
     }
 
-    public void execute(final CommandSender sender, final String[] args){
-        if(sender instanceof ProxiedPlayer) {
-            if (args.length == 0) {
-                String[] parts = BungeeCoreSystem.sqlconfig.getConfigValue("CMD-Ts").split("%button%");
+    public void execute(final CommandSender sender, final String[] args) {
+        if (sender instanceof ProxiedPlayer) {
+            String[] parts = BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.command.ts").split("%button%");
 
-                sender.sendMessage(
-                        new ComponentBuilder("")
-                                .append(TextComponent.fromLegacyText(parts[0]))
-                                .append("§7» §3§l§nKlicke hier um zu joinen")
-                                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7§oTeamSpeak-Client Öffnen").create()))
-                                .event(new ClickEvent(Action.OPEN_URL, "http://connect2ts.mcone.eu/"))
-                                .append(TextComponent.fromLegacyText(parts[1]))
-                                .create()
-                );
-            }
-        } else {
-            Messager.sendSimple(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
+            sender.sendMessage(
+                    new ComponentBuilder("")
+                            .append(TextComponent.fromLegacyText(parts[0]))
+                            .append("§7» §3§l§nKlicke hier um zu joinen")
+                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7§oTeamSpeak-Client Öffnen").create()))
+                            .event(new ClickEvent(Action.OPEN_URL, "http://connect2ts.mcone.eu/"))
+                            .append(TextComponent.fromLegacyText(parts[1]))
+                            .create()
+            );
         }
     }
 }

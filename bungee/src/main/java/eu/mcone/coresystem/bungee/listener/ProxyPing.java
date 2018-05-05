@@ -6,8 +6,11 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
+import eu.mcone.coresystem.api.bungee.util.Preference;
+import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.ServerPing;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -16,8 +19,6 @@ import net.md_5.bungee.event.EventHandler;
 import java.util.UUID;
 
 public class ProxyPing implements Listener {
-
-    public static boolean wartung = true;
 
     @EventHandler
     public void on(ProxyPingEvent e){
@@ -33,7 +34,9 @@ public class ProxyPing implements Listener {
         }*/
 
         if (con.getVersion() < 47) {
-            ping.setDescription(BungeeCoreSystem.sqlconfig.getConfigValue("ProxyPing-Protocol-Motd"));
+            ping.setDescriptionComponent(new TextComponent(TextComponent.fromLegacyText(
+                    BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.ping.outdated", Language.GERMAN)
+            )));
 
             version.setProtocol(2);
             version.setName("§4Alte Minecraft-Version!");
@@ -55,12 +58,14 @@ public class ProxyPing implements Listener {
             ping.setVersion(version);
 
             return;
-        } else if (BungeeCoreSystem.sqlconfig.getBooleanConfigValue("Wartungs-Modus")) {
+        } else if (BungeeCoreSystem.getSystem().getPreferences().getBoolean(Preference.MAINTENANCE)) {
             version.setName("§c§oWartungsarbeiten");
             version.setProtocol(2);
             players.getOnline();
             players.getMax();
-            ping.setDescription(BungeeCoreSystem.sqlconfig.getConfigValue("ProxyPing-Wartung-Motd"));
+            ping.setDescriptionComponent(new TextComponent(TextComponent.fromLegacyText(
+                    BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.ping.maintenance", Language.GERMAN)
+            )));
 
             ServerPing.PlayerInfo[] sample = new ServerPing.PlayerInfo[] {
                     new ServerPing.PlayerInfo("§3§lMC ONE §7ist gerade nicht verfügbar,", UUID.randomUUID()),
@@ -76,7 +81,9 @@ public class ProxyPing implements Listener {
             return;
         }
 
-        ping.setDescription(BungeeCoreSystem.sqlconfig.getConfigValue("ProxyPing-Motd"));
+        ping.setDescriptionComponent(new TextComponent(TextComponent.fromLegacyText(
+                BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.ping", Language.GERMAN)
+        )));
         players.getOnline();
         players.getMax();
 

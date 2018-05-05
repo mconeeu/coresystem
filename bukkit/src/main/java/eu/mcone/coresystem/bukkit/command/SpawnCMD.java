@@ -6,9 +6,9 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.util.LocationManager;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -34,23 +34,24 @@ public class SpawnCMD implements CommandExecutor {
             } else if (args.length == 2 && args[0].equalsIgnoreCase("set")) {
                 if (p.hasPermission("system.bukkit.setspawn")) {
                     if (locationManager.putLocation(args[1], p.getLocation())) {
-                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Die Location §f"+args[1]+"§2 wurde erfolgreich gesetzt!");
+                        Messager.send(p, "§2Die Location §f"+args[1]+"§2 wurde erfolgreich gesetzt!");
                     } else {
-                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Die Location §c"+args[1]+"§4 wurde vom Plugin nicht registriert und kann daher nicht gesetzt werden!");
+                        Messager.send(p, "§4Die Location §c"+args[1]+"§4 wurde vom Plugin nicht registriert und kann daher nicht gesetzt werden!");
                     }
                 } else {
-                    p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Berechtigung für diesen Befehl!");
+                    Messager.send(p, "§4Du hast keine Berechtigung für diesen Befehl!");
                 }
                 return true;
             } else if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
                 locationManager.downloadLocations();
-                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Der LocationManager wurde erfolgreich neu geladen!");
+                Messager.send(p, "§2Der LocationManager wurde erfolgreich neu geladen!");
             }
 
-            p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Benutze §c/spawn §4um dich zum Spawn zu teleportieren");
+            Messager.send(p, "§4Benutze §c/spawn §4um dich zum Spawn zu teleportieren");
         } else {
-            Bukkit.getConsoleSender().sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Dieser Befehl kann nur von einem Spieler ausgeführt werden!");
+            Messager.sendTransl(sender, "system.command.consolesender");
         }
+
         return true;
     }
 }

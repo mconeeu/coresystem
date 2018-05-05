@@ -26,11 +26,11 @@ public class PlayerChat implements Listener{
 		String msg = e.getMessage();
 		String prefix;
 
-		if (BukkitCoreSystem.cfg.getConfig().getBoolean("UserChat")){
+		if (BukkitCoreSystem.getSystem().getYamlConfig().getConfig().getBoolean("UserChat")){
             if (cp.isNicked()) {
-                prefix = Group.SPIELER.getPrefix() + BukkitCoreSystem.config.getConfigValue("Chat-Design").replaceAll("%Player%", p.getName());
+                prefix = Group.SPIELER.getPrefix() + BukkitCoreSystem.getInstance().getTranslationManager().get("system.bukkit.chat").replaceAll("%Player%", p.getName());
             } else {
-				prefix = cp.getMainGroup().getPrefix() + BukkitCoreSystem.config.getConfigValue("Chat-Design").replaceAll("%Player%", p.getName());
+				prefix = cp.getMainGroup().getPrefix() + BukkitCoreSystem.getInstance().getTranslationManager().get("system.bukkit.chat").replaceAll("%Player%", p.getName());
             }
 
 			for (Player receiver : Bukkit.getOnlinePlayers()) {

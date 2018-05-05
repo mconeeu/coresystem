@@ -12,6 +12,7 @@ import com.google.gson.JsonParser;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.HoloCMD;
 import eu.mcone.coresystem.bukkit.util.LocationManager;
+import eu.mcone.coresystem.core.mysql.Database;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -65,7 +66,7 @@ public class HologramManager implements Listener, eu.mcone.coresystem.api.bukkit
         }
 
         holograms = new HashMap<>();
-        instance.getMySQL(1).select("SELECT * FROM bukkitsystem_holograms WHERE server='"+this.server+"'", rs -> {
+        instance.getMySQL(Database.SYSTEM).select("SELECT * FROM bukkitsystem_holograms WHERE server='"+this.server+"'", rs -> {
             try {
                 while (rs.next()) {
                     JsonArray array = new JsonParser().parse(rs.getString("lines").replaceAll("&", "§")).getAsJsonArray();
@@ -88,14 +89,14 @@ public class HologramManager implements Listener, eu.mcone.coresystem.api.bukkit
 
     public void addHologram(String name, Location loc, String line1) {
         String json = LocationManager.toJson(loc);
-        instance.getMySQL(1).update("INSERT INTO bukkitsystem_holograms (`name`, `location`, `lines`, `server`) VALUES ('"+name+"', '"+json+"', '[\""+line1+"\"]', '"+this.server+"') " +
+        instance.getMySQL(Database.SYSTEM).update("INSERT INTO bukkitsystem_holograms (`name`, `location`, `lines`, `server`) VALUES ('"+name+"', '"+json+"', '[\""+line1+"\"]', '"+this.server+"') " +
                 "ON DUPLICATE KEY UPDATE `location`='"+json+"'");
         this.holograms.put(name, new Hologram(new String[]{line1.replaceAll("&", "§")}, loc));
         this.updateHolograms();
     }
 
     public void removeHologram(String name) {
-        instance.getMySQL(1).update("DELETE FROM bukkitsystem_holograms WHERE `name`='"+name+"'");
+        instance.getMySQL(Database.SYSTEM).update("DELETE FROM bukkitsystem_holograms WHERE `name`='"+name+"'");
         if (this.holograms.containsKey(name)) {
             this.holograms.get(name).hideAll();
             this.holograms.remove(name);

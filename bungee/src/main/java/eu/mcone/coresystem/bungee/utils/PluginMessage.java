@@ -11,7 +11,6 @@ import net.md_5.bungee.api.config.ServerInfo;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class PluginMessage {
 
@@ -20,7 +19,7 @@ public class PluginMessage {
         DataOutputStream out = new DataOutputStream(stream);
 
         try {
-            for (String msg : Arrays.asList(message)) {
+            for (String msg : message) {
                 out.writeUTF(msg);
             }
         } catch (IOException e) {

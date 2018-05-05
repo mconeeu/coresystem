@@ -6,10 +6,9 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
 public class HelpCMD extends Command{
@@ -19,11 +18,6 @@ public class HelpCMD extends Command{
 	}
 	
 	public void execute(final CommandSender sender, final String[] args){
-		if(sender instanceof ProxiedPlayer){
-			final ProxiedPlayer p = (ProxiedPlayer)sender;
-			Messager.sendSimple(p, BungeeCoreSystem.sqlconfig.getConfigValue("Help-Lines"));
-		}else{
-			Messager.sendSimple(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
-		}
+		Messager.send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.command.help"));
 	}
 }

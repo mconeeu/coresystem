@@ -9,7 +9,7 @@ package eu.mcone.coresystem.bungee.command;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
 import eu.mcone.coresystem.bungee.ban.BanTemplate;
-import eu.mcone.coresystem.bungee.utils.Messager;
+import eu.mcone.coresystem.api.bungee.util.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -32,7 +32,6 @@ public class BanCMD extends Command implements TabExecutor {
 
             if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
 
-            if (p.hasPermission("system.bungee.ban")) {
                 if (args.length == 1) {
                     if (args[0].equalsIgnoreCase("help")) {
                         Messager.send(p, "§2BannSystem Hilfe:" +
@@ -139,11 +138,8 @@ public class BanCMD extends Command implements TabExecutor {
                 } else {
                     Messager.send(p, "§4Bitte benutze §c/ban help");
                 }
-            } else {
-                Messager.send(p, "§4Du hast keine Berechtigung für diesen Befehl!");
-            }
         } else {
-            Messager.sendSimple(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
+            Messager.sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 

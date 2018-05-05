@@ -13,7 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-public class FriendsInventory extends CoreInventory {
+class FriendsInventory extends CoreInventory {
 
     FriendsInventory(Player p) {
         super("§8» §3§lMeine Freunde", p, 54, Option.FILL_EMPTY_SLOTS);

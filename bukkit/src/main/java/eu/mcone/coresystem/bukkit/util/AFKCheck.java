@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.util;
 
+import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -37,13 +38,13 @@ public class AFKCheck {
                 if (afkPlayers.contains(p.getUniqueId())) {
                     if (i<150) {
                         afkPlayers.remove(p.getUniqueId());
-                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Du bist nun nicht mehr AFK!");
+                        Messager.send(p, "§2Du bist nun nicht mehr AFK!");
                         BukkitCoreSystem.getInstance().getCorePlayer(p).setStatus("online");
                     }
                 } else {
                     if (i>150) {
                         afkPlayers.add(p.getUniqueId());
-                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Du bist nun AFK!");
+                        Messager.send(p, "§2Du bist nun AFK!");
                         BukkitCoreSystem.getInstance().getCorePlayer(p).setStatus("afk");
                     }
                 }

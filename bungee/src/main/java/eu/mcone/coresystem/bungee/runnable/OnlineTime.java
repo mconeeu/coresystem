@@ -7,6 +7,7 @@
 package eu.mcone.coresystem.bungee.runnable;
 
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -15,7 +16,7 @@ public class OnlineTime implements Runnable {
 	@Override
 	public void run() {
 		for(ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-			BungeeCoreSystem.getInstance().getMySQL(1).update("UPDATE `userinfo` SET onlinetime=onlinetime+1 WHERE `uuid`='" + p.getUniqueId() + "'");
+			BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `userinfo` SET onlinetime=onlinetime+1 WHERE `uuid`='" + p.getUniqueId() + "'");
 		}
 	} 
 }

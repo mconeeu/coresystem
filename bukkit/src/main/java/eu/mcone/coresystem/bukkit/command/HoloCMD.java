@@ -6,9 +6,9 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.hologram.HologramManager;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -38,19 +38,19 @@ public class HoloCMD implements CommandExecutor{
                         }
 
                         api.addHologram(args[1], p.getLocation(), line.toString());
-                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Hologramm §f" + args[1] + "§2 erfolgreich hinzugefügt!");
+                        Messager.send(p, "§2Hologramm §f" + args[1] + "§2 erfolgreich hinzugefügt!");
                         return true;
                     }
                 } else if (args.length == 2) {
                     if (args[0].equalsIgnoreCase("remove")) {
                         api.removeHologram(args[1]);
-                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Hologramm §f" + args[1] + "§2 erfolgreich gelöscht!");
+                        Messager.send(p, "§2Hologramm §f" + args[1] + "§2 erfolgreich gelöscht!");
                         return true;
                     }
                 } else if (args.length == 1) {
                     if (args[0].equalsIgnoreCase("list")) {
                         StringBuilder result = new StringBuilder();
-                        result.append(BukkitCoreSystem.config.getConfigValue("Prefix")).append("§7Diese Hologramme sind gerade geladen:\n");
+                        result.append(BukkitCoreSystem.getInstance().getTranslationManager().get("system.prefix.server")).append("§7Diese Hologramme sind gerade geladen:\n");
                         int i = api.getHolograms().keySet().size();
                         for (String h : api.getHolograms().keySet()) {
                             result.append("§3§o").append(h);
@@ -62,21 +62,20 @@ public class HoloCMD implements CommandExecutor{
                         return true;
                     } else if (args[0].equalsIgnoreCase("reload")) {
                         api.reload();
-                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Hologramme erfolgreich neu geladen!");
+                        Messager.send(p, "§2Hologramme erfolgreich neu geladen!");
                         return true;
                     }
                 }
 
-                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix")+"§4Bitte benutze: §c/holo <add | remove | list | reload> [<Name>] [<Erste Zeile>]");
-                return true;
+                Messager.send(p, "§4Bitte benutze: §c/holo <add | remove | list | reload> [<Name>] [<Erste Zeile>]");
             } else {
-                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Berechtigung für diesen Befehl");
-                return true;
+                Messager.sendTransl(p, "system.command.noperm");
             }
         } else {
-            Bukkit.getConsoleSender().sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Dieser Befehl kann nur von einem Spieler ausgeführt werden!");
-            return true;
+            Messager.sendTransl(sender, "system.command.consolesender");
         }
+
+        return true;
     }
 
 }

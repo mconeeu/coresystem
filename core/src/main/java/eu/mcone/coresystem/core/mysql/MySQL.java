@@ -20,12 +20,12 @@ public class MySQL implements eu.mcone.coresystem.api.core.mysql.MySQL {
 
     private HikariDataSource ds;
 	
-	public MySQL(String host, int port, String database, String username, String password, int poolSize) {
+	public MySQL(Database database) {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:mysql://"+host+":"+port+"/"+database);
-        config.setUsername(username);
-        config.setPassword(password);
-        config.setMaximumPoolSize(poolSize);
+        config.setJdbcUrl("jdbc:mysql://"+database.getHostname()+":"+database.getPort()+"/"+database);
+        config.setUsername(database.getUsername());
+        config.setPassword(database.getPassword());
+        config.setMaximumPoolSize(database.getPoolsize());
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");

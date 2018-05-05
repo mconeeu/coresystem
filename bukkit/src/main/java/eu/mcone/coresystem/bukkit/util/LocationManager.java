@@ -6,8 +6,10 @@
 
 package eu.mcone.coresystem.bukkit.util;
 
+import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.SpawnCMD;
+import eu.mcone.coresystem.core.mysql.MySQL;
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -18,15 +20,15 @@ import java.util.Map;
 
 public class LocationManager extends eu.mcone.coresystem.api.bukkit.world.LocationManager {
 
-    private final BukkitCoreSystem instance;
-    private Map<String, Location> locations;
-    private String server;
+    private final MySQL mySQL;
+    private final Map<String, Location> locations;
+    private final String server;
     @Getter
     private boolean allowSpawnCMD;
 
-    public LocationManager(BukkitCoreSystem instance, String server) {
-        this.instance = instance;
+    public LocationManager(MySQL mySQL, String server) {
         this.locations = new HashMap<>();
+        this.mySQL = mySQL;
         this.server = server;
         this.allowSpawnCMD = true;
 
@@ -40,7 +42,7 @@ public class LocationManager extends eu.mcone.coresystem.api.bukkit.world.Locati
     }
 
     public LocationManager downloadLocations() {
-        instance.getMySQL(1).select("SELECT * FROM `bukkitsystem_locations` WHERE `server`='"+server+"'", rs -> {
+        mySQL.select("SELECT * FROM `bukkitsystem_locations` WHERE `server`='"+server+"'", rs -> {
             try {
                 while (rs.next()) {
                     String name = rs.getString("name");
@@ -48,7 +50,7 @@ public class LocationManager extends eu.mcone.coresystem.api.bukkit.world.Locati
                     if (locations.containsKey(name)) {
                         locations.put(name, fromJson(rs.getString("location")));
                     } else {
-                        instance.getMySQL(1).update("DELETE FROM `bukkitsystem_locations` WHERE `id`='"+rs.getInt("id")+"'");
+                        mySQL.update("DELETE FROM `bukkitsystem_locations` WHERE `id`='"+rs.getInt("id")+"'");
                     }
                 }
             } catch (SQLException e) {
@@ -65,7 +67,7 @@ public class LocationManager extends eu.mcone.coresystem.api.bukkit.world.Locati
 
     public boolean putLocation(String name, Location location) {
         if (locations.containsKey(name)) {
-            if ((boolean) instance.getMySQL(1).select("SELECT `id` FROM `bukkitsystem_locations` WHERE `name`='' AND `server`=''", rs -> {
+            if ((boolean) mySQL.select("SELECT `id` FROM `bukkitsystem_locations` WHERE `name`='' AND `server`=''", rs -> {
                 try {
                     if (rs.next()) {
                         return true;
@@ -75,9 +77,9 @@ public class LocationManager extends eu.mcone.coresystem.api.bukkit.world.Locati
                 }
                 return false;
             })) {
-                instance.getMySQL(1).update("UPDATE `bukkitsystem_locations` SET `location`='" + toJson(location) + "' WHERE `name`='" + name + "' AND `server`='" + server + "'");
+                mySQL.update("UPDATE `bukkitsystem_locations` SET `location`='" + toJson(location) + "' WHERE `name`='" + name + "' AND `server`='" + server + "'");
             } else {
-                instance.getMySQL(1).update("INSERT INTO `bukkitsystem_locations` (`name`, `location`, `server`) VALUES ('"+name+"', '"+ toJson(location)+"', '"+server+"')");
+                mySQL.update("INSERT INTO `bukkitsystem_locations` (`name`, `location`, `server`) VALUES ('"+name+"', '"+ toJson(location)+"', '"+server+"')");
             }
 
             locations.put(name, location);
@@ -94,10 +96,10 @@ public class LocationManager extends eu.mcone.coresystem.api.bukkit.world.Locati
         Location loc = getLocation(name);
 
         if (loc != null) {
-            p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Du wirst teleportiert...");
+            Messager.send(p, "§2Du wirst teleportiert...");
             p.teleport(loc);
         } else {
-            p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Dieser Ort existiert nicht.");
+            Messager.send(p, "§4Dieser Ort existiert nicht.");
         }
     }
 

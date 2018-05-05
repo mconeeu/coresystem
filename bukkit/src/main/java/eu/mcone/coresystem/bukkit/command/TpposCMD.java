@@ -6,8 +6,8 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -15,33 +15,34 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class TpposCMD implements CommandExecutor{
+public class TpposCMD implements CommandExecutor {
 
-	@Override
+    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		if (sender instanceof Player) {
-			Player p = (Player) sender;
-			if (!BukkitCoreSystem.getInstance().getCooldownSystem().addAndCheck(BukkitCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return false;
+        if (sender instanceof Player) {
+            Player p = (Player) sender;
+            if (!BukkitCoreSystem.getInstance().getCooldownSystem().addAndCheck(BukkitCoreSystem.getInstance(), this.getClass(), p.getUniqueId()))
+                return false;
 
-			if (p.hasPermission("system.bukkit.tp.pos")) {
-				if (commandLabel.equalsIgnoreCase("tppos")) {
-					if (args.length == 0) {
-						p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze §c/tppos <x> <y> <z>");
-						return true;
-					}
-					Player player = (Player) sender;
-					World myworld = player.getWorld();
-					Location yourlocation = new Location(myworld, Double.parseDouble(args[0]), Double.parseDouble(args[1]), Double.parseDouble(args[2]));
-					player.teleport(yourlocation);
-					sender.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + " §7Du wurdest teleportiert!");
+            if (p.hasPermission("system.bukkit.tp.pos")) {
+                if (commandLabel.equalsIgnoreCase("tppos")) {
+                    if (args.length == 0) {
+                        Messager.send(p, "§4Bitte benutze §c/tppos <x> <y> <z>");
+                    } else {
+                        Player player = (Player) sender;
+                        World myworld = player.getWorld();
+                        Location yourlocation = new Location(myworld, Double.parseDouble(args[0]), Double.parseDouble(args[1]), Double.parseDouble(args[2]));
+                        player.teleport(yourlocation);
+                        Messager.send(sender, "§7Du wurdest teleportiert!");
+                    }
+                }
+            } else {
+                Messager.sendTransl(p, "system.command.noperm");
+            }
+        } else {
+            Messager.sendTransl(sender, "system.command.consolesender");
+        }
 
-				}
-			}
-		} else {
-			Bukkit.getConsoleSender().sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Dieser Befehl kann nur von einem Spieler ausgeführt werden!");
-			return true;
-		}
-
-        return false;
+        return true;
     }
 }

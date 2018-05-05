@@ -6,9 +6,9 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.npc.NpcManager;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -38,7 +38,7 @@ public class NpcCMD implements CommandExecutor{
                         }
 
                         api.addNPC(args[1], p.getLocation(), args[2], line.toString());
-                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2NPC §f" + args[1] + "§2 erfolgreich hinzugefügt!");
+                        Messager.send(p, "§2NPC §f" + args[1] + "§2 erfolgreich hinzugefügt!");
                         return true;
                     } else if (args[0].equalsIgnoreCase("update")) {
                         StringBuilder line = new StringBuilder();
@@ -48,19 +48,19 @@ public class NpcCMD implements CommandExecutor{
                         }
 
                         api.updateNPC(args[1], p.getLocation(), args[2], line.toString());
-                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2NPC §f" + args[1] + "§2 erfolgreich hinzugefügt!");
+                        Messager.send(p, "§2NPC §f" + args[1] + "§2 erfolgreich hinzugefügt!");
                         return true;
                     }
                 } else if (args.length == 2) {
                     if (args[0].equalsIgnoreCase("remove")) {
                         api.removeNPC(args[1]);
-                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2NPC §f" + args[1] + "§2 erfolgreich gelöscht!");
+                        Messager.send(p, "§2NPC §f" + args[1] + "§2 erfolgreich gelöscht!");
                         return true;
                     }
                 } else if (args.length == 1) {
                     if (args[0].equalsIgnoreCase("list")) {
                         StringBuilder result = new StringBuilder();
-                        result.append(BukkitCoreSystem.config.getConfigValue("Prefix")).append("§7Diese NPCs sind gerade geladen:\n");
+                        result.append(BukkitCoreSystem.getInstance().getTranslationManager().get("system.prefix.server")).append("§7Diese NPCs sind gerade geladen:\n");
                         int i = api.getNPCs().keySet().size();
                         for (String h : api.getNPCs().keySet()) {
                             result.append("§3§o").append(h);
@@ -72,21 +72,20 @@ public class NpcCMD implements CommandExecutor{
                         return true;
                     } else if (args[0].equalsIgnoreCase("reload")) {
                         api.reload();
-                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2NPCs erfolgreich neu geladen!");
+                        Messager.send(p, "§2NPCs erfolgreich neu geladen!");
                         return true;
                     }
                 }
 
-                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix")+"§4Bitte benutze: §c/npc <add | remove | update | list | reload> [<Name>] [<Texture-Name>] [<Display-Name>]");
-                return true;
+                Messager.send(p, "§4Bitte benutze: §c/npc <add | remove | update | list | reload> [<Name>] [<Texture-Name>] [<Display-Name>]");
             } else {
-                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Berechtigung für diesen Befehl");
-                return true;
+                Messager.sendTransl(p, "system.command.noperm");
             }
         } else {
-            Bukkit.getConsoleSender().sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Dieser Befehl kann nur von einem Spieler ausgeführt werden!");
-            return true;
+            Messager.sendTransl(sender, "system.command.consolesender");
         }
+
+        return true;
     }
 
 }

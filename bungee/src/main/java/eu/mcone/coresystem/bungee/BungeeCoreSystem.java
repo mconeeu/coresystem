@@ -9,6 +9,7 @@ package eu.mcone.coresystem.bungee;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
+import eu.mcone.coresystem.api.core.translation.Translation;
 import eu.mcone.coresystem.bungee.command.*;
 import eu.mcone.coresystem.bungee.friend.FriendSystem;
 import eu.mcone.coresystem.bungee.listener.*;
@@ -18,12 +19,16 @@ import eu.mcone.coresystem.bungee.runnable.Broadcast;
 import eu.mcone.coresystem.bungee.runnable.OnlineTime;
 import eu.mcone.coresystem.bungee.runnable.PremiumCheck;
 import eu.mcone.coresystem.bungee.utils.LabyModAPI;
-import eu.mcone.coresystem.bungee.utils.Messager;
+import eu.mcone.coresystem.api.bungee.util.Messager;
+import eu.mcone.coresystem.core.CoreModuleCoreSystem;
+import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.mysql.MySQL;
-import eu.mcone.coresystem.api.core.mysql.MySQL_Config;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
+import eu.mcone.coresystem.core.translation.TranslationField;
+import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CooldownSystem;
+import eu.mcone.coresystem.bungee.utils.PreferencesManager;
 import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -34,16 +39,23 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class BungeeCoreSystem extends CoreSystem {
+public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem {
 
+	@Getter
+	private static BungeeCoreSystem system;
 	final public static String MainPrefix = "§8[§3BungeeCore§8] ";
-	public static MySQL_Config sqlconfig;
 
-	private MySQL mysql1;
-	private MySQL mysql2;
+	@Getter
+	private MySQL database;
 	@Getter
 	private Map<UUID, BungeeCorePlayer> corePlayers;
+	@Getter
+    private boolean cloudsystemAvailable;
 
+	@Getter
+	private TranslationManager translationManager;
+	@Getter
+	private PreferencesManager preferences;
 	@Getter
 	private PermissionManager permissionManager;
 	@Getter
@@ -60,6 +72,7 @@ public class BungeeCoreSystem extends CoreSystem {
 	private LabyModAPI labyModAPI;
 
 	public void onEnable(){
+		system = this;
 		setInstance(this);
         corePlayers = new HashMap<>();
 
@@ -76,30 +89,38 @@ public class BungeeCoreSystem extends CoreSystem {
 				"                    /____/                                     /____/\n");
 
         Messager.console(MainPrefix + "§aMySQL Verbindungen werden initialisiert...");
-		mysql1 = new MySQL("78.46.249.195", 3306, "mc1system", "mc1system", "6THk8uDbTtDKf8yUMf2r62MHMZ57EVMBFkMDEgFqz9YF8prKug2q9DXLvTJZEmsa", 2);
-		mysql2 = new MySQL("78.46.249.195", 3306, "mc1config", "mc1config", "q%sZp=6/_wx2M2B.Qzaeya4Kd5;f4W*w*M?3#kM,QPjv6VuG3=TjTJ63CPD)}WV;", 2);
-        createTables(mysql1);
+		database = new MySQL(Database.SYSTEM);
+        createTables(database);
 
 		cooldownSystem = new CooldownSystem();
-		playerUtils = new PlayerUtils(mysql1);
+		preferences = new PreferencesManager(database);
+		playerUtils = new PlayerUtils(database);
 		labyModAPI = new LabyModAPI();
 		coinsAPI = new CoinsAPI(this);
 
-		Messager.console(MainPrefix + "§aMySQL Config wird initiiert...");
-		sqlconfig = new MySQL_Config(mysql2, "BungeeSystem", 5000);
-		registerMySQLConfig();
-
+		Messager.console(MainPrefix + "§aTranslations werden geladen...");
+		translationManager = new TranslationManager(database);
+		registerTranslations();
+		
 		Messager.console(MainPrefix + "§aPermissions werden geladen...");
-		permissionManager = new PermissionManager("Proxy", mysql1, this);
+		permissionManager = new PermissionManager("Proxy", database);
 
         Messager.console(MainPrefix + "§aFreunde System wird geladen...");
-		friendSystem = new FriendSystem(mysql1);
+		friendSystem = new FriendSystem(database);
 
 		Messager.console(MainPrefix + "§aNachrichten System wird geladen...");
 		MsgCMD.updateToggled();
 
 		Messager.console(MainPrefix + "§aNicksystem wird geladen...");
 		nickManager = new NickManager(this);
+
+        try {
+            Class.forName("eu.mcone.cloud.plugin.CloudPlugin");
+            cloudsystemAvailable = true;
+        } catch (ClassNotFoundException e) {
+            cloudsystemAvailable = false;
+            Messager.console(MainPrefix + "§cCloudSystem nicht verfügbar!");
+        }
 
 		Messager.console(MainPrefix + "§aBefehle, Events und Scheduler werden registriert...");
 	    registerCommand();
@@ -115,11 +136,10 @@ public class BungeeCoreSystem extends CoreSystem {
 
 	public void onDisable(){
 	    for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-	        mysql1.update("UPDATE userinfo SET status='offline' WHERE uuid='" + p.getUniqueId() + "'");
+			database.update("UPDATE userinfo SET status='offline' WHERE uuid='" + p.getUniqueId() + "'");
         }
 
-    	mysql1.close();
-    	mysql2.close();
+		database.close();
 		Messager.console(MainPrefix+"§cPlugin wurde Deaktiviert!");
 	}
 
@@ -136,12 +156,10 @@ public class BungeeCoreSystem extends CoreSystem {
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new NickCMD());
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new UnnickCMD());
 
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new LobbyCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new JumpCMD());
-
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new FriendCMD());
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new PartyCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new MsgCMD());
+		ProxyServer.getInstance().getPluginManager().registerCommand(this, new JumpCMD());
+		ProxyServer.getInstance().getPluginManager().registerCommand(this, new MsgCMD());
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new ReplyCMD());
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new ReportCMD());
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new HelpCMD());
@@ -186,123 +204,125 @@ public class BungeeCoreSystem extends CoreSystem {
         ProxyServer.getInstance().getPluginManager().registerListener(this, new PluginMessage());
     }
 
-	private void registerMySQLConfig(){
-		//create table
-		sqlconfig.createTable();
+	private void registerTranslations(){
+		Map<String, Translation> translations = new HashMap<>();
+		
+		//Prefix
+		translations.put("system.prefix", new TranslationField("§8[§7§l!§8]§f System §8» §7"));
+        translations.put("system.prefix.server", new TranslationField("§8[§7§l!§8]§f Server §8» §7"));
+        translations.put("system.prefix.party", new TranslationField("§8[§7§l!§8] §5Party §8» §7"));
+        translations.put("system.prefix.friend", new TranslationField("§8[§7§l!§8] §9Freunde §8» §7"));
 
-		//System
-		sqlconfig.insertMySQLConfig("System-Prefix", "§8[§7§l!§8] §fSystem §8» §7");
-		sqlconfig.insertMySQLConfig("System-Report-Cooldown", 1);
+        //Error
+		translations.put("system.error", new TranslationField("§4Es ist ein Fehler aufgetreten."));
 
-		sqlconfig.insertMySQLConfig("System-Server-Lobby", "Lobby");
-		sqlconfig.insertMySQLConfig("System-Server-Build", "Build");
-		sqlconfig.insertMySQLConfig("System-Connect-Lobby", "§7Du wirst zur §fLobby §7gesendet.");
-		sqlconfig.insertMySQLConfig("System-Already-Lobby", "§4Du bist bereits auf der Lobby.");
-		sqlconfig.insertMySQLConfig("System-Connect-Test", "§7Du wirst auf den §fTest-Server §7gesendet.");
-		sqlconfig.insertMySQLConfig("System-Already-Test", "§4Du bist bereits auf dem Test-Server.");
-		sqlconfig.insertMySQLConfig("System-Connect-Build", "§7Du wirst auf den §6Build-Server §7gesendet.");
-		sqlconfig.insertMySQLConfig("System-Already-Build", "§4Du bist bereits auf dem Build-Server.");
+		//Server
+		translations.put("system.server.lobby", new TranslationField("§7Du wirst zur §fLobby §7gesendet."));
+		translations.put("system.server.alreadyonthisserver", new TranslationField("§4Du befindest dich bereits auf diesem Server!"));
 
-		sqlconfig.insertMySQLConfig("System-NoPerm", "§4Du hast keine Berechtigung für diesen Befehl!");
-		sqlconfig.insertMySQLConfig("System-WrongUse", "§4Bitte §cbenutze.");
-		sqlconfig.insertMySQLConfig("System-No-Online-Player", "§4Dieser Spieler ist nicht online!");
-		sqlconfig.insertMySQLConfig("System-Konsolen-Sender", "§4Nur ein Spieler kann diesen Befehl ausführen!");
+		//Command
+		translations.put("system.command.noperm", new TranslationField("§4Du hast keine Berechtigung für diesen Befehl!"));
+		translations.put("system.command.wronguse", new TranslationField("§4Diese Befehlsstruktur existiert nicht!"));
+		translations.put("system.command.consolesender", new TranslationField("§4Nur ein Spieler kann diesen Befehl ausführen!"));
 
-		//BetaKey-System
-        sqlconfig.insertMySQLConfig("BetaKey-System", false);
-
-		//Wartungs-Modus
-		sqlconfig.insertMySQLConfig("Wartungs-Modus", true);
+		//Player
+		translations.put("system.player.notonline", new TranslationField("§4Dieser Spieler ist nicht online!"));
 
         //ProxyPing-Wartung
-        sqlconfig.insertMySQLConfig("ProxyPing-Motd", "§f§lMCONE.EU §3Minigamenetzwerk §8» §f§lMC 1.12 §7§o[1.8 PVP]" +
-                "\n§7§oDein Nummer 1 Minecraftnetzwerk");
-		sqlconfig.insertMySQLConfig("ProxyPing-Wartung-Motd", "§f§lMCONE.EU §3Minigamenetzwerk §8» §f§lMC 1.12 §7§o[1.8 PVP]" +
-				"\n§4§oWir führen gerade Wartungsarbeiten durch.");
-		sqlconfig.insertMySQLConfig("ProxyPing-Protocol-Motd", "§f§lMCONE.EU §3Minigamenetzwerk §8» §c§lMC 1.12 §7§o[1.8 PVP]" +
-				"\n§f§oWir empfehlen LabyMod für 1.12 (mcone.eu/launcher)!");
-        sqlconfig.insertMySQLConfig("ProxyPing-Offline-Motd", "§f§lMCONE.EU §3Minigamenetzwerk §8» §f§lMC 1.12 §7§o[Online]" +
-                "\n§4Du benutzt keinen gekauften Minecraftaccount!");
+        translations.put("system.bungee.ping", new TranslationField(
+        		"§f§lMCONE.EU §3Minigamenetzwerk §8» §f§lMC 1.12 §7§o[1.8 PVP]" +
+                "\n§7§oDein Nummer 1 Minecraftnetzwerk"
+		));
+		translations.put("system.bungee.ping.maintenance", new TranslationField(
+				"§f§lMCONE.EU §3Minigamenetzwerk §8» §f§lMC 1.12 §7§o[1.8 PVP]" +
+				"\n§4§oWir führen gerade Wartungsarbeiten durch."
+		));
+		translations.put("system.bungee.ping.outdated", new TranslationField(
+				"§f§lMCONE.EU §3Minigamenetzwerk §8» §c§lMC 1.12 §7§o[1.8 PVP]" +
+				"\n§f§oWir empfehlen LabyMod für 1.12 (mcone.eu/launcher)!"
+		));
+        translations.put("system.bungee.ping.cracked", new TranslationField(
+        		"§f§lMCONE.EU §3Minigamenetzwerk §8» §f§lMC 1.12 §7§o[Online]" +
+                "\n§4Du benutzt keinen gekauften Minecraftaccount!"
+		));
 
 		//Post-Login
-		sqlconfig.insertMySQLConfig("Wartung-KickNachricht", "§f§lMC ONE §3Minecraftnetzwerk" +
+		translations.put("system.bungee.kick.maintenance", new TranslationField(
+				"§f§lMC ONE §3Minecraftnetzwerk" +
 				"\n§4§oWir führen gerade Wartungsarbeiten durch" +
 				"\n§r" +
-				"\n§7Mehr Infos findest du auf §fstatus.mcone.eu§7.");
-
+				"\n§7Mehr Infos findest du auf §fstatus.mcone.eu§7."
+		));
 
 		//Restart
-		sqlconfig.insertMySQLConfig("Restart-KickNachricht", "\u00A7f\u00A7lMC ONE\u00A7r \u00A73Minecraftnetzwerk\n\u00A77\u00A7r" +
+		translations.put("system.bungee.kick.restart", new TranslationField(
+				"\u00A7f\u00A7lMC ONE\u00A7r \u00A73Minecraftnetzwerk\n\u00A77\u00A7r" +
 				"\n\u00A77Der Netzwerk Server startet neu.\u00A7r" +
-				"\n\u00A77\u00A7oDies sollte nicht l\u00E4nger als ein paar Sekunden dauern.");
-
-
-		//Party
-        sqlconfig.insertMySQLConfig("Party-Prefix", "§8[§7§l!§8] §5Party §8» §7");
-
-		//Party
-		sqlconfig.insertMySQLConfig("Friend-Prefix", "§8[§7§l!§8] §9Freunde §8» §7");
+				"\n\u00A77\u00A7oDies sollte nicht l\u00E4nger als ein paar Sekunden dauern."
+		));
 
 		//Chat
-		sqlconfig.insertMySQLConfig("TeamChat-Prefix", "§8[§7§l!§8] §fTeamchat §8| %Playername% §8» §7");
-
-		sqlconfig.insertMySQLConfig("Beleidigung-Lines", "§cIhre §cChatnachricht §cwurde §cgefiltert!" +
-				"\n§cGrund §8: §4Mögliche Beleidigung");
-
-		sqlconfig.insertMySQLConfig("ToggleMsg-NoSee", "§7Du §7kannt §7nun §bkeine §7Private-Nachrichten §7mehr §7Sehen.");
-		sqlconfig.insertMySQLConfig("ToggleMsg-See", "§7Du §7kannt §7nun §bwieder alle §7Private-Nachrichten §7sehen.");
-
-		sqlconfig.insertMySQLConfig("Msg-Target", "§8[§7§l!§8] §fMSG §8| §3Du §7-> §f%Msg-Target% §8» §7");
-		sqlconfig.insertMySQLConfig("Msg-Player", "§8[§7§l!§8] §fMSG §8| §f%Msg-Player% §7-> §3Dir §8» §7");
-
+		translations.put("system.bungee.chat.filter", new TranslationField("§4Bitte achte auf deine Ausdrucksweise!"));
+		translations.put("system.bungee.chat.private.dontsee", new TranslationField("§2Du hast private Nachrichten deaktiviert!"));
+		translations.put("system.bungee.chat.private.see", new TranslationField("§2Du hast private Nachrichten wieder aktiviert!"));
+		translations.put("system.bungee.chat.private.fromme", new TranslationField("§8[§7§l!§8] §fMSG §8| §3Du §7-> §f%Msg-Target% §8» §7"));
+		translations.put("system.bungee.chat.private.tome", new TranslationField("§8[§7§l!§8] §fMSG §8| §f%Msg-Player% §7-> §3Dir §8» §7"));
+        translations.put("system.bungee.chat.team", new TranslationField("§8[§7§l!§8] §fTeamchat §8| %playername% §8» §7"));
 
 		//Commands
-        sqlconfig.insertMySQLConfig("CMD-Premium", "§8§m----------------§r§8§m| §6Premium §8§m|----------------" +
+        translations.put("system.bungee.command.premium", new TranslationField(
+        		"§8§m----------------§r§8§m| §6Premium §8§m|----------------" +
                 "\n§7Du möchtest uns unterstützen und dir dafür ein paar ingame Coins verdienen? Dann ist der §6Premium §7oder §6Premium+ §7Rang auf MC ONE die richtige Wahl." +
                 "\n%button%" +
-                "\n§8§m----------------§r§8§m| §6Premium §8§m|----------------");
-
-        sqlconfig.insertMySQLConfig("CMD-Bug", "§8§m----------------§r§8§m| §cBug §8§m|----------------" +
+                "\n§8§m----------------§r§8§m| §6Premium §8§m|----------------"
+		));
+        translations.put("system.bungee.command.bug", new TranslationField(
+        		"§8§m----------------§r§8§m| §cBug §8§m|----------------" +
                 "\n§7Du hast einen §cBug §7gefunden und möchtest uns helfen in zu fixen?" +
                 "\n%button%" +
-                "\n§8§m----------------§r§8§m| §cBug §8§m|----------------");
-
-        sqlconfig.insertMySQLConfig("CMD-YT", "§8§m----------------§r§8§m| §5Youtuber §8§m|----------------" +
+                "\n§8§m----------------§r§8§m| §cBug §8§m|----------------"
+		));
+        translations.put("system.bungee.command.yt", new TranslationField(
+        		"§8§m----------------§r§8§m| §5Youtuber §8§m|----------------" +
                 "\n§7Für den YouTuber Rang benötigst du mindestens §52 Tausend §7Abonennten. Für alle weiteren Infos und Vereinbarungen stehen dir die Admins zu Verfügung. Um den YouTuber Rang behalten zu dürfen musst du abhängig von deiner Abonenntenzahl §5Lets Plays auf MC ONE hochladen§7. " +
                 "\n§r" +
                 "\n§7Falls du die Anforderungen nicht erfüllst steht dir der §6Premium+ §7Rang ab 500 Abos kostenlos zu Verfügung." +
                 "\n§r" +
                 "\n%button%" +
-                "\n§8§m----------------§r§8§m| §5Youtuber §8§m|----------------");
-
-        sqlconfig.insertMySQLConfig("CMD-Vote", "§8§m----------------§r§8§m| §5Vote §8§m|----------------" +
+                "\n§8§m----------------§r§8§m| §5Youtuber §8§m|----------------"
+		));
+        translations.put("system.bungee.command.vote", new TranslationField(
+        		"§8§m----------------§r§8§m| §5Vote §8§m|----------------" +
                 "\n§7Für ein Vote erhälst du §620 §7Coins." +
                 "\n%button%" +
-                "\n§8§m----------------§r§8§m| §5Vote §8§m|----------------" );
-
-        sqlconfig.insertMySQLConfig("CMD-Bewerben", "§8§m----------------§r§8§m| §fBewerben §8§m|----------------" +
+                "\n§8§m----------------§r§8§m| §5Vote §8§m|----------------"
+		));
+        translations.put("system.bungee.command.apply", new TranslationField(
+        		"§8§m----------------§r§8§m| §fBewerben §8§m|----------------" +
                 "\n§7Wir suchen im Moment Bewerber aus den Bereichen §b§lEntwicklung§7, §e§lBuilding§7 und §2§lSupporting§7." +
                 "\n%button%" +
-                "\n§8§m----------------§r§8§m| §fBewerben §8§m|----------------" );
-
-        sqlconfig.insertMySQLConfig("CMD-Ts", "§8§m----------------§r§8| §3Teamspeak §8§m|----------------" +
+                "\n§8§m----------------§r§8§m| §fBewerben §8§m|----------------"
+		));
+        translations.put("system.bungee.command.ts", new TranslationField(
+        		"§8§m----------------§r§8| §3Teamspeak §8§m|----------------" +
                 "\n§7Unseren TeamSpeak erreichst du über die IP §fts.mcone.eu§7." +
                 "\n%button%" +
-                "\n§8§m----------------§r§8| §3Teamspeak §8§m|----------------" );
-
-        sqlconfig.insertMySQLConfig("CMD-Team", "§8§m----------------§r§8| §bTeam §8§m|----------------" +
+                "\n§8§m----------------§r§8| §3Teamspeak §8§m|----------------"));
+        translations.put("system.bungee.command.team", new TranslationField(
+        		"§8§m----------------§r§8| §bTeam §8§m|----------------" +
                 "\n§7Unsere aktuellen Teammitglieder findest du auf unserer Homepage" +
                 "\n%button%" +
-                "\n§8§m----------------§r§8| §bTeam §8§m|----------------" );
-
-        sqlconfig.insertMySQLConfig("CMD-Regeln", "§8§m----------------§r§8| §cRegeln §8§m|----------------" +
+                "\n§8§m----------------§r§8| §bTeam §8§m|----------------"
+		));
+        translations.put("system.bungee.command.rules", new TranslationField(
+        		"§8§m----------------§r§8| §cRegeln §8§m|----------------" +
                 "\n§7Mit dem Spielen auf MC ONE akzeptierst du unsere Regeln " +
                 "\nund erklärst dich damit einverstanden sie einzuhalten!" +
                 "\n%button%" +
-                "\n§8§m----------------§r§8| §cRegeln §8§m|----------------" );
-
-
-        sqlconfig.insertMySQLConfig("Help-Lines", "§8§m----------------|§r §f§lMC ONE §3Hilfe §8§m|----------------" +
+                "\n§8§m----------------§r§8| §cRegeln §8§m|----------------"
+		));
+        translations.put("system.bungee.command.help", new TranslationField(
+        		"§8§m----------------|§r §f§lMC ONE §3Hilfe §8§m|----------------" +
 				"\n§7» §f/friends §8- §7Verwalte deine Freunde auf MC ONE" +
 				"\n§7» §f/party §8- §7Erstelle deine Party mit deinen Freunden" +
 				"\n§7» §f/msg §8- §7Schreibe anderen Spielern Privatnachrichten" +
@@ -312,40 +332,39 @@ public class BungeeCoreSystem extends CoreSystem {
 				"\n§7» §f/vote §8- §7Mit deisem Befehl kannst du für MC ONE Voten" +
 				"\n§7» §f/register §8- §7Registriert dich auf der MC ONE Homepage" +
                 "\n§7» §f/forgotpass §8- §7Lässt dich dein Passwort auf der Homepage ändern" +
-				"\n§8§m----------------|§r §f§lMC ONE §3Hilfe §8§m|----------------");
-
+				"\n§8§m----------------|§r §f§lMC ONE §3Hilfe §8§m|----------------"
+		));
 
 		//Broadcast
-		sqlconfig.insertMySQLConfig("bc1", String.valueOf("" +
+		translations.put("system.bungee.broadcast1", new TranslationField("" +
 				"\n§8[§7§l!§8] §7Du möchtest als §a§lSupporter§7, §e§lBuilder§7 oder §b§lDeveloper§7" +
 				"\n§8[§7§l!§8] §7 dem Team beitreten?" +
 				"\n§8[§7§l!§8] §7Dann bewirb dich über unsere Homepage!" +
 				"\n§8[§7§l!§8] §7Alle Infos über §f/bewerben" +
 				"\n"));
-		sqlconfig.insertMySQLConfig("bc2", String.valueOf("" +
+		translations.put("system.bungee.broadcast2", new TranslationField("" +
 				"\n§8[§7§l!§8] §7Bleibe immer auf dem neuesten Stand über unsere Homepage" +
 				"\n§8[§7§l!§8] §fhttps://www.mcone.eu" +
 				"\n§8[§7§l!§8] §7Registriere dich um Blog Posts liken und kommentieren zu" +
 				"\n§8[§7§l!§8] §7können. §3/register" +
 				"\n"));
-		sqlconfig.insertMySQLConfig("bc3", String.valueOf("" +
+		translations.put("system.bungee.broadcast3", new TranslationField("" +
 				"\n§8[§7§l!§8] §7Du hast einen Spieler gesehen der gegen die Regeln" +
 				"\n§8[§7§l!§8] §7verstößt?" +
 				"\n§8[§7§l!§8] §7Reporte ihn mit §c/report" +
 				"\n"));
-		sqlconfig.insertMySQLConfig("bc4", String.valueOf("" +
+		translations.put("system.bungee.broadcast4", new TranslationField("" +
 				"\n§8[§7§l!§8] §7Mit dem Betreten des MC ONE Netzwerks akzeptierst" +
 				"\n§8[§7§l!§8] §7du unsere Regeln." +
 				"\n§8[§7§l!§8] §7Alle Infos dazu findest du auf §3https://www.mcone.eu/regeln" +
 				"\n"));
-		sqlconfig.insertMySQLConfig("bc5", String.valueOf("" +
+		translations.put("system.bungee.broadcast5", new TranslationField("" +
 				"\n§8[§7§l!§8] §7Supporte uns auf allen bekannten sozialen Netzwerken" +
 				"\n§8[§7§l!§8] §7mit dem Nutzernamen §f@mconeeu" +
 				"\n§8[§7§l!§8] §b§lTwitter§7, §9§lFacebook§7 oder §c§lYouTube" +
 				"\n"));
 
-		//store
-		sqlconfig.store();
+		translationManager.insertIfNotExists(translations);
 	}
 
 	private void createTables(MySQL mysql) {
@@ -364,6 +383,13 @@ public class BungeeCoreSystem extends CoreSystem {
 				"`password` varchar(100), " +
 				"`onlinetime` int(10) NOT NULL, " +
 				"`msg_toggle` boolean" +
+				") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+
+		mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_preferences` " +
+				"(" +
+				"`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+				"`key` varchar(100) NOT NULL UNIQUE KEY, " +
+				"`value` varchar(100)" +
 				") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
 		mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_betakey` " +
@@ -477,12 +503,16 @@ public class BungeeCoreSystem extends CoreSystem {
     }
 
 	@Override
-	public eu.mcone.coresystem.api.core.mysql.MySQL getMySQL(int connectionID) {
-		switch (connectionID) {
-			case 1: return mysql1;
-			case 2: return mysql2;
+	public MySQL getMySQL(Database database) {
+		switch (database) {
+			case SYSTEM: return this.database;
 			default: return null;
 		}
+	}
+
+	@Override
+	public eu.mcone.coresystem.api.core.mysql.MySQL getMySQL() {
+		return null;
 	}
 
 	public BungeeCorePlayer getCorePlayer(ProxiedPlayer p) {

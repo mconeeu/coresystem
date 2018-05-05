@@ -10,7 +10,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.core.mysql.MySQL;
 
@@ -20,15 +19,15 @@ import java.util.*;
 public class PermissionManager implements eu.mcone.coresystem.api.core.player.PermissionManager {
 
     private final String servername;
-    private final GlobalCoreSystem instance;
+    private MySQL mySQL;
 
     private HashMap<Group, Set<String>> groups;
     private HashMap<Group, Set<Group>> parents;
     private HashMap<String, Set<String>> permissions;
 
-    public PermissionManager(String servername, MySQL mysql, GlobalCoreSystem instance) {
+    public PermissionManager(String servername, MySQL mysql) {
         this.servername = servername != null ? servername : "unknownserver";
-        this.instance = instance;
+        this.mySQL = mysql;
 
         this.groups = new HashMap<>();
         this.parents = new HashMap<>();
@@ -38,7 +37,7 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
     }
 
     public void reload() {
-        instance.getMySQL(1).selectAsync("SELECT * FROM `bungeesystem_permissions` WHERE (`server` IS NULL OR `server` LIKE '" + servername.toLowerCase() + "')", rs -> {
+        mySQL.selectAsync("SELECT * FROM `bungeesystem_permissions` WHERE (`server` IS NULL OR `server` LIKE '" + servername.toLowerCase() + "')", rs -> {
             groups.clear();
             parents.clear();
             permissions.clear();
@@ -142,7 +141,7 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
     }
 
     public Group getLiveGroup(UUID uuid) {
-        return (Group) instance.getMySQL(1).select("SELECT gruppe FROM userinfo WHERE uuid='"+uuid+"'", rs -> {
+        return (Group) mySQL.select("SELECT gruppe FROM userinfo WHERE uuid='"+uuid+"'", rs -> {
             try {
                 if (rs.next()) return Group.getGroupbyName(rs.getString("gruppe"));
             } catch (SQLException e) {

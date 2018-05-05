@@ -25,7 +25,7 @@ public class PlayerJoin implements Listener{
         p.setScoreboard(new MainScoreboard());
         BukkitCoreSystem.getInstance().getNickManager().setNicks(bp);
 
-		if (BukkitCoreSystem.cfg.getConfig().getBoolean("Tablist")){
+		if (BukkitCoreSystem.getSystem().getYamlConfig().getConfig().getBoolean("Tablist")){
 		    for (BukkitCorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
 		    	cp.getScoreboard().reload(BukkitCoreSystem.getInstance());
 			}

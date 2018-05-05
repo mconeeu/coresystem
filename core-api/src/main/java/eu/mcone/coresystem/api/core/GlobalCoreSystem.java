@@ -11,13 +11,16 @@ import eu.mcone.coresystem.api.core.player.CoinsAPI;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.PermissionManager;
 import eu.mcone.coresystem.api.core.player.PlayerUtils;
+import eu.mcone.coresystem.api.core.translation.TranslationManager;
 import eu.mcone.coresystem.api.core.util.CooldownSystem;
 
 import java.util.UUID;
 
 public interface GlobalCoreSystem {
 
-    MySQL getMySQL(int connectionID);
+    MySQL getMySQL();
+
+    TranslationManager getTranslationManager();
 
     PermissionManager getPermissionManager();
 

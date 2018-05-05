@@ -6,37 +6,38 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.report.Report;
 import eu.mcone.coresystem.bungee.report.ReportReason;
-import eu.mcone.coresystem.bungee.utils.Messager;
+import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
-import net.md_5.bungee.api.plugin.TabExecutor;
 
 import java.sql.SQLException;
 import java.util.*;
 
-public class ReportCMD extends Command implements TabExecutor {
+public class ReportCMD extends Command {
 
     private HashMap<ProxiedPlayer, ProxiedPlayer> reports = new HashMap<>();
     private HashMap<String, Long> zeit = new HashMap<>();
 
-    public ReportCMD(){
+    public ReportCMD() {
         super("report", null);
     }
 
     public void execute(CommandSender sender, String[] args) {
         if (sender instanceof ProxiedPlayer) {
             final ProxiedPlayer p = (ProxiedPlayer) sender;
-            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId()))
+                return;
             final long millis = System.currentTimeMillis() / 1000;
 
             if (args.length == 1) {
                 if ((args[0].equalsIgnoreCase("list") && (p.hasPermission("system.bungee.report") || (p.hasPermission("system.bungee.*"))))) {
-                    BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT `id`, `title` FROM `website_ticket` WHERE `cat`='Spielerreport' AND `state`='pending';", rs_reportlist -> {
+                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `id`, `title` FROM `website_ticket` WHERE `cat`='Spielerreport' AND `state`='pending';", rs_reportlist -> {
                         try {
                             int desc = 0;
                             while (rs_reportlist.next()) {
@@ -64,7 +65,7 @@ public class ReportCMD extends Command implements TabExecutor {
                 if ((args[0].equalsIgnoreCase("accept") && (p.hasPermission("system.bungee.report") || (p.hasPermission("system.bungee.*"))))) {
                     String id = args[1];
 
-                    BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT * FROM `website_ticket` WHERE `id`=" + id + " AND `cat`='Spielerreport' AND `state`='pending'", rs -> {
+                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT * FROM `website_ticket` WHERE `id`=" + id + " AND `cat`='Spielerreport' AND `state`='pending'", rs -> {
                         try {
                             if (rs.next()) {
                                 ProxiedPlayer reportedPlayer = ProxyServer.getInstance().getPlayer(UUID.fromString(rs.getString("target_uuid")));
@@ -74,8 +75,8 @@ public class ReportCMD extends Command implements TabExecutor {
                                     p.connect(reportedPlayer.getServer().getInfo());
 
                                     //Syntax: report Daten werden Geupdatet.
-                                    BungeeCoreSystem.getInstance().getMySQL(1).update("UPDATE `website_ticket` SET `state`='inwork', `team_member`='" + p.getUniqueId() + "' WHERE `id`=" + id + " AND `cat`='Spielerreport'");
-                                    BungeeCoreSystem.getInstance().getMySQL(1).update("INSERT INTO `website_ticket_msg` (`id`, `ticket_id`, `uuid`, `timestamp`, `msg`) VALUES (NULL, " + id + ", '" + p.getUniqueId() + "', '" + millis + "', '" + p.getName() + " hat den Status des Tickets auf \"inwork\" geändert.')");
+                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `website_ticket` SET `state`='inwork', `team_member`='" + p.getUniqueId() + "' WHERE `id`=" + id + " AND `cat`='Spielerreport'");
+                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `website_ticket_msg` (`id`, `ticket_id`, `uuid`, `timestamp`, `msg`) VALUES (NULL, " + id + ", '" + p.getUniqueId() + "', '" + millis + "', '" + p.getName() + " hat den Status des Tickets auf \"inwork\" geändert.')");
 
                                     if (reporter != null) {
                                         Messager.sendSimple(p, "" +
@@ -120,12 +121,12 @@ public class ReportCMD extends Command implements TabExecutor {
                 } else if (args[0].equalsIgnoreCase("close") || p.hasPermission("system.bungee.report")) {
                     String id = args[1];
 
-                    BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT * FROM `website_ticket` WHERE `id`=" + id + " AND `cat`='Spielerreport'", rs -> {
+                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT * FROM `website_ticket` WHERE `id`=" + id + " AND `cat`='Spielerreport'", rs -> {
                         try {
                             if (rs.next()) {
-                                if(p.getUniqueId().equals(UUID.fromString(rs.getString("team_member"))) || p.hasPermission("group.admin")) {
-                                    BungeeCoreSystem.getInstance().getMySQL(1).update("UPDATE `website_ticket` SET `state`='closed' WHERE `id`=" + id);
-                                    BungeeCoreSystem.getInstance().getMySQL(1).update("INSERT INTO `website_ticket_msg` (`id`, `ticket_id`, `uuid`, `timestamp`, `msg`) VALUES (NULL, " + id + ", '" + p.getUniqueId() + "', '" + millis + "', '" + p.getName() + " hat den Status des Tickets auf \"closed\" geändert.')");
+                                if (p.getUniqueId().equals(UUID.fromString(rs.getString("team_member"))) || p.hasPermission("group.admin")) {
+                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `website_ticket` SET `state`='closed' WHERE `id`=" + id);
+                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `website_ticket_msg` (`id`, `ticket_id`, `uuid`, `timestamp`, `msg`) VALUES (NULL, " + id + ", '" + p.getUniqueId() + "', '" + millis + "', '" + p.getName() + " hat den Status des Tickets auf \"closed\" geändert.')");
                                     Messager.send(p, " §2Der Report wurde geschlossen!");
                                 } else {
                                     Messager.send(p, "§4Du kannst dieses Ticket nicht schließen, da du es nicht angenommen hast. Benutze §c/ticket accept <id> §4um Tickets anzunehmen!");
@@ -148,13 +149,6 @@ public class ReportCMD extends Command implements TabExecutor {
                     } else if (reportedPlayer.hasPermission("system.bungee.report") || (reportedPlayer.hasPermission("System.*"))) {
                         Messager.send(p, "§4Du kannst keine §cTeammitglieder reporten!");
                         return;
-                    } else if (this.zeit.containsKey(sender.getName())) {
-                        long diff = (System.currentTimeMillis() - this.zeit.get(sender.getName())) / 1000L / 60L;
-                        int cooldown = BungeeCoreSystem.sqlconfig.getIntConfigValue("System-Report-Cooldown");
-                        if (diff < cooldown) {
-                            Messager.send(sender, "§7Du musst noch§e " + (cooldown - diff) + " §7Minuten warten um erneut reporten zu können! !");
-                            return;
-                        }
                     }
 
                     ReportReason reason = ReportReason.getReportReasonByName(args[1]);
@@ -189,7 +183,7 @@ public class ReportCMD extends Command implements TabExecutor {
                 Messager.send(p, "§7-----------------------------------------");
             }
         } else {
-            Messager.sendSimple(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
+            Messager.send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 
@@ -206,8 +200,7 @@ public class ReportCMD extends Command implements TabExecutor {
         return reportReasons.toString();
     }
 
-    public Iterable<String> onTabComplete(final CommandSender sender, final String[] args)
-    {
+    public Iterable<String> onTabComplete(final CommandSender sender, final String[] args) {
         List<String> result = new ArrayList<>();
         if (args.length == 1) {
             result.addAll(Arrays.asList("list", "accept", "close"));

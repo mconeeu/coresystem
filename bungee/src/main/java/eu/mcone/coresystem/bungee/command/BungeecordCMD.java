@@ -6,19 +6,19 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
-public class BungeecordCMD extends Command{
+public class BungeecordCMD extends Command {
 
-	public BungeecordCMD(){
-		super("bungeecord", null, "bungee");
-	}
-	
-	public void execute(final CommandSender sender, final String[] args){
+    public BungeecordCMD() {
+        super("bungeecord", null, "bungee");
+    }
+
+    public void execute(final CommandSender sender, final String[] args) {
         if (args.length == 0) {
             Messager.sendSimple(sender, "");
             Messager.sendSimple(sender, "§8§m---------- §r§3§lMCONE-BungeeCord-System §8§m----------");
@@ -30,16 +30,17 @@ public class BungeecordCMD extends Command{
             Messager.sendSimple(sender, "");
         } else if (args[0].equals("reload")) {
             if (sender instanceof ProxiedPlayer) {
-                ProxiedPlayer p = (ProxiedPlayer)sender;
-                if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
+                ProxiedPlayer p = (ProxiedPlayer) sender;
+                if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId()))
+                    return;
                 if (!p.hasPermission("system.bungee.reload")) {
                     return;
                 }
             }
 
             if (args.length == 1) {
-                Messager.send(sender, "§aMySQL-Config wird neu geladen...");
-                BungeeCoreSystem.sqlconfig.store();
+                Messager.send(sender, "§aTranslation-Manager wird neu geladen...");
+                BungeeCoreSystem.getInstance().getTranslationManager().reload();
 
                 Messager.send(sender, "§aPermissions werden neu geladen...");
                 BungeeCoreSystem.getInstance().getPermissionManager().reload();
@@ -47,9 +48,9 @@ public class BungeecordCMD extends Command{
                 Messager.send(sender, "§aNicks werden neu geladen...");
                 BungeeCoreSystem.getInstance().getNickManager().reload();
             } else if (args.length == 2) {
-                if (args[1].equalsIgnoreCase("config")) {
-                    Messager.send(sender, "§aMySQL-Config wird neu geladen...");
-                    BungeeCoreSystem.sqlconfig.store();
+                if (args[1].equalsIgnoreCase("translations")) {
+                    Messager.send(sender, "§aTranslation-Manager wird neu geladen...");
+                    BungeeCoreSystem.getInstance().getTranslationManager().reload();
                 } else if (args[1].equalsIgnoreCase("permissions")) {
                     Messager.send(sender, "§aPermissions werden neu geladen...");
                     BungeeCoreSystem.getInstance().getPermissionManager().reload();
@@ -59,5 +60,5 @@ public class BungeecordCMD extends Command{
                 }
             }
         }
-	}
+    }
 }

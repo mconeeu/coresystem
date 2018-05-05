@@ -9,7 +9,8 @@ package eu.mcone.coresystem.bungee.listener;
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.api.core.labymod.LabyPermission;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.utils.Messager;
+import eu.mcone.coresystem.api.bungee.util.Messager;
+import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.Title;
@@ -44,13 +45,13 @@ public class PostLogin implements Listener{
         String ip = ipandport[0];
         final long millis = System.currentTimeMillis();
 
-        BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT `uuid` FROM `userinfo` WHERE `uuid` = '" + p.getUniqueId().toString() + "'", rs -> {
+        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `uuid` FROM `userinfo` WHERE `uuid` = '" + p.getUniqueId().toString() + "'", rs -> {
             try {
                 if (rs.next()) {
-                    BungeeCoreSystem.getInstance().getMySQL(1).update("UPDATE `userinfo` SET `name` = '" + p.getName() + "', `ip` = '" + ip + "' , status = 'online', `timestamp` = '" + millis / 1000 + "' WHERE `uuid`='" + p.getUniqueId().toString() + "';");
+                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `userinfo` SET `name` = '" + p.getName() + "', `ip` = '" + ip + "' , status = 'online', `timestamp` = '" + millis / 1000 + "' WHERE `uuid`='" + p.getUniqueId().toString() + "';");
                 } else {
                     isNew = true;
-                    BungeeCoreSystem.getInstance().getMySQL(1).update("INSERT INTO `userinfo` (`uuid`, `name`, `groups`, `coins`, `status`, `ip`, `timestamp`, `onlinetime`) VALUES ('" +  p.getUniqueId().toString() + "', '" +  p.getName() + "', '[11]', 20, 'online', '" + ip + "', '" +  millis / 1000 + "' , 0)");
+                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `userinfo` (`uuid`, `name`, `groups`, `coins`, `status`, `ip`, `timestamp`, `onlinetime`) VALUES ('" +  p.getUniqueId().toString() + "', '" +  p.getName() + "', '[11]', 20, 'online', '" + ip + "', '" +  millis / 1000 + "' , 0)");
                 }
             }catch (SQLException e1){
                 e1.printStackTrace();
@@ -63,7 +64,7 @@ public class PostLogin implements Listener{
         }
 
         if(p.hasPermission("system.bungee.report")) {
-            BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT `id`, `title` FROM `website_ticket` WHERE `cat`='Spielerreport' AND `state`='pending';", rs -> {
+            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `id`, `title` FROM `website_ticket` WHERE `cat`='Spielerreport' AND `state`='pending';", rs -> {
                 try {
                     int desc = 0;
                     while (rs.next()) {

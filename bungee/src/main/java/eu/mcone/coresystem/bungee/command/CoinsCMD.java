@@ -8,7 +8,7 @@ package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.core.player.CoinsAPI;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.utils.Messager;
+import eu.mcone.coresystem.api.bungee.util.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -97,10 +97,10 @@ public class CoinsCMD extends Command{
                     Messager.send(p, "§4Bitte benutze: §c/coins <add|remove|set> <Spieler> <Anzahl>");
                 }
             } else {
-                Messager.send(p, " §4Du hast keine Berechtigung für diesen Befehl!");
+                Messager.send(p, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.noperm"));
             }
         } else {
-            Messager.send(sender, "§4Dieser Befehl kann nur von einem Spieler ausgeführt werden!");
+            Messager.send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 }

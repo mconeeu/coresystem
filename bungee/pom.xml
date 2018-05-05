@@ -44,6 +44,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <shadedArtifactAttached>false</shadedArtifactAttached>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>com.github.wvengen</groupId>
@@ -79,6 +82,10 @@
             <id>bungeecord-repo</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
+        <repository>
+            <id>mcone-systems</id>
+            <url>http://repo.mcone.eu/nexus/content/repositories/system/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -87,6 +94,12 @@
             <artifactId>core</artifactId>
             <version>10.0.0-SNAPSHOT</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>eu.mcone.cloud</groupId>
+            <artifactId>plugin-api-bungee</artifactId>
+            <version>1.1.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>eu.mcone.coresystem</groupId>

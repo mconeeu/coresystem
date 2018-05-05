@@ -6,9 +6,9 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.inventory.ProfileInventory;
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -28,8 +28,7 @@ public class ProfileCMD implements CommandExecutor {
                 p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
             }
         } else {
-            Bukkit.getConsoleSender().sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Dieser Befehl kann nur von einem Spieler ausgeführt werden!");
-            return true;
+            Messager.sendTransl(sender, "system.command.consolesender");
         }
 
         return true;

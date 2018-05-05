@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bukkit;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
+import eu.mcone.coresystem.api.bukkit.config.YAML_Config;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
@@ -19,10 +20,10 @@ import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
-import eu.mcone.coresystem.bukkit.channel.PluginChannelListener;
+import eu.mcone.coresystem.api.core.translation.Translation;
 import eu.mcone.coresystem.bukkit.channel.ChannelHandler;
+import eu.mcone.coresystem.bukkit.channel.PluginChannelListener;
 import eu.mcone.coresystem.bukkit.command.*;
-import eu.mcone.coresystem.api.bukkit.config.YAML_Config;
 import eu.mcone.coresystem.bukkit.listener.*;
 import eu.mcone.coresystem.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.bukkit.player.CoinsAPI;
@@ -30,13 +31,15 @@ import eu.mcone.coresystem.bukkit.player.NickManager;
 import eu.mcone.coresystem.bukkit.player.StatsAPI;
 import eu.mcone.coresystem.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.bukkit.util.AFKCheck;
-import eu.mcone.coresystem.bukkit.world.WorldLocation;
 import eu.mcone.coresystem.bukkit.world.WorldManager;
 import eu.mcone.coresystem.bukkit.world.WorldUploader;
+import eu.mcone.coresystem.core.CoreModuleCoreSystem;
+import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.mysql.MySQL;
-import eu.mcone.coresystem.api.core.mysql.MySQL_Config;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
+import eu.mcone.coresystem.core.translation.TranslationField;
+import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CooldownSystem;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
@@ -50,11 +53,11 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 
-public class BukkitCoreSystem extends CoreSystem {
+public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem {
 
+    @Getter
+    private static BukkitCoreSystem system;
     private static String MainPrefix = "§8[§fBukkitCore§8] ";
-    public static MySQL_Config config;
-    public static YAML_Config cfg = new YAML_Config("MCONE-BukkitCoreSystem", "config.yml");
 
     private MySQL mysql1;
     private MySQL mysql2;
@@ -62,6 +65,8 @@ public class BukkitCoreSystem extends CoreSystem {
     private Map<UUID, CoreInventory> inventories;
     private Map<Gamemode, StatsAPI> stats;
 
+    @Getter
+    private TranslationManager translationManager;
     @Getter
 	private PermissionManager permissionManager;
     @Getter
@@ -78,6 +83,8 @@ public class BukkitCoreSystem extends CoreSystem {
     private PlayerUtils playerUtils;
 
     @Getter
+    private YAML_Config yamlConfig;
+    @Getter
     private Map<UUID, BukkitCorePlayer> corePlayers;
     @Getter
     private HashSet<CoreCommand> commands;
@@ -87,6 +94,7 @@ public class BukkitCoreSystem extends CoreSystem {
 	@Override
 	public void onEnable(){
 		setInstance(this);
+		system = this;
 		inventories = new HashMap<>();
 		commands = new HashSet<>();
         createPluginDir("worlds");
@@ -105,15 +113,16 @@ public class BukkitCoreSystem extends CoreSystem {
         );
 
         Bukkit.getConsoleSender().sendMessage(MainPrefix + "§aMySQL Verbindungen werden initialisiert...");
-        mysql1 = new MySQL("78.46.249.195", 3306, "mc1system", "mc1system", "6THk8uDbTtDKf8yUMf2r62MHMZ57EVMBFkMDEgFqz9YF8prKug2q9DXLvTJZEmsa", 2);
-        mysql2 = new MySQL("78.46.249.195", 3306, "mc1stats", "mc1stats", "qN8FQK.hj)_Lat?uK)-#6F-$3![t;2E6KZ$sb+Am3g!VHRDe&w$nQX)5}VKb@-@[}e", 2);
-        mysql3 = new MySQL("78.46.249.195", 3306, "mc1config", "mc1config", "q%sZp=6/_wx2M2B.Qzaeya4Kd5;f4W*w*M?3#kM,QPjv6VuG3=TjTJ63CPD)}WV;", 2);
+        mysql1 = new MySQL(Database.SYSTEM);
+        mysql2 = new MySQL(Database.STATS);
+        mysql3 = new MySQL(Database.DATA);
         createTables(mysql1);
 
         cooldownSystem = new CooldownSystem();
         coinsAPI = new CoinsAPI(this);
         channelHandler = new ChannelHandler();
         playerUtils = new PlayerUtils(mysql1);
+        yamlConfig = new YAML_Config("MCONE-BukkitCoreSystem", "config.yml");
 
         stats = new HashMap<>();
         for (Gamemode gamemode : Gamemode.values()) {
@@ -128,15 +137,15 @@ public class BukkitCoreSystem extends CoreSystem {
             Bukkit.getConsoleSender().sendMessage(MainPrefix + "§cCloudSystem nicht verfügbar!");
         }
 
-        Bukkit.getConsoleSender().sendMessage(MainPrefix + "§aMySQL Config wird initiiert...");
-		config = new MySQL_Config(mysql3, "BukkitCoreSystem", 800);
-		this.registerMySQLConfig();
-
         Bukkit.getConsoleSender().sendMessage(MainPrefix + "§aWorldManager wird gestartet...");
         worldManager = new WorldManager(this);
 
+        Bukkit.getConsoleSender().sendMessage(MainPrefix + "§aTranslations werden geladen...");
+        translationManager = new TranslationManager(mysql1);
+        registerTranslations();
+
         Bukkit.getConsoleSender().sendMessage(MainPrefix + "§aPermissions & Gruppen werden geladen...");
-        permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), mysql1, this);
+        permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), mysql1);
 
         Bukkit.getConsoleSender().sendMessage(MainPrefix + "§aNickManager wird gestartet...");
         nickManager = new NickManager(this);
@@ -155,8 +164,8 @@ public class BukkitCoreSystem extends CoreSystem {
 
         StringBuilder functions = new StringBuilder();
         int i = 0;
-        for (String key : cfg.getConfig().getKeys(true)) {
-            if (cfg.getConfig().getBoolean(key)) {
+        for (String key : yamlConfig.getConfig().getKeys(true)) {
+            if (yamlConfig.getConfig().getBoolean(key)) {
                 if ((key == null) || key.equals("") || key.equals(" ")) {
                     return;
                 } else if (i==0) {
@@ -184,7 +193,7 @@ public class BukkitCoreSystem extends CoreSystem {
 
     @Override
 	public void onDisable(){
-	    if (BukkitCoreSystem.cfg.getConfig().getBoolean("AFK-Manager")) {
+	    if (yamlConfig.getConfig().getBoolean("AFK-Manager")) {
 	        for (HashMap.Entry<UUID, Integer> templateEntry : AFKCheck.players.entrySet()) {
 	            AFKCheck.players.put(templateEntry.getKey(), 0);
             }
@@ -204,28 +213,24 @@ public class BukkitCoreSystem extends CoreSystem {
 		getServer().getConsoleSender().sendMessage(MainPrefix + "§cPlugin wurde deaktiviert");
 	}
 
-	private void registerMySQLConfig(){
-		//create table
-		config.createTable();
+	private void registerTranslations(){
+	    Map<String, Translation> translations = new HashMap<>();
 
-		//System-Prefix Config values
-        config.insertMySQLConfig("Prefix", "&8[&7&l!&8]&f Server &8» &7");
-        config.insertMySQLConfig("Chat-Design", "&7%Player% &8» &7Nachricht");
+        translations.put("system.bukkit.chat", new TranslationField("&7%Player% &8» &7Nachricht"));
 
-        //store
-        config.store();
+        translationManager.insertIfNotExists(translations);
 	}
 
     private void setupConfig() {
-	    cfg.getConfig().options().copyDefaults(true);
+	    yamlConfig.getConfig().options().copyDefaults(true);
 
-        cfg.getConfig().addDefault("Tablist", Boolean.TRUE);
-        cfg.getConfig().addDefault("UserChat", Boolean.TRUE);
-        cfg.getConfig().addDefault("CoinsAPI", Boolean.TRUE);
-        cfg.getConfig().addDefault("StatsAPI", Boolean.TRUE);
-        cfg.getConfig().addDefault("AFK-Manager", Boolean.TRUE);
+        yamlConfig.getConfig().addDefault("Tablist", Boolean.TRUE);
+        yamlConfig.getConfig().addDefault("UserChat", Boolean.TRUE);
+        yamlConfig.getConfig().addDefault("CoinsAPI", Boolean.TRUE);
+        yamlConfig.getConfig().addDefault("StatsAPI", Boolean.TRUE);
+        yamlConfig.getConfig().addDefault("AFK-Manager", Boolean.TRUE);
 
-        cfg.save();
+        yamlConfig.save();
     }
 
 
@@ -259,7 +264,7 @@ public class BukkitCoreSystem extends CoreSystem {
 
 	private void startScheduler() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
-            if (BukkitCoreSystem.cfg.getConfig().getBoolean("AFK-Manager")){
+            if (yamlConfig.getConfig().getBoolean("AFK-Manager")){
                 AFKCheck.check();
             }
         }, 25, 15);
@@ -324,13 +329,18 @@ public class BukkitCoreSystem extends CoreSystem {
     }
 
     @Override
-    public eu.mcone.coresystem.api.core.mysql.MySQL getMySQL(int connectionID) {
-        switch (connectionID) {
-            case 1: return mysql1;
-            case 2: return mysql2;
-            case 3: return mysql3;
+    public MySQL getMySQL(Database database) {
+        switch (database) {
+            case SYSTEM: return mysql1;
+            case STATS: return mysql2;
+            case DATA: return mysql3;
             default: return null;
         }
+    }
+
+    @Override
+    public eu.mcone.coresystem.api.core.mysql.MySQL getMySQL() {
+        return mysql3;
     }
 
     public BukkitCorePlayer getCorePlayer(Player p) {
@@ -401,7 +411,7 @@ public class BukkitCoreSystem extends CoreSystem {
 
     @Override
     public LocationManager initialiseLocationManager(String server) {
-        return new eu.mcone.coresystem.bukkit.util.LocationManager(this, server);
+        return new eu.mcone.coresystem.bukkit.util.LocationManager(mysql1, server);
     }
 
     @Override

@@ -6,11 +6,11 @@
 
 package eu.mcone.coresystem.bungee.player;
 
-import eu.mcone.coresystem.api.core.mysql.MySQL;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.utils.Messager;
+import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.bungee.utils.PluginMessage;
+import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -20,19 +20,17 @@ import java.util.HashMap;
 public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickManager {
 
     private final BungeeCoreSystem instance;
-    private final MySQL mysql;
     private HashMap<SkinInfo, ProxiedPlayer> nicks;
 
     public NickManager(BungeeCoreSystem instance) {
         this.instance = instance;
-        this.mysql = instance.getMySQL(1);
         reload();
     }
 
     public void reload() {
         nicks = new HashMap<>();
 
-        mysql.select("SELECT n.name, t.texture_value, t.texture_signature FROM bungeesystem_nicks n, bukkitsystem_textures t WHERE n.texture = t.name", rs -> {
+        instance.getMySQL(Database.SYSTEM).select("SELECT n.name, t.texture_value, t.texture_signature FROM bungeesystem_nicks n, bukkitsystem_textures t WHERE n.texture = t.name", rs -> {
             try {
                 while (rs.next()) {
                     nicks.put(instance.getPlayerUtils().constructSkinInfo(rs.getString("n.name"), rs.getString("t.texture_value"), rs.getString("t.texture_signature")), null);

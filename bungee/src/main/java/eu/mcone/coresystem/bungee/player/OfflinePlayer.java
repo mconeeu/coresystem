@@ -12,6 +12,7 @@ import com.google.gson.JsonParser;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.core.mysql.Database;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -45,7 +46,7 @@ public class OfflinePlayer {
     private long banTime, muteTime;
 
     public OfflinePlayer(String name) throws CoreException {
-        BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT uuid, groups, status, onlinetime FROM userinfo WHERE name='"+name+"'", rs -> {
+        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT uuid, groups, status, onlinetime FROM userinfo WHERE name='"+name+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.uuid = UUID.fromString(rs.getString("uuid"));
@@ -84,7 +85,7 @@ public class OfflinePlayer {
     }
 
     public OfflinePlayer loadBanData() {
-        BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT `end` FROM `bungeesystem_bansystem_mute` WHERE `uuid`='"+getUuid()+"'", rs -> {
+        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `end` FROM `bungeesystem_bansystem_mute` WHERE `uuid`='"+getUuid()+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.muted = true;
@@ -97,7 +98,7 @@ public class OfflinePlayer {
             }
         });
 
-        BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT `end` FROM `bungeesystem_bansystem_ban` WHERE `uuid`='"+getUuid()+"'", rs -> {
+        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `end` FROM `bungeesystem_bansystem_ban` WHERE `uuid`='"+getUuid()+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.banned = true;
@@ -110,7 +111,7 @@ public class OfflinePlayer {
             }
         });
 
-        BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT `banpoints`, `mutepoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='"+getUuid()+"'", rs -> {
+        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `banpoints`, `mutepoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='"+getUuid()+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.banPoints = rs.getInt("banpoints");

@@ -9,6 +9,9 @@ package eu.mcone.coresystem.core.player;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
 import eu.mcone.coresystem.api.core.player.Group;
+import eu.mcone.coresystem.core.CoreModuleCoreSystem;
+import eu.mcone.coresystem.core.mysql.Database;
+import eu.mcone.coresystem.api.core.translation.Language;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,6 +26,8 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
     protected final String name;
     @Getter
     protected UUID uuid;
+    @Getter
+    private Language language;
     private long onlinetime, joined;
     @Getter @Setter
     private boolean nicked;
@@ -35,10 +40,11 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
         this.instance = instance;
         this.name = name;
 
-        instance.getMySQL(1).select("SELECT uuid, groups, onlinetime FROM userinfo WHERE name='"+name+"'", rs -> {
+        ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).select("SELECT uuid, groups, language, onlinetime FROM userinfo WHERE name='"+name+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.uuid = UUID.fromString(rs.getString("uuid"));
+                    this.language = Language.valueOf(rs.getString("language"));
                     this.groups = instance.getPermissionManager().getGroups(rs.getString("groups"));
                     this.onlinetime = rs.getLong("onlinetime");
                     this.joined = System.currentTimeMillis() / 1000;

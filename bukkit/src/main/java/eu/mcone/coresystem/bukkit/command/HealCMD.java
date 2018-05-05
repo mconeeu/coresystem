@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -25,7 +26,7 @@ public class HealCMD implements CommandExecutor{
 				if (args.length == 0) {
 					p.setHealth(p.getMaxHealth());
 					p.setFoodLevel(20);
-					p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Du hast nun wieder §avolles Leben§3!");
+					Messager.send(p, "§2Du hast nun wieder §avolles Leben§3!");
 					p.playSound(p.getLocation(), Sound.EAT, 1, 1);
 					p.setFireTicks(1);
 				} else if (args.length == 1) {
@@ -33,20 +34,20 @@ public class HealCMD implements CommandExecutor{
 					if (t != null) {
 						t.setHealth(20.0D);
 						t.setFoodLevel(20);
-						t.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Du hast nun §avolles Leben§3!");
+						Messager.send(t, "§2Du hast nun §avolles Leben§3!");
 						t.playSound(p.getLocation(), Sound.EAT, 1, 1);
 						t.setFireTicks(1);
 					} else {
-						p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Dieser Spieler ist nicht online!");
+						Messager.send(p, "§4Dieser Spieler ist nicht online!");
 					}
 				} else {
-					p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze: §c/heal [<Spieler>]");
+					Messager.send(p, "§4Bitte benutze: §c/heal [<Spieler>]");
 				}
 			}else{
-				p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Berechtigung für diesen Befehl!");
+				Messager.sendTransl(p, "system.command.noperm");
 			}
 		} else {
-			Bukkit.getConsoleSender().sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Dieser Befehl kann nur von einem Spieler ausgeführt werden!");
+			Messager.sendTransl(sender, "system.command.consolesender");
 			return true;
 		}
 		return false;

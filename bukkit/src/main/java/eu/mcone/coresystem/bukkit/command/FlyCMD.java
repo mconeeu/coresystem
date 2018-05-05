@@ -6,8 +6,8 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -32,22 +32,22 @@ public class FlyCMD implements CommandExecutor {
                     if (fly.contains(p.getUniqueId())) {
                         p.setAllowFlight(false);
                         fly.remove(p.getUniqueId());
-                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Du hast den §fFlugmodus §2deaktiviert!");
+                        Messager.send(p, "§2Du hast den §fFlugmodus §2deaktiviert!");
                     } else {
                         p.setAllowFlight(true);
                         fly.add(p.getUniqueId());
-                        p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Du hast den §fFlugmodus §2aktiviert!");
+                        Messager.send(p, "§2Du hast den §fFlugmodus §2aktiviert!");
                     }
                 } else {
-                    p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze: §c/fly");
+                    Messager.send(p, "§4Bitte benutze: §c/fly");
                 }
             } else {
-                p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Berechtigung für diesen Befehl");
+                Messager.sendTransl(p, "system.command.noperm");
             }
         } else {
-            Bukkit.getConsoleSender().sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Dieser Befehl kann nur von einem Spieler ausgeführt werden!");
-            return true;
+            Messager.sendTransl(sender, "system.command.consolesender");
         }
-        return false;
+
+        return true;
     }
 }

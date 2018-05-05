@@ -6,6 +6,8 @@
 
 package eu.mcone.coresystem.api.core.player;
 
+import eu.mcone.coresystem.api.core.translation.Language;
+
 import java.util.Set;
 import java.util.UUID;
 
@@ -14,7 +16,9 @@ public interface GlobalCorePlayer {
     String getName();
     
     UUID getUuid();
-    
+
+    Language getLanguage();
+
     Set<Group> getGroups();
 
     long getOnlinetime();

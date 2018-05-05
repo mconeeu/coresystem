@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -38,15 +39,13 @@ public class GamemodeCMD implements CommandExecutor{
 						p.setGameMode(GameMode.SPECTATOR);
 						p.setAllowFlight(true);
 					} else {
-						p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze: §c/gm §4oder §c/gamemode <Gamemode>");
+						Messager.send(p, "§4Bitte benutze: §c/gm §4oder §c/gamemode <Gamemode>");
 						p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
 						return true;
 					}
 
-					p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Du hast deinen Spielmodus auf §f" + p.getGameMode() + " §2gesetzt!");
+					Messager.send(p, "§2Du hast deinen Spielmodus auf §f" + p.getGameMode() + " §2gesetzt!");
 					p.playSound(p.getLocation(), Sound.BLAZE_HIT, 1, 1);
-					return true;
-
 				} else if (args.length == 2) {
 					try {
 						Player t = Bukkit.getPlayer(args[1]);
@@ -64,35 +63,28 @@ public class GamemodeCMD implements CommandExecutor{
 							t.setGameMode(GameMode.SPECTATOR);
 							p.setAllowFlight(true);
 						} else {
-							p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze: §c/gm §4oder §c/gamemode <Gamemode> [<Spieler>]");
+							Messager.send(p, "§4Bitte benutze: §c/gm §4oder §c/gamemode <Gamemode> [<Spieler>]");
 							p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
 							return true;
 						}
 
-						t.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§7Dein Spielmodus wurde auf §f" + t.getGameMode() + " §7gesetzt.");
-						p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§2Du hast den Spielmodus von §f" + t.getName() + " §2auf §a" + t.getGameMode() + "§2 gesetzt.");
+						Messager.send(t, "§7Dein Spielmodus wurde auf §f" + t.getGameMode() + " §7gesetzt.");
+						Messager.send(p, "§2Du hast den Spielmodus von §f" + t.getName() + " §2auf §a" + t.getGameMode() + "§2 gesetzt.");
 						t.playSound(t.getLocation(), Sound.BLAZE_HIT, 1, 1);
 						p.playSound(p.getLocation(), Sound.BLAZE_HIT, 1, 1);
-						return true;
-
 					} catch (NullPointerException d) {
-						p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Dieser Spieler ist nicht Online oder existiert nicht!");
-						return true;
+						Messager.send(p, "§4Dieser Spieler ist nicht Online oder existiert nicht!");
 					}
-
 				} else {
-					p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Bitte benutze: §c/gm §4oder §c/gamemode <GamemodeCMD> [<Spieler>]");
-					p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
-					return true;
+					Messager.send(p, "§4Bitte benutze: §c/gm §4oder §c/gamemode <GamemodeCMD> [<Spieler>]");
 				}
 			} else {
-				p.sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Du hast keine Rechte für den Befehl §cgamemode");
-				p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
-				return true;
+				Messager.sendTransl(p, "system.command.noperm");
 			}
 		} else {
-			Bukkit.getConsoleSender().sendMessage(BukkitCoreSystem.config.getConfigValue("Prefix") + "§4Dieser Befehl kann nur von einem Spieler ausgeführt werden!");
-			return true;
+			Messager.sendTransl(sender, "system.command.consolesender");
 		}
+
+		return true;
 	}
 }

@@ -26,7 +26,7 @@ public class PlayerLogin implements Listener {
         Player p = e.getPlayer();
         setPermissions(p);
         try {
-            new BukkitCorePlayer((BukkitCoreSystem) BukkitCoreSystem.getInstance(), p.getName());
+            new BukkitCorePlayer(BukkitCoreSystem.getInstance(), p.getName());
             p.setDisplayName(p.getName());
         } catch (PlayerNotFoundException e1) {
             e1.printStackTrace();

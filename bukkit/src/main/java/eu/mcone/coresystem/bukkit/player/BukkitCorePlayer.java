@@ -6,10 +6,12 @@
 
 package eu.mcone.coresystem.bukkit.player;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.util.AFKCheck;
+import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,11 +27,11 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
     @Getter
     private CoreScoreboard scoreboard;
 
-    public BukkitCorePlayer(BukkitCoreSystem instance, String name) throws PlayerNotFoundException {
+    public BukkitCorePlayer(CoreSystem instance, String name) throws PlayerNotFoundException {
         super(instance, name);
         this.status = "online";
 
-        instance.getCorePlayers().put(uuid, this);
+        ((BukkitCoreSystem) instance).getCorePlayers().put(uuid, this);
         reloadPermissions();
 
         System.out.println("Loaded Player "+name+"!");
@@ -48,7 +50,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
     @Override
     public void setStatus(final String status) {
         this.status = status;
-        Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> instance.getMySQL(1).update("UPDATE userinfo SET status='"+status+"' WHERE uuid='"+uuid+"'"));
+        Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> ((BukkitCoreSystem) instance).getMySQL(Database.SYSTEM).update("UPDATE userinfo SET status='"+status+"' WHERE uuid='"+uuid+"'"));
     }
 
     @Override
@@ -62,7 +64,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
         AFKCheck.players.remove(uuid);
         AFKCheck.afkPlayers.remove(uuid);
 
-        ((BukkitCoreSystem) BukkitCoreSystem.getInstance()).getCorePlayers().remove(uuid);
+        BukkitCoreSystem.getSystem().getCorePlayers().remove(uuid);
         System.out.println("Unloaded eu.mcone.coresystem.api.core.player "+name);
     }
 

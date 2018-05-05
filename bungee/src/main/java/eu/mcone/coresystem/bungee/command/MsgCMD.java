@@ -6,9 +6,11 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.utils.Messager;
+import eu.mcone.coresystem.api.bungee.util.Messager;
+import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -41,15 +43,15 @@ public class MsgCMD extends Command implements TabExecutor {
             } else if (args.length == 1 && args[0].equalsIgnoreCase("toggle")) {
                 if (noMSG.contains(p.getUniqueId())) {
                     removeToggled(p);
-                    Messager.send(p, "§2Du hast private Nachrichten wieder aktiviert!");
+                    Messager.send(p, BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.see"));
                 } else {
                     addToggled(p);
-                    Messager.send(p, "§2Du hast private Nachrichten deaktiviert!");
+                    Messager.send(p, BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.dontsee"));
                 }
             } else {
                 final BungeeCorePlayer t = BungeeCoreSystem.getInstance().getCorePlayer(args[0]);
                 if (t != null) {
-                    if (p != t) {
+                    if (p != t.bungee()) {
                         if (!t.getBlocks().contains(p.getUniqueId())) {
                             if (!noMSG.contains(p.getUniqueId())) {
                                 if (!noMSG.contains(t.getUuid())) {
@@ -57,8 +59,8 @@ public class MsgCMD extends Command implements TabExecutor {
                                     for (int i = 1; i < args.length; i++) {
                                         msg.append(args[i]).append(" ");
                                     }
-                                    Messager.sendSimple(p, new TextComponent(BungeeCoreSystem.sqlconfig.getConfigValue("Msg-Target").replaceAll("%Msg-Target%", t.getName()) + msg));
-                                    t.bungee().sendMessage(new TextComponent(BungeeCoreSystem.sqlconfig.getConfigValue("Msg-Player").replaceAll("%Msg-Player%", p.getName()) + msg));
+                                    Messager.sendSimple(p, new TextComponent(BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.fromme", CoreSystem.getInstance().getCorePlayer(p)).replaceAll("%Msg-Target%", t.getName()) + msg));
+                                    t.bungee().sendMessage(new TextComponent(BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.tome", CoreSystem.getInstance().getCorePlayer(p)).replaceAll("%Msg-Player%", p.getName()) + msg));
                                     reply.put(t.getUuid(), p.getUniqueId());
                                 } else {
                                     Messager.send(sender, "§c" + args[0] + "§4 hat private Nachrichten deaktiviert!");
@@ -77,7 +79,7 @@ public class MsgCMD extends Command implements TabExecutor {
                 }
             }
         } else {
-            Messager.sendSimple(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
+            Messager.sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 
@@ -94,17 +96,17 @@ public class MsgCMD extends Command implements TabExecutor {
     }
 
     private static void addToggled(ProxiedPlayer p) {
-        BungeeCoreSystem.getInstance().getMySQL(1).update("UPDATE userinfo SET msg_toggle = 1 WHERE uuid = '" + p.getUniqueId().toString() + "'");
+        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE userinfo SET msg_toggle = 1 WHERE uuid = '" + p.getUniqueId().toString() + "'");
         noMSG.add(p.getUniqueId());
     }
 
     private static void removeToggled(ProxiedPlayer p) {
-        BungeeCoreSystem.getInstance().getMySQL(1).update("UPDATE userinfo SET msg_toggle = 0 WHERE uuid = '" + p.getUniqueId().toString() + "'");
-        if (noMSG.contains(p.getUniqueId())) noMSG.remove(p.getUniqueId());
+        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE userinfo SET msg_toggle = 0 WHERE uuid = '" + p.getUniqueId().toString() + "'");
+        noMSG.remove(p.getUniqueId());
     }
 
     public static void updateToggled() {
-        BungeeCoreSystem.getInstance().getMySQL(1).select("SELECT uuid, msg_toggle FROM userinfo", rs -> {
+        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT uuid, msg_toggle FROM userinfo", rs -> {
             try {
                 noMSG = new ArrayList<>();
                 while (rs.next()) {

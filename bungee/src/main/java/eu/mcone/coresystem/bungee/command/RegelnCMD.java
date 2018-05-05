@@ -7,7 +7,6 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ClickEvent.Action;
@@ -26,8 +25,7 @@ public class RegelnCMD extends Command {
 
 	public void execute(final CommandSender sender, final String[] args){
 		if (sender instanceof ProxiedPlayer) {
-			if (args.length == 0) {
-				String[] parts = BungeeCoreSystem.sqlconfig.getConfigValue("CMD-Regeln").split("%button%");
+				String[] parts = BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.command.rules").split("%button%");
 
 				sender.sendMessage(
 						new ComponentBuilder("")
@@ -39,9 +37,6 @@ public class RegelnCMD extends Command {
 								.create()
 				);
 			}
-		} else {
-            Messager.sendSimple(sender, BungeeCoreSystem.sqlconfig.getConfigValue("System-Konsolen-Sender"));
-        }
 	}
 
 }

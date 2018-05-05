@@ -6,11 +6,11 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.ban.BanManager;
 import eu.mcone.coresystem.bungee.player.OfflinePlayer;
-import eu.mcone.coresystem.bungee.utils.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -20,9 +20,9 @@ public class WhoisCMD extends Command {
 
     public WhoisCMD() {
         super("whois", "system.bungee.whois", "whereis");
-     }
+    }
 
-	public void execute(final CommandSender sender, final String[] args){
+    public void execute(CommandSender sender, String[] args) {
         if (args.length == 1) {
             try {
                 OfflinePlayer p = new OfflinePlayer(args[0]).loadPermissions().loadBanData();
@@ -78,6 +78,6 @@ public class WhoisCMD extends Command {
             return;
         }
 
-        Messager.send(sender, "§4Bitte benutze: §c/whois <name>");
+        Messager.send(sender, "§4Bitte benutze: §c/whois <Spieler>");
     }
 }

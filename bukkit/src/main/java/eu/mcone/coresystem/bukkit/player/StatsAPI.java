@@ -6,10 +6,11 @@
 
 package eu.mcone.coresystem.bukkit.player;
 
+import eu.mcone.coresystem.api.bukkit.event.StatsChangeEvent;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.mysql.MySQL;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.api.bukkit.event.StatsChangeEvent;
+import eu.mcone.coresystem.core.mysql.Database;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 
@@ -31,7 +32,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.stats.StatsAPI {
 	public StatsAPI(BukkitCoreSystem instance, Gamemode gamemode) {
 		this.gamemode = gamemode;
 		this.instance = instance;
-		mySQL = instance.getMySQL(1);
+		mySQL = instance.getMySQL(Database.SYSTEM);
 
 		createTable();
     }
