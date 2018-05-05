@@ -22,7 +22,7 @@ public class MySQL implements eu.mcone.coresystem.api.core.mysql.MySQL {
 	
 	public MySQL(Database database) {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:mysql://"+database.getHostname()+":"+database.getPort()+"/"+database);
+        config.setJdbcUrl("jdbc:mysql://"+database.getHostname()+":"+database.getPort()+"/"+database.getDatabase());
         config.setUsername(database.getUsername());
         config.setPassword(database.getPassword());
         config.setMaximumPoolSize(database.getPoolsize());
