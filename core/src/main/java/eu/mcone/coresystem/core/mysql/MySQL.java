@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.core.mysql;
 
-import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import eu.mcone.coresystem.api.core.mysql.Callback;
 import eu.mcone.coresystem.api.core.mysql.CallbackResult;
@@ -21,17 +20,17 @@ public class MySQL implements eu.mcone.coresystem.api.core.mysql.MySQL {
     private HikariDataSource ds;
 	
 	public MySQL(Database database) {
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:mysql://"+database.getHostname()+":"+database.getPort()+"/"+database.getDatabase());
-        config.setUsername(database.getUsername());
-        config.setPassword(database.getPassword());
-        config.setMaximumPoolSize(database.getPoolsize());
-        config.addDataSourceProperty("cachePrepStmts", "true");
-        config.addDataSourceProperty("prepStmtCacheSize", "250");
-        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        ds = new HikariDataSource();
+        ds.setMaximumPoolSize(database.getPoolsize());
+        ds.setDriverClassName("org.mariadb.jdbc.Driver");
+        ds.setJdbcUrl("jdbc:mariadb://"+database.getHostname()+":"+database.getPort()+"/"+database.getDatabase());
+        ds.addDataSourceProperty("user", database.getUsername());
+        ds.addDataSourceProperty("password", database.getPassword());
 
-        this.ds = new HikariDataSource(config);
-        System.out.println("Verbunden zu Datenbank "+database);
+        //config.addDataSourceProperty("cachePrepStmts", "true");
+        //config.addDataSourceProperty("prepStmtCacheSize", "250");
+        //config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        System.out.println("Verbunden zu Datenbank "+database.getHostname());
 	}
 
 	public void close() {

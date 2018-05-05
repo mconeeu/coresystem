@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.api.core.translation;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,8 +27,8 @@ public final class TranslationField {
         }
     }
 
-    public String[] getTranslations() {
-        return (String[]) values.values().toArray();
+    public Collection<String> getTranslations() {
+        return values.values();
     }
 
     public String getString(Language language) {

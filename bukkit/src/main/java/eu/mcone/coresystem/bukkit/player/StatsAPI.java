@@ -32,7 +32,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.stats.StatsAPI {
 	public StatsAPI(BukkitCoreSystem instance, Gamemode gamemode) {
 		this.gamemode = gamemode;
 		this.instance = instance;
-		mySQL = instance.getMySQL(Database.SYSTEM);
+		mySQL = instance.getMySQL(Database.STATS);
 
 		createTable();
     }

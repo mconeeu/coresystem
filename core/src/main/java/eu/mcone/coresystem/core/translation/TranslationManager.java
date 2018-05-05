@@ -31,7 +31,7 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
     public void reload() {
         translations.clear();
 
-        mysql.select("SELECT * FROM bungeesystem_translations", rs -> {
+        mysql.select("SELECT * FROM translations", rs -> {
             try {
                 while (rs.next()) {
                     final Map<Language, String> values = new HashMap<>();
@@ -54,7 +54,7 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
 
     @Override
     public String get(String key) {
-        return translations.get(key).getString(Language.GERMAN);
+        return getTranslation(key, Language.ENGLISH);
     }
 
     @Override
@@ -68,38 +68,34 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
     }
 
     private String getTranslation(String key, Language language) {
-        String result = translations.get(key).getString(language);
+        if (translations.containsKey(key)) {
+            String result = translations.get(key).getString(language);
 
-        if (result != null) {
-            return result;
+            if (result != null) {
+                return result;
+            } else {
+                result = translations.get(key).getString(Language.GERMAN);
+                return result;
+            }
         } else {
-            result = translations.get(key).getString(Language.GERMAN);
-            return result;
+            return null;
         }
     }
 
     @Override
-    public void insertIfNotExists(Map<String, TranslationField> translations) {
-        Map<String, TranslationField> insert = new HashMap<>();
+    public void insertIfNotExists(final Map<String, TranslationField> translations) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO translations (`key`");
+        for (Language l : Language.values()) {
+            sb.append(", `").append(l.getId()).append("`");
+        }
+        sb.append(") VALUES ");
 
+        int i = 0;
         for (HashMap.Entry<String, TranslationField> entry : translations.entrySet()) {
             if (!this.translations.containsKey(entry.getKey())) {
-                insert.put(entry.getKey(), entry.getValue());
-            }
-        }
-
-        if (insert.size() > 0) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("INSERT INTO bungeesystem_translations (`key`");
-            for (Language l : Language.values()) {
-                sb.append(", `").append(l.getId()).append("`");
-            }
-            sb.append(") VALUES ");
-
-            int i = 0;
-            for (HashMap.Entry<String, TranslationField> entry : insert.entrySet()) {
                 i++;
-                translations.put(entry.getKey(), entry.getValue());
+                this.translations.put(entry.getKey(), entry.getValue());
                 sb.append("('").append(entry.getKey().toLowerCase()).append("'");
 
                 for (String translation : entry.getValue().getTranslations()) {
@@ -111,12 +107,12 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
                 }
                 sb.append(")");
 
-                if (i == insert.size()) return;
+                if (i == translations.size()) break;
                 sb.append(", ");
             }
-
-            mysql.update(sb.toString());
         }
+
+        if (i > 0) mysql.update(sb.toString());
     }
 
 }

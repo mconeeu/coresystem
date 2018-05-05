@@ -87,8 +87,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "                    /____/                                     /____/\n");
 
         Messager.console(MainPrefix + "§aMySQL Verbindungen werden initialisiert...");
-        database = new MySQL(Database.SYSTEM);
-        createTables(database);
+        createTables(database = new MySQL(Database.SYSTEM));
 
         cooldownSystem = new CooldownSystem();
         preferences = new PreferencesManager(database);
@@ -387,9 +386,9 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "(" +
                 "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
                 "`key` varchar(100) NOT NULL UNIQUE KEY, " +
-                "`DE` varchar" +
-                "`EN` varchar" +
-                "`FR` varchar" +
+                "`DE` varchar(2000), " +
+                "`EN` varchar(2000), " +
+                "`FR` varchar(2000)" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_preferences` " +

@@ -1,5 +1,5 @@
 name: MCONE-BukkitCoreSystem
-version: 5.2.0-SNAPHOT
+version: 10.0.0-SNAPHOT
 authors: [Domink Lippl, Rufus Maiwald]
 main: eu.mcone.coresystem.bukkit.BukkitCoreSystem
 
