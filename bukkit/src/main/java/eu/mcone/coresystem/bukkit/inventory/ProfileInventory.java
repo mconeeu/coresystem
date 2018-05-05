@@ -22,14 +22,14 @@ public class ProfileInventory extends CoreInventory {
     public ProfileInventory(Player p) {
         super("§8» §3§l"+p.getName()+"'s Profil", p, 36, Option.FILL_EMPTY_SLOTS);
 
-        BukkitCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT status, coins, onlinetime FROM userinfo WHERE uuid='" + player.getUniqueId().toString() + "'", rs -> {
+        BukkitCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT coins, onlinetime FROM userinfo WHERE uuid='" + player.getUniqueId().toString() + "'", rs -> {
             BukkitCorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(player);
 
             try {
                 if (rs.next()) {
                     double onlinetime = Math.floor((cp.getOnlinetime() / 60) * 100) / 100;
                     int coins = rs.getInt("coins");
-                    String status = getStatus(cp.getStatus());
+                    String status = cp.getStatus();
 
                     setItem(4, ItemBuilder.createSkullItem(player.getName(), 1).displayName("§f§l" + player.getName()).lore(
                                 cp.getMainGroup().getLabel(),
@@ -63,17 +63,6 @@ public class ProfileInventory extends CoreInventory {
                 e.printStackTrace();
             }
         });
-    }
-
-    private static String getStatus(String status) {
-        switch (status) {
-            case "online":
-                return "§aonline";
-            case "afk":
-                return "§6AFK";
-            default:
-                return "§aonline";
-        }
     }
 
 }

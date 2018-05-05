@@ -20,7 +20,7 @@ import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
-import eu.mcone.coresystem.api.core.translation.Translation;
+import eu.mcone.coresystem.api.core.translation.TranslationField;
 import eu.mcone.coresystem.bukkit.channel.ChannelHandler;
 import eu.mcone.coresystem.bukkit.channel.PluginChannelListener;
 import eu.mcone.coresystem.bukkit.command.*;
@@ -38,7 +38,6 @@ import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.mysql.MySQL;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
-import eu.mcone.coresystem.core.translation.TranslationField;
 import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CooldownSystem;
 import lombok.Getter;
@@ -68,11 +67,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private TranslationManager translationManager;
     @Getter
-	private PermissionManager permissionManager;
+    private PermissionManager permissionManager;
     @Getter
-	private CooldownSystem cooldownSystem;
+    private CooldownSystem cooldownSystem;
     @Getter
-	private NickManager nickManager;
+    private NickManager nickManager;
     @Getter
     private CoinsAPI coinsAPI;
     @Getter
@@ -91,15 +90,15 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private boolean cloudsystemAvailable;
 
-	@Override
-	public void onEnable(){
-		setInstance(this);
-		system = this;
-		inventories = new HashMap<>();
-		commands = new HashSet<>();
+    @Override
+    public void onEnable() {
+        setInstance(this);
+        system = this;
+        inventories = new HashMap<>();
+        commands = new HashSet<>();
         createPluginDir("worlds");
 
-        Bukkit.getConsoleSender().sendMessage("§f\n"+
+        Bukkit.getConsoleSender().sendMessage("§f\n" +
                 "      __  _____________  _   ________                                                    \n" +
                 "     /  |/  / ____/ __ \\/ | / / ____/                                                    \n" +
                 "    / /|_/ / /   / / / /  |/ / __/                                                       \n" +
@@ -151,7 +150,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         nickManager = new NickManager(this);
 
         getServer().getConsoleSender().sendMessage(MainPrefix + "§aBefehle, Events, Config & Scheduler werden geladen...");
-		this.setupConfig();
+        this.setupConfig();
         this.startScheduler();
         this.registerListener();
         this.registerCommands();
@@ -168,10 +167,10 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             if (yamlConfig.getConfig().getBoolean(key)) {
                 if ((key == null) || key.equals("") || key.equals(" ")) {
                     return;
-                } else if (i==0) {
+                } else if (i == 0) {
                     functions = new StringBuilder("§a" + key);
                     i++;
-                } else if (i>0) {
+                } else if (i > 0) {
                     functions.append("§7, §a").append(key);
                 }
             }
@@ -189,19 +188,19 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             }
         }
         for (BukkitCorePlayer p : getOnlineCorePlayers()) p.setScoreboard(new MainScoreboard());
-	}
+    }
 
     @Override
-	public void onDisable(){
-	    if (yamlConfig.getConfig().getBoolean("AFK-Manager")) {
-	        for (HashMap.Entry<UUID, Integer> templateEntry : AFKCheck.players.entrySet()) {
-	            AFKCheck.players.put(templateEntry.getKey(), 0);
+    public void onDisable() {
+        if (yamlConfig.getConfig().getBoolean("AFK-Manager")) {
+            for (HashMap.Entry<UUID, Integer> templateEntry : AFKCheck.players.entrySet()) {
+                AFKCheck.players.put(templateEntry.getKey(), 0);
             }
         }
 
         for (BukkitCorePlayer p : getOnlineCorePlayers()) {
-	        if (p.isNicked()) {
-	            nickManager.unnick(p.bukkit());
+            if (p.isNicked()) {
+                nickManager.unnick(p.bukkit());
             }
         }
 
@@ -210,19 +209,19 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         mysql3.close();
 
         getCorePlayers().clear();
-		getServer().getConsoleSender().sendMessage(MainPrefix + "§cPlugin wurde deaktiviert");
-	}
+        getServer().getConsoleSender().sendMessage(MainPrefix + "§cPlugin wurde deaktiviert");
+    }
 
-	private void registerTranslations(){
-	    Map<String, Translation> translations = new HashMap<>();
-
-        translations.put("system.bukkit.chat", new TranslationField("&7%Player% &8» &7Nachricht"));
-
-        translationManager.insertIfNotExists(translations);
-	}
+    private void registerTranslations() {
+        translationManager.insertIfNotExists(
+                new HashMap<String, TranslationField>() {{
+                    put("system.bukkit.chat", new TranslationField("&7%Player% &8» &7Nachricht"));
+                }}
+        );
+    }
 
     private void setupConfig() {
-	    yamlConfig.getConfig().options().copyDefaults(true);
+        yamlConfig.getConfig().options().copyDefaults(true);
 
         yamlConfig.getConfig().addDefault("Tablist", Boolean.TRUE);
         yamlConfig.getConfig().addDefault("UserChat", Boolean.TRUE);
@@ -235,23 +234,23 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
 
     private void registerCommands() {
-		getCommand("bukkit").setExecutor(new BukkitCMD());
+        getCommand("bukkit").setExecutor(new BukkitCMD());
         getCommand("feed").setExecutor(new FeedCMD());
         getCommand("fly").setExecutor(new FlyCMD());
-		getCommand("gamemode").setExecutor(new GamemodeCMD());
+        getCommand("gamemode").setExecutor(new GamemodeCMD());
         getCommand("heal").setExecutor(new HealCMD());
-		getCommand("tp").setExecutor(new TpCMD());
-		getCommand("tphere").setExecutor(new TphereCMD());
-		getCommand("tpall").setExecutor(new TpallCMD());
-		getCommand("tppos").setExecutor(new TpposCMD());
-		getCommand("stats").setExecutor(new StatsCMD());
+        getCommand("tp").setExecutor(new TpCMD());
+        getCommand("tphere").setExecutor(new TphereCMD());
+        getCommand("tpall").setExecutor(new TpallCMD());
+        getCommand("tppos").setExecutor(new TpposCMD());
+        getCommand("stats").setExecutor(new StatsCMD());
         getCommand("speed").setExecutor(new SpeedCMD());
-		getCommand("vanish").setExecutor(new VanishCMD());
+        getCommand("vanish").setExecutor(new VanishCMD());
         getCommand("profil").setExecutor(new ProfileCMD());
         getCommand("world").setExecutor(new WorldCMD());
-	}
+    }
 
-	private void registerListener() {
+    private void registerListener() {
         getServer().getPluginManager().registerEvents(new PermissionChange(), this);
         getServer().getPluginManager().registerEvents(new PlayerJoin(), this);
         getServer().getPluginManager().registerEvents(new PlayerLogin(), this);
@@ -260,11 +259,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         getServer().getPluginManager().registerEvents(new InventoryClick(), this);
         getServer().getPluginManager().registerEvents(new PlayerCommandPreprocess(), this);
         getServer().getPluginManager().registerEvents(new SignChange(), this);
-	}
+    }
 
-	private void startScheduler() {
+    private void startScheduler() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
-            if (yamlConfig.getConfig().getBoolean("AFK-Manager")){
+            if (yamlConfig.getConfig().getBoolean("AFK-Manager")) {
                 AFKCheck.check();
             }
         }, 25, 15);
@@ -273,55 +272,55 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private void createTables(MySQL mysql) {
         mysql.update(
                 "CREATE TABLE IF NOT EXISTS `bukkitsystem_npcs`" +
-                "(" +
-                    "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                    "`name` VARCHAR(100) NOT NULL, " +
-                    "`location` VARCHAR(100) NOT NULL, " +
-                    "`texture` VARCHAR(10000) NOT NULL, " +
-                    "`displayname` VARCHAR(1000) NOT NULL, " +
-                    "`server` varchar(100) NOT NULL" +
-                ") " +
-                "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+                        "(" +
+                        "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+                        "`name` VARCHAR(100) NOT NULL, " +
+                        "`location` VARCHAR(100) NOT NULL, " +
+                        "`texture` VARCHAR(10000) NOT NULL, " +
+                        "`displayname` VARCHAR(1000) NOT NULL, " +
+                        "`server` varchar(100) NOT NULL" +
+                        ") " +
+                        "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
         );
 
         mysql.update(
                 "CREATE TABLE IF NOT EXISTS `bukkitsystem_textures`" +
-                "(" +
-                    "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                    "`name` VARCHAR(100) NOT NULL UNIQUE KEY REFERENCES bukkitsystem_npcs(`texture`) ON DELETE SET NULL ON UPDATE SET NULL, " +
-                    "`texture_value` VARCHAR(500) NOT NULL, " +
-                    "`texture_signature` VARCHAR(1000) NOT NULL" +
-                ") " +
-                "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+                        "(" +
+                        "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+                        "`name` VARCHAR(100) NOT NULL UNIQUE KEY REFERENCES bukkitsystem_npcs(`texture`) ON DELETE SET NULL ON UPDATE SET NULL, " +
+                        "`texture_value` VARCHAR(500) NOT NULL, " +
+                        "`texture_signature` VARCHAR(1000) NOT NULL" +
+                        ") " +
+                        "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
         );
 
         mysql.update(
                 "CREATE TABLE IF NOT EXISTS `bukkitsystem_holograms`" +
-                "(" +
-                    "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                    "`name` VARCHAR(100) NOT NULL UNIQUE KEY, " +
-                    "`location` VARCHAR(100) NOT NULL, " +
-                    "`lines` VARCHAR(1000) NOT NULL, " +
-                    "`server` varchar(100) NOT NULL" +
-                ") " +
-                "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+                        "(" +
+                        "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+                        "`name` VARCHAR(100) NOT NULL UNIQUE KEY, " +
+                        "`location` VARCHAR(100) NOT NULL, " +
+                        "`lines` VARCHAR(1000) NOT NULL, " +
+                        "`server` varchar(100) NOT NULL" +
+                        ") " +
+                        "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
         );
 
         mysql.update(
                 "CREATE TABLE IF NOT EXISTS `bukkitsystem_locations`" +
-                "(" +
-                    "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY," +
-                    "`name` VARCHAR(100) NOT NULL," +
-                    "`location` VARCHAR(100) NOT NULL," +
-                    "`server` VARCHAR(100) NOT NULL" +
-                ")" +
-                "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+                        "(" +
+                        "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY," +
+                        "`name` VARCHAR(100) NOT NULL," +
+                        "`location` VARCHAR(100) NOT NULL," +
+                        "`server` VARCHAR(100) NOT NULL" +
+                        ")" +
+                        "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
         );
     }
 
     private void createPluginDir(String path) {
         String s = File.separator;
-        File file = new File(System.getProperty("user.dir")+s+"plugins"+s+path);
+        File file = new File(System.getProperty("user.dir") + s + "plugins" + s + path);
 
         if (!file.exists()) {
             file.mkdir();
@@ -331,10 +330,14 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Override
     public MySQL getMySQL(Database database) {
         switch (database) {
-            case SYSTEM: return mysql1;
-            case STATS: return mysql2;
-            case DATA: return mysql3;
-            default: return null;
+            case SYSTEM:
+                return mysql1;
+            case STATS:
+                return mysql2;
+            case DATA:
+                return mysql3;
+            default:
+                return null;
         }
     }
 
@@ -344,7 +347,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     public BukkitCorePlayer getCorePlayer(Player p) {
-	    return corePlayers.getOrDefault(p.getUniqueId(), null);
+        return corePlayers.getOrDefault(p.getUniqueId(), null);
     }
 
     public BukkitCorePlayer getCorePlayer(UUID uuid) {
@@ -365,7 +368,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public Collection<BukkitCorePlayer> getOnlineCorePlayers() {
-	    return corePlayers.values();
+        return corePlayers.values();
     }
 
     @Override
@@ -406,7 +409,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public BuildSystem initialiseBuildSystem(boolean notify, BuildSystem.BuildEvent... events) {
-	    return new eu.mcone.coresystem.bukkit.util.BuildSystem(this, notify, events);
+        return new eu.mcone.coresystem.bukkit.util.BuildSystem(this, notify, events);
     }
 
     @Override
@@ -416,7 +419,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public void registerInventory(CoreInventory inventory) {
-	    inventories.put(inventory.getPlayer().getUniqueId(), inventory);
+        inventories.put(inventory.getPlayer().getUniqueId(), inventory);
     }
 
     @Override
@@ -431,12 +434,12 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public StatsAPI getStatsAPI(Gamemode gamemode) {
-	    return stats.getOrDefault(gamemode, null);
+        return stats.getOrDefault(gamemode, null);
     }
 
     @Override
     public void registerCommand(CoreCommand command) {
-	    commands.add(command);
+        commands.add(command);
     }
 
     @Override

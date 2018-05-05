@@ -14,7 +14,7 @@ public interface TranslationManager {
 
     void reload();
 
-    Translation getTranslations(String key);
+    TranslationField getTranslations(String key);
 
     String get(String key);
 
@@ -22,6 +22,6 @@ public interface TranslationManager {
 
     String get(String key, GlobalCorePlayer player);
 
-    void insertIfNotExists(Map<String, Translation> translations);
+    void insertIfNotExists(Map<String, TranslationField> translations);
 
 }

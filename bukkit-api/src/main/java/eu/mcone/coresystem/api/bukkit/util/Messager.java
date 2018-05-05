@@ -30,13 +30,21 @@ public final class Messager {
         sender.sendMessage(CoreSystem.getInstance().getTranslationManager().get("system.prefix", Language.ENGLISH) + message);
     }
 
-    public static void sendTransl(final Player p, String translation) {
+    public static void sendTransl(final Player p, String... translation) {
         BukkitCorePlayer cp = CoreSystem.getInstance().getCorePlayer(p);
-        p.sendMessage(CoreSystem.getInstance().getTranslationManager().get("system.prefix", cp) + CoreSystem.getInstance().getTranslationManager().get(translation, cp));
+        StringBuilder sb = new StringBuilder(CoreSystem.getInstance().getTranslationManager().get("system.prefix", cp));
+        for (String s : translation) {
+            sb.append(CoreSystem.getInstance().getTranslationManager().get(s, cp));
+        }
+        p.sendMessage(sb.toString());
     }
 
-    public static void sendTransl(final CommandSender sender, String translation) {
-        sender.sendMessage(CoreSystem.getInstance().getTranslationManager().get("system.prefix", Language.ENGLISH) + CoreSystem.getInstance().getTranslationManager().get(translation, Language.ENGLISH));
+    public static void sendTransl(final CommandSender sender, String... translation) {
+        StringBuilder sb = new StringBuilder(CoreSystem.getInstance().getTranslationManager().get("system.prefix", Language.ENGLISH));
+        for (String s : translation) {
+            sb.append(CoreSystem.getInstance().getTranslationManager().get(s, Language.ENGLISH));
+        }
+        sender.sendMessage(sb.toString());
     }
 
     public static void sendSimple(final Player p, final String message) {

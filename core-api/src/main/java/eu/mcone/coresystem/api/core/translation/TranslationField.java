@@ -4,15 +4,12 @@
  *
  */
 
-package eu.mcone.coresystem.core.translation;
-
-import eu.mcone.coresystem.api.core.translation.Language;
-import eu.mcone.coresystem.api.core.translation.Translation;
+package eu.mcone.coresystem.api.core.translation;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class TranslationField implements Translation {
+public final class TranslationField {
 
     private final Map<Language, String> values;
 

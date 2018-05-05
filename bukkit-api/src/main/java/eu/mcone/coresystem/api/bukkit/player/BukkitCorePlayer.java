@@ -22,6 +22,8 @@ public interface BukkitCorePlayer extends GlobalCorePlayer {
 
     Player bukkit();
 
+    void openInteractionInventory(Player p);
+
     void setScoreboard(CoreScoreboard scoreboard);
 
     void setStatus(String status);

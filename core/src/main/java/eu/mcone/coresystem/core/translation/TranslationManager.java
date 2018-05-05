@@ -8,7 +8,7 @@ package eu.mcone.coresystem.core.translation;
 
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.translation.Language;
-import eu.mcone.coresystem.api.core.translation.Translation;
+import eu.mcone.coresystem.api.core.translation.TranslationField;
 import eu.mcone.coresystem.core.mysql.MySQL;
 
 import java.sql.SQLException;
@@ -18,7 +18,7 @@ import java.util.Map;
 public class TranslationManager implements eu.mcone.coresystem.api.core.translation.TranslationManager {
 
     private MySQL mysql;
-    private Map<String, Translation> translations;
+    private Map<String, TranslationField> translations;
 
     public TranslationManager(MySQL mysql) {
         this.mysql = mysql;
@@ -34,7 +34,7 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
         mysql.select("SELECT * FROM bungeesystem_translations", rs -> {
             try {
                 while (rs.next()) {
-                    Map<Language, String> values = new HashMap<>();
+                    final Map<Language, String> values = new HashMap<>();
                     for (Language language : Language.values()) {
                         values.put(language, rs.getString(language.getId()));
                     }
@@ -48,18 +48,18 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
     }
 
     @Override
-    public Translation getTranslations(String key) {
+    public TranslationField getTranslations(String key) {
         return translations.get(key);
     }
 
     @Override
     public String get(String key) {
-        return translations.get(key).getString(Language.ENGLISH);
+        return translations.get(key).getString(Language.GERMAN);
     }
 
     @Override
     public String get(String key, Language language) {
-        return translations.get(key).getString(language);
+        return getTranslation(key, language);
     }
 
     @Override
@@ -67,11 +67,22 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
         return get(key, player.getLanguage());
     }
 
-    @Override
-    public void insertIfNotExists(Map<String, Translation> translations) {
-        Map<String, Translation> insert = new HashMap<>();
+    private String getTranslation(String key, Language language) {
+        String result = translations.get(key).getString(language);
 
-        for (HashMap.Entry<String, Translation> entry : translations.entrySet()) {
+        if (result != null) {
+            return result;
+        } else {
+            result = translations.get(key).getString(Language.GERMAN);
+            return result;
+        }
+    }
+
+    @Override
+    public void insertIfNotExists(Map<String, TranslationField> translations) {
+        Map<String, TranslationField> insert = new HashMap<>();
+
+        for (HashMap.Entry<String, TranslationField> entry : translations.entrySet()) {
             if (!this.translations.containsKey(entry.getKey())) {
                 insert.put(entry.getKey(), entry.getValue());
             }
@@ -86,7 +97,7 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
             sb.append(") VALUES ");
 
             int i = 0;
-            for (HashMap.Entry<String, Translation> entry : insert.entrySet()) {
+            for (HashMap.Entry<String, TranslationField> entry : insert.entrySet()) {
                 i++;
                 translations.put(entry.getKey(), entry.getValue());
                 sb.append("('").append(entry.getKey().toLowerCase()).append("'");

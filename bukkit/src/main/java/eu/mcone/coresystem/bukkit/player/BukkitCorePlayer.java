@@ -10,6 +10,7 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.bukkit.inventory.InteractionInventory;
 import eu.mcone.coresystem.bukkit.util.AFKCheck;
 import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
@@ -20,7 +21,6 @@ import org.bukkit.entity.Player;
 
 public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer {
 
-    @Getter
     private String status;
     @Getter @Setter
     private String nickname;
@@ -54,6 +54,11 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
     }
 
     @Override
+    public void openInteractionInventory(Player p) {
+        new InteractionInventory(bukkit(), p);
+    }
+
+    @Override
     public void sendMessage(String message) {
         bukkit().sendMessage(message);
     }
@@ -66,6 +71,17 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
 
         BukkitCoreSystem.getSystem().getCorePlayers().remove(uuid);
         System.out.println("Unloaded eu.mcone.coresystem.api.core.player "+name);
+    }
+
+    public String getStatus() {
+        switch (status) {
+            case "online":
+                return "§aonline";
+            case "afk":
+                return "§6AFK";
+            default:
+                return "§aonline";
+        }
     }
 
 }

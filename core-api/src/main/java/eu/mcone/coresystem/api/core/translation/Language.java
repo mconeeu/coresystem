@@ -10,10 +10,9 @@ import lombok.Getter;
 
 public enum Language {
 
-    ENGLISH("EN"),
     GERMAN("DE"),
-    FRENCH("FR"),
-    ITALIAN("IT");
+    ENGLISH("EN"),
+    FRENCH("FR");
 
     @Getter
     private String id;
