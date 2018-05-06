@@ -45,7 +45,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <finalName>${project.name}-${project.artifactId}-${project.version}</finalName>
                     <shadedArtifactAttached>false</shadedArtifactAttached>
                 </configuration>
             </plugin>

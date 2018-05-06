@@ -39,7 +39,7 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
                         values.put(language, rs.getString(language.getId()));
                     }
 
-                    translations.put(rs.getString("key"), new TranslationField(values));
+                    translations.put(rs.getString("key").replaceAll("&", "§"), new TranslationField(values));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -72,10 +72,10 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
             String result = translations.get(key).getString(language);
 
             if (result != null) {
-                return result;
+                return result.replaceAll("&", "§");
             } else {
                 result = translations.get(key).getString(Language.GERMAN);
-                return result;
+                return result.replaceAll("&", "§");
             }
         } else {
             return null;

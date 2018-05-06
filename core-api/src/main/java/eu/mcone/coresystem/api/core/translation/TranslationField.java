@@ -23,7 +23,11 @@ public final class TranslationField {
 
         int i = 0;
         for (Language language : Language.values()) {
-            values.put(language, translations[i]);
+            if (translations.length >= i+1) {
+                values.put(language, translations[i]);
+            } else {
+                values.put(language, null);
+            }
         }
     }
 

@@ -215,7 +215,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private void registerTranslations() {
         translationManager.insertIfNotExists(
                 new HashMap<String, TranslationField>() {{
-                    put("system.bukkit.chat", new TranslationField("&7%Player% &8» &7Nachricht"));
+                    put("system.bukkit.chat", new TranslationField("§7%Player% §8» §7Nachricht"));
                 }}
         );
     }
