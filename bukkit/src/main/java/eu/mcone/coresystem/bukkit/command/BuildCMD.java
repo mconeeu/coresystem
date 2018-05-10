@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.util.Messager;
-import eu.mcone.coresystem.bukkit.util.BuildSystem;
+import eu.mcone.coresystem.bukkit.world.BuildSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

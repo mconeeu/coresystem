@@ -12,13 +12,22 @@ import java.util.Objects;
 
 public final class Random {
 
-    //Generate a random string.
+    /**
+     * generates a random String
+     * @return random String
+     */
     public String nextString() {
         for (int idx = 0; idx < buf.length; ++idx)
             buf[idx] = symbols[random.nextInt(symbols.length)];
         return new String(buf);
     }
 
+    /**
+     * creates a random Integer
+     * @param min minimum int
+     * @param max maximum int
+     * @return random int
+     */
     public static int randomInt(int min, int max) {
         return min + (int)(Math.random() * ((max - min) + 1));
     }

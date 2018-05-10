@@ -44,8 +44,8 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
             if (!cp.isNicked()) {
                 setNick(p, name, instance.getPlayerUtils().constructSkinInfo(name, value, signature));
 
-                cp.setNickname(name);
-                cp.setNicked(true);
+                ((BukkitCorePlayer) cp).setNickname(name);
+                ((BukkitCorePlayer) cp).setNicked(true);
                 p.setDisplayName(name);
 
                 Messager.send(p, "§2Dein Nickname ist nun §f" + name);
@@ -57,7 +57,6 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
         }
     }
 
-    @Override
     public void setNicks(Player p) {
         for (eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer cp : instance.getOnlineCorePlayers()) {
             if (cp.isNicked()) {
@@ -82,8 +81,8 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
             if (cp.isNicked()) {
                 setNick(p, cp.getName(), oldProfiles.get(p.getUniqueId()));
 
-                cp.setNickname(null);
-                cp.setNicked(false);
+                ((BukkitCorePlayer) cp).setNickname(null);
+                ((BukkitCorePlayer) cp).setNicked(false);
                 p.setDisplayName(cp.getName());
                 oldProfiles.remove(p.getUniqueId());
 

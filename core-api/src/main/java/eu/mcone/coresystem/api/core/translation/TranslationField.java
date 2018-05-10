@@ -31,18 +31,37 @@ public final class TranslationField {
         }
     }
 
+    /**
+     * get all translation values as list. ordered like the language enum
+     * @return translation list
+     */
     public Collection<String> getTranslations() {
         return values.values();
     }
 
+    /**
+     * returns the translation for a specific language
+     * @param language language
+     * @return translation
+     */
     public String getString(Language language) {
         return values.getOrDefault(language, null);
     }
 
+    /**
+     * returns the translation for a specific language as Integer
+     * @param language language
+     * @return translation
+     */
     public int getInt(Language language) {
         return Integer.valueOf(values.get(language));
     }
 
+    /**
+     * returns the translation for a specific language as Boolean
+     * @param language language
+     * @return translation
+     */
     public boolean getBoolean(Language language) {
         return Boolean.valueOf(values.get(language));
     }

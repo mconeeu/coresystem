@@ -27,6 +27,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -51,6 +52,7 @@
             <plugin>
                 <groupId>com.github.wvengen</groupId>
                 <artifactId>proguard-maven-plugin</artifactId>
+                <version>2.0.14</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -63,8 +65,12 @@
                         <option>-dontnote</option>
                         <option>-keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,LocalVariable*Table,*Annotation*,Synthetic,EnclosingMethod,EventHandler,Override</option>
                         <option>-keepclassmembers class ** { @org.bukkit.event.EventHandler *; }</option>
+                        <option>-keep class eu.mcone.coresystem.core.annotation.DontObfuscate</option>
+                        <option>-keep @eu.mcone.coresystem.core.annotation.DontObfuscate class * { *; }</option>
+                        <option>-keep class com.google.gson.** { *; }</option>
                         <option>-keep class eu.mcone.coresystem.api.** { *; }</option>
                         <option>-keep class ** extends org.bukkit.plugin.java.JavaPlugin { public void onEnable(); public void onDisable(); }</option>
+                        <option>-keep class org.mariadb.jdbc.** { *; }</option>
                     </options>
                     <obfuscate>true</obfuscate>
                     <libs>
@@ -107,12 +113,6 @@
             <artifactId>spigot</artifactId>
             <version>1.8.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mariadb.jdbc</groupId>
-            <artifactId>mariadb-java-client</artifactId>
-            <version>2.2.3</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 

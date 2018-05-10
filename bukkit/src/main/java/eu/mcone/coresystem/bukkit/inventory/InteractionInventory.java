@@ -32,7 +32,7 @@ public class InteractionInventory extends CoreInventory {
                 if (rs.next()) {
                     double onlinetime = Math.floor((rs.getInt("onlinetime") / 60) * 100) / 100;
                     int coins = rs.getInt("coins");
-                    String status = CoreSystem.getInstance().getCorePlayer(clicked).getStatus();
+                    String status = CoreSystem.getInstance().getCorePlayer(clicked).getStatus().getName();
 
                     setItem(4, ItemBuilder.createSkullItem(clicked.getName(), 1).displayName("§f§l" + clicked.getName()).lore(
                                 CoreSystem.getInstance().getCorePlayer(clicked).getMainGroup().getLabel(),

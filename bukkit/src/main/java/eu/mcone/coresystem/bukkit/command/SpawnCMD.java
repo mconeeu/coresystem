@@ -8,7 +8,7 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.bukkit.util.LocationManager;
+import eu.mcone.coresystem.bukkit.world.LocationManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

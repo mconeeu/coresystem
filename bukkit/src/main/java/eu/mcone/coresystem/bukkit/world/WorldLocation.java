@@ -11,7 +11,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import lombok.Getter;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -23,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Deprecated
 public class WorldLocation implements eu.mcone.coresystem.api.bukkit.world.WorldLocation {
 
     private String MainPrefix = "§8[§fWorldLocation§8] ";

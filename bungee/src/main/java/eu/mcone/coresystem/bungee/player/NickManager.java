@@ -57,8 +57,8 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
 
         if (nick != null) {
             new PluginMessage("Return", p.getServer().getInfo(), "NICK", p.getUniqueId().toString(), nick.getName(), nick.getValue(), nick.getSignature());
-            cp.setNickedSkin(nick);
-            cp.setNicked(true);
+            ((BungeeCorePlayer) cp).setNickedSkin(nick);
+            ((BungeeCorePlayer) cp).setNicked(true);
         } else {
             Messager.send(p, "§4Es ist kein Nickname mehr verfügbar!");
         }
@@ -68,15 +68,15 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
         eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer cp = instance.getCorePlayer(p);
         new PluginMessage("Return", p.getServer().getInfo(), "UNNICK", p.getUniqueId().toString());
         nicks.put(cp.getNickedSkin(), null);
-        cp.setNickedSkin(null);
-        cp.setNicked(false);
+        ((BungeeCorePlayer) cp).setNickedSkin(null);
+        ((BungeeCorePlayer) cp).setNicked(false);
     }
 
     public void destroy(ProxiedPlayer p) {
         eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer cp = instance.getCorePlayer(p);
         nicks.put(cp.getNickedSkin(), null);
-        cp.setNickedSkin(null);
-        cp.setNicked(false);
+        ((BungeeCorePlayer) cp).setNickedSkin(null);
+        ((BungeeCorePlayer) cp).setNicked(false);
     }
 
 }

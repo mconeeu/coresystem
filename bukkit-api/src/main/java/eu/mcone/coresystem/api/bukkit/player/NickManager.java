@@ -10,10 +10,19 @@ import org.bukkit.entity.Player;
 
 public interface NickManager {
 
-    void nick(Player p, String name, String value, String signature);
+    /**
+     * nicks a player with a specific name and skin
+     * @param player player
+     * @param name nickname
+     * @param value skin mojang-value
+     * @param signature skin mojang-signature
+     */
+    void nick(Player player, String name, String value, String signature);
 
-    void setNicks(Player p);
-
-    void unnick(Player p);
+    /**
+     * unnicks a player
+     * @param player player
+     */
+    void unnick(Player player);
 
 }

@@ -7,8 +7,6 @@
 package eu.mcone.coresystem.bukkit.listener;
 
 import eu.mcone.coresystem.api.bukkit.util.Messager;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,8 +14,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.help.HelpTopic;
-
-import java.util.Arrays;
 
 public class PlayerCommandPreprocess implements Listener {
 
@@ -29,21 +25,10 @@ public class PlayerCommandPreprocess implements Listener {
             String[] line = e.getMessage().split(" ");
             String cmd = line[0];
 
-            CoreCommand command = BukkitCoreSystem.getInstance().getCoreCommand(cmd);
-
-            if (command != null) {
+            HelpTopic topic = Bukkit.getServer().getHelpMap().getHelpTopic(cmd);
+            if (topic == null) {
+                Messager.send(p, "§4Der Befehl §c" + cmd + "§4 existiert nicht!");
                 e.setCancelled(true);
-                if (p.hasPermission(command.getPermission())) {
-                    command.execute(p, Arrays.copyOfRange(line, 1, line.length));
-                } else {
-                    Messager.send(p, "§4Du hast keine Berechtigung für diesen Befehl!");
-                }
-            } else {
-                HelpTopic topic = Bukkit.getServer().getHelpMap().getHelpTopic(cmd);
-                if (topic == null) {
-                    Messager.send(p, "§4Der Befehl §c" + cmd + "§4 existiert nicht!");
-                    e.setCancelled(true);
-                }
             }
         }
 

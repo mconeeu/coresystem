@@ -10,6 +10,11 @@ import java.util.UUID;
 
 public interface CoinsAPI {
 
+    /**
+     * check if a player is registered in the mc one database
+     * @param name name
+     * @return boolean registered
+     */
     boolean isRegistered(String name);
 
 

@@ -14,8 +14,17 @@ public interface BuildSystem {
         BLOCK_BREAK, BLOCK_PLACE, INTERACT
     }
 
+    /**
+     * changes a players build mode
+     * @param player player
+     */
     void changeBuildMode(Player player);
 
+    /**
+     * checks if player has build mode enabled
+     * @param player player
+     * @return boolean enabled
+     */
     boolean hasBuildModeEnabled(Player player);
 
 }

@@ -41,8 +41,14 @@ public abstract class CoreObjective {
         return this;
     }
 
+    /**
+     * method called when objective is registered first time
+     */
     public abstract void register();
 
+    /**
+     * method to reload/update important things
+     */
     public abstract void reload();
 
     public org.bukkit.scoreboard.Objective bukkit() {

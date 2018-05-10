@@ -26,7 +26,14 @@ public abstract class CoreInventory {
     @Getter
     private Map<ItemStack, CoreItemEvent> events;
 
-    public CoreInventory(String name, Player player, int size, Option... args) {
+    /**
+     * creates new CoreInventory
+     * @param name inventory title
+     * @param player target player
+     * @param size inventory size
+     * @param args options
+     */
+    protected CoreInventory(String name, Player player, int size, Option... args) {
         this.inventory = Bukkit.createInventory(null, size, name);
         this.player = player;
         this.events = new HashMap<>();
@@ -41,7 +48,14 @@ public abstract class CoreInventory {
         }
     }
 
-    public CoreInventory(String name, Player player, CoreInventorySize size, Option... args) {
+    /**
+     * creates new CoreInventory
+     * @param name inventory title
+     * @param player target player
+     * @param size inventory size
+     * @param args options
+     */
+    protected CoreInventory(String name, Player player, CoreInventorySize size, Option... args) {
         this.inventory = Bukkit.createInventory(null, size.getValue(), name);
         this.player = player;
         this.events = new HashMap<>();
@@ -56,16 +70,30 @@ public abstract class CoreInventory {
         }
     }
 
+    /**
+     * sets an item in the inventory
+     * @param slot inventory slot
+     * @param item item stack
+     * @param event event, called when player clicks on the item
+     */
     public void setItem(int slot, ItemStack item, CoreItemEvent event) {
         inventory.setItem(slot, item);
         events.put(item, event);
 
     }
 
+    /**
+     * sets an item in the inventory
+     * @param slot inventory slot
+     * @param item item stack
+     */
     public void setItem(int slot, ItemStack item) {
         inventory.setItem(slot, item);
     }
 
+    /**
+     * opens the inventory
+     */
     protected void openInventory() {
         player.openInventory(inventory);
     }

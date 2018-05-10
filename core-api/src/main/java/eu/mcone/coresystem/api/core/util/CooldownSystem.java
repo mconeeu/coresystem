@@ -12,10 +12,29 @@ import java.util.UUID;
 
 public interface CooldownSystem {
 
+    /**
+     * adds the current access to list and checks if there already is an list entry
+     * @param instance CoreSystem instance
+     * @param clazz target class
+     * @param uuid player uuid
+     * @return true if player is bypassing the cooldown and should be blocked
+     */
     boolean addAndCheck(GlobalCoreSystem instance, Class<?> clazz, UUID uuid);
 
+    /**
+     * adds a player to the list
+     * @param uuid player uuid
+     * @param clazz target class
+     */
     void addPlayer(UUID uuid, Class<?> clazz);
 
+    /**
+     * checks if a player is currently bypassing the cooldown or not
+     * @param instance CoreSystem instance
+     * @param clazz target class
+     * @param uuid player uuid
+     * @return true if player is bypassing the cooldown and should be blocked
+     */
     boolean canExecute(GlobalCoreSystem instance, Class<?> clazz, UUID uuid);
 
 }

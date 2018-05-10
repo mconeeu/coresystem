@@ -8,7 +8,7 @@ package eu.mcone.coresystem.bukkit.npc;
 
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.NpcCMD;
-import eu.mcone.coresystem.bukkit.util.LocationManager;
+import eu.mcone.coresystem.bukkit.world.LocationManager;
 import eu.mcone.coresystem.core.mysql.MySQL;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

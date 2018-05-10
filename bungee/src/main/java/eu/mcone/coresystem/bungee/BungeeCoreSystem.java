@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.bungee;
 
+import com.google.gson.Gson;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.api.bungee.util.Messager;
@@ -68,6 +69,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private PlayerUtils playerUtils;
     @Getter
     private LabyModAPI labyModAPI;
+    @Getter
+    private Gson gson;
 
     public void onEnable() {
         system = this;
@@ -86,7 +89,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "  /_____/\\__,_/_/ /_/\\__, /\\___/\\___/\\____/\\____/_/   \\___/____/\\__, /____/\\__/\\___/_/ /_/ /_/ \n" +
                 "                    /____/                                     /____/\n");
 
-        Messager.console(MainPrefix + "§aMySQL Verbindungen werden initialisiert...");
+        Messager.console(MainPrefix + "§aInitializing MariaDB Connections...");
         createTables(database = new MySQL(Database.SYSTEM));
 
         cooldownSystem = new CooldownSystem();
@@ -94,41 +97,43 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         playerUtils = new PlayerUtils(database);
         labyModAPI = new LabyModAPI();
         coinsAPI = new CoinsAPI(this);
+        gson = new Gson();
 
-        Messager.console(MainPrefix + "§aTranslations werden geladen...");
+        Messager.console(MainPrefix + "§aLoading Translations...");
         translationManager = new TranslationManager(database);
         registerTranslations();
 
-        Messager.console(MainPrefix + "§aPermissions werden geladen...");
-        permissionManager = new PermissionManager("Proxy", database);
+        Messager.console(MainPrefix + "§aLoading Permissions & Groups...");
+        permissionManager = new PermissionManager("Proxy", database, gson);
 
-        Messager.console(MainPrefix + "§aFreunde System wird geladen...");
+        Messager.console(MainPrefix + "§aLoading FriendSystem...");
         friendSystem = new FriendSystem(database);
 
-        Messager.console(MainPrefix + "§aNachrichten System wird geladen...");
+        Messager.console(MainPrefix + "§aLoading MessagingSystem...");
         MsgCMD.updateToggled();
 
-        Messager.console(MainPrefix + "§aNicksystem wird geladen...");
+        Messager.console(MainPrefix + "§aLoading Nicksystem...");
         nickManager = new NickManager(this);
 
         try {
             Class.forName("eu.mcone.cloud.plugin.CloudPlugin");
+            Messager.console(MainPrefix + "§aCloudSystem available!");
             cloudsystemAvailable = true;
         } catch (ClassNotFoundException e) {
             cloudsystemAvailable = false;
-            Messager.console(MainPrefix + "§cCloudSystem nicht verfügbar!");
+            Messager.console(MainPrefix + "§cCloudSystem not available!");
         }
 
-        Messager.console(MainPrefix + "§aBefehle, Events und Scheduler werden registriert...");
+        Messager.console(MainPrefix + "§aRegistering Commands, Events & Scheduler...");
         registerCommand();
         postRegisterCommand();
         registerEvents();
         loadSchedulers();
 
-        Messager.console(MainPrefix + "§aMC ONE Messaging Channel werden registriert...");
+        Messager.console(MainPrefix + "§aRegistering Plugin Messaging Channel...");
         ProxyServer.getInstance().registerChannel("Return");
 
-        Messager.console(MainPrefix + "§aVersion: §f" + this.getDescription().getVersion() + "§a wurde aktiviert!");
+        Messager.console(MainPrefix + "§aVersion: §f" + this.getDescription().getVersion() + "§a running!");
     }
 
     public void onDisable() {

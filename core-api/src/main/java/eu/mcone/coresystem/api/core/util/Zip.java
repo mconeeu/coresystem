@@ -19,6 +19,11 @@ import java.util.zip.ZipOutputStream;
 
 public final class Zip {
 
+    /**
+     * Zips a folder
+     * @param sourceDir source directory
+     * @param zipFile zip file
+     */
     public Zip(File sourceDir, File zipFile) {
         try {
             if (zipFile.exists()) zipFile.delete();

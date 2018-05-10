@@ -11,13 +11,36 @@ import eu.mcone.coresystem.api.core.mysql.MySQL;
 import java.util.UUID;
 
 public interface PlayerUtils {
-    
+
+    /**
+     * fetch uuid from name, first method is getting from database
+     * @param name name
+     * @return uuid
+     */
     UUID fetchUuid(String name);
-    
+
+    /**
+     * fetch name from uuid, first method is getting from database
+     * @param uuid uuid
+     * @return name
+     */
     String fetchName(UUID uuid);
 
+    /**
+     * cunstruct new SkinInfo
+     * @param name data name
+     * @param value mojang-value
+     * @param signature mojang-signature
+     * @return new SkinInfo object
+     */
     SkinInfo constructSkinInfo(String name, String value, String signature);
 
+    /**
+     * construct new SkinInfo with in database stored texture
+     * @param mySQL mysql database
+     * @param databaseName data texture name
+     * @return new SkinInfo object
+     */
     SkinInfo constructSkinInfo(MySQL mySQL, String databaseName);
     
 }

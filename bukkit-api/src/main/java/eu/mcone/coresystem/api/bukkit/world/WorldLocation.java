@@ -9,6 +9,7 @@ package eu.mcone.coresystem.api.bukkit.world;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 
+@Deprecated
 public interface WorldLocation {
 
     void createDirectory();
@@ -22,4 +23,5 @@ public interface WorldLocation {
     boolean isUseJson();
 
     FileConfiguration getConfig();
+
 }

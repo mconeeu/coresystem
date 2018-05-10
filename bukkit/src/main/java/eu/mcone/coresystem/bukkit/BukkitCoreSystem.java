@@ -6,14 +6,18 @@
 
 package eu.mcone.coresystem.bukkit;
 
+import com.google.gson.Gson;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.config.YAML_Config;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
+import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
+import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
+import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.LocationManager;
 import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
@@ -31,8 +35,10 @@ import eu.mcone.coresystem.bukkit.player.NickManager;
 import eu.mcone.coresystem.bukkit.player.StatsAPI;
 import eu.mcone.coresystem.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.bukkit.util.AFKCheck;
+import eu.mcone.coresystem.bukkit.util.ActionBar;
+import eu.mcone.coresystem.bukkit.util.TablistInfo;
+import eu.mcone.coresystem.bukkit.util.Title;
 import eu.mcone.coresystem.bukkit.world.WorldManager;
-import eu.mcone.coresystem.bukkit.world.WorldUploader;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.mysql.MySQL;
@@ -44,13 +50,13 @@ import lombok.Getter;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem {
 
@@ -80,13 +86,13 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private WorldManager worldManager;
     @Getter
     private PlayerUtils playerUtils;
+    @Getter
+    private Gson gson;
 
     @Getter
     private YAML_Config yamlConfig;
     @Getter
     private Map<UUID, BukkitCorePlayer> corePlayers;
-    @Getter
-    private HashSet<CoreCommand> commands;
     @Getter
     private boolean cloudsystemAvailable;
 
@@ -95,7 +101,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         setInstance(this);
         system = this;
         inventories = new HashMap<>();
-        commands = new HashSet<>();
         createPluginDir("worlds");
 
         Bukkit.getConsoleSender().sendMessage("§f\n" +
@@ -111,7 +116,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "                                                         /____/  \n"
         );
 
-        Bukkit.getConsoleSender().sendMessage(MainPrefix + "§aMySQL Verbindungen werden initialisiert...");
+        Messager.console(MainPrefix + "§aInitializing MariaDB Connections...");
         mysql1 = new MySQL(Database.SYSTEM);
         mysql2 = new MySQL(Database.STATS);
         mysql3 = new MySQL(Database.DATA);
@@ -121,6 +126,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         coinsAPI = new CoinsAPI(this);
         channelHandler = new ChannelHandler();
         playerUtils = new PlayerUtils(mysql1);
+        gson = new Gson();
         yamlConfig = new YAML_Config("MCONE-BukkitCoreSystem", "config.yml");
 
         stats = new HashMap<>();
@@ -130,33 +136,34 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         try {
             Class.forName("eu.mcone.cloud.plugin.CloudPlugin");
+            Messager.console(MainPrefix + "§aCloudSystem available!");
             cloudsystemAvailable = true;
         } catch (ClassNotFoundException e) {
             cloudsystemAvailable = false;
-            Bukkit.getConsoleSender().sendMessage(MainPrefix + "§cCloudSystem nicht verfügbar!");
+            Messager.console(MainPrefix + "§cCloudSystem not available!");
         }
 
-        Bukkit.getConsoleSender().sendMessage(MainPrefix + "§aWorldManager wird gestartet...");
+        Messager.console(MainPrefix + "§aStarting WorldManager...");
         worldManager = new WorldManager(this);
 
-        Bukkit.getConsoleSender().sendMessage(MainPrefix + "§aTranslations werden geladen...");
+        Messager.console(MainPrefix + "§aLoading Translations...");
         translationManager = new TranslationManager(mysql1);
         registerTranslations();
 
-        Bukkit.getConsoleSender().sendMessage(MainPrefix + "§aPermissions & Gruppen werden geladen...");
-        permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), mysql1);
+        Messager.console(MainPrefix + "§aLoading Permissions & Groups...");
+        permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), mysql1, gson);
 
-        Bukkit.getConsoleSender().sendMessage(MainPrefix + "§aNickManager wird gestartet...");
+        Messager.console(MainPrefix + "§aStarting NickManager...");
         nickManager = new NickManager(this);
 
-        getServer().getConsoleSender().sendMessage(MainPrefix + "§aBefehle, Events, Config & Scheduler werden geladen...");
+        Messager.console(MainPrefix + "§aLoading Commands, Events, Scheduler & Configs...");
         this.setupConfig();
         this.startScheduler();
         this.registerListener();
         this.registerCommands();
         corePlayers = new HashMap<>();
 
-        getServer().getConsoleSender().sendMessage(MainPrefix + "§aBungeeCord Messaging Channel wird registriert...");
+        Messager.console(MainPrefix + "§aRegistering BungeeCord Messaging Channel...");
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         getServer().getMessenger().registerIncomingPluginChannel(this, "Return", new PluginChannelListener());
         getServer().getMessenger().registerIncomingPluginChannel(this, "EventHandler", new PluginChannelListener());
@@ -175,8 +182,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 }
             }
         }
-        getServer().getConsoleSender().sendMessage(MainPrefix + "§7Folgende Funktionen wurden aktiviert: " + functions.toString());
-        getServer().getConsoleSender().sendMessage(MainPrefix + "§aVersion §f" + this.getDescription().getVersion() + "§a wurde aktiviert...");
+        Messager.console(MainPrefix + "§7Following functions got activated: " + functions.toString());
+        Messager.console(MainPrefix + "§aVersion §f" + this.getDescription().getVersion() + "§a running!");
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             PlayerLogin.setPermissions(p);
@@ -187,6 +194,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 e.printStackTrace();
             }
         }
+
         for (BukkitCorePlayer p : getOnlineCorePlayers()) p.setScoreboard(new MainScoreboard());
     }
 
@@ -247,7 +255,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         getCommand("speed").setExecutor(new SpeedCMD());
         getCommand("vanish").setExecutor(new VanishCMD());
         getCommand("profil").setExecutor(new ProfileCMD());
-        getCommand("world").setExecutor(new WorldCMD());
     }
 
     private void registerListener() {
@@ -372,29 +379,18 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public NPC constructNPC(String name, Location location, String texture, String displayname) {
+    public NPC createNPC(String name, Location location, String texture, String displayname) {
         return new eu.mcone.coresystem.bukkit.npc.NPC(name, location, texture, displayname);
     }
 
     @Override
-    public NPC constructNPC(String name, Location location, SkinInfo skinInfo, String displayname) {
+    public NPC createNPC(String name, Location location, SkinInfo skinInfo, String displayname) {
         return new eu.mcone.coresystem.bukkit.npc.NPC(name, location, skinInfo, displayname);
     }
 
     @Override
-    public Hologram constructHologram(String[] text, Location location) {
+    public Hologram createHologram(String[] text, Location location) {
         return new eu.mcone.coresystem.bukkit.hologram.Hologram(text, location);
-    }
-
-    @Override
-    public boolean uploadWorld(World w) {
-        try {
-            new WorldUploader(w).upload();
-            return true;
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-            return false;
-        }
     }
 
     @Override
@@ -409,12 +405,12 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public BuildSystem initialiseBuildSystem(boolean notify, BuildSystem.BuildEvent... events) {
-        return new eu.mcone.coresystem.bukkit.util.BuildSystem(this, notify, events);
+        return new eu.mcone.coresystem.bukkit.world.BuildSystem(this, notify, events);
     }
 
     @Override
     public LocationManager initialiseLocationManager(String server) {
-        return new eu.mcone.coresystem.bukkit.util.LocationManager(mysql1, server);
+        return new eu.mcone.coresystem.bukkit.world.LocationManager(mysql1, server);
     }
 
     @Override
@@ -427,7 +423,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         return inventories.values();
     }
 
-    @Override
     public void clearPlayerInventories(UUID uuid) {
         inventories.remove(uuid);
     }
@@ -438,19 +433,18 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public void registerCommand(CoreCommand command) {
-        commands.add(command);
+    public CoreTitle createTitle() {
+        return new Title();
     }
 
     @Override
-    public CoreCommand getCoreCommand(String name) {
-        for (CoreCommand command : commands) {
-            if (command.getCommand().equalsIgnoreCase(name)) {
-                return command;
-            }
-        }
+    public CoreTablistInfo createTablistInfo() {
+        return new TablistInfo();
+    }
 
-        return null;
+    @Override
+    public CoreActionBar createActionBar() {
+        return new ActionBar();
     }
 
     @Override

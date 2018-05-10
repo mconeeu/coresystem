@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.api.bukkit.event;
 
 import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
-import eu.mcone.coresystem.api.bukkit.stats.StatsAPI;
+import eu.mcone.coresystem.api.bukkit.player.StatsAPI;
 import lombok.Getter;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

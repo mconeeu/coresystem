@@ -37,7 +37,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
     private List<UUID> blocks;
     @Getter @Setter
     private boolean requestsToggled;
-    private boolean isMuted = false;
+    private boolean muted = false;
     @Getter @Setter
     private SkinInfo nickedSkin;
 
@@ -47,7 +47,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
         ((BungeeCoreSystem) instance).getMySQL(Database.SYSTEM).select("SELECT `end` FROM `bungeesystem_bansystem_mute` WHERE `uuid`='"+getUuid()+"'", rs -> {
             try {
                 if (rs.next()) {
-                    this.isMuted = true;
+                    this.muted = true;
                     this.muteTime = rs.getLong("end");
                 }
             } catch (SQLException e) {
@@ -77,14 +77,14 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
     @Override
     public boolean isMuted() {
         long millis = System.currentTimeMillis() / 1000;
-        if (isMuted && muteTime < millis) {
-            isMuted = false;
+        if (muted && muteTime < millis) {
+            muted = false;
             ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
                 ((BungeeCoreSystem) instance).getMySQL(Database.SYSTEM).update("DELETE FROM `bungeesystem_bansystem_mute` WHERE end<"+millis);
             });
         }
 
-        return isMuted;
+        return muted;
     }
 
     @Override

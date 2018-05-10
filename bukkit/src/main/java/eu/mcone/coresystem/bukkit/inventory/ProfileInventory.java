@@ -29,7 +29,7 @@ public class ProfileInventory extends CoreInventory {
                 if (rs.next()) {
                     double onlinetime = Math.floor((cp.getOnlinetime() / 60) * 100) / 100;
                     int coins = rs.getInt("coins");
-                    String status = cp.getStatus();
+                    String status = cp.getStatus().getName();
 
                     setItem(4, ItemBuilder.createSkullItem(player.getName(), 1).displayName("§f§l" + player.getName()).lore(
                                 cp.getMainGroup().getLabel(),

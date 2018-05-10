@@ -30,7 +30,7 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
     private Language language;
     private long onlinetime, joined;
     @Getter @Setter
-    private boolean nicked;
+    private boolean nicked = false;
     @Getter
     private Set<Group> groups;
     @Getter @Setter

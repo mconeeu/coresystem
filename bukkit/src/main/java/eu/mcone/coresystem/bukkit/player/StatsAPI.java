@@ -17,7 +17,7 @@ import org.bukkit.Bukkit;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class StatsAPI implements eu.mcone.coresystem.api.bukkit.stats.StatsAPI {
+public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI {
 	
     @Getter
     private Gamemode gamemode;

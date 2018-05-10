@@ -4,7 +4,7 @@
  *
  */
 
-package eu.mcone.coresystem.api.bukkit.stats;
+package eu.mcone.coresystem.api.bukkit.player;
 
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 
@@ -56,13 +56,31 @@ public interface StatsAPI {
     void removeGoals(UUID uuid, int kills);
 
 
+    /**
+     * returns the users place in hierarchy
+     * @param uuid players uuid
+     * @return place in hierarchy
+     */
     int getUserRanking(UUID uuid);
 
+    /**
+     * returns the player Kill/Death stats
+     * @param uuid players uuid
+     * @return KD
+     */
     double getKD(UUID uuid);
 
+    /**
+     * returns all data
+     * @param uuid players uuid
+     * @return data as int array
+     */
     int[] getData(UUID uuid);
 
-
+    /**
+     * returns the target gamemode of this api
+     * @return gamemode
+     */
     Gamemode getGamemode();
 
 }

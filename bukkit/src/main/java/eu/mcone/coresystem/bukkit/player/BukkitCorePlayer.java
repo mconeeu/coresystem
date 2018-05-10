@@ -8,7 +8,10 @@ package eu.mcone.coresystem.bukkit.player;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
+import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
+import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
+import eu.mcone.coresystem.api.core.player.PlayerStatus;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.inventory.InteractionInventory;
 import eu.mcone.coresystem.bukkit.util.AFKCheck;
@@ -21,7 +24,8 @@ import org.bukkit.entity.Player;
 
 public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer {
 
-    private String status;
+    @Getter
+    private PlayerStatus status;
     @Getter @Setter
     private String nickname;
     @Getter
@@ -29,7 +33,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
 
     public BukkitCorePlayer(CoreSystem instance, String name) throws PlayerNotFoundException {
         super(instance, name);
-        this.status = "online";
+        this.status = PlayerStatus.ONLINE;
 
         ((BukkitCoreSystem) instance).getCorePlayers().put(uuid, this);
         reloadPermissions();
@@ -48,9 +52,26 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
     }
 
     @Override
-    public void setStatus(final String status) {
+    public void setStatus(final PlayerStatus status) {
         this.status = status;
-        Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> ((BukkitCoreSystem) instance).getMySQL(Database.SYSTEM).update("UPDATE userinfo SET status='"+status+"' WHERE uuid='"+uuid+"'"));
+        Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> ((BukkitCoreSystem) instance).getMySQL(Database.SYSTEM).update("UPDATE userinfo SET status='"+status.toString().toLowerCase()+"' WHERE uuid='"+uuid+"'"));
+    }
+
+    @Override
+    public CoreWorld getWorld() {
+        return BukkitCoreSystem.getInstance().getWorldManager().getWorld(bukkit().getWorld());
+    }
+
+    @Override
+    public CoreLocation getLocation() {
+        return new CoreLocation(
+                getWorld().getName(),
+                bukkit().getLocation().getX(),
+                bukkit().getLocation().getY(),
+                bukkit().getLocation().getZ(),
+                bukkit().getLocation().getYaw(),
+                bukkit().getLocation().getPitch()
+        );
     }
 
     @Override
@@ -65,23 +86,12 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
 
     @Override
     public void unregister() {
-        BukkitCoreSystem.getInstance().clearPlayerInventories(uuid);
+        BukkitCoreSystem.getSystem().clearPlayerInventories(uuid);
         AFKCheck.players.remove(uuid);
         AFKCheck.afkPlayers.remove(uuid);
 
         BukkitCoreSystem.getSystem().getCorePlayers().remove(uuid);
         System.out.println("Unloaded eu.mcone.coresystem.api.core.player "+name);
-    }
-
-    public String getStatus() {
-        switch (status) {
-            case "online":
-                return "§aonline";
-            case "afk":
-                return "§6AFK";
-            default:
-                return "§aonline";
-        }
     }
 
 }

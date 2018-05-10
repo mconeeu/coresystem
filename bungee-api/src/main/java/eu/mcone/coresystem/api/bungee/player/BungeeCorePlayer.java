@@ -26,11 +26,7 @@ public interface BungeeCorePlayer extends GlobalCorePlayer {
 
     boolean isRequestsToggled();
 
-    void setRequestsToggled(boolean toggled);
-
     SkinInfo getNickedSkin();
-
-    void setNickedSkin(SkinInfo skin);
 
     ProxiedPlayer bungee();
 

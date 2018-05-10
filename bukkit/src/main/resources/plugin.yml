@@ -1,6 +1,7 @@
 name: MCONE-BukkitCoreSystem
 version: 10.0.0-SNAPHOT
 authors: [Domink Lippl, Rufus Maiwald]
+softdepend: [MCONE-CloudPlugin]
 main: eu.mcone.coresystem.bukkit.BukkitCoreSystem
 
 commands:
@@ -103,3 +104,18 @@ permissions:
             description: Allows to manage the spawn points
           system.bukkit.speed:
             description: Allows to use the speed cmd
+          system.bukkit.world:
+            description: Basic Permission for /world info and /world list
+            children:
+              system.bukkit.world.setspawn:
+                description: Allows to set the current worlds spawn
+              system.bukkit.world.upload:
+                description: Allows to upload a specific world
+              system.bukkit.world.delete:
+                description: Allows to delete a specific world
+              system.bukkit.world.modify:
+                description: Allows to modify several values of a specific world
+              system.bukkit.world.import:
+                description: Allows to import an existing world from server folder
+              system.bukkit.world.create:
+                description: Allows to create a new world with specific parameters

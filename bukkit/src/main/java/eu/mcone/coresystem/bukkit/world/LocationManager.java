@@ -4,7 +4,7 @@
  *
  */
 
-package eu.mcone.coresystem.bukkit.util;
+package eu.mcone.coresystem.bukkit.world;
 
 import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
@@ -60,8 +60,9 @@ public class LocationManager extends eu.mcone.coresystem.api.bukkit.world.Locati
         return this;
     }
 
-    public LocationManager preventSpawnCommand() {
-        allowSpawnCMD = false;
+    @Override
+    public LocationManager preventSpawnCommand(boolean prevent) {
+        allowSpawnCMD = !prevent;
         return this;
     }
 

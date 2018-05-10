@@ -16,29 +16,54 @@ import org.bukkit.entity.Player;
 
 public final class Messager {
 
-    public static void send(final Player p, final String message) {
-        p.sendMessage(CoreSystem.getInstance().getTranslationManager().get("system.prefix", CoreSystem.getInstance().getCorePlayer(p)) + message);
+    /**
+     * send message with prefix to player
+     * @param player player
+     * @param message message
+     */
+    public static void send(final Player player, final String message) {
+        player.sendMessage(CoreSystem.getInstance().getTranslationManager().get("system.prefix", CoreSystem.getInstance().getCorePlayer(player)) + message);
     }
 
-    public static void send(final Player p, final TextComponent tc) {
-        TextComponent realTc = new TextComponent(CoreSystem.getInstance().getTranslationManager().get("system.prefix", CoreSystem.getInstance().getCorePlayer(p)));
-        realTc.addExtra(tc);
-        p.spigot().sendMessage(realTc);
+    /**
+     * send TextComponent with prefix to player
+     * @param player player
+     * @param textComponent text component
+     */
+    public static void send(final Player player, final TextComponent textComponent) {
+        TextComponent realTc = new TextComponent(CoreSystem.getInstance().getTranslationManager().get("system.prefix", CoreSystem.getInstance().getCorePlayer(player)));
+        realTc.addExtra(textComponent);
+        player.spigot().sendMessage(realTc);
     }
 
+    /**
+     * send message with prefix to command sender
+     * @param sender command sender
+     * @param message message
+     */
     public static void send(final CommandSender sender, final String message) {
         sender.sendMessage(CoreSystem.getInstance().getTranslationManager().get("system.prefix", Language.ENGLISH) + message);
     }
 
-    public static void sendTransl(final Player p, String... translation) {
-        BukkitCorePlayer cp = CoreSystem.getInstance().getCorePlayer(p);
+    /**
+     * send Translation with prefix to player
+     * @param player player
+     * @param translation translation name/key
+     */
+    public static void sendTransl(final Player player, String... translation) {
+        BukkitCorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
         StringBuilder sb = new StringBuilder(CoreSystem.getInstance().getTranslationManager().get("system.prefix", cp));
         for (String s : translation) {
             sb.append(CoreSystem.getInstance().getTranslationManager().get(s, cp));
         }
-        p.sendMessage(sb.toString());
+        player.sendMessage(sb.toString());
     }
 
+    /**
+     * send Translation with prefix to command sender
+     * @param sender command sender
+     * @param translation translation name/key
+     */
     public static void sendTransl(final CommandSender sender, String... translation) {
         StringBuilder sb = new StringBuilder(CoreSystem.getInstance().getTranslationManager().get("system.prefix", Language.ENGLISH));
         for (String s : translation) {
@@ -47,26 +72,37 @@ public final class Messager {
         sender.sendMessage(sb.toString());
     }
 
-    public static void sendSimple(final Player p, final String message) {
-        p.sendMessage(message);
+    /**
+     * send message to player
+     * @param player player
+     * @param message message
+     */
+    public static void sendSimple(final Player player, final String message) {
+        player.sendMessage(message);
     }
 
-    public static void sendSimple(final Player p, final TextComponent tc) {
-        p.spigot().sendMessage(tc);
+    /**
+     * send TextComponent to player
+     * @param player player
+     * @param textComponent text component
+     */
+    public static void sendSimple(final Player player, final TextComponent textComponent) {
+        player.spigot().sendMessage(textComponent);
     }
 
+    /**
+     * send message to command sender
+     * @param sender command sender
+     * @param message message
+     */
     public static void sendSimple(final CommandSender sender, final String message) {
         sender.sendMessage(message);
     }
 
-    public static void sendParty(final Player p, final String message) {
-        p.sendMessage(CoreSystem.getInstance().getTranslationManager().get("system.prefix.party", CoreSystem.getInstance().getCorePlayer(p)) + message);
-    }
-
-    public static void sendFriend(final Player p, final String message) {
-        p.sendMessage(CoreSystem.getInstance().getTranslationManager().get("system.prefix.friend", CoreSystem.getInstance().getCorePlayer(p)) + message);
-    }
-
+    /**
+     * send message to console
+     * @param message message
+     */
     public static void console(final String message) {
         Bukkit.getConsoleSender().sendMessage(message);
     }

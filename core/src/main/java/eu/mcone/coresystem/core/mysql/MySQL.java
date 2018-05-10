@@ -23,14 +23,14 @@ public class MySQL implements eu.mcone.coresystem.api.core.mysql.MySQL {
         ds = new HikariDataSource();
         ds.setMaximumPoolSize(database.getPoolsize());
         ds.setDriverClassName("org.mariadb.jdbc.Driver");
-        ds.setJdbcUrl("jdbc:mariadb://"+database.getHostname()+":"+database.getPort()+"/"+database.getDatabase());
+        ds.setJdbcUrl("jdbc:mariadb://"+database.getHostname()+":"+database.getPort()+"/"+database.getDatabase()+"?autoReconnect=true");
         ds.addDataSourceProperty("user", database.getUsername());
         ds.addDataSourceProperty("password", database.getPassword());
 
         //config.addDataSourceProperty("cachePrepStmts", "true");
         //config.addDataSourceProperty("prepStmtCacheSize", "250");
         //config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        System.out.println("Verbunden zu Datenbank "+database.getHostname());
+        System.out.println("Verbunden zu Datenbank "+ds.getJdbcUrl());
 	}
 
 	public void close() {

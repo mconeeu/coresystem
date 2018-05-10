@@ -22,7 +22,7 @@ public enum Group {
     PREMIUMPLUS(9, "Premium+", "§6§oPremium+", "§8[§6P+§8] §7", 70),
     PREMIUM(10, "Premium", "§6§oPremium", "§8[§6P§8] §7", 80),
     SPIELER(11, "Spieler", "§f§oSpieler", "§8[§fS§8] §7", 90),
-    SPIELVERDERBER(12, "Spielverderber", "§8§oSpielverderber", "§8[SV] §8", 100);
+    SPIELVERDERBER(12, "Spielverderber", "§8Spielverderber", "§8[§0SV§8] §8", 99);
 
     @Getter
     private int id, score;

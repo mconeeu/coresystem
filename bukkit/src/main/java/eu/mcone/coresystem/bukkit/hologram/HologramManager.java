@@ -11,7 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.HoloCMD;
-import eu.mcone.coresystem.bukkit.util.LocationManager;
+import eu.mcone.coresystem.bukkit.world.LocationManager;
 import eu.mcone.coresystem.core.mysql.Database;
 import lombok.Getter;
 import org.bukkit.Bukkit;

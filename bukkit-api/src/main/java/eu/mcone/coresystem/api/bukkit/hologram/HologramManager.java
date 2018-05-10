@@ -7,20 +7,31 @@
 package eu.mcone.coresystem.api.bukkit.hologram;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 public interface HologramManager {
 
+    /**
+     * reloads all holograms from database
+     */
     void reload();
 
+    /**
+     * adds a new hologram
+     * @param name data name
+     * @param location location
+     * @param line1 fist line
+     */
     void addHologram(String name, Location location, String line1);
 
+    /**
+     * deletes an hologram
+     * @param name data name
+     */
     void removeHologram(String name);
 
+    /**
+     * update all hologram to all players
+     */
     void updateHolograms();
-
-    void setHolograms(Player player);
-
-    void unsetHolograms();
 
 }

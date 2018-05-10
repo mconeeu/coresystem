@@ -4,8 +4,9 @@
  *
  */
 
-package eu.mcone.coresystem.api.bukkit.util;
+package eu.mcone.coresystem.bukkit.util;
 
+import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerListHeaderFooter;
 import net.minecraft.server.v1_8_R3.PlayerConnection;
@@ -14,9 +15,28 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
 
-public final class TablistAPI {
+public class TablistInfo implements CoreTablistInfo {
 
-    public static void setTabHeaderFooter(Player p, String header, String footer) {
+    private String header, footer;
+
+    public TablistInfo header(String header) {
+        this.header = header;
+        return this;
+    }
+
+    public TablistInfo footer(String footer) {
+        this.footer = footer;
+        return this;
+    }
+
+    public TablistInfo reset() {
+        this.header = null;
+        this.footer = null;
+
+        return this;
+    }
+
+    public TablistInfo send(Player p) {
         if (header == null) header = "";
         if (footer == null) footer = "";
         PlayerConnection connection = ((CraftPlayer) p).getHandle().playerConnection;
@@ -34,6 +54,8 @@ public final class TablistAPI {
         } finally {
             connection.sendPacket(headerPacket);
         }
+
+        return this;
     }
 
 }

@@ -4,7 +4,7 @@
  *
  */
 
-package eu.mcone.coresystem.bukkit.world;
+package eu.mcone.coresystem.api.bukkit.world;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,8 +12,8 @@ import lombok.Setter;
 
 @AllArgsConstructor
 @Getter @Setter
-public class WorldProperties {
+public final class WorldProperties {
 
-    private boolean pvp, generateStructures, allowAnimals, allowMonsters, keepSpawnInMemory;
+    private boolean autoSave, pvp, allowAnimals, allowMonsters, keepSpawnInMemory;
 
 }

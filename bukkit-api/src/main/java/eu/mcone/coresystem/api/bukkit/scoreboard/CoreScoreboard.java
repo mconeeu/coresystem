@@ -43,8 +43,17 @@ public abstract class CoreScoreboard {
         return this;
     }
 
+    /**
+     * method called when scoreboard is set to player
+     * @param p player
+     * @param sb scoreboard
+     */
     public abstract void setPlayerTeams(BukkitCorePlayer p, org.bukkit.scoreboard.Scoreboard sb);
 
+    /**
+     * reload the set scoreboard values
+     * @param instance CoreSystem instance
+     */
     public void reload(CoreSystem instance) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             setPlayerTeams(instance.getCorePlayer(player), scoreboard);

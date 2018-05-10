@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.bukkit.inventory;
 
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
-import eu.mcone.coresystem.api.bukkit.stats.StatsAPI;
+import eu.mcone.coresystem.api.bukkit.player.StatsAPI;
 import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.Sound;

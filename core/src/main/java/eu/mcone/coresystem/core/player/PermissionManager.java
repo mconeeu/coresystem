@@ -20,14 +20,16 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
 
     private final String servername;
     private MySQL mySQL;
+    private Gson gson;
 
     private HashMap<Group, Set<String>> groups;
     private HashMap<Group, Set<Group>> parents;
     private HashMap<String, Set<String>> permissions;
 
-    public PermissionManager(String servername, MySQL mysql) {
+    public PermissionManager(String servername, MySQL mysql, Gson gson) {
         this.servername = servername != null ? servername : "unknownserver";
         this.mySQL = mysql;
+        this.gson = gson;
 
         this.groups = new HashMap<>();
         this.parents = new HashMap<>();
@@ -36,6 +38,7 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
         this.reload();
     }
 
+    @Override
     public void reload() {
         mySQL.selectAsync("SELECT * FROM `bungeesystem_permissions` WHERE (`server` IS NULL OR `server` LIKE '" + servername.toLowerCase() + "')", rs -> {
             groups.clear();
@@ -63,6 +66,7 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
         });
     }
 
+    @Override
     public Set<Group> getParents(Group group) {
         Set<Group> result = new HashSet<>();
         for (Group parent : this.parents.getOrDefault(group, new HashSet<>())) {
@@ -72,6 +76,7 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
         return result;
     }
 
+    @Override
     public Set<Group> getChildren(Group group) {
         Set<Group> result = new HashSet<>();
         for (HashMap.Entry<Group, Set<Group>> entry : this.parents.entrySet()) {
@@ -83,6 +88,7 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
         return result;
     }
 
+    @Override
     public Set<String> getPermissions(String uuid, Set<Group> groups) {
         if (groups.size() == 0) groups.add(Group.SPIELER);
         Set<String> permissions = new HashSet<>(this.permissions.getOrDefault(uuid, new HashSet<>()));
@@ -98,6 +104,7 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
         return permissions;
     }
 
+    @Override
     public boolean hasPermission(Set<String> permissions, String permission) {
         if(permissions.contains(permission) || permissions.contains("*") || permission == null) {
             return true;
@@ -114,6 +121,7 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
         return false;
     }
 
+    @Override
     public Set<Group> getGroups() {
         return groups.keySet();
     }
@@ -122,6 +130,7 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
         return groups.getOrDefault(group, null);
     }
 
+    @Override
     public Set<Group> getGroups(String json) {
         Set<Group> groups = new HashSet<>();
         JsonArray array = new JsonParser().parse(json).getAsJsonArray();
@@ -133,17 +142,19 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
         return groups;
     }
 
+    @Override
     public String getJson(Set<Group> groups) {
         JsonArray array = new JsonArray();
         for (Group group : groups) array.add(group.getId());
 
-        return new Gson().toJson(array);
+        return gson.toJson(array);
     }
 
-    public Group getLiveGroup(UUID uuid) {
-        return (Group) mySQL.select("SELECT gruppe FROM userinfo WHERE uuid='"+uuid+"'", rs -> {
+    @Override
+    public Set<Group> getLiveGroups(UUID uuid) {
+        return (Set<Group>) mySQL.select("SELECT groups FROM userinfo WHERE uuid='"+uuid+"'", rs -> {
             try {
-                if (rs.next()) return Group.getGroupbyName(rs.getString("gruppe"));
+                if (rs.next()) return getGroups(rs.getString("gruppe"));
             } catch (SQLException e) {
                 e.printStackTrace();
             }

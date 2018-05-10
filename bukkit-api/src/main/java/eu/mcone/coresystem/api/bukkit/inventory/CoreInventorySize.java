@@ -7,6 +7,7 @@
 package eu.mcone.coresystem.api.bukkit.inventory;
 
 public enum CoreInventorySize {
+
     ROW_1(8),
     ROW_2(17),
     ROW_3(26),
@@ -23,4 +24,5 @@ public enum CoreInventorySize {
     public int getValue() {
         return value;
     }
+
 }
