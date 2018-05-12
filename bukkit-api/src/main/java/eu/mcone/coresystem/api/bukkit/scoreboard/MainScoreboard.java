@@ -4,15 +4,14 @@
  *
  */
 
-package eu.mcone.coresystem.bukkit.scoreboard;
+package eu.mcone.coresystem.api.bukkit.scoreboard;
 
 import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
-import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.api.core.util.Random;
 import org.bukkit.scoreboard.Team;
 
-public class MainScoreboard extends CoreScoreboard {
+public final class MainScoreboard extends CoreScoreboard {
 
     @Override
     public void setPlayerTeams(BukkitCorePlayer p, org.bukkit.scoreboard.Scoreboard sb) {

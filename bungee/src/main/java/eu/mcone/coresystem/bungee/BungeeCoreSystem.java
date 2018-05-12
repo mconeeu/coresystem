@@ -7,6 +7,7 @@
 package eu.mcone.coresystem.bungee;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.api.bungee.util.Messager;
@@ -97,7 +98,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         playerUtils = new PlayerUtils(database);
         labyModAPI = new LabyModAPI();
         coinsAPI = new CoinsAPI(this);
-        gson = new Gson();
+        gson = new GsonBuilder().setPrettyPrinting().create();
 
         Messager.console(MainPrefix + "§aLoading Translations...");
         translationManager = new TranslationManager(database);

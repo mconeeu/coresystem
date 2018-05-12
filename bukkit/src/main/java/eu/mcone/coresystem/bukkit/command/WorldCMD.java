@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.util.Messager;
+import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
@@ -76,7 +77,7 @@ public class WorldCMD implements CommandExecutor {
                         if (w != null) {
                             if (args[0].equalsIgnoreCase("tp")) {
                                 p.teleport(w.bukkit().getSpawnLocation());
-                                Messager.send(p, "§4Du wurdest erfolgreich zur Welt §a"+w.getName()+"§2 gesendet!");
+                                Messager.send(p, "§4Du wurdest erfolgreich zur Welt §a" + w.getName() + "§2 gesendet!");
 
                                 return true;
                             } else if (args[0].equalsIgnoreCase("info")) {
@@ -128,7 +129,41 @@ public class WorldCMD implements CommandExecutor {
                             return true;
                         }
                     } else if (args.length == 3) {
-                        if (args[0].equalsIgnoreCase("set")) {
+                        if (args[0].equalsIgnoreCase("location")) {
+                            String locationName = args[2];
+
+                            if (args[1].equalsIgnoreCase("set")) {
+                                BukkitCoreSystem.getInstance().getCorePlayer(p).getWorld().addLocation(locationName, p.getLocation()).save();
+                                Messager.send(p, "§2Die Location wurde erfolgreich abgespeichert");
+
+                                return true;
+                            } else if (args[1].equalsIgnoreCase("remove")) {
+                                CoreWorld w = BukkitCoreSystem.getInstance().getCorePlayer(p).getWorld();
+
+                                if (w.getLocations().containsKey(locationName)) {
+                                    w.removeLocation(locationName).save();
+                                    Messager.send(p, "§2Die Location wurde erfolgreich gelöscht");
+                                } else {
+                                    Messager.send(p, "§4Die angegebene Location existiert nicht!");
+                                }
+                                return true;
+                            } else if (args[1].equalsIgnoreCase("list")) {
+                                StringBuilder sb = new StringBuilder();
+
+                                CoreWorld w = BukkitCoreSystem.getInstance().getWorldManager().getWorld(locationName);
+                                if (w != null) {
+                                    for (HashMap.Entry<String, CoreLocation> loc : w.getLocations().entrySet()) {
+                                        sb.append("\n§3§o").append(loc.getKey()).append(" ").append(loc.getValue());
+                                    }
+
+                                    Messager.send(p, "§2Hier alle Locations der Welt §a" + locationName + sb.toString());
+                                } else {
+                                    Messager.send(p, "§4Die angegebene Welt existiert nicht. Bitte benutze §c/world");
+                                }
+
+                                return true;
+                            }
+                        } else if (args[0].equalsIgnoreCase("set")) {
                             if (p.hasPermission("system.bukkit.world.modify")) {
                                 CoreWorld w = BukkitCoreSystem.getInstance().getCorePlayer(p).getWorld();
 
@@ -233,7 +268,7 @@ public class WorldCMD implements CommandExecutor {
                                         Messager.send(p, "§4Die Welt " + args[1] + " konnte nicht erstellt werden, da wahrscheinlich ein falsches Key-Value Konstrukt verwendet wurde!");
                                     }
                                 } catch (IllegalArgumentException e) {
-                                    Messager.send(p, "§4Die Welt §c" + args[1] + "§4 wurde erstellt, allerdings konnte mindestens eine Einstellung nicht übernommen werden: \n§7§o"+e.getMessage());
+                                    Messager.send(p, "§4Die Welt §c" + args[1] + "§4 wurde erstellt, allerdings konnte mindestens eine Einstellung nicht übernommen werden: \n§7§o" + e.getMessage());
                                 }
                             } else {
                                 Messager.send(p, "§4Eine Welt mit dem Namen §c" + args[1] + "§4 ist bereits geladen!");
@@ -247,6 +282,7 @@ public class WorldCMD implements CommandExecutor {
 
                 Messager.send(p, "§4Bitte benutze: " +
                         "\n§c/world list §4oder " +
+                        "\n§c/world location <list | set | remove> [<location-name | world-name>]" +
                         "\n§c/world <info | upload | delete | tp> <world-name> §4oder " +
                         "\n§c/world set <key> <value> §4oder " +
                         "\n§c/world import <name> <NORMAL | NETHER | THE_END>" +

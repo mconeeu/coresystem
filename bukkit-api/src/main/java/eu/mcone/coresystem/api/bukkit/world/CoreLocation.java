@@ -16,7 +16,7 @@ import org.bukkit.Location;
 @Getter @Setter
 public final class CoreLocation {
 
-    private String name;
+    private String worldName;
     private double x, y, z;
     private float yaw, pitch;
 
@@ -25,7 +25,7 @@ public final class CoreLocation {
      * @return Bukkit Location
      */
     public Location bukkit() {
-        return new Location(Bukkit.getWorld(name), x, y, z, yaw, pitch);
+        return new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
     }
 
 }

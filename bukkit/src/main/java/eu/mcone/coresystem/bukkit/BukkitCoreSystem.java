@@ -7,6 +7,7 @@
 package eu.mcone.coresystem.bukkit;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.config.YAML_Config;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
@@ -33,7 +34,7 @@ import eu.mcone.coresystem.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.bukkit.player.CoinsAPI;
 import eu.mcone.coresystem.bukkit.player.NickManager;
 import eu.mcone.coresystem.bukkit.player.StatsAPI;
-import eu.mcone.coresystem.bukkit.scoreboard.MainScoreboard;
+import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.bukkit.util.AFKCheck;
 import eu.mcone.coresystem.bukkit.util.ActionBar;
 import eu.mcone.coresystem.bukkit.util.TablistInfo;
@@ -126,7 +127,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         coinsAPI = new CoinsAPI(this);
         channelHandler = new ChannelHandler();
         playerUtils = new PlayerUtils(mysql1);
-        gson = new Gson();
+        gson = new GsonBuilder().setPrettyPrinting().create();
         yamlConfig = new YAML_Config("MCONE-BukkitCoreSystem", "config.yml");
 
         stats = new HashMap<>();

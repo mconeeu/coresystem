@@ -11,6 +11,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldType;
 
+import java.util.Map;
+
 public interface CoreWorld {
 
     /**
@@ -130,12 +132,25 @@ public interface CoreWorld {
     CoreLocation getLocation(String name);
 
     /**
+     * get all saved location
+     * @return Collection of all CoreLocations
+     */
+    Map<String, CoreLocation> getLocations();
+
+    /**
      * add location to the internal world storage
      * @param name location name
      * @param location Location object
      * @return this
      */
     CoreWorld addLocation(String name, Location location);
+
+    /**
+     * remove location from the internal world storage
+     * @param name location name
+     * @return this
+     */
+    CoreWorld removeLocation(String name);
 
     /**
      * change the worlds name
