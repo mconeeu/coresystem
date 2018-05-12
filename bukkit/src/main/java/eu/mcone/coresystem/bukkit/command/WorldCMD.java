@@ -133,7 +133,7 @@ public class WorldCMD implements CommandExecutor {
                             String locationName = args[2];
 
                             if (args[1].equalsIgnoreCase("set")) {
-                                BukkitCoreSystem.getInstance().getCorePlayer(p).getWorld().addLocation(locationName, p.getLocation()).save();
+                                BukkitCoreSystem.getInstance().getCorePlayer(p).getWorld().setLocation(locationName, p.getLocation()).save();
                                 Messager.send(p, "§2Die Location wurde erfolgreich abgespeichert");
 
                                 return true;

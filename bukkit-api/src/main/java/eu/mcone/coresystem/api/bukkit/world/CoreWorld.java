@@ -143,7 +143,7 @@ public interface CoreWorld {
      * @param location Location object
      * @return this
      */
-    CoreWorld addLocation(String name, Location location);
+    CoreWorld setLocation(String name, Location location);
 
     /**
      * remove location from the internal world storage
