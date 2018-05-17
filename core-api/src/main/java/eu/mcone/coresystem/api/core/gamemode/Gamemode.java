@@ -18,7 +18,7 @@ public enum Gamemode {
     BUILD("§e§lBuild");
 
     @Getter
-    String label;
+    private String label;
 
     Gamemode(String label) {
         this.label = label;

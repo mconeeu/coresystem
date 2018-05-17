@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 class StatsCategoryInventory extends CoreInventory {
 
     StatsCategoryInventory(Player p, StatsAPI stats) {
+
         super("§8» §3MCONE-Stats", p, 27, Option.FILL_EMPTY_SLOTS);
 
         int[] result = stats.getData(player.getUniqueId());

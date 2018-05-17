@@ -6,7 +6,9 @@
 
 package eu.mcone.coresystem.bukkit.world;
 
+import com.google.gson.Gson;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
+import eu.mcone.coresystem.api.bukkit.world.WorldProperties;
 import eu.mcone.coresystem.api.core.util.Zip;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.World;
@@ -15,6 +17,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 class WorldUploader {
 
@@ -46,9 +51,10 @@ class WorldUploader {
             PreparedStatement send;
             if (rs.next()) {
                 build = rs.getInt("build");
-                send = con.prepareStatement("UPDATE mc1cloud.cloudwrapper_worlds SET build=?, `name`=?, world_type=?, environment=?, generator=?, generate_structures=?, bytes=? WHERE `name`='" + world.getName() + "'");
+
+                send = con.prepareStatement("UPDATE mc1cloud.cloudwrapper_worlds SET build=?, `name`=?, world_type=?, environment=?, generator=?, generator_settings=?, generate_structures=?, bytes=? WHERE `name`='" + world.getName() + "'");
             } else {
-                send = con.prepareStatement("INSERT INTO mc1cloud.cloudwrapper_worlds (build, `name`, world_type, environment, generator, generate_structures, bytes) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                send = con.prepareStatement("INSERT INTO mc1cloud.cloudwrapper_worlds (build, `name`, world_type, environment, generator, generator_settings, generate_structures, bytes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
             }
 
             FileInputStream fis = new FileInputStream(zipFile);
@@ -58,8 +64,9 @@ class WorldUploader {
             send.setString(3, world.getWorldType());
             send.setString(4, world.getEnvironment());
             send.setString(5, world.getGenerator());
-            send.setBoolean(6, world.isGenerateStructures());
-            send.setBytes(7, IOUtils.toByteArray(fis));
+            send.setString(6, world.getGeneratorSettings());
+            send.setBoolean(7, world.isGenerateStructures());
+            send.setBytes(8, IOUtils.toByteArray(fis));
             send.executeUpdate();
 
             fis.close();
@@ -76,4 +83,15 @@ class WorldUploader {
         }
     }
 
+    private static String insertAsJson(WorldProperties properties) {
+        List<String> result = new ArrayList<>(Arrays.asList(
+                String.valueOf(properties.isAutoSave()),
+                String.valueOf(properties.isPvp()),
+                String.valueOf(properties.isAllowAnimals()),
+                String.valueOf(properties.isAllowMonsters()),
+                String.valueOf(properties.isKeepSpawnInMemory())
+        ));
+
+        return new Gson().toJson(result);
+    }
 }
