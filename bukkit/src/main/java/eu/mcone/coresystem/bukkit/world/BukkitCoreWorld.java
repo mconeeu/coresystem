@@ -90,10 +90,16 @@ public class BukkitCoreWorld implements CoreWorld {
     }
 
     @Override
-    public BukkitCoreWorld addLocation(String name, Location loc) {
+    public BukkitCoreWorld setLocation(String name, Location loc) {
         if (loc.getWorld().getName().equalsIgnoreCase(name)) {
             locations.put(name, new CoreLocation(loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch()));
         }
+        return this;
+    }
+
+    @Override
+    public CoreWorld removeLocation(String name) {
+        locations.remove(name);
         return this;
     }
 
