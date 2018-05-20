@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.world;
 
+import com.google.gson.stream.JsonWriter;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
@@ -83,7 +84,7 @@ public class BukkitCoreWorld implements CoreWorld {
 
     @Override
     public CoreWorld setSpawnLocation(Location loc) {
-        this.spawnLocation = new int[] {(int) loc.getX(), (int) loc.getY(), (int) loc.getZ()};
+        this.spawnLocation = new int[]{(int) loc.getX(), (int) loc.getY(), (int) loc.getZ()};
         bukkit().setSpawnLocation(spawnLocation[0], spawnLocation[1], spawnLocation[2]);
 
         return this;
@@ -91,9 +92,7 @@ public class BukkitCoreWorld implements CoreWorld {
 
     @Override
     public BukkitCoreWorld setLocation(String name, Location loc) {
-        if (loc.getWorld().getName().equalsIgnoreCase(name)) {
-            locations.put(name, new CoreLocation(loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch()));
-        }
+        locations.put(name, new CoreLocation(loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch()));
         return this;
     }
 
@@ -112,7 +111,7 @@ public class BukkitCoreWorld implements CoreWorld {
         File folder = bukkit().getWorldFolder();
         Bukkit.getServer().unloadWorld(this.name, true);
 
-        if (folder.renameTo(new File(folder.getParent()+File.separator+name))) {
+        if (folder.renameTo(new File(folder.getParent() + File.separator + name))) {
             WorldCreator wc = new WorldCreator(name)
                     .environment(World.Environment.valueOf(environment))
                     .type(WorldType.valueOf(worldType))
@@ -146,8 +145,8 @@ public class BukkitCoreWorld implements CoreWorld {
         ((WorldManager) CoreSystem.getInstance().getWorldManager()).setupWorld(bukkit(), this);
         File config = new File(bukkit().getWorldFolder(), WorldManager.CONFIG_NAME);
 
-        try (Writer writer = new FileWriter(config)) {
-            System.out.println("writing json to "+config.getPath());
+        try (JsonWriter writer = new JsonWriter(new FileWriter(config))) {
+            System.out.println("writing json to " + config.getPath());
             CoreSystem.getInstance().getGson().toJson(this, getClass(), writer);
         } catch (IOException e) {
             e.printStackTrace();

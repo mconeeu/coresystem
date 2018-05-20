@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="jar" build-on-make="true" name="bungee:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/bungee_jar</output-path>
+    <output-path>$PROJECT_DIR$/../../../../servers</output-path>
     <root id="archive" name="bungee.jar">
       <element id="module-output" name="bungee" />
       <element id="module-output" name="core" />

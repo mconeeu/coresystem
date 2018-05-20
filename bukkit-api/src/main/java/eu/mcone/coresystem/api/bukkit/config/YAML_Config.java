@@ -95,9 +95,11 @@ public class YAML_Config {
     public void save() {
         try {
             if(this.usePath) {
-                this.config.save(this.path + "/" + this.plugin + "/" + this.fileName);
-            } else if(this.hasSubdirectory) {
-                this.config.save(this.path + "/" + this.plugin + "/" + this.subdirectory + "/" + this.fileName);
+                this.config.save("./" + this.path + "/" + this.plugin + "/" + this.fileName);
+            }
+
+            if(this.hasSubdirectory) {
+                this.config.save("./" + this.path + "/" + this.plugin + "/" + this.subdirectory + "/" + this.fileName);
             } else {
                 this.config.save("./plugins/" + this.plugin + "/" + this.fileName);
             }

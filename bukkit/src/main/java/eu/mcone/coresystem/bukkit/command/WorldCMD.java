@@ -69,6 +69,9 @@ public class WorldCMD implements CommandExecutor {
                                 "\n§7§oallowMonsters §8: §f{true, false}" +
                                 "\n§7§okeepSpawnInMemory §8: §f{true, false}"
                         );
+                    } else if(args[0].equalsIgnoreCase("reload")) {
+                        CoreSystem.getInstance().getWorldManager().reload();
+                        Messager.send(p, "§2Du hast alle world Configurationen neu geladen!");
                     }
                 } else if (args.length >= 2) {
                     if (args.length == 2) {
