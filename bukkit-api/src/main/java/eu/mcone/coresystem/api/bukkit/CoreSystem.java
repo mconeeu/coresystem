@@ -182,6 +182,19 @@ public abstract class CoreSystem extends JavaPlugin implements GlobalCoreSystem 
     public abstract StatsAPI getStatsAPI(Gamemode gamemode);
 
     /**
+     * returns an registered CorePlugin
+     * @param name plugin name
+     * @return CorePlugin
+     */
+    public abstract CorePlugin getPlugin(String name);
+
+    /**
+     * registers a new CorePlugin in the CoreSystem
+      * @param plugin extended CorePlugin Object
+     */
+    public abstract void registerPlugin(CorePlugin plugin);
+
+    /**
      * creates a new player title
      * @return new CoreTitle
      */

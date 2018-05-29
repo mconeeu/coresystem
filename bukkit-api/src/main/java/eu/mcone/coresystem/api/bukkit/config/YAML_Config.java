@@ -109,8 +109,4 @@ public class YAML_Config {
 
     }
 
-    public FileConfiguration getConfig() {
-        return this.config;
-    }
-
 }

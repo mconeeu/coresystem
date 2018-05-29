@@ -51,7 +51,7 @@ public class PostLogin implements Listener{
                     BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `userinfo` SET `name` = '" + p.getName() + "', `ip` = '" + ip + "' , status = 'online', `timestamp` = '" + millis / 1000 + "' WHERE `uuid`='" + p.getUniqueId().toString() + "';");
                 } else {
                     isNew = true;
-                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `userinfo` (`uuid`, `name`, `groups`, `coins`, `status`, `ip`, `timestamp`, `onlinetime`) VALUES ('" +  p.getUniqueId().toString() + "', '" +  p.getName() + "', '[11]', 20, 'online', '" + ip + "', '" +  millis / 1000 + "' , 0)");
+                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `userinfo` (`uuid`, `name`, `groups`, `coins`, `language`, `status`, `ip`, `timestamp`, `onlinetime`) VALUES ('" +  p.getUniqueId().toString() + "', '" +  p.getName() + "', '[11]', 20, 'GERMAN', 'online', '" + ip + "', '" +  millis / 1000 + "' , 0)");
                 }
             }catch (SQLException e1){
                 e1.printStackTrace();

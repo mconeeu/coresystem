@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bukkit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.config.YAML_Config;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
@@ -69,6 +70,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private MySQL mysql2;
     private MySQL mysql3;
     private Map<UUID, CoreInventory> inventories;
+    private Map<String, CorePlugin> plugins;
     private Map<Gamemode, StatsAPI> stats;
 
     @Getter
@@ -102,6 +104,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         setInstance(this);
         system = this;
         inventories = new HashMap<>();
+        plugins = new HashMap<>();
         createPluginDir("worlds");
 
         Bukkit.getConsoleSender().sendMessage("§f\n" +
@@ -184,7 +187,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             }
         }
         Messager.console(MainPrefix + "§7Following functions got activated: " + functions.toString());
-        Messager.console(MainPrefix + "§aVersion §f" + this.getDescription().getVersion() + "§a running!");
+        Messager.console(MainPrefix + "§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             PlayerLogin.setPermissions(p);
@@ -431,6 +434,16 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Override
     public StatsAPI getStatsAPI(Gamemode gamemode) {
         return stats.getOrDefault(gamemode, null);
+    }
+
+    @Override
+    public void registerPlugin(CorePlugin plugin) {
+        plugins.put(plugin.getPluginName(), plugin);
+    }
+
+    @Override
+    public CorePlugin getPlugin(String name) {
+        return plugins.getOrDefault(name, null);
     }
 
     @Override
