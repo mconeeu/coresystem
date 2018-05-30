@@ -7,7 +7,6 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -24,12 +23,12 @@ public class PingCMD extends Command{
 			if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
 
 			if(args.length == 0){
-				Messager.send(sender, "§7Dein Ping: §f" + p.getPing() + "ms");
+				BungeeCoreSystem.getInstance().getMessager().send(sender, "§7Dein Ping: §f" + p.getPing() + "ms");
 			}else{
-				Messager.send(sender, "§4Bitte benutze: §c/ping");
+				BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Bitte benutze: §c/ping");
 			}
 		}else{
-			Messager.console(BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+			BungeeCoreSystem.getInstance().sendConsoleMessage(BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
 		}
 	}
 }

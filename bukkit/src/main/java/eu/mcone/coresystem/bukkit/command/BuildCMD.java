@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.api.bukkit.util.Messager;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.world.BuildSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -37,19 +37,19 @@ public class BuildCMD implements CommandExecutor {
                     if (t != null) {
                         buildSystem.changeBuildMode(t);
                     } else {
-                        Messager.send(p, "§4Dieser Spieler ist nicht online!");
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler ist nicht online!");
                     }
                     return true;
                 }
             } else {
-                Messager.sendTransl(p, "system.command.noperm");
+                BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
                 return true;
             }
         } else {
-            Messager.sendTransl(sender, "system.command.consolesender");
+            BukkitCoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.consolesender");
         }
 
-        Messager.send(sender, "§4Bitte benutze: §c/build [<Spieler>]");
+        BukkitCoreSystem.getInstance().getMessager().send(sender, "§4Bitte benutze: §c/build [<Spieler>]");
         return true;
     }
 

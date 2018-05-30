@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -39,22 +38,22 @@ public class ReplyCMD extends Command {
 
                             MsgCMD.reply.put(t.getUniqueId(), p.getUniqueId());
 
-                            Messager.sendSimple(p, new TextComponent(BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.fromme").replaceAll("%Msg-Target%", t.getName()) + msg));
+                            BungeeCoreSystem.getInstance().getMessager().sendSimple(p, new TextComponent(BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.fromme").replaceAll("%Msg-Target%", t.getName()) + msg));
                             t.sendMessage(new TextComponent(BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.tome").replaceAll("%Msg-Player%", p.getName()) + msg));
                         } else {
-                            Messager.send(p, "§c" + t.getName() + "§4 hat private Nachrichten deaktiviert!");
+                            BungeeCoreSystem.getInstance().getMessager().send(p, "§c" + t.getName() + "§4 hat private Nachrichten deaktiviert!");
                         }
                     } else {
-                        Messager.send(sender, "§4Du hast private Nachrichten §cdeaktiviert§4!");
+                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Du hast private Nachrichten §cdeaktiviert§4!");
                     }
                 } else {
-                    Messager.send(p, "§4Dieser Spieler ist nicht online!");
+                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler ist nicht online!");
                 }
             } else {
-                Messager.send(p, "§4Du hast keine offene Konversation!");
+                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du hast keine offene Konversation!");
             }
         } else {
-            Messager.sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessager().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 }

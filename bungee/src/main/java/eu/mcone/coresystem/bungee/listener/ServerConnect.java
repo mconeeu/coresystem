@@ -10,7 +10,6 @@ import eu.mcone.cloud.api.plugin.CloudAPI;
 import eu.mcone.cloud.api.plugin.bungee.BungeeCloudPlugin;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.friend.Party;
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -31,7 +30,7 @@ public class ServerConnect implements Listener {
                 //Ping target server
                 target.ping((result, error) -> {
                     if (error != null || result == null) {
-                        Messager.console("§4Could not ping server " + target.getName() + ": ");
+                        BungeeCoreSystem.getInstance().sendConsoleMessage("§4Could not ping server " + target.getName() + ": ");
                         if (error != null) error.printStackTrace();
                         return;
                     }
@@ -73,7 +72,7 @@ public class ServerConnect implements Listener {
                                         for (ProxiedPlayer kick : kickable) {
                                             if (toKick == 0) break;
                                             kick.connect(((BungeeCloudPlugin) CloudAPI.getInstance().getPlugin()).getFallbackServer());
-                                            Messager.send(kick, "§4Du wurdest aus der Runde gekickt, da ein höher rangiger Spieler den Server betreten hat!" +
+                                            BungeeCoreSystem.getInstance().getMessager().send(kick, "§4Du wurdest aus der Runde gekickt, da ein höher rangiger Spieler den Server betreten hat!" +
                                                     "\n§7Hol' dir den §6Premium Rang §7um nicht mehr gekickt zu werden! Benutze §f/premium §7 für mehr Infos!");
                                             toKick--;
                                         }
@@ -94,7 +93,7 @@ public class ServerConnect implements Listener {
                                     continue;
 
                                 //Send info message
-                                Messager.sendParty(m, "§2Die Party betritt den Server §f" + target.getName());
+                                BungeeCoreSystem.getInstance().getMessager().sendParty(m, "§2Die Party betritt den Server §f" + target.getName());
                                 if (m == p) continue;
 
                                 //Send member to server
@@ -109,7 +108,7 @@ public class ServerConnect implements Listener {
                                 //If is someone suitable for kick
                                 if ((kickable.size() + free) < 1) {
                                     e.setCancelled(true);
-                                    Messager.send(p, "§4Der Server §c" + target.getName() + "§4 ist bereits voll!");
+                                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Server §c" + target.getName() + "§4 ist bereits voll!");
                                     return;
                                 }
 
@@ -118,13 +117,13 @@ public class ServerConnect implements Listener {
                                 for (ProxiedPlayer kick : kickable) {
                                     if (i < 1) break;
                                     kick.connect(((BungeeCloudPlugin) CloudAPI.getInstance().getPlugin()).getFallbackServer());
-                                    Messager.send(kick, "§4Du wurdest aus der Runde gekickt, da ein höher rangiger Spieler den Server betreten hat!" +
+                                    BungeeCoreSystem.getInstance().getMessager().send(kick, "§4Du wurdest aus der Runde gekickt, da ein höher rangiger Spieler den Server betreten hat!" +
                                             "\n§7Hol' dir den §6Premium Rang §7um nicht mehr gekickt zu werden! Benutze §f/premium §7 für mehr Infos!");
                                     i--;
                                 }
                             } else {
                                 e.setCancelled(true);
-                                Messager.send(p, "§4Der Server §c" + target.getName() + "§4 ist bereits voll!" +
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Server §c" + target.getName() + "§4 ist bereits voll!" +
                                         "\n§7Hol' dir den §6Premium Rang §7um um andere aus der Runde zu kicken! Benutze §f/premium §7 für mehr Infos!");
                             }
                         }

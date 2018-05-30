@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -37,23 +36,23 @@ public class VanishCMD implements CommandExecutor {
                             all.hidePlayer(p);
                         }
                         p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
-                        Messager.send(p, "§2Du bist nun im §fVanish §2Modus!");
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du bist nun im §fVanish §2Modus!");
                     } else {
                         vanish.remove(p.getUniqueId());
                         for (Player all : Bukkit.getOnlinePlayers()) {
                             all.showPlayer(p);
                         }
                         p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
-                        Messager.send(p, "§2Du bist nun nicht mehr im §fVanish §2Modus!");
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du bist nun nicht mehr im §fVanish §2Modus!");
                     }
                 } else {
-                    Messager.send(p, "§4Bitte benutze §c/vanish");
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze §c/vanish");
                 }
             } else {
-                Messager.sendTransl(p, "system.command.noperm");
+                BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
             }
         } else {
-            Messager.sendTransl(sender, "system.command.consolesender");
+            BukkitCoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.consolesender");
         }
 
         return false;

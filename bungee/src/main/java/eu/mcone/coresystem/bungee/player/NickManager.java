@@ -8,7 +8,6 @@ package eu.mcone.coresystem.bungee.player;
 
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.bungee.utils.PluginMessage;
 import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.ProxyServer;
@@ -60,7 +59,7 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
             ((BungeeCorePlayer) cp).setNickedSkin(nick);
             ((BungeeCorePlayer) cp).setNicked(true);
         } else {
-            Messager.send(p, "§4Es ist kein Nickname mehr verfügbar!");
+            BungeeCoreSystem.getInstance().getMessager().send(p, "§4Es ist kein Nickname mehr verfügbar!");
         }
     }
 

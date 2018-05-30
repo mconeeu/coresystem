@@ -36,7 +36,7 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
     @Getter @Setter
     private Set<String> permissions;
 
-    public GlobalCorePlayer(final GlobalCoreSystem instance, String name) throws PlayerNotFoundException {
+    protected GlobalCorePlayer(final GlobalCoreSystem instance, String name) throws PlayerNotFoundException {
         this.instance = instance;
         this.name = name;
 

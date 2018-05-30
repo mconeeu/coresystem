@@ -8,7 +8,6 @@ package eu.mcone.coresystem.bukkit.player;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.listener.PlayerDeath;
@@ -48,12 +47,12 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
                 ((BukkitCorePlayer) cp).setNicked(true);
                 p.setDisplayName(name);
 
-                Messager.send(p, "§2Dein Nickname ist nun §f" + name);
+                BukkitCoreSystem.getInstance().getMessager().send(p, "§2Dein Nickname ist nun §f" + name);
             } else {
-                Messager.send(p, "§4Du bist bereits genickt!");
+                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du bist bereits genickt!");
             }
         } else {
-            Messager.send(p, "§4Du kannst dich während des Spiels nicht nicken!");
+            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du kannst dich während des Spiels nicht nicken!");
         }
     }
 
@@ -86,12 +85,12 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
                 p.setDisplayName(cp.getName());
                 oldProfiles.remove(p.getUniqueId());
 
-                Messager.send(p, "Du bist nun nicht mehr genickt!");
+                BukkitCoreSystem.getInstance().getMessager().send(p, "Du bist nun nicht mehr genickt!");
             } else {
-                Messager.send(p, "§4Du bist nicht genickt!");
+                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du bist nicht genickt!");
             }
         } else {
-            Messager.send(p, "§4Du kannst dich während des Spiels nicht entnicken!");
+            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du kannst dich während des Spiels nicht entnicken!");
         }
     }
 

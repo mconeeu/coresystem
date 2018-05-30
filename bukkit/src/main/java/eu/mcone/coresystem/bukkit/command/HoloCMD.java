@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.hologram.HologramManager;
 import org.bukkit.command.Command;
@@ -38,13 +37,13 @@ public class HoloCMD implements CommandExecutor{
                         }
 
                         api.addHologram(args[1], p.getLocation(), line.toString());
-                        Messager.send(p, "§2Hologramm §f" + args[1] + "§2 erfolgreich hinzugefügt!");
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Hologramm §f" + args[1] + "§2 erfolgreich hinzugefügt!");
                         return true;
                     }
                 } else if (args.length == 2) {
                     if (args[0].equalsIgnoreCase("remove")) {
                         api.removeHologram(args[1]);
-                        Messager.send(p, "§2Hologramm §f" + args[1] + "§2 erfolgreich gelöscht!");
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Hologramm §f" + args[1] + "§2 erfolgreich gelöscht!");
                         return true;
                     }
                 } else if (args.length == 1) {
@@ -62,17 +61,17 @@ public class HoloCMD implements CommandExecutor{
                         return true;
                     } else if (args[0].equalsIgnoreCase("reload")) {
                         api.reload();
-                        Messager.send(p, "§2Hologramme erfolgreich neu geladen!");
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Hologramme erfolgreich neu geladen!");
                         return true;
                     }
                 }
 
-                Messager.send(p, "§4Bitte benutze: §c/holo <add | remove | list | reload> [<Name>] [<Erste Zeile>]");
+                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/holo <add | remove | list | reload> [<Name>] [<Erste Zeile>]");
             } else {
-                Messager.sendTransl(p, "system.command.noperm");
+                BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
             }
         } else {
-            Messager.sendTransl(sender, "system.command.consolesender");
+            BukkitCoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.consolesender");
         }
 
         return true;

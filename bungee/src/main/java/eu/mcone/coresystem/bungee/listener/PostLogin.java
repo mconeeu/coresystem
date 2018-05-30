@@ -9,7 +9,6 @@ package eu.mcone.coresystem.bungee.listener;
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.api.core.labymod.LabyPermission;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -58,9 +57,9 @@ public class PostLogin implements Listener{
             }
         });
 
-        Messager.sendSimple(p, "\n\n§8[§7§l!§8] §3MC ONE §8» §7§o" + getRandomWelcomeMSG(p) + ", §f§o" + p.getName() + "§7§o!");
+        BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "\n\n§8[§7§l!§8] §3MC ONE §8» §7§o" + getRandomWelcomeMSG(p) + ", §f§o" + p.getName() + "§7§o!");
         if (isNew) {
-            Messager.sendSimple(p, "§8[§7§l!§8] §3MC ONE §8» §2Als kleines Willkommensgeschenk bekommst du 20 Coins gutgeschrieben!");
+            BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "§8[§7§l!§8] §3MC ONE §8» §2Als kleines Willkommensgeschenk bekommst du 20 Coins gutgeschrieben!");
         }
 
         if(p.hasPermission("system.bungee.report")) {
@@ -73,17 +72,17 @@ public class PostLogin implements Listener{
 
                     if (desc > 0) {
                         if (desc <= 10) {
-                            Messager.send(p, "§4§oFolgende Reports sind noch unbearbeitet!");
+                            BungeeCoreSystem.getInstance().getMessager().send(p, "§4§oFolgende Reports sind noch unbearbeitet!");
                             rs.beforeFirst();
                             while (rs.next()) {
-                                Messager.sendSimple(p, "§7» " + rs.getInt("id") + ". §f" + rs.getString("title"));
+                                BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "§7» " + rs.getInt("id") + ". §f" + rs.getString("title"));
                             }
-                            Messager.sendSimple(p, "");
+                            BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "");
                         } else {
-                            Messager.send(p, "§7Es sind noch §c" + desc + " §7Reports offen");
+                            BungeeCoreSystem.getInstance().getMessager().send(p, "§7Es sind noch §c" + desc + " §7Reports offen");
                         }
                     } else {
-                        Messager.send(p, "§2Es sind alle Reports erledigt!");
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§2Es sind alle Reports erledigt!");
                     }
 
                 } catch (SQLException e1) {
@@ -94,9 +93,9 @@ public class PostLogin implements Listener{
 
         Map<UUID, String> requests = cp.getFriendRequests();
         if (requests.size() >= 1) {
-            Messager.sendSimple(p, "");
-            Messager.send(p, "§7Du hast noch §f"+requests.size()+" §7offene Freundschaftsanfrage(n)!");
-            Messager.send(p, "§7Benutze §f/friend req §7zum einsehen!");
+            BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "");
+            BungeeCoreSystem.getInstance().getMessager().send(p, "§7Du hast noch §f"+requests.size()+" §7offene Freundschaftsanfrage(n)!");
+            BungeeCoreSystem.getInstance().getMessager().send(p, "§7Benutze §f/friend req §7zum einsehen!");
         }
 
         Title title = ProxyServer.getInstance().createTitle();

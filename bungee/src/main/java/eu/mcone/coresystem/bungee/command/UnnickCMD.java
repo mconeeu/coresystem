@@ -7,7 +7,6 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -29,10 +28,10 @@ public class UnnickCMD extends Command{
                 if (cp.isNicked()) {
                     BungeeCoreSystem.getInstance().getNickManager().unnick(p);
                 } else {
-                    Messager.send(p, "§4Du bist nicht genickt!");
+                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du bist nicht genickt!");
                 }
             } else {
-                Messager.send(p, "§4Bitte benutze: §c/unnick");
+                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/unnick");
             }
         }
     }

@@ -7,7 +7,6 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -36,7 +35,7 @@ public class ServerCMD extends Command implements TabExecutor {
             if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
 
             if (args.length == 0) {
-                Messager.send(p, "§7Du befindest dich gerade auf dem Server: §f" + p.getServer().getInfo().getName());
+                BungeeCoreSystem.getInstance().getMessager().send(p, "§7Du befindest dich gerade auf dem Server: §f" + p.getServer().getInfo().getName());
                 Map<String, ServerInfo> servers = ProxyServer.getInstance().getServers();
 
                 ComponentBuilder cb = new ComponentBuilder(ChatColor.GRAY + "Du kannst dich jetzt mit folgenden Servern verbinden: ");
@@ -60,11 +59,11 @@ public class ServerCMD extends Command implements TabExecutor {
                 if (si != null) {
                     p.connect(si);
                 } else {
-                    Messager.send(p, "§4Dieser Server existiert nicht!");
+                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Dieser Server existiert nicht!");
                 }
             }
         } else {
-            Messager.send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessager().send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 

@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -36,21 +35,21 @@ public class JumpCMD extends Command {
                         if (t.getServer().getInfo() != p.getServer().getInfo()) {
                             p.connect(tserver);
 
-                            Messager.send(p, "§7Du bist zu §f" + t.getName() + "§7 gesprungen!");
+                            BungeeCoreSystem.getInstance().getMessager().send(p, "§7Du bist zu §f" + t.getName() + "§7 gesprungen!");
                         } else {
-                            Messager.send(p, "§4Du bist bereits auf diesem Server!");
+                            BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du bist bereits auf diesem Server!");
                         }
                     } else {
-                        Messager.send(p, "§4Du kannst nur zu Spielern springen die deine Freunde sind!");
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du kannst nur zu Spielern springen die deine Freunde sind!");
                     }
                 } else {
-                    Messager.send(p, BungeeCoreSystem.getInstance().getTranslationManager().get("System-No-Online-Player"));
+                    BungeeCoreSystem.getInstance().getMessager().send(p, BungeeCoreSystem.getInstance().getTranslationManager().get("System-No-Online-Player"));
                 }
             } else {
-                Messager.send(p, "§4Bitte Benutze: §c/jump <Spieler>");
+                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte Benutze: §c/jump <Spieler>");
             }
         } else {
-            Messager.sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessager().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 }

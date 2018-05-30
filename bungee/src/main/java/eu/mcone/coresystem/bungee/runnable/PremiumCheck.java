@@ -7,7 +7,6 @@
 package eu.mcone.coresystem.bungee.runnable;
 
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.core.mysql.Database;
 
 import java.sql.SQLException;
@@ -22,7 +21,7 @@ public class PremiumCheck implements Runnable{
             try{
                 while(rs.next()) {
                     if ((rs.getLong(rs.getString("timestamp")) - millis) < 0) {
-                        Messager.console("§7Dem Spieler §f" + BungeeCoreSystem.getInstance().getPlayerUtils().fetchName(UUID.fromString(rs.getString("uuid"))) + " §7wird der Rang §f" + rs.getString("group") + " §7entzogen");
+                        BungeeCoreSystem.getInstance().sendConsoleMessage("§7Dem Spieler §f" + BungeeCoreSystem.getInstance().getPlayerUtils().fetchName(UUID.fromString(rs.getString("uuid"))) + " §7wird der Rang §f" + rs.getString("group") + " §7entzogen");
                         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE userinfo SET gruppe='" + rs.getString("old_group") + "' WHERE uuid='" + rs.getString("uuid") + "'");
 
                         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT gruppe FROM `userinfo` WHERE uuid='" + rs.getString("uuid") + "'", rs_info -> {
@@ -33,7 +32,7 @@ public class PremiumCheck implements Runnable{
                                     if (value.equalsIgnoreCase("Spieler")) {
                                         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM bungeesystem_premium WHERE uuid = '" + rs.getString("uuid") + "';");
                                     } else {
-                                        Messager.console("§7[§cMySQL ERROR§7] §4DER SPIELER KONNTE NICHT GELÖSCHT WERDEN OBWOHL SEIN PREMIUM RANG ABGLAUFEN IST!");
+                                        BungeeCoreSystem.getInstance().sendConsoleMessage("§7[§cMySQL ERROR§7] §4DER SPIELER KONNTE NICHT GELÖSCHT WERDEN OBWOHL SEIN PREMIUM RANG ABGLAUFEN IST!");
                                     }
                                 }
                             } catch (SQLException e) {

@@ -26,21 +26,23 @@ import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import lombok.Getter;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Collection;
 import java.util.UUID;
 
-public abstract class CoreSystem extends JavaPlugin implements GlobalCoreSystem {
+public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem {
 
     @Getter
     private static CoreSystem instance;
 
-    public CoreSystem() {}
+    protected CoreSystem() {
+        super("BukkitCoreSystem", ChatColor.WHITE, "system.prefix.server");
+    }
 
-    public void setInstance(CoreSystem instance) {
+    protected void setInstance(CoreSystem instance) {
         if (instance == null) {
             System.err.println("BukkitCoreSystem instance cannot be set twice!");
         } else {

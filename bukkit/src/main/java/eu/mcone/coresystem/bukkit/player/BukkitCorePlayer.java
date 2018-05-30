@@ -38,7 +38,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
         ((BukkitCoreSystem) instance).getCorePlayers().put(uuid, this);
         reloadPermissions();
 
-        System.out.println("Loaded Player "+name+"!");
+        BukkitCoreSystem.getInstance().sendConsoleMessage("Loaded Player "+name+"!");
     }
 
     @Override
@@ -91,7 +91,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
         AFKCheck.afkPlayers.remove(uuid);
 
         BukkitCoreSystem.getSystem().getCorePlayers().remove(uuid);
-        System.out.println("Unloaded eu.mcone.coresystem.api.core.player "+name);
+        BukkitCoreSystem.getInstance().sendConsoleMessage("Unloaded Player "+name);
     }
 
 }

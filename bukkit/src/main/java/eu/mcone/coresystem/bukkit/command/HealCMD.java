@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -26,7 +25,7 @@ public class HealCMD implements CommandExecutor{
 				if (args.length == 0) {
 					p.setHealth(p.getMaxHealth());
 					p.setFoodLevel(20);
-					Messager.send(p, "§2Du hast nun wieder §avolles Leben§3!");
+					BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast nun wieder §avolles Leben§3!");
 					p.playSound(p.getLocation(), Sound.EAT, 1, 1);
 					p.setFireTicks(1);
 				} else if (args.length == 1) {
@@ -34,20 +33,20 @@ public class HealCMD implements CommandExecutor{
 					if (t != null) {
 						t.setHealth(20.0D);
 						t.setFoodLevel(20);
-						Messager.send(t, "§2Du hast nun §avolles Leben§3!");
+						BukkitCoreSystem.getInstance().getMessager().send(t, "§2Du hast nun §avolles Leben§3!");
 						t.playSound(p.getLocation(), Sound.EAT, 1, 1);
 						t.setFireTicks(1);
 					} else {
-						Messager.send(p, "§4Dieser Spieler ist nicht online!");
+						BukkitCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler ist nicht online!");
 					}
 				} else {
-					Messager.send(p, "§4Bitte benutze: §c/heal [<Spieler>]");
+					BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/heal [<Spieler>]");
 				}
 			}else{
-				Messager.sendTransl(p, "system.command.noperm");
+				BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
 			}
 		} else {
-			Messager.sendTransl(sender, "system.command.consolesender");
+			BukkitCoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.consolesender");
 			return true;
 		}
 		return false;

@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -25,21 +24,21 @@ public class TphereCMD implements CommandExecutor {
             if (p.hasPermission("system.bukkit.tp.others")) {
                 if (cmd.getName().equalsIgnoreCase("tphere")) {
                     if (args.length == 0) {
-                        Messager.send(p, "§4Bitte benutze §c/tphere <Spieler>");
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze §c/tphere <Spieler>");
                     } else {
                         Player target = Bukkit.getServer().getPlayer(args[0]);
                         if (target == null) {
-                            Messager.send(p, "§4Der Spieler §f" + args[0] + "§4 konnte nicht gefunden werden!");
+                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler §f" + args[0] + "§4 konnte nicht gefunden werden!");
                         } else {
                             target.teleport(p.getLocation());
                         }
                     }
                 }
             } else {
-                Messager.sendTransl(p, "system.command.noperm");
+                BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
             }
         } else {
-            Messager.sendTransl(sender, "system.command.consolesender");
+            BukkitCoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.consolesender");
         }
 
         return true;

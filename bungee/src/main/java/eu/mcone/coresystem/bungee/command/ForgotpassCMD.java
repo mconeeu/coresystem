@@ -8,7 +8,6 @@ package eu.mcone.coresystem.bungee.command;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -39,7 +38,7 @@ public class ForgotpassCMD extends Command {
                     URL url;
 
                     try {
-                        Messager.send(p, "§7Bitte warten...");
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§7Bitte warten...");
                         url = new URL(https_url);
                         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
                         con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
@@ -49,21 +48,21 @@ public class ForgotpassCMD extends Command {
 
                         JsonObject result = new JsonParser().parse(rtn).getAsJsonObject();
                         if (result.get("result").getAsString().equalsIgnoreCase("success")) {
-                            Messager.send(sender, "§2" + result.get("msg").getAsString());
+                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§2" + result.get("msg").getAsString());
                         } else if (result.get("result").getAsString().equalsIgnoreCase("error")) {
-                            Messager.send(sender, "§4" + result.get("msg").getAsString());
+                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§4" + result.get("msg").getAsString());
                         } else {
-                            Messager.send(sender, "§4Es ist ein Fehler aufgetreten!");
+                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Es ist ein Fehler aufgetreten!");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 });
             } else {
-                Messager.send(sender, "§cBitte benutze /forgotpass");
+                BungeeCoreSystem.getInstance().getMessager().send(sender, "§cBitte benutze /forgotpass");
             }
         } else {
-            Messager.sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessager().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 

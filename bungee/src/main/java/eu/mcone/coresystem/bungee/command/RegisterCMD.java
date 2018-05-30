@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.api.core.util.Random;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
@@ -34,7 +33,7 @@ public class RegisterCMD extends Command {
                 try {
                     if (rs_main.next()) {
                         if (rs_main.getObject("password") != null) {
-                            Messager.send(p, "§4Du hast dich bereits registriert!");
+                            BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du hast dich bereits registriert!");
                         } else {
                             BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `uuid` FROM `website_account_token` WHERE `uuid`= '" + p.getUniqueId().toString() + "' AND `type`='register'", rs -> {
                                 String token = new Random(16).nextString();
@@ -42,10 +41,10 @@ public class RegisterCMD extends Command {
                                 try {
                                     if (rs.next()) {
                                         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `website_account_token` SET `timestamp` = '" + millis / 1000 + "', `token` = '" + token + "' WHERE `uuid`='" + p.getUniqueId().toString() + "' AND `type`='register';");
-                                        Messager.send(p, "§2Du kannst dich nun auf §fhttps://www.mcone.eu/register.php?token=" + token + " §2registrieren!");
+                                        BungeeCoreSystem.getInstance().getMessager().send(p, "§2Du kannst dich nun auf §fhttps://www.mcone.eu/register.php?token=" + token + " §2registrieren!");
                                     } else {
                                         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `website_account_token` (uuid, token, timestamp, type) VALUES ('" + p.getUniqueId().toString() + "', '" + token + "', '" + millis / 1000 + "', 'register')");
-                                        Messager.send(p, "§2Du kannst dich nun auf §fhttps://www.mcone.eu/register.php?token=" + token + " §2registrieren!");
+                                        BungeeCoreSystem.getInstance().getMessager().send(p, "§2Du kannst dich nun auf §fhttps://www.mcone.eu/register.php?token=" + token + " §2registrieren!");
                                     }
                                 } catch (SQLException e) {
                                     e.printStackTrace();
@@ -59,7 +58,7 @@ public class RegisterCMD extends Command {
                 }
             });
         } else {
-            Messager.sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessager().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
 
     }

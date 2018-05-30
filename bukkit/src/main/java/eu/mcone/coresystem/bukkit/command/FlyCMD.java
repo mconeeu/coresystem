@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -32,20 +31,20 @@ public class FlyCMD implements CommandExecutor {
                     if (fly.contains(p.getUniqueId())) {
                         p.setAllowFlight(false);
                         fly.remove(p.getUniqueId());
-                        Messager.send(p, "§2Du hast den §fFlugmodus §2deaktiviert!");
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast den §fFlugmodus §2deaktiviert!");
                     } else {
                         p.setAllowFlight(true);
                         fly.add(p.getUniqueId());
-                        Messager.send(p, "§2Du hast den §fFlugmodus §2aktiviert!");
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast den §fFlugmodus §2aktiviert!");
                     }
                 } else {
-                    Messager.send(p, "§4Bitte benutze: §c/fly");
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/fly");
                 }
             } else {
-                Messager.sendTransl(p, "system.command.noperm");
+                BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
             }
         } else {
-            Messager.sendTransl(sender, "system.command.consolesender");
+            BukkitCoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.consolesender");
         }
 
         return true;

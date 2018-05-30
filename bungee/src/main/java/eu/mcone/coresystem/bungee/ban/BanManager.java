@@ -7,7 +7,6 @@
 package eu.mcone.coresystem.bungee.ban;
 
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -73,7 +72,7 @@ public class BanManager {
             BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_bansystem_mutehistory` (`id`, `uuid`, `template`, `reason`, `end`, `timestamp`, `team_member`) VALUES (NULL, '" + gebannt.toString() + "', '" + templateName + "', '" + grund + "', " + muteTime + ", " + millis + ", '" + tName + "')");
 
             if (p != null) {
-                Messager.sendSimple(p, "\n§8§m----------------§r§8 [§7§l!§8] §fSystem §8§m----------------"
+                BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "\n§8§m----------------§r§8 [§7§l!§8] §fSystem §8§m----------------"
                         + "\n§f§lMC ONE §3Minecraftnetzwerk"
                         + "\n§7§oDu wurdest gemuted"
                         + "\n§r"

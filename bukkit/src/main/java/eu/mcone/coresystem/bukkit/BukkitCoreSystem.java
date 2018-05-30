@@ -19,7 +19,6 @@ import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
 import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
 import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
 import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
-import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.LocationManager;
 import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
@@ -120,7 +119,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "                                                         /____/  \n"
         );
 
-        Messager.console(MainPrefix + "§aInitializing MariaDB Connections...");
+        sendConsoleMessage(MainPrefix + "§aInitializing MariaDB Connections...");
         mysql1 = new MySQL(Database.SYSTEM);
         mysql2 = new MySQL(Database.STATS);
         mysql3 = new MySQL(Database.DATA);
@@ -140,34 +139,34 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         try {
             Class.forName("eu.mcone.cloud.plugin.CloudPlugin");
-            Messager.console(MainPrefix + "§aCloudSystem available!");
+            sendConsoleMessage(MainPrefix + "§aCloudSystem available!");
             cloudsystemAvailable = true;
         } catch (ClassNotFoundException e) {
             cloudsystemAvailable = false;
-            Messager.console(MainPrefix + "§cCloudSystem not available!");
+            sendConsoleMessage(MainPrefix + "§cCloudSystem not available!");
         }
 
-        Messager.console(MainPrefix + "§aStarting WorldManager...");
+        sendConsoleMessage(MainPrefix + "§aStarting WorldManager...");
         worldManager = new WorldManager(this);
 
-        Messager.console(MainPrefix + "§aLoading Translations...");
+        sendConsoleMessage(MainPrefix + "§aLoading Translations...");
         translationManager = new TranslationManager(mysql1);
         registerTranslations();
 
-        Messager.console(MainPrefix + "§aLoading Permissions & Groups...");
+        sendConsoleMessage(MainPrefix + "§aLoading Permissions & Groups...");
         permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), mysql1, gson);
 
-        Messager.console(MainPrefix + "§aStarting NickManager...");
+        sendConsoleMessage(MainPrefix + "§aStarting NickManager...");
         nickManager = new NickManager(this);
 
-        Messager.console(MainPrefix + "§aLoading Commands, Events, Scheduler & Configs...");
+        sendConsoleMessage(MainPrefix + "§aLoading Commands, Events, Scheduler & Configs...");
         this.setupConfig();
         this.startScheduler();
         this.registerListener();
         this.registerCommands();
         corePlayers = new HashMap<>();
 
-        Messager.console(MainPrefix + "§aRegistering BungeeCord Messaging Channel...");
+        sendConsoleMessage(MainPrefix + "§aRegistering BungeeCord Messaging Channel...");
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         getServer().getMessenger().registerIncomingPluginChannel(this, "Return", new PluginChannelListener());
         getServer().getMessenger().registerIncomingPluginChannel(this, "EventHandler", new PluginChannelListener());
@@ -186,8 +185,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 }
             }
         }
-        Messager.console(MainPrefix + "§7Following functions got activated: " + functions.toString());
-        Messager.console(MainPrefix + "§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
+        sendConsoleMessage(MainPrefix + "§7Following functions got activated: " + functions.toString());
+        sendConsoleMessage(MainPrefix + "§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             PlayerLogin.setPermissions(p);

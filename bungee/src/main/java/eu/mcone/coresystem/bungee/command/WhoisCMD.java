@@ -6,9 +6,9 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.player.Group;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
 import eu.mcone.coresystem.bungee.player.OfflinePlayer;
 import net.md_5.bungee.api.CommandSender;
@@ -71,13 +71,13 @@ public class WhoisCMD extends Command {
                             "\n§8» §7Mutepunkte: §f" + p.getMutePoints();
                 }
 
-                Messager.send(sender, message.append(permInfo).append(general).append(banInfo).append(muteInfo).toString());
+                BungeeCoreSystem.getInstance().getMessager().send(sender, message.append(permInfo).append(general).append(banInfo).append(muteInfo).toString());
             } catch (CoreException e) {
-                Messager.send(sender, "§4Der Spieler " + args[0] + " war noch nie auf MC ONE!");
+                BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spieler " + args[0] + " war noch nie auf MC ONE!");
             }
             return;
         }
 
-        Messager.send(sender, "§4Bitte benutze: §c/whois <Spieler>");
+        BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Bitte benutze: §c/whois <Spieler>");
     }
 }

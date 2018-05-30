@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -26,7 +25,7 @@ public class TeamChatCMD extends Command {
                 return;
 
             if (args.length == 0) {
-                Messager.send(p, "§4Bitte benutze: §c/tc <Nachricht>");
+                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/tc <Nachricht>");
             } else {
                 StringBuilder message = new StringBuilder();
                 for (String arg : args) {
@@ -34,12 +33,12 @@ public class TeamChatCMD extends Command {
                 }
                 for (ProxiedPlayer all : ProxyServer.getInstance().getPlayers()) {
                     if (all.hasPermission("system.bungee.teamchat") || all.hasPermission("System.bungee.*")) {
-                        Messager.sendSimple(all, BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.teamchat").replaceAll("%Playername%", BungeeCoreSystem.getInstance().getCorePlayer(p).getMainGroup().getPrefix() + p.getDisplayName()) + message.toString());
+                        BungeeCoreSystem.getInstance().getMessager().sendSimple(all, BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.teamchat").replaceAll("%Playername%", BungeeCoreSystem.getInstance().getCorePlayer(p).getMainGroup().getPrefix() + p.getDisplayName()) + message.toString());
                     }
                 }
             }
         } else {
-            Messager.send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessager().send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 }

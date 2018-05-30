@@ -9,7 +9,6 @@ package eu.mcone.coresystem.bungee.listener;
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -37,11 +36,11 @@ public class Chat implements Listener {
             return;
         } else if (e.getMessage().startsWith("/")) {
             if (new ArrayList<>(Arrays.asList("/plugins", "/pl", "/bukkit:pl", "bukkit:pl")).contains(msg)) {
-                Messager.sendSimple(p, "§fPlugins (6): §aDa§f, §amusst§f, §adu§f, §afrüher§f, §aaufstehen§f, §a" + p.getName());
+                BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "§fPlugins (6): §aDa§f, §amusst§f, §adu§f, §afrüher§f, §aaufstehen§f, §a" + p.getName());
                 e.setCancelled(true);
                 return;
             } else if (cmds.contains(msg)) {
-                Messager.send(p, "§4Du hast keine Berechtigung für den Befehl §c" + msg + "§4!");
+                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du hast keine Berechtigung für den Befehl §c" + msg + "§4!");
                 e.setCancelled(true);
                 return;
             } else {
@@ -50,7 +49,7 @@ public class Chat implements Listener {
         } else {
             if (cp.isMuted()) {
                 e.setCancelled(true);
-                Messager.send(p, "§4Du bist noch für " + BanManager.getEndeString(cp.getMuteTime()) + "§4 gemutet!");
+                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du bist noch für " + BanManager.getEndeString(cp.getMuteTime()) + "§4 gemutet!");
                 return;
             }
 
@@ -62,7 +61,7 @@ public class Chat implements Listener {
             }
 
             if (canelled) {
-                Messager.send(p, "§4Bitte achte auf deine Ausdrucksweise!");
+                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte achte auf deine Ausdrucksweise!");
                 e.setCancelled(true);
                 return;
             } else {

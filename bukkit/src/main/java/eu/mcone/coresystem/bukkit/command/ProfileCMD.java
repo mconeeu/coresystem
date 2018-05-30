@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.inventory.ProfileInventory;
 import org.bukkit.Sound;
@@ -28,7 +27,7 @@ public class ProfileCMD implements CommandExecutor {
                 p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
             }
         } else {
-            Messager.sendTransl(sender, "system.command.consolesender");
+            BukkitCoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.consolesender");
         }
 
         return true;

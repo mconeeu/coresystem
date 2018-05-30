@@ -9,7 +9,6 @@ package eu.mcone.coresystem.bungee.command;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
 import eu.mcone.coresystem.bungee.ban.BanTemplate;
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -34,7 +33,7 @@ public class BanCMD extends Command implements TabExecutor {
 
                 if (args.length == 1) {
                     if (args[0].equalsIgnoreCase("help")) {
-                        Messager.send(p, "§2BannSystem Hilfe:" +
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§2BannSystem Hilfe:" +
                                 "\n§8§m------§r §f§lTemplates §8§m------" +
                                 "\n§8» §7CLIENTMODS §8- §eCM" +
                                 "\n§8» §7ERSCHEINEN §8- §eES" +
@@ -54,7 +53,7 @@ public class BanCMD extends Command implements TabExecutor {
                                 "\n§8§m--------------------" +
                                 "\n§8» §7Alle Infos zum Bannsystem und zu den verschiedenen Templates findest du (bald) im Team Wiki: §fhttps://www.mcone.eu/dashboard/wiki.php");
                     } else {
-                        Messager.send(p, "§4Bitte benutze §c/ban help");
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze §c/ban help");
                     }
                 } else if (args.length == 2) {
                     UUID t = BungeeCoreSystem.getInstance().getPlayerUtils().fetchUuid(args[1]);
@@ -63,34 +62,34 @@ public class BanCMD extends Command implements TabExecutor {
                         if (args[0].equalsIgnoreCase("unban")) {
                             if (BanManager.isBanned(t)) {
                                 BanManager.unban(t);
-                                Messager.send(p, "§2Du hast den Spieler §f" + args[1] + "§2 entbannt!");
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§2Du hast den Spieler §f" + args[1] + "§2 entbannt!");
                             } else {
-                                Messager.send(p, "§4Der Spieler §c" + args[1] + "§4 ist nicht gebannt!");
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler §c" + args[1] + "§4 ist nicht gebannt!");
                             }
                         } else if (args[0].equalsIgnoreCase("unmute")) {
                             if (BanManager.isMuted(t)) {
                                 BanManager.unmute(t);
-                                Messager.send(p, "§2Du hast den Spieler §f" + args[1] + "§2 entmutet!");
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§2Du hast den Spieler §f" + args[1] + "§2 entmutet!");
                             } else {
-                                Messager.send(p, "§4Der Spieler §c" + args[1] + " §4ist nicht gemutet!");
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler §c" + args[1] + " §4ist nicht gemutet!");
                             }
                         } else if (args[0].equalsIgnoreCase("check")) {
                             if (BanManager.isBanned(t)) {
-                                Messager.send(p, "§7Der Spieler §f"+args[1]+"§7 ist gebannt");
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§7Der Spieler §f"+args[1]+"§7 ist gebannt");
                             } else {
-                                Messager.send(p, "§7Der Spieler §f"+args[1]+"§7 ist nicht gebannt");
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§7Der Spieler §f"+args[1]+"§7 ist nicht gebannt");
                             }
 
                             if (BanManager.isMuted(t)) {
-                                Messager.send(p, "§7Der Spieler §f"+args[1]+"§7 ist gemuted");
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§7Der Spieler §f"+args[1]+"§7 ist gemuted");
                             } else {
-                                Messager.send(p, "§7Der Spieler §f"+args[1]+"§7 ist nicht gemuted");
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§7Der Spieler §f"+args[1]+"§7 ist nicht gemuted");
                             }
                         } else {
-                            Messager.send(p, "§4Bitte benutze §c/ban help");
+                            BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze §c/ban help");
                         }
                     } else {
-                        Messager.send(p, "§4Der Minecraftaccount §c" + args[1] + "§4 existiert nicht!");
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Minecraftaccount §c" + args[1] + "§4 existiert nicht!");
                     }
                 } else if (args.length == 3) {
                     ProxiedPlayer t = ProxyServer.getInstance().getPlayer(args[0]);
@@ -98,25 +97,25 @@ public class BanCMD extends Command implements TabExecutor {
                     String grund = args[2];
 
                     if (t == null) {
-                        Messager.send(p, "§4Dieser Spieler ist nicht online!");
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler ist nicht online!");
                     } else if (t == p) {
-                        Messager.send(p, "§7Du kannst dich nicht selbst bannen");
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§7Du kannst dich nicht selbst bannen");
                     } else {
                         if (!BanManager.isBanned(t.getUniqueId())) {
                             if (t.hasPermission("group.team")) {
-                                Messager.send(p, "§4Du darfst keine Teammitglieder bannen!");
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du darfst keine Teammitglieder bannen!");
                             } else {
                                 if (template != null) {
                                     BanManager.ban(t.getUniqueId(), template, grund, p.getUniqueId());
 
-                                    Messager.send(p, "§2Du hast erfolgreich den Spieler §f" + t.getName() + "§2 gebannt!");
+                                    BungeeCoreSystem.getInstance().getMessager().send(p, "§2Du hast erfolgreich den Spieler §f" + t.getName() + "§2 gebannt!");
                                     for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
                                         if (player.hasPermission("system.bungee.ban")) {
-                                            Messager.send(p, "§f" + p.getName() + "§7 hat den Spieler §c" + t.getName() + "§7 mit dem Template §o" + template.getName() + "§7 und dem Grund §e" + grund + "§7 gebannt!");
+                                            BungeeCoreSystem.getInstance().getMessager().send(p, "§f" + p.getName() + "§7 hat den Spieler §c" + t.getName() + "§7 mit dem Template §o" + template.getName() + "§7 und dem Grund §e" + grund + "§7 gebannt!");
                                         }
                                     }
                                 } else {
-                                    Messager.send(p, "§4Du kannst ausschließlich diese Templates verwenden:" +
+                                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du kannst ausschließlich diese Templates verwenden:" +
                                             "\n§8» §7CLIENTMODS §8- §eCM" +
                                             "\n§8» §7ERSCHEINEN §8- §eES" +
                                             "\n§8» §7TEAMTROLLING §8- §eTT" +
@@ -132,14 +131,14 @@ public class BanCMD extends Command implements TabExecutor {
                                 }
                             }
                         } else {
-                            Messager.send(p, "§4Dieser Spieler ist bereits gebannt!");
+                            BungeeCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler ist bereits gebannt!");
                         }
                     }
                 } else {
-                    Messager.send(p, "§4Bitte benutze §c/ban help");
+                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze §c/ban help");
                 }
         } else {
-            Messager.sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessager().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 

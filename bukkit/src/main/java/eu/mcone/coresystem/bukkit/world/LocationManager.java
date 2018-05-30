@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bukkit.world;
 
-import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.SpawnCMD;
 import eu.mcone.coresystem.core.mysql.MySQL;
@@ -97,10 +96,10 @@ public class LocationManager extends eu.mcone.coresystem.api.bukkit.world.Locati
         Location loc = getLocation(name);
 
         if (loc != null) {
-            Messager.send(p, "§2Du wirst teleportiert...");
+            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wirst teleportiert...");
             p.teleport(loc);
         } else {
-            Messager.send(p, "§4Dieser Ort existiert nicht.");
+            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Dieser Ort existiert nicht.");
         }
     }
 

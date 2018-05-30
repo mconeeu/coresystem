@@ -8,9 +8,9 @@ package eu.mcone.coresystem.bungee;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import eu.mcone.coresystem.api.bungee.CorePlugin;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.translation.TranslationField;
 import eu.mcone.coresystem.bungee.command.*;
@@ -32,6 +32,7 @@ import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CooldownSystem;
 import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.Collection;
@@ -43,6 +44,8 @@ import java.util.concurrent.TimeUnit;
 public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem {
 
     final public static String MainPrefix = "§8[§3BungeeCore§8] ";
+    private Map<String, CorePlugin> plugins;
+
     @Getter
     private static BungeeCoreSystem system;
     @Getter
@@ -77,8 +80,9 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         system = this;
         setInstance(this);
         corePlayers = new HashMap<>();
+        plugins = new HashMap<>();
 
-        Messager.console("\n" +
+        ProxyServer.getInstance().getConsole().sendMessage(new TextComponent(TextComponent.fromLegacyText("\n" +
                 "      __  _____________  _   ________                                                          \n" +
                 "     /  |/  / ____/ __ \\/ | / / ____/                                                          \n" +
                 "    / /|_/ / /   / / / /  |/ / __/                                                             \n" +
@@ -88,9 +92,9 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "    / __  / / / / __ \\/ __ `/ _ \\/ _ \\/ /   / __ \\/ ___/ _ \\\\__ \\/ / / / ___/ __/ _ \\/ __ `__ \\\n" +
                 "   / /_/ / /_/ / / / / /_/ /  __/  __/ /___/ /_/ / /  /  __/__/ / /_/ (__  ) /_/  __/ / / / / /\n" +
                 "  /_____/\\__,_/_/ /_/\\__, /\\___/\\___/\\____/\\____/_/   \\___/____/\\__, /____/\\__/\\___/_/ /_/ /_/ \n" +
-                "                    /____/                                     /____/\n");
+                "                    /____/                                     /____/\n")));
 
-        Messager.console(MainPrefix + "§aInitializing MariaDB Connections...");
+        sendConsoleMessage(MainPrefix + "§aInitializing MariaDB Connections...");
         createTables(database = new MySQL(Database.SYSTEM));
 
         cooldownSystem = new CooldownSystem();
@@ -100,41 +104,41 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         coinsAPI = new CoinsAPI(this);
         gson = new GsonBuilder().setPrettyPrinting().create();
 
-        Messager.console(MainPrefix + "§aLoading Translations...");
+        sendConsoleMessage(MainPrefix + "§aLoading Translations...");
         translationManager = new TranslationManager(database);
         registerTranslations();
 
-        Messager.console(MainPrefix + "§aLoading Permissions & Groups...");
+        sendConsoleMessage(MainPrefix + "§aLoading Permissions & Groups...");
         permissionManager = new PermissionManager("Proxy", database, gson);
 
-        Messager.console(MainPrefix + "§aLoading FriendSystem...");
+        sendConsoleMessage(MainPrefix + "§aLoading FriendSystem...");
         friendSystem = new FriendSystem(database);
 
-        Messager.console(MainPrefix + "§aLoading MessagingSystem...");
+        sendConsoleMessage(MainPrefix + "§aLoading MessagingSystem...");
         MsgCMD.updateToggled();
 
-        Messager.console(MainPrefix + "§aLoading Nicksystem...");
+        sendConsoleMessage(MainPrefix + "§aLoading Nicksystem...");
         nickManager = new NickManager(this);
 
         try {
             Class.forName("eu.mcone.cloud.plugin.CloudPlugin");
-            Messager.console(MainPrefix + "§aCloudSystem available!");
+            sendConsoleMessage(MainPrefix + "§aCloudSystem available!");
             cloudsystemAvailable = true;
         } catch (ClassNotFoundException e) {
             cloudsystemAvailable = false;
-            Messager.console(MainPrefix + "§cCloudSystem not available!");
+            sendConsoleMessage(MainPrefix + "§cCloudSystem not available!");
         }
 
-        Messager.console(MainPrefix + "§aRegistering Commands, Events & Scheduler...");
+        sendConsoleMessage(MainPrefix + "§aRegistering Commands, Events & Scheduler...");
         registerCommand();
         postRegisterCommand();
         registerEvents();
         loadSchedulers();
 
-        Messager.console(MainPrefix + "§aRegistering Plugin Messaging Channel...");
+        sendConsoleMessage(MainPrefix + "§aRegistering Plugin Messaging Channel...");
         ProxyServer.getInstance().registerChannel("Return");
 
-        Messager.console(MainPrefix + "§aVersion: §f" + this.getDescription().getVersion() + "§a running!");
+        sendConsoleMessage(MainPrefix + "§aVersion: §f" + this.getDescription().getVersion() + "§a running!");
     }
 
     public void onDisable() {
@@ -143,7 +147,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         }
 
         database.close();
-        Messager.console(MainPrefix + "§cPlugin wurde Deaktiviert!");
+        sendConsoleMessage(MainPrefix + "§cPlugin wurde Deaktiviert!");
     }
 
     private void registerCommand() {
@@ -551,6 +555,16 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     public Collection<BungeeCorePlayer> getOnlineCorePlayers() {
         return corePlayers.values();
+    }
+
+    @Override
+    public void registerPlugin(CorePlugin plugin) {
+        plugins.put(plugin.getPluginName(), plugin);
+    }
+
+    @Override
+    public CorePlugin getPlugin(String name) {
+        return plugins.getOrDefault(name, null);
     }
 
     public void runAsync(Runnable runnable) {

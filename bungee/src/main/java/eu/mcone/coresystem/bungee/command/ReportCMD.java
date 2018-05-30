@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.report.Report;
 import eu.mcone.coresystem.bungee.report.ReportReason;
@@ -45,21 +44,21 @@ public class ReportCMD extends Command {
                             }
 
                             if (desc > 0) {
-                                Messager.send(p, "§7Folgende Reports sind noch unbearbeitet:");
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§7Folgende Reports sind noch unbearbeitet:");
                                 rs_reportlist.beforeFirst();
                                 while (rs_reportlist.next()) {
-                                    Messager.sendSimple(p, "§7» " + rs_reportlist.getInt("id") + ". §f" + rs_reportlist.getString("title"));
+                                    BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "§7» " + rs_reportlist.getInt("id") + ". §f" + rs_reportlist.getString("title"));
                                 }
-                                Messager.sendSimple(p, "");
+                                BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "");
                             } else {
-                                Messager.send(p, "§2Es sind alle Reports erledigt!");
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§2Es sind alle Reports erledigt!");
                             }
                         } catch (SQLException e1) {
                             e1.printStackTrace();
                         }
                     });
                 } else {
-                    Messager.send(p, "§7Bitte benutze §e/report §e<Name> §e<Grund>");
+                    BungeeCoreSystem.getInstance().getMessager().send(p, "§7Bitte benutze §e/report §e<Name> §e<Grund>");
                 }
             } else if (args.length == 2) {
                 if ((args[0].equalsIgnoreCase("accept") && (p.hasPermission("system.bungee.report") || (p.hasPermission("system.bungee.*"))))) {
@@ -79,7 +78,7 @@ public class ReportCMD extends Command {
                                     BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `website_ticket_msg` (`id`, `ticket_id`, `uuid`, `timestamp`, `msg`) VALUES (NULL, " + id + ", '" + p.getUniqueId() + "', '" + millis + "', '" + p.getName() + " hat den Status des Tickets auf \"inwork\" geändert.')");
 
                                     if (reporter != null) {
-                                        Messager.sendSimple(p, "" +
+                                        BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "" +
                                                 "\n§8§m----------------§r§8 [§7§l!§8] §fSystem §8§m----------------" +
                                                 "\n§8[§7§l!§8] §2Du kümmerst dich nun um den Report mit der ID §f" + id + "§2. Schließe den Report mit §f/report close " + id + "§2." +
                                                 "\n§8[§7§l!§8] §7Das Report-Ticket findest du unter: §fhttps://www.mcone.eu/dashboard/ticket.php?id=" + id + "" +
@@ -87,9 +86,9 @@ public class ReportCMD extends Command {
                                                 "\n§8[§7§l!§8] §7Titel des Reports: §f" + rs.getString("title") +
                                                 "\n§8§m----------------------------------------" +
                                                 "\n");
-                                        Messager.send(reporter, "§7Ein §aTeammitglied §7kümmert sich jetzt um deinen Report!");
+                                        BungeeCoreSystem.getInstance().getMessager().send(reporter, "§7Ein §aTeammitglied §7kümmert sich jetzt um deinen Report!");
                                     } else {
-                                        Messager.sendSimple(p, "" +
+                                        BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "" +
                                                 "\n§8§m----------------§r§8 [§7§l!§8] §fSystem §8§m----------------" +
                                                 "\n§8[§7§l!§8] §2Du kümmerst dich nun um den Report mit der ID §f" + id + "§2. Schließe den Report mit §f/report close " + id + "§2." +
                                                 "\n§8[§7§l!§8] §7Das Report-Ticket findest du unter: §fhttps://www.mcone.eu/dashboard/ticket.php?id=" + id + "" +
@@ -105,14 +104,14 @@ public class ReportCMD extends Command {
 
                                     for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
                                         if (player.hasPermission("system.bungee.report") || player.hasPermission("system.bungee.*")) {
-                                            Messager.send(player, "§2" + p.getName() + " §7kümmert sich um den Report mit der ID §f" + id);
+                                            BungeeCoreSystem.getInstance().getMessager().send(player, "§2" + p.getName() + " §7kümmert sich um den Report mit der ID §f" + id);
                                         }
                                     }
                                 } else {
-                                    Messager.send(p, "§4Der reportete Spieler ist nicht mehr online. Schließe den Report mit §c/report close 19");
+                                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der reportete Spieler ist nicht mehr online. Schließe den Report mit §c/report close 19");
                                 }
                             } else {
-                                Messager.send(p, "§4Um diesen Report kümmert sich bereits ein anderes Teammitglied, oder der Report ist bereits geschlossen oder existiert nicht!");
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Um diesen Report kümmert sich bereits ein anderes Teammitglied, oder der Report ist bereits geschlossen oder existiert nicht!");
                             }
                         } catch (SQLException e) {
                             e.printStackTrace();
@@ -127,12 +126,12 @@ public class ReportCMD extends Command {
                                 if (p.getUniqueId().equals(UUID.fromString(rs.getString("team_member"))) || p.hasPermission("group.admin")) {
                                     BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `website_ticket` SET `state`='closed' WHERE `id`=" + id);
                                     BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `website_ticket_msg` (`id`, `ticket_id`, `uuid`, `timestamp`, `msg`) VALUES (NULL, " + id + ", '" + p.getUniqueId() + "', '" + millis + "', '" + p.getName() + " hat den Status des Tickets auf \"closed\" geändert.')");
-                                    Messager.send(p, " §2Der Report wurde geschlossen!");
+                                    BungeeCoreSystem.getInstance().getMessager().send(p, " §2Der Report wurde geschlossen!");
                                 } else {
-                                    Messager.send(p, "§4Du kannst dieses Ticket nicht schließen, da du es nicht angenommen hast. Benutze §c/ticket accept <id> §4um Tickets anzunehmen!");
+                                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du kannst dieses Ticket nicht schließen, da du es nicht angenommen hast. Benutze §c/ticket accept <id> §4um Tickets anzunehmen!");
                                 }
                             } else {
-                                Messager.send(p, "§4Ein Ticket mit dieser ID existiert nicht!");
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Ein Ticket mit dieser ID existiert nicht!");
                             }
                         } catch (SQLException e) {
                             e.printStackTrace();
@@ -141,13 +140,13 @@ public class ReportCMD extends Command {
                 } else {
                     final ProxiedPlayer reportedPlayer = ProxyServer.getInstance().getPlayer(args[0]);
                     if (reportedPlayer == null) {
-                        Messager.send(p, "§4Der Spieler §c" + args[0] + "§4 ist nicht online!");
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler §c" + args[0] + "§4 ist nicht online!");
                         return;
                     } else if (reportedPlayer.getName().equals(p.getName())) {
-                        Messager.send(p, "§4Du kannst dich nicht selber reporten!");
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du kannst dich nicht selber reporten!");
                         return;
                     } else if (reportedPlayer.hasPermission("system.bungee.report") || (reportedPlayer.hasPermission("System.*"))) {
-                        Messager.send(p, "§4Du kannst keine §cTeammitglieder reporten!");
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du kannst keine §cTeammitglieder reporten!");
                         return;
                     }
 
@@ -162,28 +161,28 @@ public class ReportCMD extends Command {
                         return;
                     }
 
-                    Messager.send(p, "");
-                    Messager.send(p, "§7Du kannst ausschließlich diese §cReport-Gründe §7verwenden:");
-                    Messager.send(p, "§7---------------§cHacking§7---------------");
-                    Messager.send(p, "§cBenutze:");
-                    Messager.send(p, getReportResons());
-                    Messager.send(p, "§7-----------------------------------------");
+                    BungeeCoreSystem.getInstance().getMessager().send(p, "");
+                    BungeeCoreSystem.getInstance().getMessager().send(p, "§7Du kannst ausschließlich diese §cReport-Gründe §7verwenden:");
+                    BungeeCoreSystem.getInstance().getMessager().send(p, "§7---------------§cHacking§7---------------");
+                    BungeeCoreSystem.getInstance().getMessager().send(p, "§cBenutze:");
+                    BungeeCoreSystem.getInstance().getMessager().send(p, getReportResons());
+                    BungeeCoreSystem.getInstance().getMessager().send(p, "§7-----------------------------------------");
                 }
             } else {
                 if (p.hasPermission("system.bungee.report")) {
-                    Messager.send(p, "§4Bitte benutze §c/report <list | accept | close> [<id>]");
+                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze §c/report <list | accept | close> [<id>]");
                     return;
                 }
 
-                Messager.sendSimple(p, "");
-                Messager.send(p, "§7Du kannst ausschließlich diese §cReport-Gründe §7verwenden:");
-                Messager.send(p, "§7---------------§cHacking§7---------------");
-                Messager.send(p, "§cBenutze:");
-                Messager.send(p, getReportResons());
-                Messager.send(p, "§7-----------------------------------------");
+                BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "");
+                BungeeCoreSystem.getInstance().getMessager().send(p, "§7Du kannst ausschließlich diese §cReport-Gründe §7verwenden:");
+                BungeeCoreSystem.getInstance().getMessager().send(p, "§7---------------§cHacking§7---------------");
+                BungeeCoreSystem.getInstance().getMessager().send(p, "§cBenutze:");
+                BungeeCoreSystem.getInstance().getMessager().send(p, getReportResons());
+                BungeeCoreSystem.getInstance().getMessager().send(p, "§7-----------------------------------------");
             }
         } else {
-            Messager.send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessager().send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 

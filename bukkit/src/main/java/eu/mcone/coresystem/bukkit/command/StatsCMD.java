@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.inventory.StatsInventory;
 import org.bukkit.command.Command;
@@ -22,7 +21,7 @@ public class StatsCMD implements CommandExecutor{
 			if (!BukkitCoreSystem.getInstance().getCooldownSystem().addAndCheck(BukkitCoreSystem.getInstance(), this.getClass(), ((Player) sender).getUniqueId())) return false;
 			new StatsInventory((Player) sender);
 		} else {
-			Messager.sendTransl(sender, "system.command.consolesender");
+			BukkitCoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.consolesender");
 		}
 
 		return true;

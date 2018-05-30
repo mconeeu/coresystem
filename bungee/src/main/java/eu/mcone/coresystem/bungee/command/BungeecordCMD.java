@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -20,14 +19,14 @@ public class BungeecordCMD extends Command {
 
     public void execute(final CommandSender sender, final String[] args) {
         if (args.length == 0) {
-            Messager.sendSimple(sender, "");
-            Messager.sendSimple(sender, "§8§m---------- §r§3§lMCONE-BungeeCord-System §8§m----------");
-            Messager.send(sender, "§7Entwickelt von §fTwinsterHD §7und §frufi");
-            Messager.sendSimple(sender, "§r");
-            Messager.sendSimple(sender, "§7§oWir bemühen uns darum alle Systeme und Spielmodi so effizient wie möglich zu gestalten.");
-            Messager.sendSimple(sender, "§7§oDeshalb sind auch alle von uns verwendeten Plugins ausschließlich selbst entwickelt!");
-            Messager.sendSimple(sender, "§8§m---------- §r§3§lMCONE-BungeeCord-System §8§m----------");
-            Messager.sendSimple(sender, "");
+            BungeeCoreSystem.getInstance().getMessager().sendSimple(sender, "");
+            BungeeCoreSystem.getInstance().getMessager().sendSimple(sender, "§8§m---------- §r§3§lMCONE-BungeeCord-System §8§m----------");
+            BungeeCoreSystem.getInstance().getMessager().send(sender, "§7Entwickelt von §fTwinsterHD §7und §frufi");
+            BungeeCoreSystem.getInstance().getMessager().sendSimple(sender, "§r");
+            BungeeCoreSystem.getInstance().getMessager().sendSimple(sender, "§7§oWir bemühen uns darum alle Systeme und Spielmodi so effizient wie möglich zu gestalten.");
+            BungeeCoreSystem.getInstance().getMessager().sendSimple(sender, "§7§oDeshalb sind auch alle von uns verwendeten Plugins ausschließlich selbst entwickelt!");
+            BungeeCoreSystem.getInstance().getMessager().sendSimple(sender, "§8§m---------- §r§3§lMCONE-BungeeCord-System §8§m----------");
+            BungeeCoreSystem.getInstance().getMessager().sendSimple(sender, "");
         } else if (args[0].equals("reload")) {
             if (sender instanceof ProxiedPlayer) {
                 ProxiedPlayer p = (ProxiedPlayer) sender;
@@ -39,23 +38,23 @@ public class BungeecordCMD extends Command {
             }
 
             if (args.length == 1) {
-                Messager.send(sender, "§aTranslation-Manager wird neu geladen...");
+                BungeeCoreSystem.getInstance().getMessager().send(sender, "§aTranslation-Manager wird neu geladen...");
                 BungeeCoreSystem.getInstance().getTranslationManager().reload();
 
-                Messager.send(sender, "§aPermissions werden neu geladen...");
+                BungeeCoreSystem.getInstance().getMessager().send(sender, "§aPermissions werden neu geladen...");
                 BungeeCoreSystem.getInstance().getPermissionManager().reload();
 
-                Messager.send(sender, "§aNicks werden neu geladen...");
+                BungeeCoreSystem.getInstance().getMessager().send(sender, "§aNicks werden neu geladen...");
                 BungeeCoreSystem.getInstance().getNickManager().reload();
             } else if (args.length == 2) {
                 if (args[1].equalsIgnoreCase("translations")) {
-                    Messager.send(sender, "§aTranslation-Manager wird neu geladen...");
+                    BungeeCoreSystem.getInstance().getMessager().send(sender, "§aTranslation-Manager wird neu geladen...");
                     BungeeCoreSystem.getInstance().getTranslationManager().reload();
                 } else if (args[1].equalsIgnoreCase("permissions")) {
-                    Messager.send(sender, "§aPermissions werden neu geladen...");
+                    BungeeCoreSystem.getInstance().getMessager().send(sender, "§aPermissions werden neu geladen...");
                     BungeeCoreSystem.getInstance().getPermissionManager().reload();
                 } else if (args[1].equalsIgnoreCase("nick")) {
-                    Messager.send(sender, "§aNicks werden neu geladen...");
+                    BungeeCoreSystem.getInstance().getMessager().send(sender, "§aNicks werden neu geladen...");
                     BungeeCoreSystem.getInstance().getNickManager().reload();
                 }
             }

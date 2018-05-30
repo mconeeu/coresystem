@@ -8,7 +8,6 @@ package eu.mcone.coresystem.bungee.friend;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -36,7 +35,7 @@ public class Party {
     public Party(ProxiedPlayer leader, ProxiedPlayer... member) {
         if (leader != null) {
             if (isInParty(leader)) {
-                Messager.sendParty(leader, "§4Du bist noch in einer Party! Benutze §c/party leave §4um die Party zu verlassen!");
+                BungeeCoreSystem.getInstance().getMessager().sendParty(leader, "§4Du bist noch in einer Party! Benutze §c/party leave §4um die Party zu verlassen!");
             } else {
                 parties.put(leader.getName().toLowerCase(), this);
 
@@ -47,11 +46,11 @@ public class Party {
 
                 this.member.add(leader);
 
-                Messager.sendParty(leader, "§2Eine neue Party wurde erfolgreich erstellt");
+                BungeeCoreSystem.getInstance().getMessager().sendParty(leader, "§2Eine neue Party wurde erfolgreich erstellt");
                 if (member != null) {
                     for (ProxiedPlayer m : member) {
                         this.invites.add(m);
-                        Messager.sendParty(leader, "§f" + m.getName() + "§7 wurde in die Party eingeladen!");
+                        BungeeCoreSystem.getInstance().getMessager().sendParty(leader, "§f" + m.getName() + "§7 wurde in die Party eingeladen!");
                         m.sendMessage(
                             new ComponentBuilder("")
                                 .append(TextComponent.fromLegacyText(BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.party", CoreSystem.getInstance().getCorePlayer(m))))
@@ -66,7 +65,7 @@ public class Party {
                 }
             }
         } else {
-            Messager.console("§4Party konnte nicht erstellt werden da (leader == null)");
+            BungeeCoreSystem.getInstance().sendConsoleMessage("§4Party konnte nicht erstellt werden da (leader == null)");
         }
     }
 
@@ -89,13 +88,13 @@ public class Party {
             if (this.invites.contains(p)) {
                 this.member.add(p);
                 this.invites.remove(p);
-                Messager.sendParty(p, "§2Du bist der Party beigetreten!");
+                BungeeCoreSystem.getInstance().getMessager().sendParty(p, "§2Du bist der Party beigetreten!");
                 this.sendAll("§f" + p.getName() + " §7ist der Party beigetreten!");
             } else {
-                Messager.sendParty(p, "§4Du wurdest nicht in diese Party eingeladen!");
+                BungeeCoreSystem.getInstance().getMessager().sendParty(p, "§4Du wurdest nicht in diese Party eingeladen!");
             }
         } else {
-            Messager.sendParty(p, "§4Du bist bereits in dieser Party!");
+            BungeeCoreSystem.getInstance().getMessager().sendParty(p, "§4Du bist bereits in dieser Party!");
         }
     }
 
@@ -108,8 +107,8 @@ public class Party {
                 parties.put(this.leader.getName().toLowerCase(), this);
 
                 for (ProxiedPlayer m : this.member) {
-                    Messager.sendParty(m, "§c" + p.getName() + " §4hat die Party verlassen");
-                    Messager.sendParty(m, "§f" + this.leader + " §7ist jetzt der neue Partyleader!");
+                    BungeeCoreSystem.getInstance().getMessager().sendParty(m, "§c" + p.getName() + " §4hat die Party verlassen");
+                    BungeeCoreSystem.getInstance().getMessager().sendParty(m, "§f" + this.leader + " §7ist jetzt der neue Partyleader!");
                 }
             } else {
                 destroy();
@@ -145,7 +144,7 @@ public class Party {
 
     public void sendAll(final String msg) {
         for (ProxiedPlayer p : this.member) {
-            Messager.sendParty(p, msg);
+            BungeeCoreSystem.getInstance().getMessager().sendParty(p, msg);
         }
     }
 

@@ -10,19 +10,24 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
 import eu.mcone.coresystem.api.core.translation.Language;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public final class Messager {
+
+    private String prefixTranslation;
+
+    public Messager(String prefixTranlation) {
+        this.prefixTranslation = prefixTranlation;
+    }
 
     /**
      * send message with prefix to player
      * @param player player
      * @param message message
      */
-    public static void send(final Player player, final String message) {
-        player.sendMessage(CoreSystem.getInstance().getTranslationManager().get("system.prefix", CoreSystem.getInstance().getCorePlayer(player)) + message);
+    public void send(final Player player, final String message) {
+        player.sendMessage(CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, CoreSystem.getInstance().getCorePlayer(player)) + message);
     }
 
     /**
@@ -30,8 +35,8 @@ public final class Messager {
      * @param player player
      * @param textComponent text component
      */
-    public static void send(final Player player, final TextComponent textComponent) {
-        TextComponent realTc = new TextComponent(CoreSystem.getInstance().getTranslationManager().get("system.prefix", CoreSystem.getInstance().getCorePlayer(player)));
+    public void send(final Player player, final TextComponent textComponent) {
+        TextComponent realTc = new TextComponent(CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, CoreSystem.getInstance().getCorePlayer(player)));
         realTc.addExtra(textComponent);
         player.spigot().sendMessage(realTc);
     }
@@ -41,8 +46,8 @@ public final class Messager {
      * @param sender command sender
      * @param message message
      */
-    public static void send(final CommandSender sender, final String message) {
-        sender.sendMessage(CoreSystem.getInstance().getTranslationManager().get("system.prefix", Language.ENGLISH) + message);
+    public void send(final CommandSender sender, final String message) {
+        sender.sendMessage(CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, Language.ENGLISH) + message);
     }
 
     /**
@@ -50,9 +55,9 @@ public final class Messager {
      * @param player player
      * @param translation translation name/key
      */
-    public static void sendTransl(final Player player, String... translation) {
+    public void sendTransl(final Player player, String... translation) {
         BukkitCorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
-        StringBuilder sb = new StringBuilder(CoreSystem.getInstance().getTranslationManager().get("system.prefix", cp));
+        StringBuilder sb = new StringBuilder(CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, cp));
         for (String s : translation) {
             sb.append(CoreSystem.getInstance().getTranslationManager().get(s, cp));
         }
@@ -64,8 +69,8 @@ public final class Messager {
      * @param sender command sender
      * @param translation translation name/key
      */
-    public static void sendTransl(final CommandSender sender, String... translation) {
-        StringBuilder sb = new StringBuilder(CoreSystem.getInstance().getTranslationManager().get("system.prefix", Language.ENGLISH));
+    public void sendTransl(final CommandSender sender, String... translation) {
+        StringBuilder sb = new StringBuilder(CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, Language.ENGLISH));
         for (String s : translation) {
             sb.append(CoreSystem.getInstance().getTranslationManager().get(s, Language.ENGLISH));
         }
@@ -77,7 +82,7 @@ public final class Messager {
      * @param player player
      * @param message message
      */
-    public static void sendSimple(final Player player, final String message) {
+    public void sendSimple(final Player player, final String message) {
         player.sendMessage(message);
     }
 
@@ -86,7 +91,7 @@ public final class Messager {
      * @param player player
      * @param textComponent text component
      */
-    public static void sendSimple(final Player player, final TextComponent textComponent) {
+    public void sendSimple(final Player player, final TextComponent textComponent) {
         player.spigot().sendMessage(textComponent);
     }
 
@@ -95,16 +100,8 @@ public final class Messager {
      * @param sender command sender
      * @param message message
      */
-    public static void sendSimple(final CommandSender sender, final String message) {
+    public void sendSimple(final CommandSender sender, final String message) {
         sender.sendMessage(message);
-    }
-
-    /**
-     * send message to console
-     * @param message message
-     */
-    public static void console(final String message) {
-        Bukkit.getConsoleSender().sendMessage(message);
     }
 
 }

@@ -4,14 +4,16 @@
  *
  */
 
-package eu.mcone.coresystem.api.bukkit;
+package eu.mcone.coresystem.api.bungee;
 
-import eu.mcone.coresystem.api.bukkit.util.Messager;
+import eu.mcone.coresystem.api.bungee.util.Messager;
 import lombok.Getter;
-import org.bukkit.ChatColor;
-import org.bukkit.plugin.java.JavaPlugin;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.plugin.Plugin;
 
-public abstract class CorePlugin extends JavaPlugin {
+public abstract class CorePlugin extends Plugin {
 
     @Getter
     private String pluginName;
@@ -28,7 +30,7 @@ public abstract class CorePlugin extends JavaPlugin {
     }
 
     public void sendConsoleMessage(String message) {
-        getServer().getConsoleSender().sendMessage(consolePrefix+message);
+        ProxyServer.getInstance().getConsole().sendMessage(new TextComponent(TextComponent.fromLegacyText(consolePrefix + message)));
     }
 
 }

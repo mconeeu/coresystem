@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
-import eu.mcone.coresystem.api.bukkit.util.Messager;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -27,7 +27,7 @@ public class PlayerCommandPreprocess implements Listener {
 
             HelpTopic topic = Bukkit.getServer().getHelpMap().getHelpTopic(cmd);
             if (topic == null) {
-                Messager.send(p, "§4Der Befehl §c" + cmd + "§4 existiert nicht!");
+                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Befehl §c" + cmd + "§4 existiert nicht!");
                 e.setCancelled(true);
             }
         }

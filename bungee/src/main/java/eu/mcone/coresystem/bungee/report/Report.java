@@ -7,7 +7,6 @@
 package eu.mcone.coresystem.bungee.report;
 
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -30,10 +29,10 @@ public class Report {
         this.reason = reason;
 
         long millis = System.currentTimeMillis() / 1000;
-        Messager.send(reporter, "§2Du hast erfolgreich den Spieler §f" + reportedPlayer.getName() + "§2 erfolgreich reportet.");
+        BungeeCoreSystem.getInstance().getMessager().send(reporter, "§2Du hast erfolgreich den Spieler §f" + reportedPlayer.getName() + "§2 erfolgreich reportet.");
 
         id = BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).updateWithGetId("INSERT INTO `website_ticket` (`cat`, `title`, `uuid`, `target_uuid`, `state`, `created`, `changed`, `team_member`) VALUES ('Spielerreport', 'Report gegen " + reportedPlayer.getName() + " mit dem Grund " + reason.getName() + "', '" + reporter.getUniqueId() + "', '" + reportedPlayer.getUniqueId().toString() + "', 'pending', '" + millis + "', '" + millis + "', NULL)");
-        Messager.send(reporter, "§2Du kannst den Status deines Reports auf dieser Seite einsehen: §fhttps://www.mcone.eu/dashboard/ticket.php?id=" + id);
+        BungeeCoreSystem.getInstance().getMessager().send(reporter, "§2Du kannst den Status deines Reports auf dieser Seite einsehen: §fhttps://www.mcone.eu/dashboard/ticket.php?id=" + id);
     }
 
     public void sendToTeam(){
@@ -47,7 +46,7 @@ public class Report {
 
                 TextComponent realTc = new TextComponent("§7Der Spieler §f" + this.reporter.getName() + " §7hat §e" + this.reportedPlayer.getName() + " §7reportet (ID: " + this.id + "). §7Grund: §c" + reason.getName() + "§r  ");
                 realTc.addExtra(tc);
-                Messager.send(p, realTc);
+                BungeeCoreSystem.getInstance().getMessager().send(p, realTc);
             }
         }
     }

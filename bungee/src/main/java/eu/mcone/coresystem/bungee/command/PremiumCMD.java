@@ -11,7 +11,6 @@ import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
 import eu.mcone.coresystem.bungee.player.OfflinePlayer;
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -66,12 +65,12 @@ public class PremiumCMD extends Command implements TabExecutor {
                                             String rang = rs.getString("group");
                                             long timestamp = Long.parseLong(rs.getString("timestamp"));
 
-                                            Messager.sendSimple(p, "");
-                                            Messager.send(p, "§7Der Spieler §f" + target);
-                                            Messager.send(p, "§7hat den Rang §6" + rang);
-                                            Messager.send(p, "§7noch " + BanManager.getEndeString(timestamp));
+                                            BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "");
+                                            BungeeCoreSystem.getInstance().getMessager().send(p, "§7Der Spieler §f" + target);
+                                            BungeeCoreSystem.getInstance().getMessager().send(p, "§7hat den Rang §6" + rang);
+                                            BungeeCoreSystem.getInstance().getMessager().send(p, "§7noch " + BanManager.getEndeString(timestamp));
                                         } else {
-                                            Messager.send(p, "§7Der Spieler §f" + target + " §7hat keinen auslaufenden Rang.");
+                                            BungeeCoreSystem.getInstance().getMessager().send(p, "§7Der Spieler §f" + target + " §7hat keinen auslaufenden Rang.");
                                         }
                                     } catch (SQLException e1) {
                                         e1.printStackTrace();
@@ -95,9 +94,9 @@ public class PremiumCMD extends Command implements TabExecutor {
 
                                                             if (value.equalsIgnoreCase("Spieler")) {
                                                                 BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM bungeesystem_premium WHERE uuid = '" + uuid + "';");
-                                                                Messager.send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group + "§2 erfolgreich entzogen!");
+                                                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group + "§2 erfolgreich entzogen!");
                                                             } else {
-                                                                Messager.send(sender, "§7[§cMySQL ERROR§7] §4DER SPIELER KONNTE NICHT GELÖSCHT WERDEN OBWOHL SEIN PREMIUM RANG ABGLAUFEN IST!");
+                                                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§7[§cMySQL ERROR§7] §4DER SPIELER KONNTE NICHT GELÖSCHT WERDEN OBWOHL SEIN PREMIUM RANG ABGLAUFEN IST!");
                                                             }
                                                         }
                                                     } catch (SQLException e) {
@@ -105,22 +104,22 @@ public class PremiumCMD extends Command implements TabExecutor {
                                                     }
                                                 });
                                             } else {
-                                                Messager.send(sender, "§4Dieser Spieler hat keinen auslaufenden Rang!");
+                                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Dieser Spieler hat keinen auslaufenden Rang!");
                                             }
                                         } catch (SQLException e) {
                                             e.printStackTrace();
                                         }
                                     });
                                 } else {
-                                    Messager.send(sender, "§4Dieser Spieler hat keinen Premium Rang!");
+                                    BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Dieser Spieler hat keinen Premium Rang!");
                                 }
                             }
                         } else {
-                            Messager.send(sender, "§c" + target + "§4 war noch nie auf MC ONE!");
+                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§c" + target + "§4 war noch nie auf MC ONE!");
                         }
                         return;
                     } catch (CoreException e) {
-                        Messager.send(p, "§4Der Spieler "+target+" war noch nie auf MC ONE!");
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler "+target+" war noch nie auf MC ONE!");
                     }
                 } else if (args.length == 3) {
                     String target = args[1];
@@ -134,20 +133,20 @@ public class PremiumCMD extends Command implements TabExecutor {
                                     if (!t.hasPermission("mcone.premium")) {
                                         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_premium` (`uuid`, `group`, `old_group`, `kosten`, `gekauft`, `timestamp`) VALUES ('" + t.getUuid().toString() + "', '" + group.getName() + "', '" + BungeeCoreSystem.getInstance().getPermissionManager().getJson(t.getGroups()) + "', 'free', '" + unixtime + "', " + ((60 * 60 * 24 * 30) + unixtime) + ")");
                                         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDAtE userinfo SET gruppe='" + group.getName() + "' WHERE uuid='" + target + "'");
-                                        Messager.send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für 1 Monat zugeschrieben!");
+                                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für 1 Monat zugeschrieben!");
                                     } else {
-                                        Messager.send(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
+                                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
                                     }
                                 }
                             } else {
-                                Messager.send(sender, "§c" + target + "§4 war noch nie auf MC ONE!");
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§c" + target + "§4 war noch nie auf MC ONE!");
                             }
                         } else {
-                            Messager.send(sender, "§4Dieser Rang existiert nicht!");
+                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Dieser Rang existiert nicht!");
                         }
                         return;
                     } catch (CoreException e) {
-                        Messager.send(p, "§4Der Spieler "+target+" war noch nie auf MC ONE!");
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler "+target+" war noch nie auf MC ONE!");
                     }
                 } else if (args.length == 4) {
                     String target = args[1];
@@ -162,29 +161,29 @@ public class PremiumCMD extends Command implements TabExecutor {
                                     if (!t.hasPermission("mcone.premium")) {
                                         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_premium` (`uuid`, `group`, `old_group`, `kosten`, `gekauft`, `timestamp`) VALUES ('" + t.getUuid().toString() + "', '" + group.getName() + "', '" + BungeeCoreSystem.getInstance().getPermissionManager().getJson(t.getGroups()) + "', 'free', '" + unixtime + "', " + ((60 * 60 * 24 * 30 * months) + unixtime) + ")");
                                         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDAtE userinfo SET gruppe='" + group.getName() + "' WHERE uuid='" + target + "'");
-                                        Messager.send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für " + months + " Monat(e) zugeschrieben!");
+                                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für " + months + " Monat(e) zugeschrieben!");
                                     } else {
-                                        Messager.send(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
+                                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
                                     }
                                 }
                             } else {
-                                Messager.send(sender, "§c" + target + "§4 war noch nie auf MC ONE!");
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§c" + target + "§4 war noch nie auf MC ONE!");
                             }
                         } else {
-                            Messager.send(sender, "§4Dieser Rang existiert nicht!");
+                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Dieser Rang existiert nicht!");
                         }
                         return;
                     } catch (CoreException e) {
-                        Messager.send(p, "§4Der Spieler "+target+" war noch nie auf MC ONE!");
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler "+target+" war noch nie auf MC ONE!");
                     }
                 }
 
-                Messager.send(p, "§4Bitte benutze: §c/premium add <eu.mcone.coresystem.api.core.player> <group> [<Anzahl der Monate>] §4oder §c/premium <check | remove> <eu.mcone.coresystem.api.core.player>");
+                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/premium add <eu.mcone.coresystem.api.core.player> <group> [<Anzahl der Monate>] §4oder §c/premium <check | remove> <eu.mcone.coresystem.api.core.player>");
             } else {
-                Messager.send(p, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.noperm"));
+                BungeeCoreSystem.getInstance().getMessager().send(p, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.noperm"));
             }
         } else {
-            Messager.send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessager().send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 

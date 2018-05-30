@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.npc.NpcManager;
 import org.bukkit.command.Command;
@@ -38,7 +37,7 @@ public class NpcCMD implements CommandExecutor{
                         }
 
                         api.addNPC(args[1], p.getLocation(), args[2], line.toString());
-                        Messager.send(p, "§2NPC §f" + args[1] + "§2 erfolgreich hinzugefügt!");
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2NPC §f" + args[1] + "§2 erfolgreich hinzugefügt!");
                         return true;
                     } else if (args[0].equalsIgnoreCase("update")) {
                         StringBuilder line = new StringBuilder();
@@ -48,13 +47,13 @@ public class NpcCMD implements CommandExecutor{
                         }
 
                         api.updateNPC(args[1], p.getLocation(), args[2], line.toString());
-                        Messager.send(p, "§2NPC §f" + args[1] + "§2 erfolgreich hinzugefügt!");
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2NPC §f" + args[1] + "§2 erfolgreich hinzugefügt!");
                         return true;
                     }
                 } else if (args.length == 2) {
                     if (args[0].equalsIgnoreCase("remove")) {
                         api.removeNPC(args[1]);
-                        Messager.send(p, "§2NPC §f" + args[1] + "§2 erfolgreich gelöscht!");
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2NPC §f" + args[1] + "§2 erfolgreich gelöscht!");
                         return true;
                     }
                 } else if (args.length == 1) {
@@ -72,17 +71,17 @@ public class NpcCMD implements CommandExecutor{
                         return true;
                     } else if (args[0].equalsIgnoreCase("reload")) {
                         api.reload();
-                        Messager.send(p, "§2NPCs erfolgreich neu geladen!");
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2NPCs erfolgreich neu geladen!");
                         return true;
                     }
                 }
 
-                Messager.send(p, "§4Bitte benutze: §c/npc <add | remove | update | list | reload> [<Name>] [<Texture-Name>] [<Display-Name>]");
+                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/npc <add | remove | update | list | reload> [<Name>] [<Texture-Name>] [<Display-Name>]");
             } else {
-                Messager.sendTransl(p, "system.command.noperm");
+                BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
             }
         } else {
-            Messager.sendTransl(sender, "system.command.consolesender");
+            BukkitCoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.consolesender");
         }
 
         return true;

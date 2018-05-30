@@ -12,7 +12,6 @@ import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.player.OfflinePlayer;
-import eu.mcone.coresystem.api.bungee.util.Messager;
 import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -41,12 +40,12 @@ public class PermsCMD extends Command implements TabExecutor {
                     if (g != null) {
                         if (args[3].equalsIgnoreCase("set")) {
                             BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE userinfo SET groups='[" + g.getId() + "]' WHERE uuid='" + p.getUuid() + "'");
-                            Messager.send(sender, "§2Die Gruppe von " + args[1] + " wurde erfolgreich auf §f" + g.getLabel() + "§2 geändert!");
+                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Die Gruppe von " + args[1] + " wurde erfolgreich auf §f" + g.getLabel() + "§2 geändert!");
 
                             BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUuid());
                             if (cp != null)
                                 ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.GROUP_CHANGE, cp, new HashSet<>(Collections.singletonList(g))));
-                            Messager.console(BungeeCoreSystem.MainPrefix + "§f" + sender.getName() + "§7 hat die Gruppe von §2" + args[1] + "§7 auf §f" + g.getLabel() + "§7 geändert!");
+                            BungeeCoreSystem.getInstance().sendConsoleMessage(BungeeCoreSystem.MainPrefix + "§f" + sender.getName() + "§7 hat die Gruppe von §2" + args[1] + "§7 auf §f" + g.getLabel() + "§7 geändert!");
                             return;
                         } else if (args[3].equalsIgnoreCase("add")) {
                             Set<Group> groups = p.getGroups();
@@ -58,14 +57,14 @@ public class PermsCMD extends Command implements TabExecutor {
                                 groups.forEach(group -> sb.append(group.getLabel()).append(" "));
 
                                 BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE userinfo SET groups='" + BungeeCoreSystem.getInstance().getPermissionManager().getJson(groups) + "' WHERE uuid='" + p.getUuid() + "'");
-                                Messager.send(sender, "§2Der User " + args[1] + " besitzt nun die Gruppen: " + sb.toString() + "§7(Gruppe " + g.getName() + " hinzugefügt)");
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Der User " + args[1] + " besitzt nun die Gruppen: " + sb.toString() + "§7(Gruppe " + g.getName() + " hinzugefügt)");
 
                                 BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUuid());
                                 if (cp != null)
                                     ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.GROUP_CHANGE, cp, groups));
-                                Messager.console(BungeeCoreSystem.MainPrefix + "§f" + sender.getName() + "§7 hat die Gruppen von §2" + args[1] + "§7 geändert: " + sb.toString() + "§7(Gruppe " + g.getName() + " hinzugefügt)");
+                                BungeeCoreSystem.getInstance().sendConsoleMessage(BungeeCoreSystem.MainPrefix + "§f" + sender.getName() + "§7 hat die Gruppen von §2" + args[1] + "§7 geändert: " + sb.toString() + "§7(Gruppe " + g.getName() + " hinzugefügt)");
                             } else {
-                                Messager.send(sender, "§4Der Spieler " + p.getName() + " hat die Gruppe " + g.getLabel() + "§4 bereits!");
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spieler " + p.getName() + " hat die Gruppe " + g.getLabel() + "§4 bereits!");
                             }
                             return;
                         } else if (args[3].equalsIgnoreCase("remove")) {
@@ -78,19 +77,19 @@ public class PermsCMD extends Command implements TabExecutor {
                                 groups.forEach(group -> sb.append(group.getLabel()).append(" "));
 
                                 BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE userinfo SET groups='" + BungeeCoreSystem.getInstance().getPermissionManager().getJson(groups) + "' WHERE uuid='" + p.getUuid() + "'");
-                                Messager.send(sender, "§2Der User " + args[1] + " besitzt nun die Gruppen: " + sb.toString() + "§7(Gruppe " + g.getName() + " gelöscht)");
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Der User " + args[1] + " besitzt nun die Gruppen: " + sb.toString() + "§7(Gruppe " + g.getName() + " gelöscht)");
 
                                 BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUuid());
                                 if (cp != null)
                                     ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.GROUP_CHANGE, cp, groups));
-                                Messager.console(BungeeCoreSystem.MainPrefix + "§f" + sender.getName() + "§7 hat die Gruppen von §2" + args[1] + "§7 geändert: " + sb.toString() + "§7(Gruppe " + g.getName() + " gelöscht)");
+                                BungeeCoreSystem.getInstance().sendConsoleMessage(BungeeCoreSystem.MainPrefix + "§f" + sender.getName() + "§7 hat die Gruppen von §2" + args[1] + "§7 geändert: " + sb.toString() + "§7(Gruppe " + g.getName() + " gelöscht)");
                             } else {
-                                Messager.send(sender, "§4Der Spieler " + p.getName() + " hat die Gruppe " + g.getLabel() + "§4 nicht!");
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spieler " + p.getName() + " hat die Gruppe " + g.getLabel() + "§4 nicht!");
                             }
                             return;
                         }
                     } else {
-                        Messager.send(sender, "§4Diese Gruppe existiert nicht!");
+                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Diese Gruppe existiert nicht!");
                         return;
                     }
                 } else if (args[2].equalsIgnoreCase("addperm") || args[2].equalsIgnoreCase("add")) {
@@ -98,23 +97,23 @@ public class PermsCMD extends Command implements TabExecutor {
 
                     if (args.length == 4) {
                         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`) VALUES ('" + p.getUuid() + "', 'eu.mcone.coresystem.api.core.player-permission', '" + permission + "')");
-                        Messager.send(sender, "§2Dem Spieler " + args[1] + " wurde die Permission §f" + permission + "§2 hinzugefügt!");
-                        Messager.send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
+                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Dem Spieler " + args[1] + " wurde die Permission §f" + permission + "§2 hinzugefügt!");
+                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
 
                         BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUuid());
                         if (cp != null) ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.USER_PERMISSION, cp));
-                        Messager.console("§f"+sender.getName()+"§7 hat dem Spieler §f" + args[1] + "§7 wurde die Permission §2" + permission + "§7 hinzugefügt!");
+                        BungeeCoreSystem.getInstance().sendConsoleMessage("§f"+sender.getName()+"§7 hat dem Spieler §f" + args[1] + "§7 wurde die Permission §2" + permission + "§7 hinzugefügt!");
                         return;
                     } else if (args.length == 5) {
                         String server = args[4];
 
                         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`, `server`) VALUES ('" + p.getUuid() + "', 'eu.mcone.coresystem.api.core.player-permission', '" + permission + "', '" + server + "')");
-                        Messager.send(sender, "§2Dem Spieler " + args[1] + " wurde die Permission §f" + permission + "§2 auf dem Server §f" + server + "§2 hinzugefügt!");
-                        Messager.send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
+                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Dem Spieler " + args[1] + " wurde die Permission §f" + permission + "§2 auf dem Server §f" + server + "§2 hinzugefügt!");
+                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
 
                         BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUuid());
                         if (cp != null) ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.USER_PERMISSION, cp));
-                        Messager.console(BungeeCoreSystem.MainPrefix + "§f"+sender.getName()+"§7 hat dem User §2"+args[1]+"§7 die Permission §f"+permission+"§7 auf dem Server §7§o"+server+"§7 hinzugefügt!");
+                        BungeeCoreSystem.getInstance().sendConsoleMessage(BungeeCoreSystem.MainPrefix + "§f"+sender.getName()+"§7 hat dem User §2"+args[1]+"§7 die Permission §f"+permission+"§7 auf dem Server §7§o"+server+"§7 hinzugefügt!");
                         return;
                     }
                 } else if (args[2].equalsIgnoreCase("removeperm") || args[2].equalsIgnoreCase("remove")) {
@@ -128,12 +127,12 @@ public class PermsCMD extends Command implements TabExecutor {
                                 } else {
                                     BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`) VALUES ('" + p.getUuid() + "', 'eu.mcone.coresystem.api.core.player-permission', '-" + permission + "')");
                                 }
-                                Messager.send(sender, "§2Dem Spieler " + args[1] + " wurde die Permission §f" + permission + "§2 entzogen!");
-                                Messager.send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Dem Spieler " + args[1] + " wurde die Permission §f" + permission + "§2 entzogen!");
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
 
                                 BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUuid());
                                 if (cp != null) ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.USER_PERMISSION, cp));
-                                Messager.console("§f"+sender.getName()+"§7 hat dem Spieler §f" + args[1] + "§7 wurde die Permission §2" + permission + "§7 entfernt!");
+                                BungeeCoreSystem.getInstance().sendConsoleMessage("§f"+sender.getName()+"§7 hat dem Spieler §f" + args[1] + "§7 wurde die Permission §2" + permission + "§7 entfernt!");
                             } catch (SQLException e) {
                                 e.printStackTrace();
                             }
@@ -149,12 +148,12 @@ public class PermsCMD extends Command implements TabExecutor {
                                 } else {
                                     BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`, `server`) VALUES ('" + p.getUuid() + "', 'eu.mcone.coresystem.api.core.player-permission', '-" + permission + "', '" + server + "')");
                                 }
-                                Messager.send(sender, "§2Dem Spieler " + args[1] + " wurde die Permission §f" + permission + "§2 auf dem Server §f" + server + "§2 entzogen!");
-                                Messager.send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Dem Spieler " + args[1] + " wurde die Permission §f" + permission + "§2 auf dem Server §f" + server + "§2 entzogen!");
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
 
                                 BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUuid());
                                 if (cp != null) ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.USER_PERMISSION, cp));
-                                Messager.console(BungeeCoreSystem.MainPrefix + "§f"+sender.getName()+"§7 hat dem User §2"+args[1]+"§7 die Permission §f"+permission+"§7 auf dem Server §7§o"+server+"§7 entzogen!");
+                                BungeeCoreSystem.getInstance().sendConsoleMessage(BungeeCoreSystem.MainPrefix + "§f"+sender.getName()+"§7 hat dem User §2"+args[1]+"§7 die Permission §f"+permission+"§7 auf dem Server §7§o"+server+"§7 entzogen!");
                             } catch (SQLException e) {
                                 e.printStackTrace();
                             }
@@ -167,9 +166,9 @@ public class PermsCMD extends Command implements TabExecutor {
                     BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `value`, `server` FROM `bungeesystem_permissions` WHERE `name`='" + p.getUuid() + "' AND `key`='eu.mcone.coresystem.api.core.player-permission' AND `value`='" + permission + "'", rs -> {
                         try {
                             if (rs.next()) {
-                                Messager.send(sender, "§2Der Spieler "+args[1]+" hat die Permission §f"+rs.getString("value")+"§2 auf dem Server §7"+rs.getString("server"));
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Der Spieler "+args[1]+" hat die Permission §f"+rs.getString("value")+"§2 auf dem Server §7"+rs.getString("server"));
                             } else {
-                                Messager.send(sender, "§4Der Spieler "+args[1]+" hat die Permission §c"+permission+"§4 nicht!");
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spieler "+args[1]+" hat die Permission §c"+permission+"§4 nicht!");
                             }
                         } catch (SQLException e) {
                             e.printStackTrace();
@@ -178,7 +177,7 @@ public class PermsCMD extends Command implements TabExecutor {
                     return;
                 }
             } catch (CoreException e) {
-                Messager.send(sender, "§4Der Spieler "+args[1]+" war noch nie auf MC ONE!");
+                BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spieler "+args[1]+" war noch nie auf MC ONE!");
                 return;
             }
         } else if (args.length >=3 && args[0].equalsIgnoreCase("group")) {
@@ -190,21 +189,21 @@ public class PermsCMD extends Command implements TabExecutor {
 
                     if (args.length == 4) {
                         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`) VALUES ('" + g.getId() + "', 'permission', '" + permission + "')");
-                        Messager.send(sender, "§2Der Gruppe " + g.getLabel() + "§2 wurde die Permission §f" + permission + "§2 hinzugefügt!");
-                        Messager.send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
+                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Der Gruppe " + g.getLabel() + "§2 wurde die Permission §f" + permission + "§2 hinzugefügt!");
+                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
 
                         ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.GROUP_PERMISSION, g));
-                        Messager.console("§f"+sender.getName()+"§7 hat der Gruppe §f" + g.getLabel() + "§7 wurde die Permission §2" + permission + "§7 hinzugefügt!");
+                        BungeeCoreSystem.getInstance().sendConsoleMessage("§f"+sender.getName()+"§7 hat der Gruppe §f" + g.getLabel() + "§7 wurde die Permission §2" + permission + "§7 hinzugefügt!");
                         return;
                     } else if (args.length == 5) {
                         String server = args[4];
 
                         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`, `server`) VALUES ('" + g.getId() + "', 'permission', '" + permission + "', '" + server + "')");
-                        Messager.send(sender, "§2Der Gruppe " + g.getLabel() + "§2 wurde die Permission §f" + permission + "§2 auf dem Server §f" + server + "§2 hinzugefügt!");
-                        Messager.send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
+                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Der Gruppe " + g.getLabel() + "§2 wurde die Permission §f" + permission + "§2 auf dem Server §f" + server + "§2 hinzugefügt!");
+                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
 
                         ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.GROUP_PERMISSION, g));
-                        Messager.console(BungeeCoreSystem.MainPrefix + "§f"+sender.getName()+"§7 hat der Gruppe §f"+g.getLabel()+"§7 wurde die Permission §2"+permission+"§7 auf dem Server §7§o"+server+"§7 hinzugefügt");
+                        BungeeCoreSystem.getInstance().sendConsoleMessage(BungeeCoreSystem.MainPrefix + "§f"+sender.getName()+"§7 hat der Gruppe §f"+g.getLabel()+"§7 wurde die Permission §2"+permission+"§7 auf dem Server §7§o"+server+"§7 hinzugefügt");
                         return;
                     }
                 } else if (args[2].equalsIgnoreCase("removeperm") || args[2].equalsIgnoreCase("remove")) {
@@ -218,11 +217,11 @@ public class PermsCMD extends Command implements TabExecutor {
                                 } else {
                                     BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`) VALUES ('" + g.getId() + "', 'permission', '-" + permission + "')");
                                 }
-                                Messager.send(sender, "§2Der Gruppe " + g.getLabel() + "§2 wurde die Permission §f" + permission + "§2 entzogen!");
-                                Messager.send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Der Gruppe " + g.getLabel() + "§2 wurde die Permission §f" + permission + "§2 entzogen!");
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
 
                                 ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.GROUP_PERMISSION, g));
-                                Messager.console("§f"+sender.getName()+"§7 hat der Gruppe §f" + g.getLabel() + "§7 wurde die Permission §2" + permission + "§7 entfernt!");
+                                BungeeCoreSystem.getInstance().sendConsoleMessage("§f"+sender.getName()+"§7 hat der Gruppe §f" + g.getLabel() + "§7 wurde die Permission §2" + permission + "§7 entfernt!");
                             } catch (SQLException e) {
                                 e.printStackTrace();
                             }
@@ -238,11 +237,11 @@ public class PermsCMD extends Command implements TabExecutor {
                                 } else {
                                     BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`, `server`) VALUES ('" + g.getId() + "', 'permission', '-" + permission + "', '" + server + "')");
                                 }
-                                Messager.send(sender, "§2Der Gruppe " + g.getLabel() + "§2 wurde die Permission §f" + permission + " auf dem Server §f" + server + "§2 entzogen!");
-                                Messager.send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Der Gruppe " + g.getLabel() + "§2 wurde die Permission §f" + permission + " auf dem Server §f" + server + "§2 entzogen!");
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
 
                                 ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.GROUP_PERMISSION, g));
-                                Messager.console(BungeeCoreSystem.MainPrefix + "§f"+sender.getName()+"§7hat der Gruppe §f"+g.getLabel()+"§7 wurde die Permission §2"+permission+"§7 auf dem Server §7§o"+server+"§7 entzogen");
+                                BungeeCoreSystem.getInstance().sendConsoleMessage(BungeeCoreSystem.MainPrefix + "§f"+sender.getName()+"§7hat der Gruppe §f"+g.getLabel()+"§7 wurde die Permission §2"+permission+"§7 auf dem Server §7§o"+server+"§7 entzogen");
                             } catch (SQLException e) {
                                 e.printStackTrace();
                             }
@@ -255,9 +254,9 @@ public class PermsCMD extends Command implements TabExecutor {
                     BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `value`, `server` FROM `bungeesystem_permissions` WHERE `name`='" + g.getId() + "' AND `key`='permission' AND `value`='" + permission + "'", rs -> {
                         try {
                             if (rs.next()) {
-                                Messager.send(sender, "§2Die Gruppe " + g.getLabel() + "§2 hat die Permission §f" + rs.getString("value") + "§2 auf dem Server §7" + rs.getString("server"));
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Die Gruppe " + g.getLabel() + "§2 hat die Permission §f" + rs.getString("value") + "§2 auf dem Server §7" + rs.getString("server"));
                             } else {
-                                Messager.send(sender, "§4Die Gruppe " + g.getLabel() + "§4 hat die Permission §c" + permission + "§4 nicht!");
+                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Die Gruppe " + g.getLabel() + "§4 hat die Permission §c" + permission + "§4 nicht!");
                             }
                         } catch (SQLException e) {
                             e.printStackTrace();
@@ -266,12 +265,12 @@ public class PermsCMD extends Command implements TabExecutor {
                     return;
                 }
             } else {
-                Messager.send(sender, "§4Diese Gruppe existiert nicht!");
+                BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Diese Gruppe existiert nicht!");
                 return;
             }
         }
 
-        Messager.send(sender,
+        BungeeCoreSystem.getInstance().getMessager().send(sender,
                 "§4Bitte benutze: " +
                         "\n§c/perms user <user> <group [set, add, remove] | addperm | removeperm | check> [<group | permission>] §4oder" +
                 "\n§c/perms group <group> <addperm | removeperm | check> [<permission>]"

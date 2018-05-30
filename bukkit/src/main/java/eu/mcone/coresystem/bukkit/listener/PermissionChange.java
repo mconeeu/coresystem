@@ -8,7 +8,6 @@ package eu.mcone.coresystem.bukkit.listener;
 
 import eu.mcone.coresystem.api.bukkit.event.PermissionChangeEvent;
 import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
-import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
@@ -41,7 +40,7 @@ public class PermissionChange implements Listener {
                 Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
                     BukkitCoreSystem.getInstance().getPermissionManager().reload();
                     p.reloadPermissions();
-                    Messager.send(p.bukkit(), "§7§oDeine Permissions wurden upgedated!");
+                    BukkitCoreSystem.getInstance().getMessager().send(p.bukkit(), "§7§oDeine Permissions wurden upgedated!");
                 });
             }
         } else if (e.getKind() == PermissionChangeEvent.Kind.GROUP_CHANGE) {
@@ -52,7 +51,7 @@ public class PermissionChange implements Listener {
                 StringBuilder sb = new StringBuilder();
                 e.getGroups().forEach(g -> sb.append(g.getLabel()).append(" "));
 
-                Messager.send(p.bukkit(), "§7Deine Permissions wurden geändert! Du besitzt nun folgende Permissions-Gruppen: "+sb.toString());
+                BukkitCoreSystem.getInstance().getMessager().send(p.bukkit(), "§7Deine Permissions wurden geändert! Du besitzt nun folgende Permissions-Gruppen: "+sb.toString());
                 for (BukkitCorePlayer player : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
                     player.getScoreboard().reload(BukkitCoreSystem.getInstance());
                 }
