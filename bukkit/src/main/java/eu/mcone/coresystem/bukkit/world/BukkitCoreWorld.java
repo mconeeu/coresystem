@@ -20,7 +20,6 @@ import org.bukkit.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -146,7 +145,7 @@ public class BukkitCoreWorld implements CoreWorld {
         File config = new File(bukkit().getWorldFolder(), WorldManager.CONFIG_NAME);
 
         try (JsonWriter writer = new JsonWriter(new FileWriter(config))) {
-            System.out.println("writing json to " + config.getPath());
+            CoreSystem.getInstance().sendConsoleMessage("writing json to " + config.getPath());
             CoreSystem.getInstance().getGson().toJson(this, getClass(), writer);
         } catch (IOException e) {
             e.printStackTrace();

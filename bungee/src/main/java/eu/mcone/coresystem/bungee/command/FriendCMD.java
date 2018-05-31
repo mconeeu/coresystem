@@ -100,7 +100,6 @@ public class FriendCMD extends Command implements TabExecutor {
             } else if (args.length == 2) {
                 if (args[0].equalsIgnoreCase("req") ||args[0].equalsIgnoreCase("request") || args[0].equalsIgnoreCase("requests")){
                     if (args[1].equalsIgnoreCase("toggle")) {
-                        System.out.println("unique id: "+p.getUniqueId().toString());
                         if (cp.isRequestsToggled()) {
                             BungeeCoreSystem.getInstance().getFriendSystem().removeToggled(p.getUniqueId());
                             BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§2Du hast Freundschaftsanfragen §feingeschaltet!");

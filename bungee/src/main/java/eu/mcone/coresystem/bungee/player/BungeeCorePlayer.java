@@ -66,7 +66,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
         this.blocks = (List<UUID>) friendData[2];
         this.requestsToggled = (boolean) friendData[3];
 
-        System.out.println("Loaded Player "+name+"!");
+        CoreSystem.getInstance().sendConsoleMessage("Loaded Player "+name+"!");
     }
 
     @Override
@@ -95,7 +95,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
     @Override
     public void unregister() {
         BungeeCoreSystem.getSystem().getCorePlayers().remove(uuid);
-        System.out.println("Unloaded Player "+name+"!");
+        CoreSystem.getInstance().sendConsoleMessage("Unloaded Player "+name+"!");
     }
 
 }

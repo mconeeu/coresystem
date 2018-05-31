@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.bungee.ban;
 
+import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.ProxyServer;
@@ -20,7 +21,7 @@ import java.util.UUID;
 public class BanManager {
 
 	public static void ban(UUID gebannt, BanTemplate template, String grund, UUID team_member){
-        System.out.println("Banning user with uuid \""+gebannt.toString()+"\" with template \""+template.getName()+"\" with reason \""+grund+"\" by team member with uuid \""+team_member.toString()+"\"");
+        CoreSystem.getInstance().sendConsoleMessage("Banning user with uuid \""+gebannt.toString()+"\" with template \""+template.getName()+"\" with reason \""+grund+"\" by team member with uuid \""+team_member.toString()+"\"");
         long millis = System.currentTimeMillis() / 1000;
 
 	    String templateName = template.getName();

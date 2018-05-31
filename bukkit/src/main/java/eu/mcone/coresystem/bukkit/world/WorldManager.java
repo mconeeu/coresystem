@@ -51,7 +51,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                         coreWorlds.add(w);
                     }
                 } else {
-                    System.out.println("Missing config file in world "+world.getName()+". Creating...");
+                    CoreSystem.getInstance().sendConsoleMessage("Missing config file in world "+world.getName()+". Creating...");
 
                     if (config.createNewFile()) {
                         constructNewCoreWorld(world);

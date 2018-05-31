@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bukkit.channel;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.channel.FutureTask;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
@@ -38,7 +39,7 @@ public class ChannelHandler implements eu.mcone.coresystem.api.bukkit.channel.Ch
     }
 
     public void sendPluginMessage(String... write) {
-        System.out.println("sending plugin message "+write[0]);
+        CoreSystem.getInstance().sendConsoleMessage("sending plugin message "+write[0]);
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("mc1main");
         for (String w : write) {
