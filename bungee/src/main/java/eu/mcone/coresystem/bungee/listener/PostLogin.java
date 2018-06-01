@@ -7,9 +7,9 @@
 package eu.mcone.coresystem.bungee.listener;
 
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
-import eu.mcone.coresystem.api.core.labymod.LabyPermission;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
+import net.labymod.serverapi.LabyPermission;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.Title;
@@ -127,7 +127,7 @@ public class PostLogin implements Listener{
             labyPermissions.put(LabyPermission.GUI_ARMOR_HUD, false);
             labyPermissions.put(LabyPermission.GUI_ITEM_HUD, false);
 
-            BungeeCoreSystem.getInstance().getLabyModAPI().setLabyModPermissions(BungeeCoreSystem.getInstance().getCorePlayer(p), labyPermissions);
+            BungeeCoreSystem.getInstance().getLabyModAPI().sendPermissions(p, labyPermissions);
         },1000L, TimeUnit.MILLISECONDS);
     }
 

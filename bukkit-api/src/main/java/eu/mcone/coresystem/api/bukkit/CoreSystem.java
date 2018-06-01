@@ -26,6 +26,7 @@ import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import lombok.Getter;
+import net.labymod.serverapi.bukkit.LabyModAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -61,6 +62,12 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return WorldManager instance
      */
     public abstract WorldManager getWorldManager();
+
+    /**
+     * returns the bukkit Labymod API
+     * @return bukkit Labymod API instance
+     */
+    public abstract LabyModAPI getLabyModAPI();
 
     /**
      * returns the mc one plugin messaging channel handler

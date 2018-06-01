@@ -11,8 +11,8 @@ import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.api.bungee.player.FriendSystem;
 import eu.mcone.coresystem.api.bungee.player.NickManager;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
-import eu.mcone.coresystem.api.core.labymod.LabyModAPI;
 import lombok.Getter;
+import net.labymod.serverapi.bungee.LabyModAPI;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 

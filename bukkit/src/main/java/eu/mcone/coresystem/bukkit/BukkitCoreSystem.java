@@ -48,6 +48,7 @@ import eu.mcone.coresystem.core.player.PlayerUtils;
 import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CooldownSystem;
 import lombok.Getter;
+import net.labymod.serverapi.bukkit.LabyModAPI;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -85,6 +86,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private ChannelHandler channelHandler;
     @Getter
     private WorldManager worldManager;
+    @Getter
+    private LabyModAPI labyModAPI;
     @Getter
     private PlayerUtils playerUtils;
     @Getter
@@ -144,6 +147,9 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             cloudsystemAvailable = false;
             sendConsoleMessage("§cCloudSystem not available!");
         }
+
+        sendConsoleMessage("§aInitializing LabyModAPI...");
+        labyModAPI = new LabyModAPI(this);
 
         sendConsoleMessage("§aStarting WorldManager...");
         worldManager = new WorldManager(this);
@@ -218,6 +224,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         mysql2.close();
         mysql3.close();
 
+        labyModAPI.disable();
         getCorePlayers().clear();
         getServer().getConsoleSender().sendMessage("§cPlugin disabled!");
     }

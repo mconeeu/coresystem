@@ -21,7 +21,6 @@ import eu.mcone.coresystem.bungee.player.NickManager;
 import eu.mcone.coresystem.bungee.runnable.Broadcast;
 import eu.mcone.coresystem.bungee.runnable.OnlineTime;
 import eu.mcone.coresystem.bungee.runnable.PremiumCheck;
-import eu.mcone.coresystem.bungee.utils.LabyModAPI;
 import eu.mcone.coresystem.bungee.utils.PreferencesManager;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
@@ -31,6 +30,7 @@ import eu.mcone.coresystem.core.player.PlayerUtils;
 import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CooldownSystem;
 import lombok.Getter;
+import net.labymod.serverapi.bungee.LabyModAPI;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -100,7 +100,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         cooldownSystem = new CooldownSystem();
         preferences = new PreferencesManager(database);
         playerUtils = new PlayerUtils(database);
-        labyModAPI = new LabyModAPI();
         coinsAPI = new CoinsAPI(this);
         gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -113,6 +112,9 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         sendConsoleMessage("§aLoading FriendSystem...");
         friendSystem = new FriendSystem(database);
+
+        sendConsoleMessage("§aInitializing LabyModAPI...");
+        labyModAPI = new LabyModAPI(this);
 
         sendConsoleMessage("§aLoading MessagingSystem...");
         MsgCMD.updateToggled();
