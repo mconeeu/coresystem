@@ -23,7 +23,7 @@ public abstract class CorePlugin extends Plugin {
 
     protected CorePlugin(String pluginName, ChatColor pluginColor, String prefixTranslation) {
         this.pluginName = pluginName;
-        this.consolePrefix = "§8[" + pluginColor + pluginName + "§8]";
+        this.consolePrefix = "§8[" + pluginColor + pluginName + "§8] §7";
         this.messager = new Messager(prefixTranslation);
 
         if (CoreSystem.getInstance() != null) CoreSystem.getInstance().registerPlugin(this);

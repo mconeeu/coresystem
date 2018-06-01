@@ -43,17 +43,10 @@ import java.util.concurrent.TimeUnit;
 
 public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem {
 
-    final public static String MainPrefix = "§8[§3BungeeCore§8] ";
-    private Map<String, CorePlugin> plugins;
-
     @Getter
     private static BungeeCoreSystem system;
-    @Getter
-    private MySQL database;
-    @Getter
-    private Map<UUID, BungeeCorePlayer> corePlayers;
-    @Getter
-    private boolean cloudsystemAvailable;
+
+    private Map<String, CorePlugin> plugins;
 
     @Getter
     private TranslationManager translationManager;
@@ -76,6 +69,13 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private Gson gson;
 
+    @Getter
+    private MySQL database;
+    @Getter
+    private Map<UUID, BungeeCorePlayer> corePlayers;
+    @Getter
+    private boolean cloudsystemAvailable;
+
     public void onEnable() {
         system = this;
         setInstance(this);
@@ -94,7 +94,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "  /_____/\\__,_/_/ /_/\\__, /\\___/\\___/\\____/\\____/_/   \\___/____/\\__, /____/\\__/\\___/_/ /_/ /_/ \n" +
                 "                    /____/                                     /____/\n")));
 
-        sendConsoleMessage(MainPrefix + "§aInitializing MariaDB Connections...");
+        sendConsoleMessage("§aInitializing MariaDB Connections...");
         createTables(database = new MySQL(Database.SYSTEM));
 
         cooldownSystem = new CooldownSystem();
@@ -104,41 +104,41 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         coinsAPI = new CoinsAPI(this);
         gson = new GsonBuilder().setPrettyPrinting().create();
 
-        sendConsoleMessage(MainPrefix + "§aLoading Translations...");
+        sendConsoleMessage("§aLoading Translations...");
         translationManager = new TranslationManager(database);
         registerTranslations();
 
-        sendConsoleMessage(MainPrefix + "§aLoading Permissions & Groups...");
+        sendConsoleMessage("§aLoading Permissions & Groups...");
         permissionManager = new PermissionManager("Proxy", database, gson);
 
-        sendConsoleMessage(MainPrefix + "§aLoading FriendSystem...");
+        sendConsoleMessage("§aLoading FriendSystem...");
         friendSystem = new FriendSystem(database);
 
-        sendConsoleMessage(MainPrefix + "§aLoading MessagingSystem...");
+        sendConsoleMessage("§aLoading MessagingSystem...");
         MsgCMD.updateToggled();
 
-        sendConsoleMessage(MainPrefix + "§aLoading Nicksystem...");
+        sendConsoleMessage("§aLoading Nicksystem...");
         nickManager = new NickManager(this);
 
         try {
             Class.forName("eu.mcone.cloud.plugin.CloudPlugin");
-            sendConsoleMessage(MainPrefix + "§aCloudSystem available!");
+            sendConsoleMessage("§aCloudSystem available!");
             cloudsystemAvailable = true;
         } catch (ClassNotFoundException e) {
             cloudsystemAvailable = false;
-            sendConsoleMessage(MainPrefix + "§cCloudSystem not available!");
+            sendConsoleMessage("§cCloudSystem not available!");
         }
 
-        sendConsoleMessage(MainPrefix + "§aRegistering Commands, Events & Scheduler...");
+        sendConsoleMessage("§aRegistering Commands, Events & Scheduler...");
         registerCommand();
         postRegisterCommand();
         registerEvents();
         loadSchedulers();
 
-        sendConsoleMessage(MainPrefix + "§aRegistering Plugin Messaging Channel...");
+        sendConsoleMessage("§aRegistering Plugin Messaging Channel...");
         ProxyServer.getInstance().registerChannel("Return");
 
-        sendConsoleMessage(MainPrefix + "§aVersion: §f" + this.getDescription().getVersion() + "§a running!");
+        sendConsoleMessage("§aVersion: §f" + this.getDescription().getVersion() + "§a enabled!");
     }
 
     public void onDisable() {
@@ -147,7 +147,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         }
 
         database.close();
-        sendConsoleMessage(MainPrefix + "§cPlugin wurde Deaktiviert!");
+        sendConsoleMessage("§cPlugin disabled!");
     }
 
     private void registerCommand() {

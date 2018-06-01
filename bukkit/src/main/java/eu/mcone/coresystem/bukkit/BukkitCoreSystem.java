@@ -63,7 +63,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Getter
     private static BukkitCoreSystem system;
-    private static String MainPrefix = "§8[§fBukkitCore§8] ";
 
     private MySQL mysql1;
     private MySQL mysql2;
@@ -119,7 +118,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "                                                         /____/  \n"
         );
 
-        sendConsoleMessage(MainPrefix + "§aInitializing MariaDB Connections...");
+        sendConsoleMessage("§aInitializing MariaDB Connections...");
         mysql1 = new MySQL(Database.SYSTEM);
         mysql2 = new MySQL(Database.STATS);
         mysql3 = new MySQL(Database.DATA);
@@ -139,34 +138,34 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         try {
             Class.forName("eu.mcone.cloud.plugin.CloudPlugin");
-            sendConsoleMessage(MainPrefix + "§aCloudSystem available!");
+            sendConsoleMessage("§aCloudSystem available!");
             cloudsystemAvailable = true;
         } catch (ClassNotFoundException e) {
             cloudsystemAvailable = false;
-            sendConsoleMessage(MainPrefix + "§cCloudSystem not available!");
+            sendConsoleMessage("§cCloudSystem not available!");
         }
 
-        sendConsoleMessage(MainPrefix + "§aStarting WorldManager...");
+        sendConsoleMessage("§aStarting WorldManager...");
         worldManager = new WorldManager(this);
 
-        sendConsoleMessage(MainPrefix + "§aLoading Translations...");
+        sendConsoleMessage("§aLoading Translations...");
         translationManager = new TranslationManager(mysql1);
         registerTranslations();
 
-        sendConsoleMessage(MainPrefix + "§aLoading Permissions & Groups...");
+        sendConsoleMessage("§aLoading Permissions & Groups...");
         permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), mysql1, gson);
 
-        sendConsoleMessage(MainPrefix + "§aStarting NickManager...");
+        sendConsoleMessage("§aStarting NickManager...");
         nickManager = new NickManager(this);
 
-        sendConsoleMessage(MainPrefix + "§aLoading Commands, Events, Scheduler & Configs...");
+        sendConsoleMessage("§aLoading Commands, Events, Scheduler & Configs...");
         this.setupConfig();
         this.startScheduler();
         this.registerListener();
         this.registerCommands();
         corePlayers = new HashMap<>();
 
-        sendConsoleMessage(MainPrefix + "§aRegistering BungeeCord Messaging Channel...");
+        sendConsoleMessage("§aRegistering BungeeCord Messaging Channel...");
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         getServer().getMessenger().registerIncomingPluginChannel(this, "Return", new PluginChannelListener());
         getServer().getMessenger().registerIncomingPluginChannel(this, "EventHandler", new PluginChannelListener());
@@ -185,8 +184,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 }
             }
         }
-        sendConsoleMessage(MainPrefix + "§7Following functions got activated: " + functions.toString());
-        sendConsoleMessage(MainPrefix + "§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
+        sendConsoleMessage("§7Following functions got activated: " + functions.toString());
+        sendConsoleMessage("§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             PlayerLogin.setPermissions(p);
@@ -220,7 +219,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         mysql3.close();
 
         getCorePlayers().clear();
-        getServer().getConsoleSender().sendMessage(MainPrefix + "§cPlugin wurde deaktiviert");
+        getServer().getConsoleSender().sendMessage("§cPlugin disabled!");
     }
 
     private void registerTranslations() {
@@ -234,11 +233,9 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private void setupConfig() {
         yamlConfig.getConfig().options().copyDefaults(true);
 
-        yamlConfig.getConfig().addDefault("Tablist", Boolean.TRUE);
-        yamlConfig.getConfig().addDefault("UserChat", Boolean.TRUE);
-        yamlConfig.getConfig().addDefault("CoinsAPI", Boolean.TRUE);
-        yamlConfig.getConfig().addDefault("StatsAPI", Boolean.TRUE);
-        yamlConfig.getConfig().addDefault("AFK-Manager", Boolean.TRUE);
+        yamlConfig.getConfig().addDefault("Tablist", true);
+        yamlConfig.getConfig().addDefault("UserChat", true);
+        yamlConfig.getConfig().addDefault("AFK-Manager", true);
 
         yamlConfig.save();
     }
