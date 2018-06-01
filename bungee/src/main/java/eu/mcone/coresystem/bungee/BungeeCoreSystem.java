@@ -31,7 +31,6 @@ import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CooldownSystem;
 import lombok.Getter;
 import net.labymod.serverapi.bungee.LabyModAPI;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -82,7 +81,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         corePlayers = new HashMap<>();
         plugins = new HashMap<>();
 
-        ProxyServer.getInstance().getConsole().sendMessage(new TextComponent(TextComponent.fromLegacyText("\n" +
+        getProxy().getConsole().sendMessage(new TextComponent(TextComponent.fromLegacyText("\n" +
                 "      __  _____________  _   ________                                                          \n" +
                 "     /  |/  / ____/ __ \\/ | / / ____/                                                          \n" +
                 "    / /|_/ / /   / / / /  |/ / __/                                                             \n" +
@@ -138,13 +137,13 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         loadSchedulers();
 
         sendConsoleMessage("§aRegistering Plugin Messaging Channel...");
-        ProxyServer.getInstance().registerChannel("Return");
+        getProxy().registerChannel("Return");
 
         sendConsoleMessage("§aVersion: §f" + this.getDescription().getVersion() + "§a enabled!");
     }
 
     public void onDisable() {
-        for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
+        for (ProxiedPlayer p : getProxy().getPlayers()) {
             database.update("UPDATE userinfo SET status='offline' WHERE uuid='" + p.getUniqueId() + "'");
         }
 
@@ -153,64 +152,65 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     private void registerCommand() {
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new PingCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new TeamChatCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new PermsCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new BanCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new WhoisCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new RestartCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new WartungCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new CoinsCMD());
+        getProxy().getPluginManager().registerCommand(this, new PingCMD());
+        getProxy().getPluginManager().registerCommand(this, new TeamChatCMD());
+        getProxy().getPluginManager().registerCommand(this, new PermsCMD());
+        getProxy().getPluginManager().registerCommand(this, new BanCMD());
+        getProxy().getPluginManager().registerCommand(this, new WhoisCMD());
+        getProxy().getPluginManager().registerCommand(this, new RestartCMD());
+        getProxy().getPluginManager().registerCommand(this, new WartungCMD());
+        getProxy().getPluginManager().registerCommand(this, new CoinsCMD());
 
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new NickCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new UnnickCMD());
+        getProxy().getPluginManager().registerCommand(this, new NickCMD());
+        getProxy().getPluginManager().registerCommand(this, new UnnickCMD());
 
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new FriendCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new PartyCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new JumpCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new MsgCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new ReplyCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new ReportCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new HelpCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new BungeecordCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new RegisterCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new ForgotpassCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new ChatlogCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new RegelnCMD());
+        getProxy().getPluginManager().registerCommand(this, new FriendCMD());
+        getProxy().getPluginManager().registerCommand(this, new PartyCMD());
+        getProxy().getPluginManager().registerCommand(this, new JumpCMD());
+        getProxy().getPluginManager().registerCommand(this, new MsgCMD());
+        getProxy().getPluginManager().registerCommand(this, new ReplyCMD());
+        getProxy().getPluginManager().registerCommand(this, new ReportCMD());
+        getProxy().getPluginManager().registerCommand(this, new HelpCMD());
+        getProxy().getPluginManager().registerCommand(this, new BungeecordCMD());
+        getProxy().getPluginManager().registerCommand(this, new RegisterCMD());
+        getProxy().getPluginManager().registerCommand(this, new ForgotpassCMD());
+        getProxy().getPluginManager().registerCommand(this, new ChatlogCMD());
+        getProxy().getPluginManager().registerCommand(this, new RegelnCMD());
 
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new PremiumCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new YoutubeCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new TsCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new VoteCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new BewerbenCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new TeamCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new BugreportCMD());
-        ProxyServer.getInstance().getPluginManager().registerCommand(this, new RegelnCMD());
+        getProxy().getPluginManager().registerCommand(this, new PremiumCMD());
+        getProxy().getPluginManager().registerCommand(this, new YoutubeCMD());
+        getProxy().getPluginManager().registerCommand(this, new TsCMD());
+        getProxy().getPluginManager().registerCommand(this, new VoteCMD());
+        getProxy().getPluginManager().registerCommand(this, new BewerbenCMD());
+        getProxy().getPluginManager().registerCommand(this, new TeamCMD());
+        getProxy().getPluginManager().registerCommand(this, new BugreportCMD());
+        getProxy().getPluginManager().registerCommand(this, new RegelnCMD());
     }
 
     private void postRegisterCommand() {
-        ProxyServer.getInstance().getScheduler().schedule(
+        getProxy().getScheduler().schedule(
                 getInstance(),
-                () -> ProxyServer.getInstance().getPluginManager().registerCommand(this, new ServerCMD()),
+                () -> getProxy().getPluginManager().registerCommand(this, new ServerCMD()),
                 1,
                 TimeUnit.SECONDS
         );
     }
 
     private void registerEvents() {
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new Chat());
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new CoinsChange());
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new PermissionChange());
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new PermissionCheck());
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new PostLogin());
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new ProxyPing());
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new ServerConnect());
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new PreLogin());
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new PlayerDisconnect());
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new TabComplete());
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new ServerKick());
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new ServerSwitch());
-        ProxyServer.getInstance().getPluginManager().registerListener(this, new PluginMessage());
+        getProxy().getPluginManager().registerListener(this, new Chat());
+        getProxy().getPluginManager().registerListener(this, new CoinsChange());
+        getProxy().getPluginManager().registerListener(this, new LabyModPlayerJoin());
+        getProxy().getPluginManager().registerListener(this, new PermissionChange());
+        getProxy().getPluginManager().registerListener(this, new PermissionCheck());
+        getProxy().getPluginManager().registerListener(this, new PostLogin());
+        getProxy().getPluginManager().registerListener(this, new ProxyPing());
+        getProxy().getPluginManager().registerListener(this, new ServerConnect());
+        getProxy().getPluginManager().registerListener(this, new PreLogin());
+        getProxy().getPluginManager().registerListener(this, new PlayerDisconnect());
+        getProxy().getPluginManager().registerListener(this, new TabComplete());
+        getProxy().getPluginManager().registerListener(this, new ServerKick());
+        getProxy().getPluginManager().registerListener(this, new ServerSwitch());
+        getProxy().getPluginManager().registerListener(this, new PluginMessage());
     }
 
     private void registerTranslations() {
@@ -515,9 +515,9 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     private void loadSchedulers() {
-        ProxyServer.getInstance().getScheduler().schedule(this, new PremiumCheck(), 0, 5, TimeUnit.SECONDS);
-        ProxyServer.getInstance().getScheduler().schedule(this, new Broadcast(), 0, 15, TimeUnit.MINUTES);
-        ProxyServer.getInstance().getScheduler().schedule(this, new OnlineTime(), 0, 1, TimeUnit.MINUTES);
+        getProxy().getScheduler().schedule(this, new PremiumCheck(), 0, 5, TimeUnit.SECONDS);
+        getProxy().getScheduler().schedule(this, new Broadcast(), 0, 15, TimeUnit.MINUTES);
+        getProxy().getScheduler().schedule(this, new OnlineTime(), 0, 1, TimeUnit.MINUTES);
     }
 
     @Override
@@ -570,7 +570,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     public void runAsync(Runnable runnable) {
-        ProxyServer.getInstance().getScheduler().runAsync(this, runnable);
+        getProxy().getScheduler().runAsync(this, runnable);
     }
 
 }

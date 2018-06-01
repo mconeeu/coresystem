@@ -7,6 +7,7 @@
 package eu.mcone.coresystem.api.core.player;
 
 import eu.mcone.coresystem.api.core.translation.Language;
+import net.labymod.serverapi.LabyModConnection;
 
 import java.util.Set;
 import java.util.UUID;
@@ -90,6 +91,12 @@ public interface GlobalCorePlayer {
      * @return boolean nicked
      */
     boolean isNicked();
+
+    /**
+     * returns the unique id and other LabyMod spefific data if player is connected via LabyMod
+     * @return LabyModConnection object
+     */
+    LabyModConnection getLabyModConnection();
 
     /**
      * sends the player a message

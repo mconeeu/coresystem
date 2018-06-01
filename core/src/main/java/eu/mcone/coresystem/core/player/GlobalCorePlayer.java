@@ -9,11 +9,12 @@ package eu.mcone.coresystem.core.player;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
 import eu.mcone.coresystem.api.core.player.Group;
+import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
-import eu.mcone.coresystem.api.core.translation.Language;
 import lombok.Getter;
 import lombok.Setter;
+import net.labymod.serverapi.LabyModConnection;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -35,6 +36,8 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
     private Set<Group> groups;
     @Getter @Setter
     private Set<String> permissions;
+    @Getter @Setter
+    private LabyModConnection labyModConnection;
 
     protected GlobalCorePlayer(final GlobalCoreSystem instance, String name) throws PlayerNotFoundException {
         this.instance = instance;

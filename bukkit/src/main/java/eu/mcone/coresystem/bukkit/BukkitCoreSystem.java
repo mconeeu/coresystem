@@ -265,6 +265,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     private void registerListener() {
+        getServer().getPluginManager().registerEvents(new LabyModPlayerJoin(), this);
         getServer().getPluginManager().registerEvents(new PermissionChange(), this);
         getServer().getPluginManager().registerEvents(new PlayerJoin(), this);
         getServer().getPluginManager().registerEvents(new PlayerLogin(), this);
