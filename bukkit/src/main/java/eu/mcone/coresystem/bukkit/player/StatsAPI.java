@@ -351,8 +351,8 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 
 			try {
 				if (rs.next()) {
-					kills = rs.getInt("kills");
-					deaths = rs.getInt("deaths");
+					kills = rs.getInt("kill");
+					deaths = rs.getInt("death");
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
