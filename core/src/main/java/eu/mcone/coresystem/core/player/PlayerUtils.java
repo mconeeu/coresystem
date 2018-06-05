@@ -36,8 +36,8 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
     }
 
     @Override
-    public SkinInfo constructSkinInfo(MySQL mySQL, String databaseName) {
-        return null;
+    public SkinInfo constructSkinInfo(String databaseName) {
+        return new eu.mcone.coresystem.core.player.SkinInfo(mySQL, databaseName);
     }
 
     @Override

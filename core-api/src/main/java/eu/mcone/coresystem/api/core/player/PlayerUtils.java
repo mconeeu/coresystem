@@ -6,8 +6,6 @@
 
 package eu.mcone.coresystem.api.core.player;
 
-import eu.mcone.coresystem.api.core.mysql.MySQL;
-
 import java.util.UUID;
 
 public interface PlayerUtils {
@@ -37,10 +35,9 @@ public interface PlayerUtils {
 
     /**
      * construct new SkinInfo with in database stored texture
-     * @param mySQL mysql database
      * @param databaseName data texture name
      * @return new SkinInfo object
      */
-    SkinInfo constructSkinInfo(MySQL mySQL, String databaseName);
+    SkinInfo constructSkinInfo(String databaseName);
     
 }
