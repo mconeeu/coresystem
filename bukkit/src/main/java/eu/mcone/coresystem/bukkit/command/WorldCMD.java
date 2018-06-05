@@ -85,6 +85,13 @@ public class WorldCMD implements CommandExecutor {
                         CoreSystem.getInstance().getWorldManager().reload();
                         BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast alle world Configurationen neu geladen!");
                         return true;
+                    } else {
+                        for (CoreWorld w : BukkitCoreSystem.getInstance().getWorldManager().getWorlds()) {
+                            if (args[0].equalsIgnoreCase(w.getName())) {
+                                p.performCommand("world tp "+w.getName());
+                                return true;
+                            }
+                        }
                     }
                 } else {
                     if (args.length == 2) {
@@ -119,6 +126,11 @@ public class WorldCMD implements CommandExecutor {
                             } else if (args[0].equalsIgnoreCase("upload")) {
                                 if (p.hasPermission("system.bukkit.world.upload")) {
                                     BukkitCoreSystem.getInstance().getMessager().send(p, "§7Die Welt wird hochgeladen...");
+                                    BukkitCoreSystem.getInstance().sendConsoleMessage("Uploading world "+w.getName()+" to database. Initialized by "+p.getName());
+                                    for (Player player : Bukkit.getOnlinePlayers()) {
+                                        if (player.hasPermission("group.builder") && player != p) BukkitCoreSystem.getInstance().getMessager().send(player, "§3"+p.getName()+"§7 lädt gerade die Welt §f"+w.getName()+"§7 in die Datenbank hoch...");
+                                    }
+
                                     if (w.upload()) {
                                         BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Welt wurde erfolgreich abgespeichert und kann nun wieder modifiziert werden!");
                                     } else {
@@ -153,51 +165,56 @@ public class WorldCMD implements CommandExecutor {
                         }
                     } else if (args.length == 3) {
                         if (args[0].equalsIgnoreCase("location")) {
-                            String locationName = args[2];
+                            if (p.hasPermission("system.bukkit.world.location")) {
+                                String locationName = args[2];
 
-                            if (args[1].equalsIgnoreCase("set")) {
-                                BukkitCoreSystem.getInstance().getCorePlayer(p).getWorld().setLocation(locationName, p.getLocation()).save();
-                                BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Location wurde erfolgreich abgespeichert");
+                                if (args[1].equalsIgnoreCase("set")) {
+                                    BukkitCoreSystem.getInstance().getCorePlayer(p).getWorld().setLocation(locationName, p.getLocation()).save();
+                                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Location wurde erfolgreich abgespeichert");
 
-                                return true;
-                            } else if (args[1].equalsIgnoreCase("remove")) {
-                                CoreWorld w = BukkitCoreSystem.getInstance().getCorePlayer(p).getWorld();
+                                    return true;
+                                } else if (args[1].equalsIgnoreCase("remove")) {
+                                    CoreWorld w = BukkitCoreSystem.getInstance().getCorePlayer(p).getWorld();
 
-                                if (w.getLocations().containsKey(locationName)) {
-                                    w.removeLocation(locationName).save();
-                                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Location wurde erfolgreich gelöscht");
-                                } else {
-                                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene Location existiert nicht!");
-                                }
-                                return true;
-                            } else if (args[1].equalsIgnoreCase("list")) {
-                                StringBuilder sb = new StringBuilder();
-
-                                CoreWorld w = BukkitCoreSystem.getInstance().getWorldManager().getWorld(locationName);
-                                if (w != null) {
-                                    if (w.getLocations().size() > 0) {
-                                        for (HashMap.Entry<String, CoreLocation> loc : w.getLocations().entrySet()) {
-                                            sb.append("\n§3§o").append(loc.getKey()).append(" ").append(loc.getValue());
-                                        }
-
-                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Hier alle Locations der Welt §a" + locationName + sb.toString() + "§2:");
+                                    if (w.getLocations().containsKey(locationName)) {
+                                        w.removeLocation(locationName).save();
+                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Location wurde erfolgreich gelöscht");
                                     } else {
-                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§7Die Welt hat keine abgespeicherten Locations!");
+                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene Location existiert nicht!");
                                     }
-                                } else {
-                                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene Welt existiert nicht. Bitte benutze §c/world");
-                                }
+                                    return true;
+                                } else if (args[1].equalsIgnoreCase("list")) {
+                                    StringBuilder sb = new StringBuilder();
 
-                                return true;
-                            } else if (args[1].equalsIgnoreCase("tp")) {
-                                CoreLocation loc = BukkitCoreSystem.getInstance().getCorePlayer(p).getWorld().getLocation(locationName);
+                                    CoreWorld w = BukkitCoreSystem.getInstance().getWorldManager().getWorld(locationName);
+                                    if (w != null) {
+                                        if (w.getLocations().size() > 0) {
+                                            for (HashMap.Entry<String, CoreLocation> loc : w.getLocations().entrySet()) {
+                                                sb.append("\n§3§o").append(loc.getKey()).append(" ").append(loc.getValue());
+                                            }
 
-                                if (loc != null) {
-                                    p.teleport(loc.bukkit());
-                                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest erfolgreich zu der Location §a" + locationName + "§2 teleportiert!");
-                                } else {
-                                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die Location §c" + locationName + "§4 existiert nicht in dieser Welt!");
+                                            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Hier alle Locations der Welt §a" + locationName + sb.toString() + "§2:");
+                                        } else {
+                                            BukkitCoreSystem.getInstance().getMessager().send(p, "§7Die Welt hat keine abgespeicherten Locations!");
+                                        }
+                                    } else {
+                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene Welt existiert nicht. Bitte benutze §c/world");
+                                    }
+
+                                    return true;
+                                } else if (args[1].equalsIgnoreCase("tp") || args[1].equalsIgnoreCase("teleport")) {
+                                    CoreLocation loc = BukkitCoreSystem.getInstance().getCorePlayer(p).getWorld().getLocation(locationName);
+
+                                    if (loc != null) {
+                                        p.teleport(loc.bukkit());
+                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest erfolgreich zu der Location §a" + locationName + "§2 teleportiert!");
+                                    } else {
+                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die Location §c" + locationName + "§4 existiert nicht in dieser Welt!");
+                                    }
+                                    return true;
                                 }
+                            } else {
+                                BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
                                 return true;
                             }
                         } else if (args[0].equalsIgnoreCase("set")) {
@@ -320,6 +337,7 @@ public class WorldCMD implements CommandExecutor {
                 }
 
                 BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: " +
+                        "\n§c/world <name> " +
                         "\n§c/world list §4oder " +
                         "\n§c/world location <list | set | remove | tp> <world-name | location-name>" +
                         "\n§c/world <info | upload | delete | tp> <world-name> §4oder " +

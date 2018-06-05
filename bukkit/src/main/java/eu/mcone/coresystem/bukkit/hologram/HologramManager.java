@@ -112,7 +112,9 @@ public class HologramManager implements Listener, eu.mcone.coresystem.api.bukkit
 
     public void setHolograms(Player p) {
         for (Hologram hologram : holograms.values()) {
-            hologram.showPlayer(p);
+            if (hologram.getLocation().getWorld().equals(p.getWorld())) {
+                hologram.showPlayer(p);
+            }
         }
     }
 
