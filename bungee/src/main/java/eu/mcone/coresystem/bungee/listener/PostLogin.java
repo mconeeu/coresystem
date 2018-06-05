@@ -118,16 +118,14 @@ public class PostLogin implements Listener{
                 );
             }
 
-            HashMap<LabyPermission, Boolean> labyPermissions = new HashMap<>();
-
-            labyPermissions.put(LabyPermission.IMPROVED_LAVA, true);
-            labyPermissions.put(LabyPermission.CROSSHAIR_SYNC, true);
-            labyPermissions.put(LabyPermission.REFILL_FIX, true);
-            labyPermissions.put(LabyPermission.GUI_POTION_EFFECTS, false);
-            labyPermissions.put(LabyPermission.GUI_ARMOR_HUD, false);
-            labyPermissions.put(LabyPermission.GUI_ITEM_HUD, false);
-
-            BungeeCoreSystem.getInstance().getLabyModAPI().sendPermissions(p, labyPermissions);
+            BungeeCoreSystem.getInstance().getLabyModAPI().sendPermissions(p, new HashMap<LabyPermission, Boolean>(){{
+                put(LabyPermission.IMPROVED_LAVA, true);
+                put(LabyPermission.CROSSHAIR_SYNC, true);
+                put(LabyPermission.REFILL_FIX, true);
+                put(LabyPermission.GUI_POTION_EFFECTS, false);
+                put(LabyPermission.GUI_ARMOR_HUD, false);
+                put(LabyPermission.GUI_ITEM_HUD, false);
+            }});
         },1000L, TimeUnit.MILLISECONDS);
     }
 

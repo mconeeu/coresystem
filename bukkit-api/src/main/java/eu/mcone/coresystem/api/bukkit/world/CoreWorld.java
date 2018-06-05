@@ -157,7 +157,13 @@ public interface CoreWorld {
      * @param name new name
      * @return this
      */
-    CoreWorld changeName(String name);
+    void changeName(String name);
+
+    /**
+     * unloads the world from Bukkit
+     * @param save should the world be saved before unloading?
+     */
+    void unload(boolean save);
 
     /**
      * ATTENTION: this deletes the world without making a backup. Be careful!

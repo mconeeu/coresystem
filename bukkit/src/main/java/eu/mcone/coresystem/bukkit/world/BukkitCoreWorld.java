@@ -11,11 +11,13 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.WorldProperties;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.annotation.DontObfuscate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
+import org.bukkit.entity.*;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -29,7 +31,7 @@ public class BukkitCoreWorld implements CoreWorld {
 
     private String name;
     private String worldType, environment, difficulty, generator, generatorSettings;
-    private boolean generateStructures;
+    private boolean generateStructures, loadOnStartup;
     private WorldProperties properties;
     private int[] spawnLocation;
 
@@ -106,9 +108,9 @@ public class BukkitCoreWorld implements CoreWorld {
     }
 
     @Override
-    public BukkitCoreWorld changeName(String name) {
+    public void changeName(String name) {
         File folder = bukkit().getWorldFolder();
-        Bukkit.getServer().unloadWorld(this.name, true);
+        unload(true);
 
         if (folder.renameTo(new File(folder.getParent() + File.separator + name))) {
             WorldCreator wc = new WorldCreator(name)
@@ -121,15 +123,32 @@ public class BukkitCoreWorld implements CoreWorld {
                 if (generatorSettings != null) wc.generatorSettings(generatorSettings);
             }
 
-            ((WorldManager) CoreSystem.getInstance().getWorldManager()).setupWorld(wc.createWorld(), this);
+            wc.createWorld();
+            this.name = name;
+            save();
+        } else {
+            throw new UnsupportedOperationException("Target world folder could not be renamed!");
+        }
+    }
+
+    @Override
+    public void unload(boolean save) {
+        World safeWorld = Bukkit.getWorlds().get(0);
+
+        if (!safeWorld.equals(bukkit())) {
+            for (Player p : bukkit().getPlayers()) {
+                p.teleport(safeWorld.getSpawnLocation());
+                BukkitCoreSystem.getInstance().getMessager().send(p, "§7§oDeine aktuelle Welt ist nicht mehr zugänglich. Du wurdest auf die Hauptwelt verschoben.");
+            }
         }
 
-        return this;
+        Bukkit.unloadWorld(bukkit(), save);
     }
 
     @Override
     public boolean delete() {
-        Bukkit.unloadWorld(bukkit(), false);
+        unload(false);
+
         try {
             FileUtils.deleteDirectory(bukkit().getWorldFolder());
             return true;
@@ -141,14 +160,46 @@ public class BukkitCoreWorld implements CoreWorld {
 
     @Override
     public void save() {
-        ((WorldManager) CoreSystem.getInstance().getWorldManager()).setupWorld(bukkit(), this);
+        setupWorld();
         File config = new File(bukkit().getWorldFolder(), WorldManager.CONFIG_NAME);
 
         try (JsonWriter writer = new JsonWriter(new FileWriter(config))) {
-            CoreSystem.getInstance().sendConsoleMessage("writing json to " + config.getPath());
             CoreSystem.getInstance().getGson().toJson(this, getClass(), writer);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    void setupWorld() {
+        World w = bukkit();
+
+        w.setDifficulty(Difficulty.valueOf(difficulty));
+        w.setSpawnLocation(spawnLocation[0], spawnLocation[1], spawnLocation[2]);
+        w.setPVP(properties.isPvp());
+        w.setKeepSpawnInMemory(properties.isKeepSpawnInMemory());
+
+        if (!properties.isAllowAnimals()) {
+            w.setAnimalSpawnLimit(0);
+            w.setWaterAnimalSpawnLimit(0);
+        }
+        if (!properties.isAllowMonsters()) {
+            w.setMonsterSpawnLimit(0);
+        }
+    }
+
+    public void purgeAnimals() {
+        for (Entity entity : bukkit().getEntities()) {
+            if (entity instanceof Squid || entity instanceof Animals) {
+                entity.remove();
+            }
+        }
+    }
+
+    public void purgeMonsters() {
+        for (Entity entity : bukkit().getEntities()) {
+            if (entity instanceof Slime || entity instanceof Monster || entity instanceof Ghast || entity instanceof EnderDragon) {
+                entity.remove();
+            }
         }
     }
 

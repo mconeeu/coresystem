@@ -8,9 +8,16 @@ package eu.mcone.coresystem.api.bukkit.world;
 
 import org.bukkit.World;
 
+import java.util.List;
 import java.util.Map;
 
 public interface WorldManager {
+
+    /**
+     * returns all loaded worlds
+     * @return Collection of CoreWorlds
+     */
+    List<CoreWorld> getWorlds();
 
     /**
      * @param name name of the world

@@ -26,7 +26,6 @@ import java.util.Map;
 public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldManager {
 
     final static String CONFIG_NAME = "core-config.json";
-
     private List<BukkitCoreWorld> coreWorlds;
 
     public WorldManager(BukkitCoreSystem instance) {
@@ -41,28 +40,60 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
         this.coreWorlds.clear();
 
         try {
-            for (World world : Bukkit.getWorlds()) {
-                final File config = new File(world.getWorldFolder(), CONFIG_NAME);
+            File[] dirs = Bukkit.getWorldContainer().listFiles(file -> file.isDirectory() && new File(file, "uid.dat").exists());
 
-                if (config.exists()) {
-                    try (JsonReader reader = new JsonReader(new FileReader(config))) {
-                        BukkitCoreWorld w = CoreSystem.getInstance().getGson().fromJson(reader, BukkitCoreWorld.class);
-                        setupWorld(world, w);
-                        coreWorlds.add(w);
-                    }
-                } else {
-                    CoreSystem.getInstance().sendConsoleMessage("Missing config file in world "+world.getName()+". Creating...");
+            if (dirs != null) {
+                for (File dir : dirs) {
+                    File config = new File(dir, CONFIG_NAME);
+                    World world = Bukkit.getWorld(dir.getName());
 
-                    if (config.createNewFile()) {
-                        constructNewCoreWorld(world);
+                    if (config.exists()) {
+                        try (JsonReader reader = new JsonReader(new FileReader(config))) {
+                            BukkitCoreWorld w = CoreSystem.getInstance().getGson().fromJson(reader, BukkitCoreWorld.class);
+
+                            if (w.isLoadOnStartup()) {
+                                if (world == null) {
+                                    WorldCreator wc = new WorldCreator(dir.getName())
+                                            .environment(World.Environment.valueOf(w.getEnvironment()))
+                                            .type(WorldType.valueOf(w.getWorldType()))
+                                            .generateStructures(w.isGenerateStructures());
+
+                                    if (w.getGenerator() != null) {
+                                        wc.generator(w.getGenerator());
+                                        if (w.getGeneratorSettings() != null)
+                                            wc.generatorSettings(w.getGeneratorSettings());
+                                    }
+
+                                    wc.createWorld();
+                                }
+                            }
+
+                            w.setupWorld();
+                            coreWorlds.add(w);
+                            BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + w.getName());
+                        }
                     } else {
-                        throw new FileNotFoundException("Config File could not be created!");
+                        if (world != null) {
+                            if (config.createNewFile()) {
+                                coreWorlds.add(constructNewCoreWorld(world));
+                                BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + world.getName());
+                            } else {
+                                throw new FileNotFoundException("Config File could not be created!");
+                            }
+                        } else {
+                            BukkitCoreSystem.getInstance().sendConsoleMessage("Recognized world "+dir.getName()+" but has no config! Import manually (/world import "+dir.getName()+")");
+                        }
                     }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public List<CoreWorld> getWorlds() {
+        return new ArrayList<>(coreWorlds);
     }
 
     @Override
@@ -86,11 +117,32 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     }
 
 
-
     @Override
     public boolean addWorld(String name, World.Environment environment) {
         try {
-            new WorldCreator(name).environment(environment).createWorld();
+            File uid = new File(name, "level.dat");
+            if (uid.exists()) {
+                uid.delete();
+            }
+
+            World world = new WorldCreator(name).environment(environment).createWorld();
+            File config = new File(name, CONFIG_NAME);
+
+            if (config.exists()) {
+                try (JsonReader reader = new JsonReader(new FileReader(config))) {
+                    BukkitCoreWorld w = CoreSystem.getInstance().getGson().fromJson(reader, BukkitCoreWorld.class);
+                    w.setupWorld();
+                    coreWorlds.add(w);
+                }
+            } else {
+                if (config.createNewFile()) {
+                    coreWorlds.add(constructNewCoreWorld(world));
+                } else {
+                    throw new FileNotFoundException("Config File could not be created!");
+                }
+            }
+
+            BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + world.getName());
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -129,24 +181,10 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
         if (settings.containsKey("allowMonsters") && !Boolean.valueOf("allowMonsters")) {
             world.setMonsterSpawnLimit(0);
         }
-        if (settings.containsKey("keepSpawnInMemory")) world.setKeepSpawnInMemory(Boolean.valueOf(settings.get("keepSpawnInMemory")));
+        if (settings.containsKey("keepSpawnInMemory"))
+            world.setKeepSpawnInMemory(Boolean.valueOf(settings.get("keepSpawnInMemory")));
 
         return true;
-    }
-
-    void setupWorld(World w, BukkitCoreWorld cw) {
-        w.setDifficulty(Difficulty.valueOf(cw.getDifficulty()));
-        w.setSpawnLocation(cw.getSpawnLocation()[0], cw.getSpawnLocation()[1], cw.getSpawnLocation()[2]);
-        w.setPVP(cw.getProperties().isPvp());
-        w.setKeepSpawnInMemory(cw.getProperties().isKeepSpawnInMemory());
-
-        if (!cw.getProperties().isAllowAnimals()) {
-            w.setAnimalSpawnLimit(0);
-            w.setWaterAnimalSpawnLimit(0);
-        }
-        if (!cw.getProperties().isAllowMonsters()) {
-            w.setMonsterSpawnLimit(0);
-        }
     }
 
     private BukkitCoreWorld constructNewCoreWorld(World world) {
@@ -159,6 +197,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                 null,
                 null,
                 world.canGenerateStructures(),
+                true,
                 new WorldProperties(
                         world.isAutoSave(),
                         world.getPVP(),
@@ -166,12 +205,11 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                         world.getAllowMonsters(),
                         world.getKeepSpawnInMemory()
                 ),
-                new int[] {(int) loc.getX(), (int) loc.getY(), (int) loc.getZ()},
+                new int[]{(int) loc.getX(), (int) loc.getY(), (int) loc.getZ()},
                 Collections.emptyMap()
         );
         w.save();
 
-        coreWorlds.add(w);
         return w;
     }
 
