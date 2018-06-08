@@ -77,7 +77,7 @@ public class NPC implements eu.mcone.coresystem.api.bukkit.npc.NPC {
 
         entity = new EntityPlayer(server, world, gameprofile, new PlayerInteractManager(world));
 
-        entity.playerConnection = new PlayerConnection(MinecraftServer.getServer(), new NPCNetworkManager(), entity);
+        entity.playerConnection = new PlayerConnection(MinecraftServer.getServer(), new NetworkManager(EnumProtocolDirection.SERVERBOUND), entity);
         entity.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
         ((CraftWorld) location.getWorld()).getHandle().addEntity(entity);
     }
@@ -89,15 +89,16 @@ public class NPC implements eu.mcone.coresystem.api.bukkit.npc.NPC {
         PlayerConnection connection = ((CraftPlayer)p).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entity));
         connection.sendPacket(new PacketPlayOutNamedEntitySpawn(entity));
-        connection.sendPacket(new PacketPlayOutEntityMetadata(entity.getId(), watcher, true));
         connection.sendPacket(new PacketPlayOutEntityHeadRotation(entity, ((byte) (int) (location.getYaw()*256.0F/360.0F))));
+        connection.sendPacket(new PacketPlayOutEntity.PacketPlayOutEntityLook(entity.getId(), (byte) location.getYaw(), (byte) location.getPitch(), false));
+        connection.sendPacket(new PacketPlayOutEntityMetadata(entity.getId(), watcher, true));
         entity.getBukkitEntity().getPlayer().setPlayerListName("");
 
         loadedPlayers.add(p.getUniqueId());
 
         Bukkit.getScheduler().runTaskLaterAsynchronously(BukkitCoreSystem.getInstance(), () ->
                 connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entity))
-        , 26);
+        , 40L);
     }
 
     public void setSkin(SkinInfo skin, Player p) {
@@ -129,7 +130,8 @@ public class NPC implements eu.mcone.coresystem.api.bukkit.npc.NPC {
         PlayerConnection connection = ((CraftPlayer)p).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entity));
         connection.sendPacket(new PacketPlayOutEntityDestroy(entity.getId()));
-        if (loadedPlayers.contains(p.getUniqueId())) loadedPlayers.remove(p.getUniqueId());
+
+        loadedPlayers.remove(p.getUniqueId());
     }
 
     public void unsetAll() {

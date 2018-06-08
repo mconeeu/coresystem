@@ -6,21 +6,21 @@
 
 package eu.mcone.coresystem.api.core.exception;
 
-public class LabyModAPIException extends RuntimeException {
+public class RuntimeCoreException extends RuntimeException {
 
-    public LabyModAPIException() {
+    public RuntimeCoreException() {
         super();
     }
 
-    public LabyModAPIException(String message) {
+    public RuntimeCoreException(String message) {
         super(message);
     }
 
-    public LabyModAPIException(String message, Throwable cause) {
+    public RuntimeCoreException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public LabyModAPIException(Throwable cause) {
+    public RuntimeCoreException(Throwable cause) {
         super(cause);
     }
 

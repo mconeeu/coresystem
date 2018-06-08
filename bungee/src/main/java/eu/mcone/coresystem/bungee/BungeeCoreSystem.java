@@ -22,6 +22,7 @@ import eu.mcone.coresystem.bungee.runnable.Broadcast;
 import eu.mcone.coresystem.bungee.runnable.OnlineTime;
 import eu.mcone.coresystem.bungee.runnable.PremiumCheck;
 import eu.mcone.coresystem.bungee.utils.PreferencesManager;
+import eu.mcone.coresystem.bungee.utils.TeamspeakVerifier;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.mysql.MySQL;
@@ -44,6 +45,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Getter
     private static BungeeCoreSystem system;
+    @Getter
+    private static boolean cloudsystemAvailable;
 
     private Map<String, CorePlugin> plugins;
 
@@ -60,6 +63,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private NickManager nickManager;
     @Getter
+    private TeamspeakVerifier teamspeakVerifier;
+    @Getter
     private CoinsAPI coinsAPI;
     @Getter
     private PlayerUtils playerUtils;
@@ -72,8 +77,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private MySQL database;
     @Getter
     private Map<UUID, BungeeCorePlayer> corePlayers;
-    @Getter
-    private boolean cloudsystemAvailable;
 
     public void onEnable() {
         system = this;
@@ -115,6 +118,9 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aInitializing LabyModAPI...");
         labyModAPI = new LabyModAPI(this);
 
+        sendConsoleMessage("§aLoading TeamSpeakQuery...");
+        teamspeakVerifier = new TeamspeakVerifier();
+
         sendConsoleMessage("§aLoading MessagingSystem...");
         MsgCMD.updateToggled();
 
@@ -143,6 +149,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     public void onDisable() {
+        teamspeakVerifier.close();
         for (ProxiedPlayer p : getProxy().getPlayers()) {
             database.update("UPDATE userinfo SET status='offline' WHERE uuid='" + p.getUniqueId() + "'");
         }
@@ -391,6 +398,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "`timestamp` varchar(100), " +
                 "`password` varchar(100), " +
                 "`onlinetime` int(10) NOT NULL, " +
+                "`teamspeak_uid` varchar(100), " +
                 "`msg_toggle` boolean" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
@@ -509,8 +517,16 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_chatlog` " +
                 "(" +
                 "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                "`uuid` varchar(200), `nachricht` varchar(100), " +
+                "`uuid` varchar(100), " +
+                "`nachricht` varchar(100), " +
                 "`timestamp` int(100)" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+
+        mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_teamspeak_icons` " +
+                "(" +
+                "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+                "`uuid` varchar(100), " +
+                "`icon_id` int(100)" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
     }
 

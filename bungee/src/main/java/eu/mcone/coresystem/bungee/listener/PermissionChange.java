@@ -51,6 +51,7 @@ public class PermissionChange implements Listener {
             if (p != null) {
                 p.setGroups(e.getGroups());
                 p.reloadPermissions();
+                BungeeCoreSystem.getSystem().getTeamspeakVerifier().updateLink(p, null);
 
                 new PluginMessage("Return", p.bungee().getServer().getInfo(), "EVENT", p.getUuid().toString(), "PermissionChangeEvent", "GROUP_CHANGE;"+BungeeCoreSystem.getInstance().getPermissionManager().getJson(e.getGroups()));
             }

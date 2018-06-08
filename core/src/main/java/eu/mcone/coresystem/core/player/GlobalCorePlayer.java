@@ -37,19 +37,22 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
     @Getter @Setter
     private Set<String> permissions;
     @Getter @Setter
+    private String teamspeakUid;
+    @Getter @Setter
     private LabyModConnection labyModConnection;
 
     protected GlobalCorePlayer(final GlobalCoreSystem instance, String name) throws PlayerNotFoundException {
         this.instance = instance;
         this.name = name;
 
-        ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).select("SELECT uuid, groups, language, onlinetime FROM userinfo WHERE name='"+name+"'", rs -> {
+        ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).select("SELECT uuid, groups, language, onlinetime, teamspeak_uid FROM userinfo WHERE name='"+name+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.uuid = UUID.fromString(rs.getString("uuid"));
                     this.language = Language.valueOf(rs.getString("language"));
                     this.groups = instance.getPermissionManager().getGroups(rs.getString("groups"));
                     this.onlinetime = rs.getLong("onlinetime");
+                    this.teamspeakUid = rs.getString("teamspeak_uid");
                     this.joined = System.currentTimeMillis() / 1000;
                 }
             } catch (SQLException e) {
@@ -107,4 +110,8 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
         reloadPermissions();
     }
 
+    @Override
+    public boolean isTeamspeakIdLinked() {
+        return teamspeakUid != null;
+    }
 }

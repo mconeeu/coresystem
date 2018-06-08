@@ -99,6 +99,19 @@ public interface GlobalCorePlayer {
     LabyModConnection getLabyModConnection();
 
     /**
+     * returns the TeamSpeak UID from the players linked TeamSpeak identity
+     * if no TS identity is linked null will be returned
+     * @return TeamSpeak UID
+     */
+    String getTeamspeakUid();
+
+    /**
+     * returns whether the player has a linked TS ID
+     * @return player has linked TS ID in database
+     */
+    boolean isTeamspeakIdLinked();
+
+    /**
      * sends the player a message
      * @param message message
      */

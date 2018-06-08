@@ -20,7 +20,6 @@ import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.net.InetSocketAddress;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -34,14 +33,7 @@ public class PostLogin implements Listener{
         final ProxiedPlayer p = e.getPlayer();
         final BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUniqueId());
 
-        final InetSocketAddress IPAdressPlayer = p.getAddress();
-        String sfullip = IPAdressPlayer.toString();
-        String[] fullip;
-        String[] ipandport;
-        fullip = sfullip.split("/");
-        String sIpandPort = fullip[1];
-        ipandport = sIpandPort.split(":");
-        String ip = ipandport[0];
+        String ip = p.getAddress().toString().split("/")[1].split(":")[0];
         final long millis = System.currentTimeMillis();
 
         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `uuid` FROM `userinfo` WHERE `uuid` = '" + p.getUniqueId().toString() + "'", rs -> {
@@ -126,6 +118,8 @@ public class PostLogin implements Listener{
                 put(LabyPermission.GUI_ARMOR_HUD, false);
                 put(LabyPermission.GUI_ITEM_HUD, false);
             }});
+
+            if (cp.isTeamspeakIdLinked()) BungeeCoreSystem.getSystem().getTeamspeakVerifier().updateLink(cp, null);
         },1000L, TimeUnit.MILLISECONDS);
     }
 

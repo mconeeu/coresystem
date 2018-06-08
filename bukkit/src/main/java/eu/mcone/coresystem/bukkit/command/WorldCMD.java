@@ -117,8 +117,8 @@ public class WorldCMD implements CommandExecutor {
                                         "\n§7§ogenerateStructures: §f" + bw.canGenerateStructures() +
                                         "\n§7§oautoSave: §f" + bw.isAutoSave() +
                                         "\n§7§opvp: §f" + bw.getPVP() +
-                                        "\n§7§oallowAnimals: §f" + bw.getAllowAnimals() +
-                                        "\n§7§oallowMonsters: §f" + bw.getAllowMonsters() +
+                                        "\n§7§oallowAnimals: §f" + w.getProperties().isAllowAnimals() +
+                                        "\n§7§oallowMonsters: §f" + w.getProperties().isAllowMonsters() +
                                         "\n§7§okeepSpawnInMemory: §f" + bw.getKeepSpawnInMemory()
                                 );
 

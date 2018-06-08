@@ -105,18 +105,7 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
         }
         gp.getProperties().removeAll("textures");
         gp.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
-        try {
-            final Field nameField = gp.getClass().getDeclaredField("name");
-            nameField.setAccessible(true);
-            int modifiers = nameField.getModifiers();
-            final Field modifierField = nameField.getClass().getDeclaredField("modifiers");
-            modifiers &= 0xFFFFFFEF;
-            modifierField.setAccessible(true);
-            modifierField.setInt(nameField, modifiers);
-            nameField.set(gp, name);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        setGameProfileName(gp, name);
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
@@ -136,6 +125,21 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
 
         p.setDisplayName(name);
         instance.getCorePlayer(p).getScoreboard().reload(BukkitCoreSystem.getInstance());
+    }
+
+    public static void setGameProfileName(GameProfile gp, String name) {
+        try {
+            final Field nameField = gp.getClass().getDeclaredField("name");
+            nameField.setAccessible(true);
+            int modifiers = nameField.getModifiers();
+            final Field modifierField = nameField.getClass().getDeclaredField("modifiers");
+            modifiers &= 0xFFFFFFEF;
+            modifierField.setAccessible(true);
+            modifierField.setInt(nameField, modifiers);
+            nameField.set(gp, name);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
