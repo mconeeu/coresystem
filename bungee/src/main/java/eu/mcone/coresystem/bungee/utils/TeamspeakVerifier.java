@@ -18,6 +18,7 @@ import com.github.theholywaffle.teamspeak3.api.event.TextMessageEvent;
 import com.github.theholywaffle.teamspeak3.api.reconnect.ReconnectStrategy;
 import com.github.theholywaffle.teamspeak3.api.wrapper.ClientInfo;
 import com.github.theholywaffle.teamspeak3.api.wrapper.ServerQueryInfo;
+import com.google.common.primitives.Ints;
 import eu.mcone.cloud.api.plugin.CloudAPI;
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.api.core.exception.RuntimeCoreException;
@@ -45,8 +46,10 @@ public class TeamspeakVerifier {
             .setReconnectStrategy(ReconnectStrategy.linearBackoff())
             .setEnableCommunicationsLogging(true);
 
+    private static final int VERIFIED_RANK = 23;
+
     private final static int[] RELEVANT_GROUPS = {
-            23, Group.SPIELVERDERBER.getTsId(), Group.PREMIUM.getTsId(), Group.PREMIUMPLUS.getTsId(), Group.YOUTUBER.getTsId()
+            VERIFIED_RANK, Group.SPIELVERDERBER.getTsId(), Group.PREMIUM.getTsId(), Group.PREMIUMPLUS.getTsId(), Group.YOUTUBER.getTsId()
     };
 
     private TS3Query query;
@@ -106,22 +109,32 @@ public class TeamspeakVerifier {
             @Override
             public void onClientJoin(ClientJoinEvent e) {
                 if (e.getClientType() == 0) {
-                    final String uid = e.getUniqueClientIdentifier();
+                    api.getClientByUId(e.getUniqueClientIdentifier()).onSuccess(clientInfo -> {
+                        if (!Ints.asList(clientInfo.getServerGroups()).contains(VERIFIED_RANK)) {
+                            List<BungeeCorePlayer> players = new ArrayList<>();
 
-                    api.getClientByUId(uid).onSuccess(clientInfo -> {
-                        List<BungeeCorePlayer> players = new ArrayList<>();
+                            for (BungeeCorePlayer p : BungeeCoreSystem.getInstance().getOnlineCorePlayers()) {
+                                String ip = p.bungee().getAddress().toString().split("/")[1].split(":")[0];
 
-                        for (BungeeCorePlayer p : BungeeCoreSystem.getInstance().getOnlineCorePlayers()) {
-                            String ip = p.bungee().getAddress().toString().split("/")[1].split(":")[0];
-
-                            if (clientInfo.getIp().equalsIgnoreCase(ip) && !p.isTeamspeakIdLinked()) {
-                                players.add(p);
+                                if (clientInfo.getIp().equalsIgnoreCase(ip) && !p.isTeamspeakIdLinked()) {
+                                    players.add(p);
+                                }
                             }
-                        }
 
-                        if (players.size() == 1) {
-                            registering.put(players.get(0).getUuid(), clientInfo.getUniqueIdentifier());
-                            api.sendPrivateMessage(clientInfo.getId(), "Bitte schreibe hier deinen Minecraftnamen, um deinen TeamSpeak Account zu verknüpfen und alle Funktionen des TeamSpeaks nutzen zu können!");
+                            if (players.size() == 1) {
+                                registering.put(players.get(0).getUuid(), clientInfo.getUniqueIdentifier());
+                                api.sendPrivateMessage(clientInfo.getId(), "Bitte schreibe hier deinen Minecraftnamen, um deinen TeamSpeak Account zu verknüpfen und alle Funktionen des TeamSpeaks nutzen zu können!");
+                            }
+                        } else if ((boolean) BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT uuid FROM userinfo WHERE teamspeak_uid='" + clientInfo.getUniqueIdentifier() + "'", rs -> {
+                            try {
+                                return !rs.next();
+                            } catch (SQLException e1) {
+                                e1.printStackTrace();
+                            }
+                            return true;
+                        })) {
+                            unsetLinkedGroups(clientInfo);
+                            api.sendPrivateMessage(clientInfo.getId(), "Dir wurde der Verifizierten-Rang entfernt, da du keinen Minecraft-Account mit deiner TeamSpeak-ID verlinkt hast.");
                         }
                     }).onFailure(Throwable::printStackTrace);
                 }
@@ -144,13 +157,21 @@ public class TeamspeakVerifier {
 
     public void unlink(BungeeCorePlayer p) {
         if (p.isTeamspeakIdLinked()) {
-            api.getClientByUId(p.getTeamspeakUid()).onSuccess(clientInfo -> {
-                removeIcon(p.getUuid(), clientInfo);
-                unsetLinkedGroups(clientInfo);
+            api.isClientOnline(p.getTeamspeakUid()).onSuccess(online -> {
+                if (online) {
+                    api.getClientByUId(p.getTeamspeakUid()).onSuccess(clientInfo -> {
+                        removeIcon(p.getUuid(), clientInfo.getDatabaseId());
+                        unsetLinkedGroups(clientInfo);
+                    }).onFailure(Throwable::printStackTrace);
+                } else {
+                    api.getDatabaseClientByUId(p.getTeamspeakUid())
+                            .onSuccess(databaseClientInfo -> removeIcon(p.getUuid(), databaseClientInfo.getDatabaseId()))
+                            .onFailure(Throwable::printStackTrace);
+                }
 
                 ((GlobalCorePlayer) p).setTeamspeakUid(null);
                 BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE userinfo SET teamspeak_uid=NULL WHERE uuid='" + p.getUuid() + "'");
-            }).onFailure(Throwable::printStackTrace);
+            });
         } else {
             throw new RuntimeCoreException("Player " + p.getName() + " has no linked Teamspeak-UID!");
         }
@@ -168,16 +189,20 @@ public class TeamspeakVerifier {
 
     public void updateLink(BungeeCorePlayer p, CommandFuture.SuccessListener<ClientInfo> listener) {
         if (p.isTeamspeakIdLinked()) {
-            api.getClientByUId(p.getTeamspeakUid()).onSuccess(clientInfo -> {
-                try {
-                    updateIcon(p.getUuid(), clientInfo);
-                    updateLinkedGroups(p, clientInfo);
+            api.isClientOnline(p.getTeamspeakUid()).onSuccess(online -> {
+                if (online) {
+                    api.getClientByUId(p.getTeamspeakUid()).onSuccess(clientInfo -> {
+                        try {
+                            updateIcon(p.getUuid(), clientInfo);
+                            updateLinkedGroups(p, clientInfo);
 
-                    if (listener != null) listener.handleSuccess(clientInfo);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                            if (listener != null) listener.handleSuccess(clientInfo);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }).onFailure(Throwable::printStackTrace);
                 }
-            }).onFailure(Throwable::printStackTrace);
+            });
         } else {
             throw new RuntimeCoreException("Player " + p.getName() + " has no linked Teamspeak-UID!");
         }
@@ -238,7 +263,7 @@ public class TeamspeakVerifier {
         ImageIO.write(ImageIO.read(new URL("https://crafatar.com/avatars/" + uuid + "?size=16")), "PNG", out);
 
         api.uploadIconDirect(out.toByteArray()).onSuccess(iconId -> {
-            if (icons.containsKey(uuid)) removeIcon(uuid, clientInfo);
+            if (icons.containsKey(uuid)) removeIcon(uuid, clientInfo.getDatabaseId());
             addIcon(uuid, clientInfo, out, iconId);
         }).onFailure(Throwable::printStackTrace);
     }
@@ -251,8 +276,8 @@ public class TeamspeakVerifier {
         }).onFailure(Throwable::printStackTrace);
     }
 
-    private void removeIcon(UUID uuid, ClientInfo clientInfo) {
-        api.deleteClientPermission(clientInfo.getDatabaseId(), "i_icon_id").onSuccess(aVoid -> {
+    private void removeIcon(UUID uuid, int databaseId) {
+        api.deleteClientPermission(databaseId, "i_icon_id").onSuccess(aVoid -> {
             api.deleteIcon(icons.get(uuid)).onFailure(Throwable::printStackTrace);
             BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM bungeesystem_teamspeak_icons WHERE uuid='" + uuid + "'");
             icons.remove(uuid);
