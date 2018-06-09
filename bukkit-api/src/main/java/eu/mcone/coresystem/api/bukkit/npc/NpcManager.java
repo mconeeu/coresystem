@@ -19,6 +19,15 @@ public interface NpcManager {
     void reload();
 
     /**
+     * creates new local NPC that dont gets saved in the database
+     * @param name data name
+     * @param location location
+     * @param texture texture name
+     * @param displayname displayname
+     */
+    void addLocalNPC(String name, Location location, String texture, String displayname);
+
+    /**
      * create new NPC
      * @param name data name
      * @param location location

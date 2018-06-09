@@ -43,8 +43,7 @@ public class TeamspeakVerifier {
             .setHost("f.rmlk-verwaltung.de")
             .setQueryPort(10011)
             .setFloodRate(TS3Query.FloodRate.UNLIMITED)
-            .setReconnectStrategy(ReconnectStrategy.linearBackoff())
-            .setEnableCommunicationsLogging(true);
+            .setReconnectStrategy(ReconnectStrategy.linearBackoff());
 
     private static final int VERIFIED_RANK = 23;
 
@@ -263,7 +262,7 @@ public class TeamspeakVerifier {
         ImageIO.write(ImageIO.read(new URL("https://crafatar.com/avatars/" + uuid + "?size=16")), "PNG", out);
 
         api.uploadIconDirect(out.toByteArray()).onSuccess(iconId -> {
-            removeIcon(uuid, clientInfo.getDatabaseId());
+            if (icons.containsKey(uuid)) removeIcon(uuid, clientInfo.getDatabaseId());
             addIcon(uuid, clientInfo, out, iconId);
         }).onFailure(Throwable::printStackTrace);
     }

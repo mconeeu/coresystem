@@ -526,7 +526,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "(" +
                 "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
                 "`uuid` varchar(100), " +
-                "`icon_id` int(100)" +
+                "`icon_id` varchar(100)" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
     }
 

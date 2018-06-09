@@ -59,6 +59,12 @@ public interface NPC {
     String getDisplayname();
 
     /**
+     * returns if the NPC is only locally stored or saved in Database
+     * @return loccaly stored
+     */
+    boolean isLocal();
+
+    /**
      * sets the NPC a specific player
      * @param player player
      */

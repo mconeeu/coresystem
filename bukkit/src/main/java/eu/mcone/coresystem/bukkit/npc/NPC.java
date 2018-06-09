@@ -14,6 +14,7 @@ import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -41,6 +42,8 @@ public class NPC implements eu.mcone.coresystem.api.bukkit.npc.NPC {
     private UUID uuid;
     @Getter
     private String name, displayname;
+    @Getter @Setter
+    private boolean local = false;
 
     public NPC(String name, Location location, SkinInfo skin, String displayname){
         this.name = name;

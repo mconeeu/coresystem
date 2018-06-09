@@ -84,14 +84,24 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
     }
 
     @Override
+    public void addLocalNPC(String name, Location loc, String texture, String displayname) {
+        NPC npc = new NPC(name, loc, texture, displayname);
+        npc.setLocal(true);
+
+        this.npcs.put(name, npc);
+        this.updateNPCs();
+    }
+
+    @Override
     public void addNPC(String name, Location loc, String texture, String displayname) {
         NPC npc = new NPC(name, loc, texture, displayname);
+
+        this.npcs.put(name, npc);
+        this.updateNPCs();
 
         String json = LocationManager.toJson(loc);
         this.mysql.update("INSERT INTO bukkitsystem_npcs (`name`, `location`, `displayname`, `texture`, `server`) VALUES ('"+name+"', '"+json+"', '"+displayname+"', '"+texture+"', '"+this.server+"') " +
                 "ON DUPLICATE KEY UPDATE `location`='"+json+"'");
-        this.npcs.put(name, npc);
-        this.updateNPCs();
     }
 
     public void updateNPC(String name, Location loc, String texture, String displayname) {
@@ -99,8 +109,11 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
             getNPCs().get(name).unsetAll();
             NPC npc = new NPC(name, loc, texture, displayname);
 
-            String json = LocationManager.toJson(loc);
-            this.mysql.update("UPDATE bukkitsystem_npcs SET `location`='"+json+"', `displayname`='"+displayname+"', `texture`='"+texture+"' WHERE `name`='"+name+"' AND `server`='"+this.server+"'");
+            if (!npc.isLocal()) {
+                String json = LocationManager.toJson(loc);
+                this.mysql.update("UPDATE bukkitsystem_npcs SET `location`='" + json + "', `displayname`='" + displayname + "', `texture`='" + texture + "' WHERE `name`='" + name + "' AND `server`='" + this.server + "'");
+            }
+
             this.npcs.put(name, npc);
             this.updateNPCs();
         }
@@ -117,7 +130,7 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
 
     public boolean isNPC(String playerName) {
         for (NPC npc : npcs.values()) {
-            if (npc.getName().equalsIgnoreCase(playerName)) {
+            if (npc.getDisplayname().equalsIgnoreCase(playerName)) {
                 return true;
             }
         }
