@@ -9,7 +9,6 @@ package eu.mcone.coresystem.bungee.player;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.PluginMessage;
-import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 

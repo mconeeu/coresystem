@@ -32,5 +32,4 @@ public abstract class CorePlugin extends Plugin {
     public void sendConsoleMessage(String message) {
         ProxyServer.getInstance().getConsole().sendMessage(new TextComponent(TextComponent.fromLegacyText(consolePrefix + message)));
     }
-
 }

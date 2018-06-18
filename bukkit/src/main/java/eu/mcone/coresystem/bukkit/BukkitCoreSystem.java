@@ -16,6 +16,7 @@ import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
 import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
 import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
@@ -23,6 +24,7 @@ import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.LocationManager;
 import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
+import eu.mcone.coresystem.api.core.mysql.Database;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.api.core.translation.TranslationField;
@@ -34,14 +36,12 @@ import eu.mcone.coresystem.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.bukkit.player.CoinsAPI;
 import eu.mcone.coresystem.bukkit.player.NickManager;
 import eu.mcone.coresystem.bukkit.player.StatsAPI;
-import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.bukkit.util.AFKCheck;
 import eu.mcone.coresystem.bukkit.util.ActionBar;
 import eu.mcone.coresystem.bukkit.util.TablistInfo;
 import eu.mcone.coresystem.bukkit.util.Title;
 import eu.mcone.coresystem.bukkit.world.WorldManager;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.mysql.MySQL;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
@@ -68,6 +68,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private MySQL mysql1;
     private MySQL mysql2;
     private MySQL mysql3;
+    private MySQL mysql4;
     private Map<UUID, CoreInventory> inventories;
     private Map<String, CorePlugin> plugins;
     private Map<Gamemode, StatsAPI> stats;
@@ -125,6 +126,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         mysql1 = new MySQL(Database.SYSTEM);
         mysql2 = new MySQL(Database.STATS);
         mysql3 = new MySQL(Database.DATA);
+        mysql4 = new MySQL(Database.CLOUD);
         createTables(mysql1);
 
         cooldownSystem = new CooldownSystem();
@@ -351,9 +353,10 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 return mysql2;
             case DATA:
                 return mysql3;
-            default:
-                return null;
+            case CLOUD:
+                return mysql4;
         }
+        return null;
     }
 
     @Override

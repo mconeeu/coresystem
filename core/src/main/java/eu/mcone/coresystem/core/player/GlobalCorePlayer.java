@@ -8,10 +8,10 @@ package eu.mcone.coresystem.core.player;
 
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
+import eu.mcone.coresystem.api.core.mysql.Database;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.coresystem.core.mysql.Database;
 import lombok.Getter;
 import lombok.Setter;
 import net.labymod.serverapi.LabyModConnection;

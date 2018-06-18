@@ -12,7 +12,6 @@ import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.player.OfflinePlayer;
-import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;

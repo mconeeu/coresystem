@@ -8,7 +8,6 @@ package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.core.util.Random;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;

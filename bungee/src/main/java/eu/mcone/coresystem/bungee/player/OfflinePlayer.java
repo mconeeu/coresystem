@@ -12,7 +12,6 @@ import com.google.gson.JsonParser;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.core.mysql.Database;
 import lombok.Getter;
 import lombok.Setter;
 

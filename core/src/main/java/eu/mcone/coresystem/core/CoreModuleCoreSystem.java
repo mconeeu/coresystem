@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.core;
 
-import eu.mcone.coresystem.core.mysql.Database;
+import eu.mcone.coresystem.api.core.mysql.Database;
 import eu.mcone.coresystem.core.mysql.MySQL;
 
 public interface CoreModuleCoreSystem {

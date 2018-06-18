@@ -10,7 +10,6 @@ import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import lombok.Getter;
 import lombok.Setter;

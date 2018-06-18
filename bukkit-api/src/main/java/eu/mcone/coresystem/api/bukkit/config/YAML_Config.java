@@ -67,7 +67,7 @@ public class YAML_Config {
         this.config = YamlConfiguration.loadConfiguration(file);
     }
 
-    public YAML_Config(String plugin, String path, String subdirectory,  String fileName) {
+    public YAML_Config(String plugin, String path, String subdirectory, String fileName) {
         this.plugin = plugin;
         this.fileName = fileName;
         this.path = path;
@@ -94,11 +94,9 @@ public class YAML_Config {
 
     public void save() {
         try {
-            if(this.usePath) {
+            if (this.usePath) {
                 this.config.save("./" + this.path + "/" + this.plugin + "/" + this.fileName);
-            }
-
-            if(this.hasSubdirectory) {
+            } else if (this.hasSubdirectory) {
                 this.config.save("./" + this.path + "/" + this.plugin + "/" + this.subdirectory + "/" + this.fileName);
             } else {
                 this.config.save("./plugins/" + this.plugin + "/" + this.fileName);

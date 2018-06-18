@@ -8,7 +8,6 @@ package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.listener.Chat;
-import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
