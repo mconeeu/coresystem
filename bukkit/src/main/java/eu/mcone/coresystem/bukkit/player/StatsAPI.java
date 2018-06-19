@@ -8,9 +8,9 @@ package eu.mcone.coresystem.bukkit.player;
 
 import eu.mcone.coresystem.api.bukkit.event.StatsChangeEvent;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
-import eu.mcone.coresystem.api.core.mysql.Database;
 import eu.mcone.coresystem.api.core.mysql.MySQL;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.core.mysql.Database;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 

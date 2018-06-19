@@ -39,7 +39,7 @@ public class WorldCMD implements CommandExecutor {
             if (p.hasPermission("system.bukkit.world")) {
                 if (args.length < 2) {
                     if (args.length == 0 || args[0].equalsIgnoreCase("list")) {
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§7Du befindest dich gerade auf der Welt: §f"+p.getWorld().getName());
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§7Du befindest dich gerade auf der Welt: §f" + p.getWorld().getName());
                         ComponentBuilder componentBuilder = new ComponentBuilder("§7Du kannst dich zu folgenden Welten teleportieren: ");
 
                         List<CoreWorld> worlds = BukkitCoreSystem.getInstance().getWorldManager().getWorlds();
@@ -78,7 +78,9 @@ public class WorldCMD implements CommandExecutor {
                                 "\n§7§opvp §8: §f{true, false}" +
                                 "\n§7§oallowAnimals §8: §f{true, false}" +
                                 "\n§7§oallowMonsters §8: §f{true, false}" +
-                                "\n§7§okeepSpawnInMemory §8: §f{true, false}"
+                                "\n§7§okeepSpawnInMemory §8: §f{true, false}" +
+                                "\n§7§oGammeodeType §8: §f{Bedwars, Skypvp, Minewar...}" +
+                                "\n§7§oMode §8: §f{1x1, 2x2, 4x1...}"
                         );
                         return true;
                     } else if (args[0].equalsIgnoreCase("reload")) {
@@ -88,7 +90,7 @@ public class WorldCMD implements CommandExecutor {
                     } else {
                         for (CoreWorld w : BukkitCoreSystem.getInstance().getWorldManager().getWorlds()) {
                             if (args[0].equalsIgnoreCase(w.getName())) {
-                                p.performCommand("world tp "+w.getName());
+                                p.performCommand("world tp " + w.getName());
                                 return true;
                             }
                         }
@@ -126,9 +128,10 @@ public class WorldCMD implements CommandExecutor {
                             } else if (args[0].equalsIgnoreCase("upload")) {
                                 if (p.hasPermission("system.bukkit.world.upload")) {
                                     BukkitCoreSystem.getInstance().getMessager().send(p, "§7Die Welt wird hochgeladen...");
-                                    BukkitCoreSystem.getInstance().sendConsoleMessage("Uploading world "+w.getName()+" to database. Initialized by "+p.getName());
+                                    BukkitCoreSystem.getInstance().sendConsoleMessage("Uploading world " + w.getName() + " to database. Initialized by " + p.getName());
                                     for (Player player : Bukkit.getOnlinePlayers()) {
-                                        if (player.hasPermission("group.builder") && player != p) BukkitCoreSystem.getInstance().getMessager().send(player, "§3"+p.getName()+"§7 lädt gerade die Welt §f"+w.getName()+"§7 in die Datenbank hoch...");
+                                        if (player.hasPermission("group.builder") && player != p)
+                                            BukkitCoreSystem.getInstance().getMessager().send(player, "§3" + p.getName() + "§7 lädt gerade die Welt §f" + w.getName() + "§7 in die Datenbank hoch...");
                                     }
 
                                     if (w.upload()) {
@@ -143,7 +146,7 @@ public class WorldCMD implements CommandExecutor {
                             } else if (args[0].equalsIgnoreCase("unload")) {
                                 if (p.hasPermission("system.bukkit.world.unload")) {
                                     w.unload(true);
-                                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Welt wurde erfolgreich entladen! Benutze §a/world import "+w.getName()+" <environment>§2 um sie wieder zu laden!");
+                                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Welt wurde erfolgreich entladen! Benutze §a/world import " + w.getName() + " <environment>§2 um sie wieder zu laden!");
                                 } else {
                                     BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
                                 }
@@ -251,6 +254,10 @@ public class WorldCMD implements CommandExecutor {
                                     } else if (args[1].equalsIgnoreCase("seed")) {
                                         BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Seed kann nachträglich nicht verändert werden!");
                                         return true;
+                                    } if(args[1].equalsIgnoreCase("gamemodetype")) {
+                                        w.setGamemodeType(args[2]);
+                                    } if(args[1].equalsIgnoreCase("mode")) {
+                                        w.setMode(args[2]);
                                     } else {
                                         BukkitCoreSystem.getInstance().getMessager().send(p, "§4Diese Einstellung existiert nicht! Benutze §c/world keys§4 für eine Liste aller Keys!");
                                         return true;

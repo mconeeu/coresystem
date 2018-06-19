@@ -9,7 +9,6 @@ package eu.mcone.coresystem.core.mysql;
 import com.zaxxer.hikari.HikariDataSource;
 import eu.mcone.coresystem.api.core.mysql.Callback;
 import eu.mcone.coresystem.api.core.mysql.CallbackResult;
-import eu.mcone.coresystem.api.core.mysql.Database;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

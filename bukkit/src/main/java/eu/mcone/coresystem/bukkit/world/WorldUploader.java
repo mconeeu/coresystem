@@ -54,7 +54,7 @@ class WorldUploader {
 
                 send = con.prepareStatement("UPDATE mc1cloud.cloudwrapper_worlds SET build=?, `name`=?, world_type=?, environment=?, generator=?, generator_settings=?, generate_structures=?, bytes=? WHERE `name`='" + world.getName() + "'");
             } else {
-                send = con.prepareStatement("INSERT INTO mc1cloud.cloudwrapper_worlds (build, `name`, world_type, environment, generator, generator_settings, generate_structures, bytes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                send = con.prepareStatement("INSERT INTO mc1cloud.cloudwrapper_worlds (build, `name`, world_type, environment, generator, generator_settings, generate_structures, gamemode, mode, bytes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             }
 
             FileInputStream fis = new FileInputStream(zipFile);
@@ -66,7 +66,9 @@ class WorldUploader {
             send.setString(5, world.getGenerator());
             send.setString(6, world.getGeneratorSettings());
             send.setBoolean(7, world.isGenerateStructures());
-            send.setBytes(8, IOUtils.toByteArray(fis));
+            send.setString(8, world.getGamemodeType());
+            send.setString(9, world.getMode());
+            send.setBytes(10, IOUtils.toByteArray(fis));
             send.executeUpdate();
 
             fis.close();

@@ -52,6 +52,18 @@ public interface CoreWorld {
     String getGeneratorSettings();
 
     /**
+     * get the gamemodeType of the world
+     * @return generator settings
+     */
+    String getGamemodeType();
+
+    /**
+     * get the mode of the world
+     * @return generator settings
+     */
+    String getMode();
+
+    /**
      * check if world is generating structures
      * @return generating structures
      */
@@ -97,6 +109,20 @@ public interface CoreWorld {
      * @return this
      */
     CoreWorld setGeneratorSettings(String settings);
+
+    /**
+     * set gamemode
+     * @param gamemode world Gamemode
+     * @return this
+     */
+    CoreWorld setGamemodeType(String gamemode);
+
+    /**
+     * set mode
+     * @param mode world mode
+     * @return this
+     */
+    CoreWorld setMode(String mode);
 
     /**
      * set if world should generate structures

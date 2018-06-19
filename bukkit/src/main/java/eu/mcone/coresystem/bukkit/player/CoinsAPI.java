@@ -7,8 +7,8 @@
 package eu.mcone.coresystem.bukkit.player;
 
 import eu.mcone.coresystem.api.bukkit.event.CoinsChangeEvent;
-import eu.mcone.coresystem.api.core.mysql.Database;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.core.mysql.Database;
 import org.bukkit.Bukkit;
 
 import java.sql.SQLException;

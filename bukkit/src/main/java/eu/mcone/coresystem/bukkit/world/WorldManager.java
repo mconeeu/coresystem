@@ -196,7 +196,10 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                 world.getDifficulty().toString(),
                 null,
                 null,
+                null,
+                null,
                 world.canGenerateStructures(),
+
                 true,
                 new WorldProperties(
                         world.isAutoSave(),

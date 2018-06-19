@@ -4,7 +4,7 @@
  *
  */
 
-package eu.mcone.coresystem.api.core.mysql;
+package eu.mcone.coresystem.core.mysql;
 
 import lombok.Getter;
 
