@@ -79,8 +79,7 @@ public class WorldCMD implements CommandExecutor {
                                 "\n§7§oallowAnimals §8: §f{true, false}" +
                                 "\n§7§oallowMonsters §8: §f{true, false}" +
                                 "\n§7§okeepSpawnInMemory §8: §f{true, false}" +
-                                "\n§7§oGammeodeType §8: §f{Bedwars, Skypvp, Minewar...}" +
-                                "\n§7§oMode §8: §f{1x1, 2x2, 4x1...}"
+                                "\n§7§otemplateName §8: §f{name}"
                         );
                         return true;
                     } else if (args[0].equalsIgnoreCase("reload")) {
@@ -121,7 +120,8 @@ public class WorldCMD implements CommandExecutor {
                                         "\n§7§opvp: §f" + bw.getPVP() +
                                         "\n§7§oallowAnimals: §f" + w.getProperties().isAllowAnimals() +
                                         "\n§7§oallowMonsters: §f" + w.getProperties().isAllowMonsters() +
-                                        "\n§7§okeepSpawnInMemory: §f" + bw.getKeepSpawnInMemory()
+                                        "\n§7§okeepSpawnInMemory: §f" + bw.getKeepSpawnInMemory() +
+                                        "\n§7§otemplateName: §f" + w.getTemplateName()
                                 );
 
                                 return true;
@@ -254,10 +254,8 @@ public class WorldCMD implements CommandExecutor {
                                     } else if (args[1].equalsIgnoreCase("seed")) {
                                         BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Seed kann nachträglich nicht verändert werden!");
                                         return true;
-                                    } if(args[1].equalsIgnoreCase("gamemodetype")) {
-                                        w.setGamemodeType(args[2]);
-                                    } if(args[1].equalsIgnoreCase("mode")) {
-                                        w.setMode(args[2]);
+                                    } else if(args[1].equalsIgnoreCase("templateName")) {
+                                        w.setTemplateName(args[2]);
                                     } else {
                                         BukkitCoreSystem.getInstance().getMessager().send(p, "§4Diese Einstellung existiert nicht! Benutze §c/world keys§4 für eine Liste aller Keys!");
                                         return true;

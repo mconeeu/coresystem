@@ -40,6 +40,7 @@ import eu.mcone.coresystem.bukkit.util.ActionBar;
 import eu.mcone.coresystem.bukkit.util.TablistInfo;
 import eu.mcone.coresystem.bukkit.util.Title;
 import eu.mcone.coresystem.bukkit.world.WorldManager;
+import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.mysql.MySQL;
 import eu.mcone.coresystem.core.player.PermissionManager;
@@ -59,7 +60,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class BukkitCoreSystem extends CoreSystem{
+public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem {
 
     @Getter
     private static BukkitCoreSystem system;

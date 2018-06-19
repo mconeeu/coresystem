@@ -52,22 +52,16 @@ public interface CoreWorld {
     String getGeneratorSettings();
 
     /**
-     * get the gamemodeType of the world
-     * @return generator settings
-     */
-    String getGamemodeType();
-
-    /**
-     * get the mode of the world
-     * @return generator settings
-     */
-    String getMode();
-
-    /**
      * check if world is generating structures
      * @return generating structures
      */
     boolean isGenerateStructures();
+
+    /**
+     * get the template name
+     * @return template name
+     */
+    String getTemplateName();
 
     /**
      * get additional world properties
@@ -111,25 +105,18 @@ public interface CoreWorld {
     CoreWorld setGeneratorSettings(String settings);
 
     /**
-     * set gamemode
-     * @param gamemode world Gamemode
-     * @return this
-     */
-    CoreWorld setGamemodeType(String gamemode);
-
-    /**
-     * set mode
-     * @param mode world mode
-     * @return this
-     */
-    CoreWorld setMode(String mode);
-
-    /**
      * set if world should generate structures
      * @param generate boolean to generate structures
      * @return this
      */
     CoreWorld generateStructures(boolean generate);
+
+    /**
+     * set Template name for CloudSystem
+     * @param name template name
+     * @return this
+     */
+    CoreWorld setTemplateName(String name);
 
     /**
      * set spawn location

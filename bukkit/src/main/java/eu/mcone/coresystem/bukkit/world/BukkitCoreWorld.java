@@ -30,7 +30,7 @@ import java.util.Map;
 public class BukkitCoreWorld implements CoreWorld {
 
     private String name;
-    private String worldType, environment, difficulty, generator, generatorSettings, gamemodeType, mode;
+    private String worldType, environment, difficulty, generator, generatorSettings, templateName;
     private boolean generateStructures, loadOnStartup;
     private WorldProperties properties;
     private int[] spawnLocation;
@@ -73,14 +73,8 @@ public class BukkitCoreWorld implements CoreWorld {
     }
 
     @Override
-    public CoreWorld setGamemodeType(String gamemodeType) {
-        this.gamemodeType = gamemodeType;
-        return this;
-    }
-
-    @Override
-    public CoreWorld setMode(String mode) {
-        this.mode = mode;
+    public CoreWorld setTemplateName(String name) {
+        this.templateName = name;
         return this;
     }
 

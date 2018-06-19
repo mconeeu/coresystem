@@ -197,7 +197,6 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                 null,
                 null,
                 null,
-                null,
                 world.canGenerateStructures(),
 
                 true,
