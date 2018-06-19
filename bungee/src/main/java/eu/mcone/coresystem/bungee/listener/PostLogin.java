@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bungee.listener;
 
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.core.mysql.Database;
 import net.labymod.serverapi.LabyPermission;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;

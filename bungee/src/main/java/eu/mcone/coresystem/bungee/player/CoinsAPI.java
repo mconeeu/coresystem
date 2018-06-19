@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bungee.player;
 
 import eu.mcone.coresystem.api.bungee.event.CoinsChangeEvent;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.ProxyServer;
 
 import java.sql.SQLException;

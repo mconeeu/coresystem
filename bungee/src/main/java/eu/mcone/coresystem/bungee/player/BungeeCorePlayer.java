@@ -10,6 +10,7 @@ import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import lombok.Getter;
 import lombok.Setter;
@@ -78,9 +79,8 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
         long millis = System.currentTimeMillis() / 1000;
         if (muted && muteTime < millis) {
             muted = false;
-            ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
-                ((BungeeCoreSystem) instance).getMySQL(Database.SYSTEM).update("DELETE FROM `bungeesystem_bansystem_mute` WHERE end<"+millis);
-            });
+            ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () ->
+                    ((BungeeCoreSystem) instance).getMySQL(Database.SYSTEM).update("DELETE FROM `bungeesystem_bansystem_mute` WHERE end<"+millis));
         }
 
         return muted;

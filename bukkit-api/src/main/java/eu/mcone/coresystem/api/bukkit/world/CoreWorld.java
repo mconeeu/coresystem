@@ -58,6 +58,12 @@ public interface CoreWorld {
     boolean isGenerateStructures();
 
     /**
+     * check if the world is default loaded on startup
+     * @return world is loaded on startup
+     */
+    boolean isLoadOnStartup();
+
+    /**
      * get the template name
      * @return template name
      */
@@ -110,6 +116,13 @@ public interface CoreWorld {
      * @return this
      */
     CoreWorld generateStructures(boolean generate);
+
+    /**
+     * set if the world should be loaded on startup
+     * @param load boolean to load on startup
+     * @return this
+     */
+    CoreWorld loadOnStartup(boolean load);
 
     /**
      * set Template name for CloudSystem

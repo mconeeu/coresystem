@@ -29,8 +29,7 @@ import java.util.Map;
 @DontObfuscate
 public class BukkitCoreWorld implements CoreWorld {
 
-    private String name;
-    private String worldType, environment, difficulty, generator, generatorSettings, templateName;
+    private String name, worldType, environment, difficulty, generator, generatorSettings, templateName;
     private boolean generateStructures, loadOnStartup;
     private WorldProperties properties;
     private int[] spawnLocation;
@@ -73,6 +72,18 @@ public class BukkitCoreWorld implements CoreWorld {
     }
 
     @Override
+    public CoreWorld generateStructures(boolean generate) {
+        this.generateStructures = generate;
+        return this;
+    }
+
+    @Override
+    public CoreWorld loadOnStartup(boolean load) {
+        this.loadOnStartup = load;
+        return this;
+    }
+
+    @Override
     public CoreWorld setTemplateName(String name) {
         this.templateName = name;
         return this;
@@ -81,12 +92,6 @@ public class BukkitCoreWorld implements CoreWorld {
     @Override
     public CoreLocation getLocation(String name) {
         return locations.getOrDefault(name, null);
-    }
-
-    @Override
-    public CoreWorld generateStructures(boolean generate) {
-        this.generateStructures = generate;
-        return this;
     }
 
     @Override

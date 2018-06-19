@@ -33,6 +33,25 @@ public final class ItemBuilder {
     /**
      * create ItemBuilder
      * @param material material
+     */
+    public ItemBuilder(Material material) {
+        itemStack = new ItemStack(material);
+        itemMeta = itemStack.getItemMeta();
+    }
+
+    /**
+     * create ItemBuilder
+     * @param material material
+     * @param amount amount of items in ItemStack
+     */
+    public ItemBuilder(Material material, int amount) {
+        itemStack = new ItemStack(material, amount);
+        itemMeta = itemStack.getItemMeta();
+    }
+
+    /**
+     * create ItemBuilder
+     * @param material material
      * @param amount amount of items in ItemStack
      * @param subId sub ID of the material
      */

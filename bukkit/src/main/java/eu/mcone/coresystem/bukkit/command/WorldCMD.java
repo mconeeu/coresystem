@@ -79,6 +79,7 @@ public class WorldCMD implements CommandExecutor {
                                 "\n§7§oallowAnimals §8: §f{true, false}" +
                                 "\n§7§oallowMonsters §8: §f{true, false}" +
                                 "\n§7§okeepSpawnInMemory §8: §f{true, false}" +
+                                "\n§7§oloadOnStartup §8: §f{true, false}" +
                                 "\n§7§otemplateName §8: §f{name}"
                         );
                         return true;
@@ -121,6 +122,7 @@ public class WorldCMD implements CommandExecutor {
                                         "\n§7§oallowAnimals: §f" + w.getProperties().isAllowAnimals() +
                                         "\n§7§oallowMonsters: §f" + w.getProperties().isAllowMonsters() +
                                         "\n§7§okeepSpawnInMemory: §f" + bw.getKeepSpawnInMemory() +
+                                        "\n§7§oloadOnStartup: §f" + w.isLoadOnStartup() +
                                         "\n§7§otemplateName: §f" + w.getTemplateName()
                                 );
 
@@ -226,7 +228,12 @@ public class WorldCMD implements CommandExecutor {
 
                                 try {
                                     if (args[1].equalsIgnoreCase("name")) {
-                                        w.changeName(args[2]);
+                                        if (! Bukkit.getWorlds().get(0).equals(w.bukkit())) {
+                                            w.changeName(args[2]);
+                                        } else {
+                                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du kannst nicht den Namen der Hauptwelt verändern!");
+                                            return true;
+                                        }
                                     } else if (args[1].equalsIgnoreCase("type")) {
                                         w.setWorldType(WorldType.valueOf(args[2]));
                                     } else if (args[1].equalsIgnoreCase("environment")) {
@@ -251,11 +258,13 @@ public class WorldCMD implements CommandExecutor {
                                         if (!Boolean.valueOf(args[2])) w.purgeMonsters();
                                     } else if (args[1].equalsIgnoreCase("keepSpawnInMemory")) {
                                         w.getProperties().setKeepSpawnInMemory(Boolean.valueOf(args[2]));
+                                    } else if (args[1].equalsIgnoreCase("loadOnStartup")) {
+                                        w.loadOnStartup(Boolean.valueOf(args[2]));
+                                    } else if(args[1].equalsIgnoreCase("templateName")) {
+                                        w.setTemplateName(args[2]);
                                     } else if (args[1].equalsIgnoreCase("seed")) {
                                         BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Seed kann nachträglich nicht verändert werden!");
                                         return true;
-                                    } else if(args[1].equalsIgnoreCase("templateName")) {
-                                        w.setTemplateName(args[2]);
                                     } else {
                                         BukkitCoreSystem.getInstance().getMessager().send(p, "§4Diese Einstellung existiert nicht! Benutze §c/world keys§4 für eine Liste aller Keys!");
                                         return true;

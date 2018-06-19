@@ -126,7 +126,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         mysql1 = new MySQL(Database.SYSTEM);
         mysql2 = new MySQL(Database.STATS);
         mysql3 = new MySQL(Database.DATA);
-        mysql4 = new MySQL(Database.CLOUD);
         createTables(mysql1);
 
         cooldownSystem = new CooldownSystem();
@@ -352,10 +351,9 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 return mysql2;
             case DATA:
                 return mysql3;
-            case CLOUD:
-                return mysql4;
+            default:
+                return null;
         }
-        return null;
     }
 
     @Override
