@@ -96,7 +96,7 @@ public class PermsCMD extends Command implements TabExecutor {
                     String permission = args[3];
 
                     if (args.length == 4) {
-                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`) VALUES ('" + p.getUuid() + "', 'eu.mcone.coresystem.api.core.player-permission', '" + permission + "')");
+                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `permissions` (`name`, `key`, `value`) VALUES ('" + p.getUuid() + "', 'eu.mcone.coresystem.api.core.player-permission', '" + permission + "')");
                         BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Dem Spieler " + args[1] + " wurde die Permission §f" + permission + "§2 hinzugefügt!");
                         BungeeCoreSystem.getInstance().getMessager().send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
 
@@ -107,7 +107,7 @@ public class PermsCMD extends Command implements TabExecutor {
                     } else if (args.length == 5) {
                         String server = args[4];
 
-                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`, `server`) VALUES ('" + p.getUuid() + "', 'eu.mcone.coresystem.api.core.player-permission', '" + permission + "', '" + server + "')");
+                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `permissions` (`name`, `key`, `value`, `server`) VALUES ('" + p.getUuid() + "', 'eu.mcone.coresystem.api.core.player-permission', '" + permission + "', '" + server + "')");
                         BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Dem Spieler " + args[1] + " wurde die Permission §f" + permission + "§2 auf dem Server §f" + server + "§2 hinzugefügt!");
                         BungeeCoreSystem.getInstance().getMessager().send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
 
@@ -120,12 +120,12 @@ public class PermsCMD extends Command implements TabExecutor {
                     String permission = args[3];
 
                     if (args.length == 4) {
-                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `id` FROM `bungeesystem_permissions` WHERE `name`='" + p.getUuid() + "' AND `key`='eu.mcone.coresystem.api.core.player-permission' AND `value`='" + permission + "'", rs -> {
+                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `id` FROM `permissions` WHERE `name`='" + p.getUuid() + "' AND `key`='eu.mcone.coresystem.api.core.player-permission' AND `value`='" + permission + "'", rs -> {
                             try {
                                 if (rs.next()) {
-                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM `bungeesystem_permissions` WHERE `name`='" + p.getUuid() + "' AND `key`='eu.mcone.coresystem.api.core.player-permission' AND `value`='" + permission + "'");
+                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM `permissions` WHERE `name`='" + p.getUuid() + "' AND `key`='eu.mcone.coresystem.api.core.player-permission' AND `value`='" + permission + "'");
                                 } else {
-                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`) VALUES ('" + p.getUuid() + "', 'eu.mcone.coresystem.api.core.player-permission', '-" + permission + "')");
+                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `permissions` (`name`, `key`, `value`) VALUES ('" + p.getUuid() + "', 'eu.mcone.coresystem.api.core.player-permission', '-" + permission + "')");
                                 }
                                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Dem Spieler " + args[1] + " wurde die Permission §f" + permission + "§2 entzogen!");
                                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
@@ -141,12 +141,12 @@ public class PermsCMD extends Command implements TabExecutor {
                     } else if (args.length == 5) {
                         String server = args[4];
 
-                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `id` FROM `bungeesystem_permissions` WHERE `name`='" + p.getUuid() + "' AND `key`='eu.mcone.coresystem.api.core.player-permission' AND `value`='" + permission + "' AND `server`='" + server + "'", rs -> {
+                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `id` FROM `permissions` WHERE `name`='" + p.getUuid() + "' AND `key`='eu.mcone.coresystem.api.core.player-permission' AND `value`='" + permission + "' AND `server`='" + server + "'", rs -> {
                             try {
                                 if (rs.next()) {
-                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM `bungeesystem_permissions` WHERE `name`='" + p.getUuid() + "' AND `key`='eu.mcone.coresystem.api.core.player-permission' AND `value`='" + permission + "' AND `server`='" + server + "'");
+                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM `permissions` WHERE `name`='" + p.getUuid() + "' AND `key`='eu.mcone.coresystem.api.core.player-permission' AND `value`='" + permission + "' AND `server`='" + server + "'");
                                 } else {
-                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`, `server`) VALUES ('" + p.getUuid() + "', 'eu.mcone.coresystem.api.core.player-permission', '-" + permission + "', '" + server + "')");
+                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `permissions` (`name`, `key`, `value`, `server`) VALUES ('" + p.getUuid() + "', 'eu.mcone.coresystem.api.core.player-permission', '-" + permission + "', '" + server + "')");
                                 }
                                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Dem Spieler " + args[1] + " wurde die Permission §f" + permission + "§2 auf dem Server §f" + server + "§2 entzogen!");
                                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
@@ -163,7 +163,7 @@ public class PermsCMD extends Command implements TabExecutor {
                 } else if (args.length == 4 && args[2].equalsIgnoreCase("check")) {
                     String permission = args[3];
 
-                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `value`, `server` FROM `bungeesystem_permissions` WHERE `name`='" + p.getUuid() + "' AND `key`='eu.mcone.coresystem.api.core.player-permission' AND `value`='" + permission + "'", rs -> {
+                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `value`, `server` FROM `permissions` WHERE `name`='" + p.getUuid() + "' AND `key`='eu.mcone.coresystem.api.core.player-permission' AND `value`='" + permission + "'", rs -> {
                         try {
                             if (rs.next()) {
                                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Der Spieler "+args[1]+" hat die Permission §f"+rs.getString("value")+"§2 auf dem Server §7"+rs.getString("server"));
@@ -188,7 +188,7 @@ public class PermsCMD extends Command implements TabExecutor {
                     String permission = args[3];
 
                     if (args.length == 4) {
-                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`) VALUES ('" + g.getId() + "', 'permission', '" + permission + "')");
+                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `permissions` (`name`, `key`, `value`) VALUES ('" + g.getId() + "', 'permission', '" + permission + "')");
                         BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Der Gruppe " + g.getLabel() + "§2 wurde die Permission §f" + permission + "§2 hinzugefügt!");
                         BungeeCoreSystem.getInstance().getMessager().send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
 
@@ -198,7 +198,7 @@ public class PermsCMD extends Command implements TabExecutor {
                     } else if (args.length == 5) {
                         String server = args[4];
 
-                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`, `server`) VALUES ('" + g.getId() + "', 'permission', '" + permission + "', '" + server + "')");
+                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `permissions` (`name`, `key`, `value`, `server`) VALUES ('" + g.getId() + "', 'permission', '" + permission + "', '" + server + "')");
                         BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Der Gruppe " + g.getLabel() + "§2 wurde die Permission §f" + permission + "§2 auf dem Server §f" + server + "§2 hinzugefügt!");
                         BungeeCoreSystem.getInstance().getMessager().send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
 
@@ -210,12 +210,12 @@ public class PermsCMD extends Command implements TabExecutor {
                     String permission = args[3];
 
                     if (args.length == 4) {
-                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `id` FROM `bungeesystem_permissions` WHERE `name`='" + g.getId() + "' AND `key`='permission' AND `value`='" + permission + "'", rs -> {
+                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `id` FROM `permissions` WHERE `name`='" + g.getId() + "' AND `key`='permission' AND `value`='" + permission + "'", rs -> {
                             try {
                                 if (rs.next()) {
-                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM `bungeesystem_permissions` WHERE `name`='" + g.getId() + "' AND `key`='permission' AND `value`='" + permission + "'");
+                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM `permissions` WHERE `name`='" + g.getId() + "' AND `key`='permission' AND `value`='" + permission + "'");
                                 } else {
-                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`) VALUES ('" + g.getId() + "', 'permission', '-" + permission + "')");
+                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `permissions` (`name`, `key`, `value`) VALUES ('" + g.getId() + "', 'permission', '-" + permission + "')");
                                 }
                                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Der Gruppe " + g.getLabel() + "§2 wurde die Permission §f" + permission + "§2 entzogen!");
                                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
@@ -230,12 +230,12 @@ public class PermsCMD extends Command implements TabExecutor {
                     } else if (args.length == 5) {
                         String server = args[4];
 
-                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `id` FROM `bungeesystem_permissions` WHERE `name`='" + g.getId() + "' AND `key`='permission' AND `value`='" + permission + "' AND `server`='" + server + "'", rs -> {
+                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `id` FROM `permissions` WHERE `name`='" + g.getId() + "' AND `key`='permission' AND `value`='" + permission + "' AND `server`='" + server + "'", rs -> {
                             try {
                                 if (rs.next()) {
-                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM `bungeesystem_permissions` WHERE `name`='" + g.getId() + "' AND `key`='permission' AND `value`='" + permission + "' AND `server`='" + server + "'");
+                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM `permissions` WHERE `name`='" + g.getId() + "' AND `key`='permission' AND `value`='" + permission + "' AND `server`='" + server + "'");
                                 } else {
-                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_permissions` (`name`, `key`, `value`, `server`) VALUES ('" + g.getId() + "', 'permission', '-" + permission + "', '" + server + "')");
+                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `permissions` (`name`, `key`, `value`, `server`) VALUES ('" + g.getId() + "', 'permission', '-" + permission + "', '" + server + "')");
                                 }
                                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Der Gruppe " + g.getLabel() + "§2 wurde die Permission §f" + permission + " auf dem Server §f" + server + "§2 entzogen!");
                                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§4§lBevor die Änderung übernommen ist müssen bei allen entsprechenden Servern die Permissions neu geladen werden!");
@@ -251,7 +251,7 @@ public class PermsCMD extends Command implements TabExecutor {
                 } else if (args.length == 4 && args[2].equalsIgnoreCase("check")) {
                     final String permission = args[3];
 
-                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `value`, `server` FROM `bungeesystem_permissions` WHERE `name`='" + g.getId() + "' AND `key`='permission' AND `value`='" + permission + "'", rs -> {
+                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `value`, `server` FROM `permissions` WHERE `name`='" + g.getId() + "' AND `key`='permission' AND `value`='" + permission + "'", rs -> {
                         try {
                             if (rs.next()) {
                                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Die Gruppe " + g.getLabel() + "§2 hat die Permission §f" + rs.getString("value") + "§2 auf dem Server §7" + rs.getString("server"));

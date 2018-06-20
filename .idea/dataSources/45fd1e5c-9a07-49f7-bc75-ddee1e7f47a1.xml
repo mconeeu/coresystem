@@ -1423,28 +1423,28 @@
     <table id="365" parent="6" name="bungeesystem_nicks">
       <Engine>InnoDB</Engine>
     </table>
-    <table id="366" parent="6" name="bungeesystem_permissions">
+    <table id="366" parent="6" name="bungeesystem_preferences">
       <Engine>InnoDB</Engine>
     </table>
-    <table id="367" parent="6" name="bungeesystem_preferences">
+    <table id="367" parent="6" name="bungeesystem_premium">
       <Engine>InnoDB</Engine>
     </table>
-    <table id="368" parent="6" name="bungeesystem_premium">
+    <table id="368" parent="6" name="bungeesystem_reportarchiv">
       <Engine>InnoDB</Engine>
     </table>
-    <table id="369" parent="6" name="bungeesystem_reportarchiv">
+    <table id="369" parent="6" name="bungeesystem_reports">
       <Engine>InnoDB</Engine>
     </table>
-    <table id="370" parent="6" name="bungeesystem_reports">
+    <table id="370" parent="6" name="bungeesystem_teamspeak_icons">
       <Engine>InnoDB</Engine>
     </table>
-    <table id="371" parent="6" name="bungeesystem_teamspeak_icons">
+    <table id="371" parent="6" name="bungeesystem_userarchiv">
       <Engine>InnoDB</Engine>
     </table>
-    <table id="372" parent="6" name="bungeesystem_userarchiv">
+    <table id="372" parent="6" name="bungeesystem_wartunginfo">
       <Engine>InnoDB</Engine>
     </table>
-    <table id="373" parent="6" name="bungeesystem_wartunginfo">
+    <table id="373" parent="6" name="permissions">
       <Engine>InnoDB</Engine>
     </table>
     <table id="374" parent="6" name="translations">
@@ -2938,32 +2938,29 @@
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="648" parent="366" name="name">
+    <column id="648" parent="366" name="key">
       <Position>2</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="649" parent="366" name="key">
+    <column id="649" parent="366" name="value">
       <Position>3</Position>
       <DataType>varchar(100)|0s</DataType>
-      <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="650" parent="366" name="value">
-      <Position>4</Position>
-      <DataType>varchar(1000)|0s</DataType>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="651" parent="366" name="server">
-      <Position>5</Position>
-      <DataType>varchar(100)|0s</DataType>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <key id="652" parent="366" name="PRIMARY">
+    <index id="650" parent="366" name="key">
+      <ColNames>key</ColNames>
+      <Unique>1</Unique>
+    </index>
+    <key id="651" parent="366" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
+    </key>
+    <key id="652" parent="366" name="key">
+      <ColNames>key</ColNames>
+      <UnderlyingIndexName>key</UnderlyingIndexName>
     </key>
     <column id="653" parent="367" name="id">
       <Position>1</Position>
@@ -2972,224 +2969,227 @@
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="654" parent="367" name="key">
-      <Position>2</Position>
-      <DataType>varchar(100)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="655" parent="367" name="value">
-      <Position>3</Position>
-      <DataType>varchar(100)|0s</DataType>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <index id="656" parent="367" name="key">
-      <ColNames>key</ColNames>
-      <Unique>1</Unique>
-    </index>
-    <key id="657" parent="367" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <ColNames>id</ColNames>
-      <Primary>1</Primary>
-    </key>
-    <key id="658" parent="367" name="key">
-      <ColNames>key</ColNames>
-      <UnderlyingIndexName>key</UnderlyingIndexName>
-    </key>
-    <column id="659" parent="368" name="id">
-      <Position>1</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-      <SequenceIdentity>1</SequenceIdentity>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="660" parent="368" name="uuid">
+    <column id="654" parent="367" name="uuid">
       <Position>2</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="661" parent="368" name="group">
+    <column id="655" parent="367" name="group">
       <Position>3</Position>
       <DataType>varchar(355)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="662" parent="368" name="old_group">
+    <column id="656" parent="367" name="old_group">
       <Position>4</Position>
       <DataType>varchar(355)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="663" parent="368" name="kosten">
+    <column id="657" parent="367" name="kosten">
       <Position>5</Position>
       <DataType>varchar(155)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="664" parent="368" name="gekauft">
+    <column id="658" parent="367" name="gekauft">
       <Position>6</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="665" parent="368" name="timestamp">
+    <column id="659" parent="367" name="timestamp">
       <Position>7</Position>
       <DataType>int(50)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="666" parent="368" name="PRIMARY">
+    <key id="660" parent="367" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="667" parent="369" name="id">
+    <column id="661" parent="368" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="668" parent="369" name="reporter">
+    <column id="662" parent="368" name="reporter">
       <Position>2</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="669" parent="369" name="reporteter">
+    <column id="663" parent="368" name="reporteter">
       <Position>3</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="670" parent="369" name="grund">
+    <column id="664" parent="368" name="grund">
       <Position>4</Position>
       <DataType>varchar(355)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="671" parent="369" name="timestamp">
+    <column id="665" parent="368" name="timestamp">
       <Position>5</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="672" parent="369" name="reporter">
+    <index id="666" parent="368" name="reporter">
       <ColNames>reporter</ColNames>
       <Unique>1</Unique>
     </index>
-    <key id="673" parent="369" name="PRIMARY">
+    <key id="667" parent="368" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="674" parent="369" name="reporter">
+    <key id="668" parent="368" name="reporter">
       <ColNames>reporter</ColNames>
       <UnderlyingIndexName>reporter</UnderlyingIndexName>
     </key>
-    <column id="675" parent="370" name="id">
+    <column id="669" parent="369" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="676" parent="370" name="reporter">
+    <column id="670" parent="369" name="reporter">
       <Position>2</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="677" parent="370" name="reporteter">
+    <column id="671" parent="369" name="reporteter">
       <Position>3</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="678" parent="370" name="bearbeiter">
+    <column id="672" parent="369" name="bearbeiter">
       <Position>4</Position>
       <DataType>varchar(355)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="679" parent="370" name="grund">
+    <column id="673" parent="369" name="grund">
       <Position>5</Position>
       <DataType>varchar(355)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="680" parent="370" name="status">
+    <column id="674" parent="369" name="status">
       <Position>6</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="681" parent="370" name="timestamp">
+    <column id="675" parent="369" name="timestamp">
       <Position>7</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <index id="682" parent="370" name="reporter">
+    <index id="676" parent="369" name="reporter">
       <ColNames>reporter</ColNames>
       <Unique>1</Unique>
     </index>
-    <key id="683" parent="370" name="PRIMARY">
+    <key id="677" parent="369" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <key id="684" parent="370" name="reporter">
+    <key id="678" parent="369" name="reporter">
       <ColNames>reporter</ColNames>
       <UnderlyingIndexName>reporter</UnderlyingIndexName>
     </key>
-    <column id="685" parent="371" name="id">
+    <column id="679" parent="370" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="686" parent="371" name="uuid">
+    <column id="680" parent="370" name="uuid">
       <Position>2</Position>
       <DataType>varchar(100)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="687" parent="371" name="icon_id">
+    <column id="681" parent="370" name="icon_id">
       <Position>3</Position>
       <DataType>varchar(100)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="688" parent="371" name="PRIMARY">
+    <key id="682" parent="370" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="689" parent="372" name="name">
+    <column id="683" parent="371" name="name">
       <Position>1</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="690" parent="372" name="ip">
+    <column id="684" parent="371" name="ip">
       <Position>2</Position>
       <DataType>varchar(355)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="691" parent="373" name="uuid">
+    <column id="685" parent="372" name="uuid">
       <Position>1</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="692" parent="373" name="status">
+    <column id="686" parent="372" name="status">
       <Position>2</Position>
       <DataType>varchar(355)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
+    <column id="687" parent="373" name="id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="688" parent="373" name="name">
+      <Position>2</Position>
+      <DataType>varchar(100)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="689" parent="373" name="key">
+      <Position>3</Position>
+      <DataType>varchar(100)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="690" parent="373" name="value">
+      <Position>4</Position>
+      <DataType>varchar(1000)|0s</DataType>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="691" parent="373" name="server">
+      <Position>5</Position>
+      <DataType>varchar(100)|0s</DataType>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="692" parent="373" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
     <column id="693" parent="374" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>

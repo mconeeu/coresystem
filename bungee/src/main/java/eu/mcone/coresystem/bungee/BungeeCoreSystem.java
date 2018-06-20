@@ -432,7 +432,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "`timestamp` int(100)" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
-        mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_permissions` " +
+        mysql.update("CREATE TABLE IF NOT EXISTS `permissions` " +
                 "(" +
                 "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
                 "`name` varchar(100) NOT NULL, " +

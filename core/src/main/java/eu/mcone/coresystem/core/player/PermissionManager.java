@@ -40,7 +40,7 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
 
     @Override
     public void reload() {
-        mySQL.selectAsync("SELECT * FROM `bungeesystem_permissions` WHERE (`server` IS NULL OR `server` LIKE '" + servername.toLowerCase() + "')", rs -> {
+        mySQL.selectAsync("SELECT * FROM `permissions` WHERE (`server` IS NULL OR `server` LIKE '" + servername.toLowerCase() + "')", rs -> {
             groups.clear();
             parents.clear();
             permissions.clear();
