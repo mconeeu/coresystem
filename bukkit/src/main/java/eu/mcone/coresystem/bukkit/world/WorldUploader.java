@@ -79,15 +79,4 @@ class WorldUploader {
         }
     }
 
-    private static String insertAsJson(WorldProperties properties) {
-        List<String> result = new ArrayList<>(Arrays.asList(
-                String.valueOf(properties.isAutoSave()),
-                String.valueOf(properties.isPvp()),
-                String.valueOf(properties.isAllowAnimals()),
-                String.valueOf(properties.isAllowMonsters()),
-                String.valueOf(properties.isKeepSpawnInMemory())
-        ));
-
-        return new Gson().toJson(result);
-    }
 }

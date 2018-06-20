@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.npc;
 
+import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.NpcCMD;
 import eu.mcone.coresystem.bukkit.world.LocationManager;
@@ -72,7 +73,7 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
             try {
                 while (rs.next()) {
                     if (rs.getString("texture") != null) {
-                        this.npcs.put(rs.getString("name"), new NPC(rs.getString("name"), Objects.requireNonNull(LocationManager.fromJson(rs.getString("location"))), rs.getString("texture"), rs.getString("displayname")));
+                        this.npcs.put(rs.getString("name"), new NPC(rs.getString("name"), Objects.requireNonNull(CoreLocation.fromJson(rs.getString("location")).bukkit()), rs.getString("texture"), rs.getString("displayname")));
                     } else {
                         System.err.println("NPC "+rs.getString("name")+" besitzt keine Textur!");
                     }
@@ -99,7 +100,7 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
         this.npcs.put(name, npc);
         this.updateNPCs();
 
-        String json = LocationManager.toJson(loc);
+        String json = new CoreLocation(loc).toJson();
         this.mysql.update("INSERT INTO bukkitsystem_npcs (`name`, `location`, `displayname`, `texture`, `server`) VALUES ('"+name+"', '"+json+"', '"+displayname+"', '"+texture+"', '"+this.server+"') " +
                 "ON DUPLICATE KEY UPDATE `location`='"+json+"'");
     }
@@ -110,7 +111,7 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
             NPC npc = new NPC(name, loc, texture, displayname);
 
             if (!npc.isLocal()) {
-                String json = LocationManager.toJson(loc);
+                String json = new CoreLocation(loc).toJson();
                 this.mysql.update("UPDATE bukkitsystem_npcs SET `location`='" + json + "', `displayname`='" + displayname + "', `texture`='" + texture + "' WHERE `name`='" + name + "' AND `server`='" + this.server + "'");
             }
 

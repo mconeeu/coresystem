@@ -38,7 +38,7 @@ public interface WorldManager {
      * @param environment Environment of the target world
      * @return new bukkit world
      */
-    boolean addWorld(String name, World.Environment environment);
+    boolean importWorld(String name, World.Environment environment);
 
     /**
      * To use for new non-existing worlds
@@ -47,7 +47,7 @@ public interface WorldManager {
      * @return boolean created
      * @throws IllegalArgumentException thrown if one setting was formatted false, but world was created though
      */
-    boolean addWorld(String name, Map<String, String> settings) throws IllegalArgumentException;
+    boolean createWorld(String name, Map<String, String> settings) throws IllegalArgumentException;
 
     /**
      * reloads all world configs

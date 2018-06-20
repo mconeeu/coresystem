@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bungee.listener;
 
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.bungee.utils.TeamspeakVerifier;
 import eu.mcone.coresystem.core.mysql.Database;
 import net.labymod.serverapi.LabyPermission;
 import net.md_5.bungee.api.ChatColor;
@@ -119,7 +120,8 @@ public class PostLogin implements Listener{
                 put(LabyPermission.GUI_ITEM_HUD, false);
             }});
 
-            if (cp.isTeamspeakIdLinked()) BungeeCoreSystem.getSystem().getTeamspeakVerifier().updateLink(cp, null);
+            TeamspeakVerifier tsv = BungeeCoreSystem.getSystem().getTeamspeakVerifier();
+            if (cp.isTeamspeakIdLinked() && tsv != null) tsv.updateLink(cp, null);
         },1000L, TimeUnit.MILLISECONDS);
     }
 

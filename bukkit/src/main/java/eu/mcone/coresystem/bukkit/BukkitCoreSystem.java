@@ -21,6 +21,7 @@ import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
 import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
 import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
+import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.LocationManager;
 import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
@@ -68,7 +69,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private MySQL mysql1;
     private MySQL mysql2;
     private MySQL mysql3;
-    private MySQL mysql4;
     private Map<UUID, CoreInventory> inventories;
     private Map<String, CorePlugin> plugins;
     private Map<Gamemode, StatsAPI> stats;
@@ -140,14 +140,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             stats.put(gamemode, new StatsAPI(this, gamemode));
         }
 
-        try {
-            Class.forName("eu.mcone.cloud.plugin.CloudPlugin");
-            sendConsoleMessage("§aCloudSystem available!");
-            cloudsystemAvailable = true;
-        } catch (ClassNotFoundException e) {
-            cloudsystemAvailable = false;
-            sendConsoleMessage("§cCloudSystem not available!");
-        }
+        cloudsystemAvailable = checkIfCloudSystemAvailable();
+        sendConsoleMessage("§7CloudSystem available: "+cloudsystemAvailable);
 
         sendConsoleMessage("§aInitializing LabyModAPI...");
         labyModAPI = new LabyModAPI(this);
@@ -416,9 +410,14 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         return new eu.mcone.coresystem.bukkit.world.BuildSystem(this, notify, events);
     }
 
-    @Override
+    @Override @Deprecated
     public LocationManager initialiseLocationManager(String server) {
         return new eu.mcone.coresystem.bukkit.world.LocationManager(mysql1, server);
+    }
+
+    @Override
+    public void enableSpawnCommand(CoreWorld world) {
+        getCommand("spawn").setExecutor(new SpawnCMD(world));
     }
 
     @Override

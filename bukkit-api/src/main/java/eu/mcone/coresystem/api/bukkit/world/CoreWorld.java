@@ -10,6 +10,7 @@ import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldType;
+import org.bukkit.entity.Player;
 
 import java.util.Map;
 
@@ -52,6 +53,12 @@ public interface CoreWorld {
     String getGeneratorSettings();
 
     /**
+     * get the template name
+     * @return template name
+     */
+    String getTemplateName();
+
+    /**
      * check if world is generating structures
      * @return generating structures
      */
@@ -64,79 +71,97 @@ public interface CoreWorld {
     boolean isLoadOnStartup();
 
     /**
-     * get the template name
-     * @return template name
+     * check if worlds auto-save mechanism is toggled on
+     * @return autosave on
      */
-    String getTemplateName();
+    boolean isAutoSave();
 
     /**
-     * get additional world properties
-     * @return world properties
+     * check if pvp is enabled
+     * @return pvp enabled
      */
-    WorldProperties getProperties();
+    boolean isPvp();
+
+    /**
+     * check if animals are allowed
+     * @return animals allowed
+     */
+    boolean isAllowAnimals();
+
+    /**
+     * check if monsters are allowed
+     * @return monsters allowed
+     */
+    boolean isAllowMonsters();
+
+    /**
+     * check if spawn should be kept in memory
+     * @return keep spawn in memory
+     */
+    boolean isKeepSpawnInMemory();
 
     /**
      * set world type
      * @param worldType world type
      * @return this
      */
-    CoreWorld setWorldType(WorldType worldType);
+    void setWorldType(WorldType worldType);
 
     /**
      * set world environment
      * @param environment world environment
      * @return this
      */
-    CoreWorld setEnvironment(World.Environment environment);
+    void setEnvironment(World.Environment environment);
 
     /**
      * set difficulty
      * @param difficulty difficulty
      * @return this
      */
-    CoreWorld setDifficulty(Difficulty difficulty);
+    void setDifficulty(Difficulty difficulty);
 
     /**
      * set generator name
      * @param generator generator name
      * @return this
      */
-    CoreWorld setGenerator(String generator);
+    void setGenerator(String generator);
 
     /**
      * set generator settings
      * @param settings generator settings
      * @return this
      */
-    CoreWorld setGeneratorSettings(String settings);
+    void setGeneratorSettings(String settings);
 
     /**
      * set if world should generate structures
      * @param generate boolean to generate structures
      * @return this
      */
-    CoreWorld generateStructures(boolean generate);
+    void setGenerateStructures(boolean generate);
 
     /**
      * set if the world should be loaded on startup
      * @param load boolean to load on startup
      * @return this
      */
-    CoreWorld loadOnStartup(boolean load);
+    void setLoadOnStartup(boolean load);
 
     /**
      * set Template name for CloudSystem
      * @param name template name
      * @return this
      */
-    CoreWorld setTemplateName(String name);
+    void setTemplateName(String name);
 
     /**
      * set spawn location
      * @param location
      * @return this
      */
-    CoreWorld setSpawnLocation(Location location);
+    void setSpawnLocation(Location location);
 
     /**
      * get the Bukkit World object
@@ -149,6 +174,20 @@ public interface CoreWorld {
      * @return spawn location as int array
      */
     int[] getSpawnLocation();
+
+    /**
+     * teleports a player to a saved location by its name
+     * @param player Bukkit Player
+     * @param locationName name of the saved location
+     */
+    void teleport(Player player, String locationName);
+
+    /**
+     * teleports a player to a saved location by its name without notifying him
+     * @param player Bukkit Player
+     * @param locationName name of the saved location
+     */
+    void teleportSilently(Player player, String locationName);
 
     /**
      * get saved location from the internal world storage

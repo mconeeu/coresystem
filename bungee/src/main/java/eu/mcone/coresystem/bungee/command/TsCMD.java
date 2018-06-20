@@ -9,6 +9,7 @@ package eu.mcone.coresystem.bungee.command;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.bungee.utils.TeamspeakVerifier;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ClickEvent.Action;
@@ -47,7 +48,8 @@ public class TsCMD extends Command {
                 return;
             } else if (args.length == 1 && args[0].equalsIgnoreCase("unlink")) {
                 if (cp.isTeamspeakIdLinked()) {
-                    BungeeCoreSystem.getSystem().getTeamspeakVerifier().unlink(cp);
+                    TeamspeakVerifier tsv = BungeeCoreSystem.getSystem().getTeamspeakVerifier();
+                    if (tsv != null) tsv.unlink(cp);
                     BungeeCoreSystem.getInstance().getMessager().send(p, "§2Deine Identität wurde erfolgreich von deinem Minecraftaccount entfernt. Benutze §a/ts link <Identität-UID>§2 um wieder eine Identität zu verlinken.");
                 } else {
                     BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du hast gerade keine TeamSpeak-Identität verlinkt! Benutze §a/ts link <Identität-UID>§2 um eine Identität zu verlinken.");
@@ -55,7 +57,8 @@ public class TsCMD extends Command {
                 return;
             } else if (args.length == 2 && args[0].equalsIgnoreCase("link")) {
                 if (!cp.isTeamspeakIdLinked()) {
-                    BungeeCoreSystem.getSystem().getTeamspeakVerifier().addRegistering(p, args[1]);
+                    TeamspeakVerifier tsv = BungeeCoreSystem.getSystem().getTeamspeakVerifier();
+                    if (tsv != null) tsv.addRegistering(p, args[1]);
                     BungeeCoreSystem.getInstance().getMessager().send(p, "§2Bitte wechsle zu deinem TeamSpeak Fenster und gib in dem gerade vom §f[Bot] mc1net§2 geöffneten Chat deinen §aMinecraft-Namen§2 ein, um den Vorgang abzuschließen.");
                 } else {
                     BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du kannst nicht mehr als eine TeamSpeak Identität verlinken!");

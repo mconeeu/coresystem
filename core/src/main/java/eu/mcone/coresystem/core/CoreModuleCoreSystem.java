@@ -11,6 +11,15 @@ import eu.mcone.coresystem.core.mysql.MySQL;
 
 public interface CoreModuleCoreSystem {
 
+    default boolean checkIfCloudSystemAvailable() {
+        try {
+            Class.forName("eu.mcone.cloud.plugin.CloudPlugin");
+            return true;
+        } catch (ClassNotFoundException e) {
+           return false;
+        }
+    }
+
     MySQL getMySQL(Database database);
 
 }

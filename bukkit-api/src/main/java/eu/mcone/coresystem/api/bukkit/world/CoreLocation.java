@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.api.bukkit.world;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +20,25 @@ public final class CoreLocation {
     private String worldName;
     private double x, y, z;
     private float yaw, pitch;
+
+    public CoreLocation(Location loc) {
+        this(
+                loc.getWorld().getName(),
+                loc.getX(),
+                loc.getY(),
+                loc.getZ(),
+                loc.getYaw(),
+                loc.getPitch()
+        );
+    }
+
+    public static CoreLocation fromJson(String json) {
+        return CoreSystem.getInstance().getGson().fromJson(json, CoreLocation.class);
+    }
+
+    public String toJson() {
+        return CoreSystem.getInstance().getGson().toJson(this, getClass());
+    }
 
     /**
      * get Bukkit Location object

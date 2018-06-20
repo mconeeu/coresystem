@@ -11,13 +11,17 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.WorldProperties;
+import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.annotation.DontObfuscate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.builder.Diff;
 import org.bukkit.*;
 import org.bukkit.entity.*;
+import org.omg.CORBA.Environment;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -25,16 +29,18 @@ import java.io.IOException;
 import java.util.Map;
 
 @AllArgsConstructor
-@Getter
+@Getter @Setter
 @DontObfuscate
 public class BukkitCoreWorld implements CoreWorld {
 
-    private String name, worldType, environment, difficulty, generator, generatorSettings, templateName;
-    private boolean generateStructures, loadOnStartup;
-    private WorldProperties properties;
-    private int[] spawnLocation;
+    private String name, worldType = "NORMAL", environment = "NORMAL", difficulty = "NORMAL", generator, generatorSettings, templateName;
+    private boolean generateStructures = false, loadOnStartup = true, autoSave = true, pvp, allowAnimals, allowMonsters, keepSpawnInMemory = true;
+    private int[] spawnLocation = new int[]{0, 0, 0};
 
     private Map<String, CoreLocation> locations;
+
+    //this constructor is needed!
+    public BukkitCoreWorld() {}
 
     @Override
     public World bukkit() {
@@ -42,51 +48,36 @@ public class BukkitCoreWorld implements CoreWorld {
     }
 
     @Override
-    public CoreWorld setWorldType(WorldType worldType) {
+    public void setWorldType(WorldType worldType) {
         this.worldType = worldType.toString();
-        return this;
     }
 
     @Override
-    public CoreWorld setEnvironment(World.Environment environment) {
+    public void setEnvironment(World.Environment environment) {
         this.environment = environment.toString();
-        return this;
     }
 
     @Override
-    public CoreWorld setDifficulty(Difficulty difficulty) {
+    public void setDifficulty(Difficulty difficulty) {
         this.difficulty = difficulty.toString();
-        return this;
     }
 
     @Override
-    public CoreWorld setGenerator(String generator) {
-        this.generator = generator;
-        return this;
+    public void teleport(Player p, String locationName) {
+        CoreLocation loc = getLocation(locationName);
+
+        if (loc != null) {
+            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wirst teleportiert...");
+            p.teleport(loc.bukkit());
+        } else {
+            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Dieser Ort existiert nicht.");
+        }
     }
 
     @Override
-    public CoreWorld setGeneratorSettings(String settings) {
-        this.generatorSettings = settings;
-        return this;
-    }
-
-    @Override
-    public CoreWorld generateStructures(boolean generate) {
-        this.generateStructures = generate;
-        return this;
-    }
-
-    @Override
-    public CoreWorld loadOnStartup(boolean load) {
-        this.loadOnStartup = load;
-        return this;
-    }
-
-    @Override
-    public CoreWorld setTemplateName(String name) {
-        this.templateName = name;
-        return this;
+    public void teleportSilently(Player p, String locationName) {
+        CoreLocation loc = getLocation(locationName);
+        if (getLocation(locationName) != null) p.teleport(loc.bukkit());
     }
 
     @Override
@@ -95,11 +86,9 @@ public class BukkitCoreWorld implements CoreWorld {
     }
 
     @Override
-    public CoreWorld setSpawnLocation(Location loc) {
+    public void setSpawnLocation(Location loc) {
         this.spawnLocation = new int[]{(int) loc.getX(), (int) loc.getY(), (int) loc.getZ()};
         bukkit().setSpawnLocation(spawnLocation[0], spawnLocation[1], spawnLocation[2]);
-
-        return this;
     }
 
     @Override
@@ -172,10 +161,12 @@ public class BukkitCoreWorld implements CoreWorld {
     @Override
     public void save() {
         setupWorld();
-        File config = new File(bukkit().getWorldFolder(), WorldManager.CONFIG_NAME);
 
-        try (JsonWriter writer = new JsonWriter(new FileWriter(config))) {
-            CoreSystem.getInstance().getGson().toJson(this, getClass(), writer);
+        try {
+            File config = new File(bukkit().getWorldFolder(), WorldManager.CONFIG_NAME);
+            if (!config.exists()) config.createNewFile();
+
+            FileUtils.writeStringToFile(config, CoreSystem.getInstance().getGson().toJson(this, getClass()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -186,14 +177,14 @@ public class BukkitCoreWorld implements CoreWorld {
 
         w.setDifficulty(Difficulty.valueOf(difficulty));
         w.setSpawnLocation(spawnLocation[0], spawnLocation[1], spawnLocation[2]);
-        w.setPVP(properties.isPvp());
-        w.setKeepSpawnInMemory(properties.isKeepSpawnInMemory());
+        w.setPVP(pvp);
+        w.setKeepSpawnInMemory(keepSpawnInMemory);
 
-        if (!properties.isAllowAnimals()) {
+        if (!allowAnimals) {
             w.setAnimalSpawnLimit(0);
             w.setWaterAnimalSpawnLimit(0);
         }
-        if (!properties.isAllowMonsters()) {
+        if (!allowMonsters) {
             w.setMonsterSpawnLimit(0);
         }
     }

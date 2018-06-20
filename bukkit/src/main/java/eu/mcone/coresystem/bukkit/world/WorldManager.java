@@ -9,7 +9,6 @@ package eu.mcone.coresystem.bukkit.world;
 import com.google.gson.stream.JsonReader;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import eu.mcone.coresystem.api.bukkit.world.WorldProperties;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.WorldCMD;
 import org.bukkit.*;
@@ -50,10 +49,11 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                     if (config.exists()) {
                         try (JsonReader reader = new JsonReader(new FileReader(config))) {
                             BukkitCoreWorld w = CoreSystem.getInstance().getGson().fromJson(reader, BukkitCoreWorld.class);
+                            reader.close();
 
                             if (w.isLoadOnStartup()) {
                                 if (world == null) {
-                                    WorldCreator wc = new WorldCreator(dir.getName())
+                                    WorldCreator wc = new WorldCreator(w.getName())
                                             .environment(World.Environment.valueOf(w.getEnvironment()))
                                             .type(WorldType.valueOf(w.getWorldType()))
                                             .generateStructures(w.isGenerateStructures());
@@ -66,11 +66,11 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
 
                                     wc.createWorld();
                                 }
-                            }
 
-                            w.setupWorld();
-                            coreWorlds.add(w);
-                            BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + w.getName());
+                                w.save();
+                                coreWorlds.add(w);
+                                BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + w.getName());
+                            }
                         }
                     } else {
                         if (world != null) {
@@ -116,42 +116,46 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
         return null;
     }
 
-
     @Override
-    public boolean addWorld(String name, World.Environment environment) {
-        try {
-            File uid = new File(name, "level.dat");
-            if (uid.exists()) {
-                uid.delete();
-            }
-
-            World world = new WorldCreator(name).environment(environment).createWorld();
-            File config = new File(name, CONFIG_NAME);
-
-            if (config.exists()) {
-                try (JsonReader reader = new JsonReader(new FileReader(config))) {
-                    BukkitCoreWorld w = CoreSystem.getInstance().getGson().fromJson(reader, BukkitCoreWorld.class);
-                    w.setupWorld();
-                    coreWorlds.add(w);
+    public boolean importWorld(String name, World.Environment environment) {
+        if (new File(name).exists()) {
+            try {
+                File uid = new File(name, "level.dat");
+                if (uid.exists()) {
+                    uid.delete();
                 }
-            } else {
-                if (config.createNewFile()) {
-                    coreWorlds.add(constructNewCoreWorld(world));
+
+                World world = new WorldCreator(name).environment(environment).createWorld();
+                File config = new File(name, CONFIG_NAME);
+
+                if (config.exists()) {
+                    try (JsonReader reader = new JsonReader(new FileReader(config))) {
+                        BukkitCoreWorld w = CoreSystem.getInstance().getGson().fromJson(reader, BukkitCoreWorld.class);
+                        w.setupWorld();
+                        coreWorlds.add(w);
+                    }
                 } else {
-                    throw new FileNotFoundException("Config File could not be created!");
+                    if (config.createNewFile()) {
+                        coreWorlds.add(constructNewCoreWorld(world));
+                    } else {
+                        throw new FileNotFoundException("Config File could not be created!");
+                    }
                 }
-            }
 
-            BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + world.getName());
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
+                BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + world.getName());
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        } else {
+            BukkitCoreSystem.getInstance().sendConsoleMessage("§4Could not import world " + name + "! World does not exist!");
             return false;
         }
     }
 
     @Override
-    public boolean addWorld(String name, Map<String, String> settings) throws IllegalArgumentException {
+    public boolean createWorld(String name, Map<String, String> settings) throws IllegalArgumentException {
         WorldCreator wc = new WorldCreator(name);
 
         try {
@@ -198,15 +202,12 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                 null,
                 null,
                 world.canGenerateStructures(),
-
                 true,
-                new WorldProperties(
-                        world.isAutoSave(),
-                        world.getPVP(),
-                        world.getAllowAnimals(),
-                        world.getAllowMonsters(),
-                        world.getKeepSpawnInMemory()
-                ),
+                world.isAutoSave(),
+                world.getPVP(),
+                world.getAllowAnimals(),
+                world.getAllowMonsters(),
+                world.getKeepSpawnInMemory(),
                 new int[]{(int) loc.getX(), (int) loc.getY(), (int) loc.getZ()},
                 Collections.emptyMap()
         );

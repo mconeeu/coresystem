@@ -20,6 +20,7 @@ import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
 import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
 import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
+import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.LocationManager;
 import eu.mcone.coresystem.api.bukkit.world.WorldManager;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
@@ -169,7 +170,16 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @param server name of server/plugin for database management
      * @return new LocationManager instance
      */
+    @Deprecated
     public abstract LocationManager initialiseLocationManager(String server);
+
+    /**
+     * enables an global /server spawn command
+     * IMPORTANT: The location "spawn" must be set in the core-config.json of the given world!
+     * otherwise the spawn command will throw an error to the player!
+     * @param world CoreWorld
+     */
+    public abstract void enableSpawnCommand(CoreWorld world);
 
     /**
      * registers a new CoreInventory (not necessary, extending the CoreInventory class will do this)

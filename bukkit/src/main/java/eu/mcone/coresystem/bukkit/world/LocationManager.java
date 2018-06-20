@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class LocationManager extends eu.mcone.coresystem.api.bukkit.world.LocationManager {
 
     private final MySQL mySQL;
@@ -32,7 +33,6 @@ public class LocationManager extends eu.mcone.coresystem.api.bukkit.world.Locati
         this.allowSpawnCMD = true;
 
         locations.put("spawn", null);
-        BukkitCoreSystem.getInstance().getCommand("spawn").setExecutor(new SpawnCMD(this));
     }
 
     public LocationManager registerLocation(String name) {

@@ -119,8 +119,8 @@ public class WorldCMD implements CommandExecutor {
                                         "\n§7§ogenerateStructures: §f" + bw.canGenerateStructures() +
                                         "\n§7§oautoSave: §f" + bw.isAutoSave() +
                                         "\n§7§opvp: §f" + bw.getPVP() +
-                                        "\n§7§oallowAnimals: §f" + w.getProperties().isAllowAnimals() +
-                                        "\n§7§oallowMonsters: §f" + w.getProperties().isAllowMonsters() +
+                                        "\n§7§oallowAnimals: §f" + w.isAllowAnimals() +
+                                        "\n§7§oallowMonsters: §f" + w.isAllowMonsters() +
                                         "\n§7§okeepSpawnInMemory: §f" + bw.getKeepSpawnInMemory() +
                                         "\n§7§oloadOnStartup: §f" + w.isLoadOnStartup() +
                                         "\n§7§otemplateName: §f" + w.getTemplateName()
@@ -245,21 +245,21 @@ public class WorldCMD implements CommandExecutor {
                                     } else if (args[1].equalsIgnoreCase("generatorSettings")) {
                                         w.setGeneratorSettings(args[2]);
                                     } else if (args[1].equalsIgnoreCase("generateStructures")) {
-                                        w.generateStructures(Boolean.valueOf(args[2]));
+                                        w.setGenerateStructures(Boolean.valueOf(args[2]));
                                     } else if (args[1].equalsIgnoreCase("autoSave")) {
-                                        w.getProperties().setAutoSave(Boolean.valueOf(args[2]));
+                                        w.setAutoSave(Boolean.valueOf(args[2]));
                                     } else if (args[1].equalsIgnoreCase("pvp")) {
-                                        w.getProperties().setPvp(Boolean.valueOf(args[2]));
+                                        w.setPvp(Boolean.valueOf(args[2]));
                                     } else if (args[1].equalsIgnoreCase("allowAnimals")) {
-                                        w.getProperties().setAllowAnimals(Boolean.valueOf(args[2]));
+                                        w.setAllowAnimals(Boolean.valueOf(args[2]));
                                         if (!Boolean.valueOf(args[2])) w.purgeAnimals();
                                     } else if (args[1].equalsIgnoreCase("allowMonsters")) {
-                                        w.getProperties().setAllowMonsters(Boolean.valueOf(args[2]));
+                                        w.setAllowMonsters(Boolean.valueOf(args[2]));
                                         if (!Boolean.valueOf(args[2])) w.purgeMonsters();
                                     } else if (args[1].equalsIgnoreCase("keepSpawnInMemory")) {
-                                        w.getProperties().setKeepSpawnInMemory(Boolean.valueOf(args[2]));
+                                        w.setKeepSpawnInMemory(Boolean.valueOf(args[2]));
                                     } else if (args[1].equalsIgnoreCase("loadOnStartup")) {
-                                        w.loadOnStartup(Boolean.valueOf(args[2]));
+                                        w.setLoadOnStartup(Boolean.valueOf(args[2]));
                                     } else if(args[1].equalsIgnoreCase("templateName")) {
                                         w.setTemplateName(args[2]);
                                     } else if (args[1].equalsIgnoreCase("seed")) {
@@ -293,7 +293,7 @@ public class WorldCMD implements CommandExecutor {
                                         }
 
                                         if (env != null) {
-                                            if (BukkitCoreSystem.getInstance().getWorldManager().addWorld(args[1], World.Environment.valueOf(args[2]))) {
+                                            if (BukkitCoreSystem.getInstance().getWorldManager().importWorld(args[1], World.Environment.valueOf(args[2]))) {
                                                 BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Welt §a" + args[1] + "§2 wurde erfolgreich geladen!");
                                             } else {
                                                 BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die Welt §c" + args[1] + "§4 konnte nicht importiert werden! Weitere Infos in der Konsole.");
@@ -332,7 +332,7 @@ public class WorldCMD implements CommandExecutor {
                                 }
 
                                 try {
-                                    if (BukkitCoreSystem.getInstance().getWorldManager().addWorld(args[1], settings)) {
+                                    if (BukkitCoreSystem.getInstance().getWorldManager().createWorld(args[1], settings)) {
                                         BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Welt §a" + args[1] + "§2 wurde erfolgreich erstellt!");
                                     } else {
                                         BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die Welt " + args[1] + " konnte nicht erstellt werden, da wahrscheinlich ein falsches Key-Value Konstrukt verwendet wurde!");

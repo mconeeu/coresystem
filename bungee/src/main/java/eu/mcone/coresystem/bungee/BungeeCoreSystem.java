@@ -63,7 +63,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private NickManager nickManager;
     @Getter
-    private TeamspeakVerifier teamspeakVerifier;
+    private TeamspeakVerifier teamspeakVerifier = null;
     @Getter
     private CoinsAPI coinsAPI;
     @Getter
@@ -105,6 +105,9 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         coinsAPI = new CoinsAPI(this);
         gson = new GsonBuilder().setPrettyPrinting().create();
 
+        cloudsystemAvailable = checkIfCloudSystemAvailable();
+        sendConsoleMessage("§7CloudSystem available: "+cloudsystemAvailable);
+
         sendConsoleMessage("§aLoading Translations...");
         translationManager = new TranslationManager(database);
         registerTranslations();
@@ -118,23 +121,18 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aInitializing LabyModAPI...");
         labyModAPI = new LabyModAPI(this);
 
-        sendConsoleMessage("§aLoading TeamSpeakQuery...");
-        teamspeakVerifier = new TeamspeakVerifier();
+        if (!Boolean.valueOf(System.getProperty("DisableTsQuery"))) {
+            sendConsoleMessage("§aLoading TeamSpeakQuery...");
+            teamspeakVerifier = new TeamspeakVerifier();
+        } else {
+            sendConsoleMessage("§cTeamSpeakQuery disabled by JVM Argument");
+        }
 
         sendConsoleMessage("§aLoading MessagingSystem...");
         MsgCMD.updateToggled();
 
         sendConsoleMessage("§aLoading Nicksystem...");
         nickManager = new NickManager(this);
-
-        try {
-            Class.forName("eu.mcone.cloud.plugin.CloudPlugin");
-            sendConsoleMessage("§aCloudSystem available!");
-            cloudsystemAvailable = true;
-        } catch (ClassNotFoundException e) {
-            cloudsystemAvailable = false;
-            sendConsoleMessage("§cCloudSystem not available!");
-        }
 
         sendConsoleMessage("§aRegistering Commands, Events & Scheduler...");
         registerCommand();
@@ -149,7 +147,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     public void onDisable() {
-        teamspeakVerifier.close();
+        if (teamspeakVerifier != null) teamspeakVerifier.close();
         for (ProxiedPlayer p : getProxy().getPlayers()) {
             database.update("UPDATE userinfo SET status='offline' WHERE uuid='" + p.getUniqueId() + "'");
         }
