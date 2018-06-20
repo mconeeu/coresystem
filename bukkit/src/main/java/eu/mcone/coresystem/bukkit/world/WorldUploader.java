@@ -43,7 +43,7 @@ class WorldUploader {
         new Zip(worldFile, zipFile);
 
         try {
-            Connection con = DriverManager.getConnection("jdbc:mariadb://mysql.mcone.eu:3306/mc1cloud", "core-system", "RugQsbRUDABCG6zHrjLva4L7cLryL8tEScDDW3g2GGVg3M9zA9fEVkg2yU9r9KHG");
+            Connection con = DriverManager.getConnection("jdbc:mariadb://db.mcone.eu:3306/mc1cloud", "core-system", "RugQsbRUDABCG6zHrjLva4L7cLryL8tEScDDW3g2GGVg3M9zA9fEVkg2yU9r9KHG");
             PreparedStatement ps = con.prepareStatement("SELECT build FROM mc1cloud.cloudwrapper_worlds WHERE `name`='" + world.getName() + "'");
             ResultSet rs = ps.executeQuery();
 

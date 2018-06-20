@@ -315,17 +315,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                         ") " +
                         "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
         );
-
-        mysql.update(
-                "CREATE TABLE IF NOT EXISTS `bukkitsystem_locations`" +
-                        "(" +
-                        "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY," +
-                        "`name` VARCHAR(100) NOT NULL," +
-                        "`location` VARCHAR(100) NOT NULL," +
-                        "`server` VARCHAR(100) NOT NULL" +
-                        ")" +
-                        "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
-        );
     }
 
     private void createPluginDir(String path) {
