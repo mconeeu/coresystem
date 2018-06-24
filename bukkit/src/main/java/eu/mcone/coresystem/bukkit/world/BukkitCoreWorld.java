@@ -6,60 +6,41 @@
 
 package eu.mcone.coresystem.bukkit.world;
 
-import com.google.gson.stream.JsonWriter;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import eu.mcone.coresystem.api.bukkit.world.WorldProperties;
-import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.annotation.DontObfuscate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.builder.Diff;
 import org.bukkit.*;
 import org.bukkit.entity.*;
-import org.omg.CORBA.Environment;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter @Setter
 @DontObfuscate
 public class BukkitCoreWorld implements CoreWorld {
 
-    private String name, worldType = "NORMAL", environment = "NORMAL", difficulty = "NORMAL", generator, generatorSettings, templateName;
+    private String name, alias, generator, generatorSettings, templateName;
+    private WorldType worldType = WorldType.NORMAL;
+    private World.Environment environment = World.Environment.NORMAL;
+    private Difficulty difficulty = Difficulty.NORMAL;
     private boolean generateStructures = false, loadOnStartup = true, autoSave = true, pvp, allowAnimals, allowMonsters, keepSpawnInMemory = true;
     private int[] spawnLocation = new int[]{0, 0, 0};
 
     private Map<String, CoreLocation> locations;
 
-    //this constructor is needed!
-    public BukkitCoreWorld() {}
-
     @Override
     public World bukkit() {
         return Bukkit.getWorld(name);
-    }
-
-    @Override
-    public void setWorldType(WorldType worldType) {
-        this.worldType = worldType.toString();
-    }
-
-    @Override
-    public void setEnvironment(World.Environment environment) {
-        this.environment = environment.toString();
-    }
-
-    @Override
-    public void setDifficulty(Difficulty difficulty) {
-        this.difficulty = difficulty.toString();
     }
 
     @Override
@@ -114,8 +95,8 @@ public class BukkitCoreWorld implements CoreWorld {
 
         if (folder.renameTo(new File(folder.getParent() + File.separator + name))) {
             WorldCreator wc = new WorldCreator(name)
-                    .environment(World.Environment.valueOf(environment))
-                    .type(WorldType.valueOf(worldType))
+                    .environment(environment)
+                    .type(worldType)
                     .generateStructures(generateStructures);
 
             if (generator != null) {
@@ -175,7 +156,7 @@ public class BukkitCoreWorld implements CoreWorld {
     void setupWorld() {
         World w = bukkit();
 
-        w.setDifficulty(Difficulty.valueOf(difficulty));
+        w.setDifficulty(difficulty);
         w.setSpawnLocation(spawnLocation[0], spawnLocation[1], spawnLocation[2]);
         w.setPVP(pvp);
         w.setKeepSpawnInMemory(keepSpawnInMemory);

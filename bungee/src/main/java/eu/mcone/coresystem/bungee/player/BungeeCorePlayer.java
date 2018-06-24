@@ -7,9 +7,14 @@
 package eu.mcone.coresystem.bungee.player;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.event.PlayerSettingsChangeEvent;
+import eu.mcone.coresystem.api.bungee.player.FriendData;
 import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
+import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.bungee.utils.PluginMessage;
+import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import lombok.Getter;
@@ -19,9 +24,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 public class BungeeCorePlayer extends GlobalCorePlayer implements eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer {
 
@@ -30,13 +32,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
     @Getter
     private long muteTime;
     @Getter
-    private Map<UUID, String> friends;
-    @Getter
-    private Map<UUID, String> friendRequests;
-    @Getter
-    private List<UUID> blocks;
-    @Getter @Setter
-    private boolean requestsToggled;
+    private FriendData friendData;
     private boolean muted = false;
     @Getter @Setter
     private SkinInfo nickedSkin;
@@ -60,11 +56,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
         ((BungeeCoreSystem) instance).getCorePlayers().put(uuid, this);
         reloadPermissions();
 
-        Object[] friendData = BungeeCoreSystem.getInstance().getFriendSystem().getData(uuid);
-        this.friends = (Map<UUID, String>) friendData[0];
-        this.friendRequests = (Map<UUID, String>) friendData[1];
-        this.blocks = (List<UUID>) friendData[2];
-        this.requestsToggled = (boolean) friendData[3];
+        this.friendData = BungeeCoreSystem.getInstance().getFriendSystem().getData(uuid);
 
         CoreSystem.getInstance().sendConsoleMessage("Loaded Player "+name+"!");
     }
@@ -84,6 +76,16 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
         }
 
         return muted;
+    }
+
+    @Override
+    public void updateSettings(PlayerSettings settings) {
+        ProxyServer.getInstance().getPluginManager().callEvent(new PlayerSettingsChangeEvent(this, settings));
+        new PluginMessage("Return", bungee().getServer().getInfo(), "PLAYER_SETTINGS", uuid.toString(), CoreSystem.getInstance().getGson().toJson(settings, PlayerSettings.class));
+
+        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update(
+                "UPDATE userinfo SET player_settings='"+((CoreModuleCoreSystem) instance).getGson().toJson(settings, PlayerSettings.class)+"' WHERE uuid ='"+uuid+"'"
+        );
     }
 
     @Override

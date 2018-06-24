@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.core.mysql;
 
+import com.google.gson.internal.Primitives;
 import com.zaxxer.hikari.HikariDataSource;
 import eu.mcone.coresystem.api.core.mysql.Callback;
 import eu.mcone.coresystem.api.core.mysql.CallbackResult;
@@ -23,14 +24,12 @@ public class MySQL implements eu.mcone.coresystem.api.core.mysql.MySQL {
         ds = new HikariDataSource();
         ds.setMaximumPoolSize(database.getPoolsize());
         ds.setDriverClassName("org.mariadb.jdbc.Driver");
-        ds.setJdbcUrl("jdbc:mariadb://"+database.getHostname()+":"+database.getPort()+"/"+database.getDatabase()+"?autoReconnect=true");
+        ds.setJdbcUrl("jdbc:mariadb://"+database.getHostname()+":"+database.getPort()+"/"+database.getDatabase());
         ds.addDataSourceProperty("user", database.getUsername());
         ds.addDataSourceProperty("password", database.getPassword());
+        ds.setMaxLifetime(28800000L);
 
-        //config.addDataSourceProperty("cachePrepStmts", "true");
-        //config.addDataSourceProperty("prepStmtCacheSize", "250");
-        //config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        System.out.println("Verbunden zu Datenbank "+ds.getJdbcUrl());
+        System.out.println("Created pool for database "+ds.getJdbcUrl());
 	}
 
 	public void close() {
@@ -127,8 +126,8 @@ public class MySQL implements eu.mcone.coresystem.api.core.mysql.MySQL {
     }
 
     @Override
-    public Object select(String qry, CallbackResult<ResultSet> cb){
-	    Object o = null;
+    public <T> T select(String qry, CallbackResult<ResultSet> cb, Class<T> typeClass){
+        Object o = null;
         try {
             final Connection con = this.ds.getConnection();
 
@@ -140,12 +139,10 @@ public class MySQL implements eu.mcone.coresystem.api.core.mysql.MySQL {
             result.close();
             preparedStatement.close();
             con.close();
-
-            return o;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return o;
+        return Primitives.wrap(typeClass).cast(o);
     }
 
     public Connection getConnection() {

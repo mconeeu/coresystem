@@ -64,7 +64,7 @@ public class PreferencesManager implements Preferences {
 
     @Override
     public String getLiveString(Preference preference) {
-        return (String) mySQL.select("SELECT `value` FROM `bungeesystem_preferences` WHERE `key`='" + preference + "'", rs -> {
+        return mySQL.select("SELECT `value` FROM `bungeesystem_preferences` WHERE `key`='" + preference + "'", rs -> {
             try {
                 if (rs.next()) {
                     return rs.getString("value");
@@ -73,12 +73,12 @@ public class PreferencesManager implements Preferences {
                 e.printStackTrace();
             }
             return null;
-        });
+        }, String.class);
     }
 
     @Override
     public int getLiveInt(Preference preference) {
-        return (int) mySQL.select("SELECT `value` FROM `bungeesystem_preferences` WHERE `key`='" + preference + "'", rs -> {
+        return mySQL.select("SELECT `value` FROM `bungeesystem_preferences` WHERE `key`='" + preference + "'", rs -> {
             try {
                 if (rs.next()) {
                     return Integer.valueOf(rs.getString("value"));
@@ -87,12 +87,12 @@ public class PreferencesManager implements Preferences {
                 e.printStackTrace();
             }
             return null;
-        });
+        }, int.class);
     }
 
     @Override
     public boolean getLiveBoolean(Preference preference) {
-        return (boolean) mySQL.select("SELECT `value` FROM `bungeesystem_preferences` WHERE `key`='" + preference + "'", rs -> {
+        return mySQL.select("SELECT `value` FROM `bungeesystem_preferences` WHERE `key`='" + preference + "'", rs -> {
             try {
                 if (rs.next()) {
                     return Boolean.valueOf(rs.getString("value"));
@@ -101,7 +101,7 @@ public class PreferencesManager implements Preferences {
                 e.printStackTrace();
             }
             return null;
-        });
+        }, boolean.class);
     }
 
 }

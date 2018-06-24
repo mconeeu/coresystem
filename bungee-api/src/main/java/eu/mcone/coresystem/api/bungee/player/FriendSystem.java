@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface FriendSystem {
 
-    Object[] getData(UUID uuid);
+    FriendData getData(UUID uuid);
 
 
     void addFriend(UUID player, UUID friend, String friendName);

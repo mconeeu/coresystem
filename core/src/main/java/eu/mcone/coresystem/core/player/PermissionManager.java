@@ -159,7 +159,7 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
                 e.printStackTrace();
             }
             return null;
-        });
+        }, Set.class);
     }
 
     private void addPermission(Group group, String permission) {

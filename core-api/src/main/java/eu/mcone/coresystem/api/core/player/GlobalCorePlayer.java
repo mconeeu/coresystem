@@ -99,6 +99,18 @@ public interface GlobalCorePlayer {
     LabyModConnection getLabyModConnection();
 
     /**
+     * returns the mcone player settings
+     * @return player settings
+     */
+    PlayerSettings getSettings();
+
+    /**
+     * changes the player settings and updates both bungee & bukkit server
+     * @param settings player settings
+     */
+    void updateSettings(PlayerSettings settings);
+
+    /**
      * returns the TeamSpeak UID from the players linked TeamSpeak identity
      * if no TS identity is linked null will be returned
      * @return TeamSpeak UID

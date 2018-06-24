@@ -6,6 +6,9 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.friend.Party;
 import net.md_5.bungee.api.CommandSender;
@@ -59,19 +62,27 @@ public class PartyCMD extends Command implements TabExecutor {
                     final Party party = Party.getParty(p);
 
                     if (t != null) {
+                        final BungeeCorePlayer tc = CoreSystem.getInstance().getCorePlayer(t);
+
                         switch (args[0]) {
                             case "invite": {
                                 if (Party.getParty(t) == null) {
-                                    if (party != null) {
-                                        if (party.getLeader().equals(p)) {
-                                            BungeeCoreSystem.getInstance().getMessager().sendParty(p, "§f" + t.getName() + " §2wird in die Party eingeladen!");
-                                            party.invite(t);
-                                        } else {
-                                            BungeeCoreSystem.getInstance().getMessager().sendParty(p, "§4Du bist kein Partyleader!");
-                                        }
+                                    if (tc.getSettings().getPartyInvites().equals(PlayerSettings.Sender.NOBODY)) {
+                                        BungeeCoreSystem.getInstance().getMessager().sendParty(p, "§4Dieser Spieler hat Party-Einladungen ausgeschaltet!");
+                                    } else if (tc.getSettings().getPartyInvites().equals(PlayerSettings.Sender.FRIENDS) && !tc.getFriendData().getFriends().containsKey(p.getUniqueId())) {
+                                        BungeeCoreSystem.getInstance().getMessager().sendParty(p, "§4Dieser Spieler emfängt nur Party-Einladungen von Freunden!");
                                     } else {
-                                        BungeeCoreSystem.getInstance().getMessager().sendParty(p, "§7§oDu bist in keiner Party!");
-                                        new Party(p, t);
+                                        if (party != null) {
+                                            if (party.getLeader().equals(p)) {
+                                                BungeeCoreSystem.getInstance().getMessager().sendParty(p, "§f" + t.getName() + " §2wird in die Party eingeladen!");
+                                                party.invite(t);
+                                            } else {
+                                                BungeeCoreSystem.getInstance().getMessager().sendParty(p, "§4Du bist kein Partyleader!");
+                                            }
+                                        } else {
+                                            BungeeCoreSystem.getInstance().getMessager().sendParty(p, "§7§oDu bist in keiner Party!");
+                                            new Party(p, t);
+                                        }
                                     }
                                 } else {
                                     BungeeCoreSystem.getInstance().getMessager().sendParty(p, "§4Dieser Spieler ist bereits in einer Party!");

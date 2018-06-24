@@ -40,18 +40,23 @@ public class ProfileInventory extends CoreInventory {
                             ).create()
                     );
 
-                    setItem(20, new ItemBuilder(Material.NETHER_STAR, 1, 0).displayName("§f§lStats").lore("§7§oRufe die deine Spielerstatistiken", "§7§oaus allen MC ONE Spielmodi ab!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), () -> {
+                    setItem(19, new ItemBuilder(Material.NETHER_STAR, 1, 0).displayName("§f§lStats").lore("§7§oRufe die deine Spielerstatistiken", "§7§oaus allen MC ONE Spielmodi ab!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), () -> {
                         p.performCommand("stats");
                         p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
                     });
 
-                    setItem(22, new ItemBuilder(Material.SKULL_ITEM, 1, 3).displayName("§9§lFreunde").lore("", "§7§oZeige deine Freunde und", "§7§oFreundschaftsanzeigen", "§7§oan!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), () -> {
+                    setItem(21, new ItemBuilder(Material.SKULL_ITEM, 1, 3).displayName("§9§lFreunde").lore("", "§7§oZeige deine Freunde und", "§7§oFreundschaftsanzeigen", "§7§oan!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), () -> {
                         new FriendsInventory(p);
                         p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
                     });
 
-                    setItem(24, new ItemBuilder(Material.CAKE, 1, 0).displayName("§5§lParty").lore("", "§7§oZeige infos zu deiner Party", "§7§oan, oder ertselle eine!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), () -> {
+                    setItem(23, new ItemBuilder(Material.CAKE, 1, 0).displayName("§5§lParty").lore("", "§7§oZeige infos zu deiner Party", "§7§oan, oder ertselle eine!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), () -> {
                         new PartyInventory(p);
+                        p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+                    });
+
+                    setItem(25, new ItemBuilder(Material.REDSTONE, 1, 0).displayName("§c§lEinstellungen").lore("", "§7§oVerwalte dein Konto und andere", "§7§oingame Einstellungen", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), () -> {
+                        new PlayerSettingsInventory(p);
                         p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
                     });
 

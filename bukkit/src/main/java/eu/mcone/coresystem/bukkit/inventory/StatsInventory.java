@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 
 public class StatsInventory extends CoreInventory {
 
@@ -24,7 +25,7 @@ public class StatsInventory extends CoreInventory {
             new StatsCategoryInventory(p, BukkitCoreSystem.getInstance().getStatsAPI(Gamemode.SKYPVP));
             p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
         });
-        setItem(13, new ItemBuilder(Material.STICK, 1, 0).enchantment(Enchantment.KNOCKBACK, 1).displayName(Gamemode.KNOCKIT.getLabel()).create(), () -> {
+        setItem(13, new ItemBuilder(Material.STICK, 1, 0).enchantment(Enchantment.KNOCKBACK, 1).displayName(Gamemode.KNOCKIT.getLabel()).itemFlags(ItemFlag.HIDE_ENCHANTS).create(), () -> {
             new StatsCategoryInventory(p, BukkitCoreSystem.getInstance().getStatsAPI(Gamemode.KNOCKIT));
             p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
         });

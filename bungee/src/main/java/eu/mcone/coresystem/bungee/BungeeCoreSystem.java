@@ -128,9 +128,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             sendConsoleMessage("§cTeamSpeakQuery disabled by JVM Argument");
         }
 
-        sendConsoleMessage("§aLoading MessagingSystem...");
-        MsgCMD.updateToggled();
-
         sendConsoleMessage("§aLoading Nicksystem...");
         nickManager = new NickManager(this);
 
@@ -209,6 +206,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         getProxy().getPluginManager().registerListener(this, new PermissionCheck());
         getProxy().getPluginManager().registerListener(this, new PostLogin());
         getProxy().getPluginManager().registerListener(this, new ProxyPing());
+        getProxy().getPluginManager().registerListener(this, new PlayerSettingsChange());
         getProxy().getPluginManager().registerListener(this, new ServerConnect());
         getProxy().getPluginManager().registerListener(this, new PreLogin());
         getProxy().getPluginManager().registerListener(this, new PlayerDisconnect());

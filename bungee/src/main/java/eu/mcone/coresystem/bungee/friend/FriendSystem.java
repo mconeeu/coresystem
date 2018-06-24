@@ -7,8 +7,10 @@
 package eu.mcone.coresystem.bungee.friend;
 
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.api.bungee.player.FriendData;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.core.mysql.MySQL;
+import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import net.md_5.bungee.api.ProxyServer;
 
 import java.sql.SQLException;
@@ -22,12 +24,11 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
         this.mysql = mysql;
     }
 
-    public Object[] getData(UUID uuid) {
-        return (Object[]) this.mysql.select("SELECT f.uuid, f.target, f.key, u.uuid, u.name FROM bungeesystem_friends f, userinfo u WHERE f.target = u.uuid AND f.uuid = '"+uuid.toString()+"';", rs -> {
+    public FriendData getData(UUID uuid) {
+        return this.mysql.select("SELECT f.uuid, f.target, f.key, u.uuid, u.name FROM bungeesystem_friends f, userinfo u WHERE f.target = u.uuid AND f.uuid = '"+uuid.toString()+"';", rs -> {
             Map<UUID, String> friends = new HashMap<>();
             Map<UUID, String> requests = new HashMap<>();
             List<UUID> blocks = new ArrayList<>();
-            boolean requestsToggled = false;
 
             try {
                 while (rs.next()) {
@@ -35,21 +36,20 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
                         case "friend": friends.put(UUID.fromString(rs.getString("f.target")), rs.getString("u.name")); break;
                         case "request": requests.put(UUID.fromString(rs.getString("f.target")), rs.getString("u.name")); break;
                         case "block": blocks.add(UUID.fromString(rs.getString("f.target"))); break;
-                        case "toggled": requestsToggled = true; break;
                     }
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
 
-            return new Object[]{friends, requests, blocks, requestsToggled};
-        });
+            return new eu.mcone.coresystem.bungee.player.FriendData(friends, requests, blocks);
+        }, FriendData.class);
     }
 
     public void addFriend(UUID player, UUID friend, String friendName) {
         ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
             BungeeCorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
-            if (p != null) p.getFriends().put(friend, friendName);
+            if (p != null) p.getFriendData().getFriends().put(friend, friendName);
 
             long millis = System.currentTimeMillis() / 1000;
 
@@ -60,7 +60,7 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
     public void removeFriend(UUID player, UUID friend) {
         ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
             BungeeCorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
-            if (p != null) p.getFriends().remove(friend);
+            if (p != null) p.getFriendData().getFriends().remove(friend);
 
             this.mysql.update("DELETE FROM `bungeesystem_friends` WHERE `uuid`='" + player.toString() + "' AND `target`='" + friend.toString() + "' AND `key`='friend'");
         });
@@ -69,7 +69,7 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
     public void addRequest(UUID player, UUID friend, String friendName) {
         ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
             BungeeCorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
-            if (p != null) p.getFriendRequests().put(friend, friendName);
+            if (p != null) p.getFriendData().getRequests().put(friend, friendName);
 
             long millis = System.currentTimeMillis() / 1000;
 
@@ -80,7 +80,7 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
     public void removeRequest(UUID player, UUID friend) {
         ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
             BungeeCorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
-            if (p != null) p.getFriendRequests().remove(friend);
+            if (p != null) p.getFriendData().getRequests().remove(friend);
 
             this.mysql.update("DELETE FROM `bungeesystem_friends` WHERE `uuid`='" + player.toString() + "' AND `target`='" + friend.toString() + "' AND `key`='request'");
         });
@@ -89,7 +89,7 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
     public void addBlock(UUID player, UUID friend) {
         ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
             BungeeCorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
-            if (p != null) p.getBlocks().add(friend);
+            if (p != null) p.getFriendData().getBlocks().add(friend);
 
             long millis = System.currentTimeMillis() / 1000;
 
@@ -100,7 +100,7 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
     public void removeBlock(UUID player, UUID friend) {
         ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
             BungeeCorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
-            if (p != null) p.getBlocks().remove(friend);
+            if (p != null) p.getFriendData().getBlocks().remove(friend);
 
             this.mysql.update("DELETE FROM `bungeesystem_friends` WHERE `uuid`='" + player.toString() + "' AND `target`='" + friend.toString() + "' AND `key`='block'");
         });
@@ -108,7 +108,7 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
 
     public void addToggled(UUID player) {
         BungeeCorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
-        if (p != null) ((eu.mcone.coresystem.bungee.player.BungeeCorePlayer) p).setRequestsToggled(true);
+        if (p != null) ((PlayerSettings) p.getSettings()).setEnableFriendRequests(true);
 
         long millis = System.currentTimeMillis() / 1000;
 
@@ -118,7 +118,7 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
     public void removeToggled(UUID player) {
         ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
             BungeeCorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
-            if (p != null) ((eu.mcone.coresystem.bungee.player.BungeeCorePlayer) p).setRequestsToggled(false);
+            if (p != null) ((PlayerSettings) p.getSettings()).setEnableFriendRequests(true);
 
 
             this.mysql.update("DELETE FROM `bungeesystem_friends` WHERE `target`='" + player.toString() + "' AND `key`='toggled'");

@@ -124,14 +124,14 @@ public class TeamspeakVerifier {
                                 registering.put(players.get(0).getUuid(), clientInfo.getUniqueIdentifier());
                                 api.sendPrivateMessage(clientInfo.getId(), "[b][color=white]Bitte schreibe hier deinen [/color][color=darkcyan]Minecraftnamen[/color][color=white], um deinen TeamSpeak Account zu verknüpfen und alle Funktionen des TeamSpeaks nutzen zu können![/color][/b]");
                             }
-                        } else if ((boolean) BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT uuid FROM userinfo WHERE teamspeak_uid='" + clientInfo.getUniqueIdentifier() + "'", rs -> {
+                        } else if (BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT uuid FROM userinfo WHERE teamspeak_uid='" + clientInfo.getUniqueIdentifier() + "'", rs -> {
                             try {
                                 return !rs.next();
                             } catch (SQLException e1) {
                                 e1.printStackTrace();
                             }
                             return true;
-                        })) {
+                        }, boolean.class)) {
                             unsetLinkedGroups(clientInfo);
                             api.sendPrivateMessage(clientInfo.getId(), "[b][color=white]Dir wurde der Verifizierten-Rang entfernt, da du keinen Minecraft-Account mit deiner TeamSpeak-ID verlinkt hast.[/color][/b]");
                         }

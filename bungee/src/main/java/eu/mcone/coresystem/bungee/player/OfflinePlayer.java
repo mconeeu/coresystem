@@ -9,8 +9,11 @@ package eu.mcone.coresystem.bungee.player;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.player.FriendData;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.player.Group;
+import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
 import lombok.Getter;
@@ -31,22 +34,18 @@ public class OfflinePlayer {
     @Getter @Setter
     private Set<String> permissions;
     @Getter
-    private Map<UUID, String> friends;
-    @Getter @Setter
-    private Map<UUID, String> requests;
-    @Getter
-    private List<UUID> blocks;
-    @Getter @Setter
-    private boolean requestsToggled;
+    private FriendData friendData;
     @Getter
     private boolean banned, muted;
     @Getter
     private int banPoints, mutePoints;
     @Getter
     private long banTime, muteTime;
+    @Getter
+    private PlayerSettings settings;
 
     public OfflinePlayer(String name) throws CoreException {
-        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT uuid, groups, status, onlinetime FROM userinfo WHERE name='"+name+"'", rs -> {
+        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT uuid, groups, status, onlinetime, player_settings FROM userinfo WHERE name='"+name+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.uuid = UUID.fromString(rs.getString("uuid"));
@@ -54,6 +53,7 @@ public class OfflinePlayer {
                     this.onlinetime = rs.getLong("onlinetime");
                     this.joined = System.currentTimeMillis() / 1000;
                     this.groups = new HashSet<>();
+                    this.settings = CoreSystem.getInstance().getGson().fromJson(rs.getString("player_settings"), PlayerSettings.class);
                     JsonArray array = new JsonParser().parse(rs.getString("groups")).getAsJsonArray();
 
                     for (JsonElement e : array) {
@@ -70,12 +70,7 @@ public class OfflinePlayer {
     }
 
     public OfflinePlayer loadFriendData() {
-        Object[] friendData = BungeeCoreSystem.getInstance().getFriendSystem().getData(uuid);
-        this.friends = (Map<UUID, String>) friendData[0];
-        this.requests = (Map<UUID, String>) friendData[1];
-        this.blocks = (List<UUID>) friendData[2];
-        this.requestsToggled = (boolean) friendData[3];
-
+        this.friendData = BungeeCoreSystem.getInstance().getFriendSystem().getData(uuid);
         return this;
     }
 

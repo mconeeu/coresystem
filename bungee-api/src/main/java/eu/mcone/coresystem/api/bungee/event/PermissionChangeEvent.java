@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PermissionChangeEvent extends Event {
+public final class PermissionChangeEvent extends Event {
 
     @Getter
     private Kind kind;

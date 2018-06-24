@@ -11,7 +11,6 @@ import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
-import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.NickManager;
@@ -21,11 +20,9 @@ import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
 import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import eu.mcone.coresystem.api.bukkit.world.LocationManager;
 import eu.mcone.coresystem.api.bukkit.world.WorldManager;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
-import eu.mcone.coresystem.api.core.player.SkinInfo;
 import lombok.Getter;
 import net.labymod.serverapi.bukkit.LabyModAPI;
 import org.bukkit.ChatColor;
@@ -116,26 +113,6 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     public abstract Collection<BukkitCorePlayer> getOnlineCorePlayers();
 
     /**
-     * creates a new NPC
-     * @param name data name
-     * @param location location where the NPC should be visible
-     * @param texture predefined database name of the skin texture
-     * @param displayname displayname
-     * @return new NPC
-     */
-    public abstract NPC createNPC(String name, Location location, String texture, String displayname);
-
-    /**
-     * creates a new NPC
-     * @param name data name
-     * @param location location where the NPC should be visible
-     * @param skinInfo BCS SkinInfo object
-     * @param displayname displayname
-     * @return new NPC
-     */
-    public abstract NPC createNPC(String name, Location location, SkinInfo skinInfo, String displayname);
-
-    /**
      * creates a new Hologram
      * @param text array of lines that the hologram should display
      * @param location location
@@ -145,17 +122,17 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     /**
      * creates a new instance of NpcManager
-     * @param server name of server/plugin for database management
+     * @param plugin CorePlugin instance
      * @return new NpcManager instance
      */
-    public abstract NpcManager initialiseNpcManager(String server);
+    public abstract NpcManager initialiseNpcManager(CorePlugin plugin);
 
     /**
      * creates a new instance od HologramManager
-     * @param server name of server/plugin for database management
+     * @param plugin CorePlugin instance
      * @return new HologramManager instance
      */
-    public abstract HologramManager inititaliseHologramManager(String server);
+    public abstract HologramManager inititaliseHologramManager(CorePlugin plugin);
 
     /**
      * creates a new instance of BuildSystem
@@ -164,14 +141,6 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return nwe BuildSystem instance
      */
     public abstract BuildSystem initialiseBuildSystem(boolean notify, BuildSystem.BuildEvent... events);
-
-    /**
-     * creates a new LocationManager instance
-     * @param server name of server/plugin for database management
-     * @return new LocationManager instance
-     */
-    @Deprecated
-    public abstract LocationManager initialiseLocationManager(String server);
 
     /**
      * enables an global /server spawn command

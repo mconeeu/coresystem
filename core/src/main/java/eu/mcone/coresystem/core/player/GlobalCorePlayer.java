@@ -8,6 +8,7 @@ package eu.mcone.coresystem.core.player;
 
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
+import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
@@ -40,12 +41,14 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
     private String teamspeakUid;
     @Getter @Setter
     private LabyModConnection labyModConnection;
+    @Getter @Setter
+    private PlayerSettings settings;
 
     protected GlobalCorePlayer(final GlobalCoreSystem instance, String name) throws PlayerNotFoundException {
         this.instance = instance;
         this.name = name;
 
-        ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).select("SELECT uuid, groups, language, onlinetime, teamspeak_uid FROM userinfo WHERE name='"+name+"'", rs -> {
+        ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).select("SELECT uuid, groups, language, onlinetime, teamspeak_uid, player_settings FROM userinfo WHERE name='"+name+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.uuid = UUID.fromString(rs.getString("uuid"));
@@ -53,6 +56,7 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
                     this.groups = instance.getPermissionManager().getGroups(rs.getString("groups"));
                     this.onlinetime = rs.getLong("onlinetime");
                     this.teamspeakUid = rs.getString("teamspeak_uid");
+                    this.settings = ((CoreModuleCoreSystem) instance).getGson().fromJson(rs.getString("player_settings"), PlayerSettings.class);
                     this.joined = System.currentTimeMillis() / 1000;
                 }
             } catch (SQLException e) {
@@ -114,4 +118,5 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
     public boolean isTeamspeakIdLinked() {
         return teamspeakUid != null;
     }
+
 }

@@ -6,11 +6,14 @@
 
 package eu.mcone.coresystem.bukkit.channel;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.channel.FutureTask;
 import eu.mcone.coresystem.api.bukkit.event.CoinsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.event.PermissionChangeEvent;
+import eu.mcone.coresystem.api.bukkit.event.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -24,7 +27,7 @@ import java.util.UUID;
 
 public class PluginChannelListener implements PluginMessageListener {
 
-    public static Map<UUID, FutureTask<String>> tasks = new HashMap<>();
+    static Map<UUID, FutureTask<String>> tasks = new HashMap<>();
 
     @Override
     public void onPluginMessageReceived(String s, Player p, byte[] bytes) {
@@ -107,6 +110,15 @@ public class PluginChannelListener implements PluginMessageListener {
                             tasks.get(t.getUniqueId()).execute(result);
                         }
                     }
+                    break;
+                }
+                case "PLAYER_SETTINGS": {
+                    UUID uuid = UUID.fromString(in.readUTF());
+
+                    Bukkit.getPluginManager().callEvent(new PlayerSettingsChangeEvent(
+                            CoreSystem.getInstance().getCorePlayer(uuid),
+                            CoreSystem.getInstance().getGson().fromJson(in.readUTF(), PlayerSettings.class)
+                    ));
                     break;
                 }
             }

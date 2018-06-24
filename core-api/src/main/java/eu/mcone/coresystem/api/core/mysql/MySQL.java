@@ -45,6 +45,6 @@ public interface MySQL {
      * @param task task to do after querying
      * @return Object returned from task
      */
-    Object select(String qry, CallbackResult<ResultSet> task);
+    <T> T select(String qry, CallbackResult<ResultSet> task, Class<T> typeClass);
 
 }

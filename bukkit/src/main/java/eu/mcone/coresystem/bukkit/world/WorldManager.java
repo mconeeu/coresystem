@@ -54,8 +54,8 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                             if (w.isLoadOnStartup()) {
                                 if (world == null) {
                                     WorldCreator wc = new WorldCreator(w.getName())
-                                            .environment(World.Environment.valueOf(w.getEnvironment()))
-                                            .type(WorldType.valueOf(w.getWorldType()))
+                                            .environment(w.getEnvironment())
+                                            .type(w.getWorldType())
                                             .generateStructures(w.isGenerateStructures());
 
                                     if (w.getGenerator() != null) {
@@ -194,6 +194,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     private BukkitCoreWorld constructNewCoreWorld(World world) {
         Location loc = world.getSpawnLocation();
         BukkitCoreWorld w = new BukkitCoreWorld(
+                world.getName(),
                 world.getName(),
                 world.getWorldType().toString(),
                 world.getEnvironment().toString(),

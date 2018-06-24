@@ -6,9 +6,12 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
+import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.event.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.friend.Party;
+import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -46,7 +49,7 @@ public class PluginMessage implements Listener {
 
                         if (input.equalsIgnoreCase("friends")) {
                             StringBuilder result = new StringBuilder();
-                            Map<UUID, String> friends = cp.getFriends();
+                            Map<UUID, String> friends = cp.getFriendData().getFriends();
 
                             for (Map.Entry<UUID, String> friend : friends.entrySet()) {
                                 ProxiedPlayer f = ProxyServer.getInstance().getPlayer(friend.getKey());
@@ -102,6 +105,11 @@ public class PluginMessage implements Listener {
                         }
                     } else if (subch.equalsIgnoreCase("UNNICK")) {
                         BungeeCoreSystem.getInstance().getNickManager().destroy(p);
+                    } else if (subch.equalsIgnoreCase("PLAYER_SETTINGS")) {
+                        ProxyServer.getInstance().getPluginManager().callEvent(new PlayerSettingsChangeEvent(
+                                CoreSystem.getInstance().getCorePlayer(p),
+                                CoreSystem.getInstance().getGson().fromJson(in.readUTF(), PlayerSettings.class)
+                        ));
                     }
                 }
             } catch (IOException e1) {

@@ -44,7 +44,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
     public UUID fetchUuid(final String name) {
         if (uuidCache.containsKey(name)) return uuidCache.get(name);
 
-        UUID dbUuid = (UUID) mySQL.select("SELECT uuid FROM userinfo WHERE name='" + name + "'", rs -> {
+        UUID dbUuid = mySQL.select("SELECT uuid FROM userinfo WHERE name='" + name + "'", rs -> {
             try {
                 if (rs.next()) {
                     return UUID.fromString(rs.getString("uuid"));
@@ -53,7 +53,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
                 e.printStackTrace();
             }
             return null;
-        });
+        }, UUID.class);
         if (dbUuid != null) return dbUuid;
 
         try {
@@ -93,7 +93,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
 
     @Override
     public String fetchName(final UUID uuid) {
-        return (String) mySQL.select("SELECT name FROM userinfo WHERE uuid='" + uuid.toString() + "'", rs -> {
+        return mySQL.select("SELECT name FROM userinfo WHERE uuid='" + uuid.toString() + "'", rs -> {
             try {
                 if (rs.next()) {
                     return rs.getString("uuid");
@@ -102,7 +102,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
                 e.printStackTrace();
             }
             return null;
-        });
+        }, String.class);
     }
 
     private static String fromTrimmed(final String trimmedUUID) throws IllegalArgumentException {

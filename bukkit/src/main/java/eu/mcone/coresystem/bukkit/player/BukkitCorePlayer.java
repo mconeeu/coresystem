@@ -7,14 +7,17 @@
 package eu.mcone.coresystem.bukkit.player;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.event.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
+import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.PlayerStatus;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.inventory.InteractionInventory;
 import eu.mcone.coresystem.bukkit.util.AFKCheck;
+import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import lombok.Getter;
@@ -77,6 +80,16 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
     @Override
     public void openInteractionInventory(Player p) {
         new InteractionInventory(bukkit(), p);
+    }
+
+    @Override
+    public void updateSettings(PlayerSettings settings) {
+        Bukkit.getPluginManager().callEvent(new PlayerSettingsChangeEvent(this, settings));
+        CoreSystem.getInstance().getChannelHandler().sendPluginMessage(bukkit(), "PLAYER_SETTINGS", CoreSystem.getInstance().getGson().toJson(settings, PlayerSettings.class));
+
+        BukkitCoreSystem.getSystem().getMySQL(Database.SYSTEM).update(
+                "UPDATE userinfo SET player_settings='"+((CoreModuleCoreSystem) instance).getGson().toJson(settings, PlayerSettings.class)+"' WHERE uuid ='"+uuid+"'"
+        );
     }
 
     @Override

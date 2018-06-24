@@ -23,22 +23,28 @@ public interface CoreWorld {
     String getName();
 
     /**
+     * get the worlds saved alias name
+     * @return world alias
+     */
+    String getAlias();
+
+    /**
      * get the world type
      * @return world type
      */
-    String getWorldType();
+    WorldType getWorldType();
 
     /**
      * get the world environment
      * @return world environment
      */
-    String getEnvironment();
+    World.Environment getEnvironment();
 
     /**
      * get the worlds difficulty
      * @return difficulty
      */
-    String getDifficulty();
+    Difficulty getDifficulty();
 
     /**
      * get the worlds generator name
@@ -103,63 +109,54 @@ public interface CoreWorld {
     /**
      * set world type
      * @param worldType world type
-     * @return this
      */
     void setWorldType(WorldType worldType);
 
     /**
      * set world environment
      * @param environment world environment
-     * @return this
      */
     void setEnvironment(World.Environment environment);
 
     /**
      * set difficulty
      * @param difficulty difficulty
-     * @return this
      */
     void setDifficulty(Difficulty difficulty);
 
     /**
      * set generator name
      * @param generator generator name
-     * @return this
      */
     void setGenerator(String generator);
 
     /**
      * set generator settings
      * @param settings generator settings
-     * @return this
      */
     void setGeneratorSettings(String settings);
 
     /**
      * set if world should generate structures
      * @param generate boolean to generate structures
-     * @return this
      */
     void setGenerateStructures(boolean generate);
 
     /**
      * set if the world should be loaded on startup
      * @param load boolean to load on startup
-     * @return this
      */
     void setLoadOnStartup(boolean load);
 
     /**
      * set Template name for CloudSystem
      * @param name template name
-     * @return this
      */
     void setTemplateName(String name);
 
     /**
      * set spawn location
-     * @param location
-     * @return this
+     * @param location location
      */
     void setSpawnLocation(Location location);
 

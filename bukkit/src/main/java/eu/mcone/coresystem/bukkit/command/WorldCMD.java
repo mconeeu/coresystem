@@ -67,6 +67,7 @@ public class WorldCMD implements CommandExecutor {
                     } else if (args[0].equalsIgnoreCase("keys")) {
                         BukkitCoreSystem.getInstance().getMessager().send(p, "§2Diese Keys können bei §a/world set <key> <value>§2 oder bei §a/world create [<key>=<value>]... §2verwendet werden:" +
                                 "\n§7§oname §8: §f§o{name}" +
+                                "\n§7§oalias §8: §f§o{alias}" +
                                 "\n§7§oseed §8: §f§o{seed}" +
                                 "\n§7§otype §8: §f{NORMAL, FLAT, LARGE_BIOMES, AMPLIFIED, CUSTOMIZED}" +
                                 "\n§7§oenvironment §8: §f{NORMAL, NETHER, THE_END}" +
@@ -109,6 +110,7 @@ public class WorldCMD implements CommandExecutor {
                                 World bw = w.bukkit();
                                 p.sendMessage("");
                                 BukkitCoreSystem.getInstance().getMessager().send(p, "§2Bitteschön, Ein paar Infos über die Welt §a" + args[1] + "§2:" +
+                                        "\n§7§oalias: §f" + w.getAlias() +
                                         "\n§7§ospawn-location: §f" + bw.getSpawnLocation() +
                                         "\n§7§oseed: §f" + bw.getSeed() +
                                         "\n§7§otype: §f" + bw.getWorldType() +
@@ -195,7 +197,7 @@ public class WorldCMD implements CommandExecutor {
                                     if (w != null) {
                                         if (w.getLocations().size() > 0) {
                                             for (HashMap.Entry<String, CoreLocation> loc : w.getLocations().entrySet()) {
-                                                sb.append("\n§3§o").append(loc.getKey()).append(" ").append(loc.getValue());
+                                                sb.append("\n§f").append(loc.getKey()).append(" §8» §7").append(loc.getValue().toString());
                                             }
 
                                             BukkitCoreSystem.getInstance().getMessager().send(p, "§2Hier alle Locations der Welt §a" + locationName + sb.toString() + "§2:");
@@ -228,12 +230,14 @@ public class WorldCMD implements CommandExecutor {
 
                                 try {
                                     if (args[1].equalsIgnoreCase("name")) {
-                                        if (! Bukkit.getWorlds().get(0).equals(w.bukkit())) {
+                                        if (!Bukkit.getWorlds().get(0).equals(w.bukkit())) {
                                             w.changeName(args[2]);
                                         } else {
                                             BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du kannst nicht den Namen der Hauptwelt verändern!");
                                             return true;
                                         }
+                                    } else if (args[1].equalsIgnoreCase("alias")) {
+                                        w.setAlias(args[2]);
                                     } else if (args[1].equalsIgnoreCase("type")) {
                                         w.setWorldType(WorldType.valueOf(args[2]));
                                     } else if (args[1].equalsIgnoreCase("environment")) {

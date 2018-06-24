@@ -6,10 +6,10 @@
 
 package eu.mcone.coresystem.bukkit.npc;
 
+import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.NpcCMD;
-import eu.mcone.coresystem.bukkit.world.LocationManager;
 import eu.mcone.coresystem.core.mysql.MySQL;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -29,9 +29,9 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
     private String server;
     private HashMap<String, NPC> npcs;
 
-    public NpcManager(MySQL mysql, String server) {
+    public NpcManager(MySQL mysql, CorePlugin plugin) {
         this.mysql = mysql;
-        this.server = server;
+        this.server = plugin.getPluginName();
 
         BukkitCoreSystem.getInstance().getServer().getPluginManager().registerEvents(this, BukkitCoreSystem.getInstance());
         BukkitCoreSystem.getInstance().getCommand("npc").setExecutor(new NpcCMD(this));

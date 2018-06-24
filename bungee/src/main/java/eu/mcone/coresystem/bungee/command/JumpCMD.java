@@ -29,7 +29,7 @@ public class JumpCMD extends Command {
                 ProxiedPlayer t = ProxyServer.getInstance().getPlayer(args[0]);
 
                 if (t != null) {
-                    if (BungeeCoreSystem.getInstance().getCorePlayer(p).getFriends().containsKey(t.getUniqueId())) {
+                    if (BungeeCoreSystem.getInstance().getCorePlayer(p).getFriendData().getFriends().containsKey(t.getUniqueId())) {
                         ServerInfo tserver = t.getServer().getInfo();
 
                         if (t.getServer().getInfo() != p.getServer().getInfo()) {

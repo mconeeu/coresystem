@@ -43,7 +43,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 * @param uuid >> Player UniqueID
 	 */
     public int getKills(UUID uuid) {
-        return (int) mySQL.select("SELECT `kill` FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
+        return mySQL.select("SELECT `kill` FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
             int i = 0;
             try {
                 if (rs.next()) {
@@ -53,7 +53,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
                 e.printStackTrace();
             }
             return i;
-        });
+        }, int.class);
     }
 
 	/**
@@ -61,7 +61,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 * @param uuid >> Player UniqueID
 	 */
     public int getWins(UUID uuid) {
-	    return (int) mySQL.select("SELECT `win` FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
+	    return mySQL.select("SELECT `win` FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
             int i = 0;
             try {
                 if (rs.next()) {
@@ -72,7 +72,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
                 e.printStackTrace();
             }
             return i;
-        });
+        }, int.class);
     }
 
 	/**
@@ -80,7 +80,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 * @param uuid >> Player UniqueID
 	 */
     public int getLoses(UUID uuid) {
-        return (int) mySQL.select("SELECT `lose` FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
+        return mySQL.select("SELECT `lose` FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
             int i = 0;
             try {
                 if (rs.next()) {
@@ -90,7 +90,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
                 e.printStackTrace();
             }
             return i;
-        });
+        }, int.class);
     }
 
 	/**
@@ -98,7 +98,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 * @param uuid >> Player UniqueID
 	 */
     public int getDeaths(UUID uuid) {
-        return (int) mySQL.select("SELECT `death` FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
+        return mySQL.select("SELECT `death` FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
             int i = 0;
             try {
 			    if (rs.next()) {
@@ -108,7 +108,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
                 e.printStackTrace();
             }
             return i;
-        });
+        }, int.class);
     }
 
 	/**
@@ -116,7 +116,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 * @param uuid >> Player UniqueID
 	 */
 	public int getGoals(UUID uuid) {
-		return (int) mySQL.select("SELECT `goal` FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
+		return mySQL.select("SELECT `goal` FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
 			int i = 0;
 			try {
 				if (rs.next()) {
@@ -126,7 +126,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 				e.printStackTrace();
 			}
 			return i;
-		});
+		}, int.class);
 	}
 
 
@@ -320,7 +320,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 * @param uuid >> Player UniqueID
 	 */
 	public int getUserRanking(final UUID uuid){
-		return (int) mySQL.select("SELECT uuid FROM " + this.gamemode.toString() + " ORDER BY `kill` DESC", rs -> {
+		return mySQL.select("SELECT uuid FROM " + this.gamemode.toString() + " ORDER BY `kill` DESC", rs -> {
             boolean done = false;
             int n = 0;
 
@@ -337,7 +337,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
                 e.printStackTrace();
             }
             return 0;
-        });
+        }, int.class);
 	}
 
 	/**
@@ -345,7 +345,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 * @param uuid >> Player UniqueID
 	 */
 	public double getKD(UUID uuid) {
-		mySQL.select("SELECT * FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
+		return mySQL.select("SELECT * FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
 			int kills = 0;
 			int deaths = 0;
 
@@ -367,13 +367,11 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 			} else {
 				return kills / deaths;
 			}
-		});
-
-		return 0.0;
+		}, int.class);
 	}
 
 	public int[] getData(final UUID uuid) {
-		return (int[]) mySQL.select("SELECT * FROM " + this.gamemode.toString() + " WHERE uuid='" + uuid + "'", rs -> {
+		return mySQL.select("SELECT * FROM " + this.gamemode.toString() + " WHERE uuid='" + uuid + "'", rs -> {
 			try {
 				if (rs.next()) {
 					return new int[]{getUserRanking(uuid), rs.getInt("kill"), rs.getInt("death")};
@@ -382,7 +380,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 				e.printStackTrace();
 			}
 			return new int[]{0,0,0};
-		});
+		}, int[].class);
 	}
 
 	/**

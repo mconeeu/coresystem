@@ -23,18 +23,18 @@ public class CoinsAPI implements eu.mcone.coresystem.api.core.player.CoinsAPI {
     }
     
 	public boolean isRegistered(String name){
-        return (boolean) instance.getMySQL(Database.SYSTEM).select("SELECT coins FROM userinfo WHERE name='" + name + "'", rs -> {
+        return instance.getMySQL(Database.SYSTEM).select("SELECT coins FROM userinfo WHERE name='" + name + "'", rs -> {
             try {
                 return rs.next();
             } catch (SQLException e) {
                 e.printStackTrace();
                 return false;
             }
-        });
+        }, boolean.class);
     }
 
 	public int getCoins(UUID uuid){
-        return (int) instance.getMySQL(Database.SYSTEM).select("SELECT coins FROM userinfo WHERE uuid='" + uuid.toString() + "'", rs -> {
+        return instance.getMySQL(Database.SYSTEM).select("SELECT coins FROM userinfo WHERE uuid='" + uuid.toString() + "'", rs -> {
             try {
                 if (rs.next()) {
                     return rs.getInt("coins");
@@ -43,11 +43,11 @@ public class CoinsAPI implements eu.mcone.coresystem.api.core.player.CoinsAPI {
                 e.printStackTrace();
             }
             return -1;
-        });
+        }, int.class);
 	}
 
     public int getCoins(String name){
-	    return (int) instance.getMySQL(Database.SYSTEM).select("SELECT coins FROM userinfo WHERE name='" + name + "'", rs -> {
+	    return instance.getMySQL(Database.SYSTEM).select("SELECT coins FROM userinfo WHERE name='" + name + "'", rs -> {
             try {
                 if (rs.next()) {
                     return rs.getInt("coins");
@@ -56,7 +56,7 @@ public class CoinsAPI implements eu.mcone.coresystem.api.core.player.CoinsAPI {
                 e.printStackTrace();
             }
             return -1;
-        });
+        }, int.class);
     }
 
 

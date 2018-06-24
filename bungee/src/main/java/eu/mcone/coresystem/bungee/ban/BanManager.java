@@ -100,42 +100,42 @@ public class BanManager {
     public static boolean isBanned(UUID uuid){
         long millis = System.currentTimeMillis() / 1000;
         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM `bungeesystem_bansystem_ban` WHERE end<="+millis);
-		return (boolean) BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `template` FROM `bungeesystem_bansystem_ban` WHERE `uuid`='" + uuid.toString() + "'", rs -> {
+		return BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `template` FROM `bungeesystem_bansystem_ban` WHERE `uuid`='" + uuid.toString() + "'", rs -> {
             try {
                 return rs.next();
             }catch (SQLException e){
                 e.printStackTrace();
             }
             return false;
-        });
+        }, boolean.class);
 	}
 
 	public static boolean isMuted(UUID uuid){
         long millis = System.currentTimeMillis() / 1000;
         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM `bungeesystem_bansystem_mute` WHERE end<="+millis);
-		return (boolean) BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `template` FROM `bungeesystem_bansystem_mute` WHERE `uuid` ='" + uuid.toString() + "'", rs -> {
+		return BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `template` FROM `bungeesystem_bansystem_mute` WHERE `uuid` ='" + uuid.toString() + "'", rs -> {
             try {
                 return rs.next();
             }catch (SQLException e){
                 e.printStackTrace();
             }
             return false;
-        });
+        }, boolean.class);
 	}
 
 	private static boolean hasPoints(UUID uuid) {
-        return (boolean) BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `banpoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='" + uuid.toString() + "'", rs -> {
+        return BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `banpoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='" + uuid.toString() + "'", rs -> {
             try{
                 return rs.next();
             }catch (SQLException e){
                 e.printStackTrace();
             }
             return false;
-        });
+        }, boolean.class);
     }
 
 	private static Map<String, Integer> getPoints(UUID uuid) {
-        return (Map<String, Integer>) BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `banpoints`, `mutepoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='" + uuid.toString() + "'", rs -> {
+        return (HashMap<String, Integer>) BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `banpoints`, `mutepoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='" + uuid.toString() + "'", rs -> {
             Map<String, Integer> result = new HashMap<>();
             try{
                 if (rs.next()) {
@@ -146,7 +146,7 @@ public class BanManager {
                 e.printStackTrace();
             }
             return result;
-        });
+        }, Map.class);
     }
 
     private static void addPoints(UUID uuid, int banpoints, int mutepoints) {

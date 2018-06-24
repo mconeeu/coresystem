@@ -14,7 +14,6 @@ import eu.mcone.coresystem.api.bukkit.config.YAML_Config;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
-import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
 import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
@@ -22,11 +21,9 @@ import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
 import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import eu.mcone.coresystem.api.bukkit.world.LocationManager;
 import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
-import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.api.core.translation.TranslationField;
 import eu.mcone.coresystem.bukkit.channel.ChannelHandler;
 import eu.mcone.coresystem.bukkit.channel.PluginChannelListener;
@@ -266,6 +263,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         getServer().getPluginManager().registerEvents(new PlayerLogin(), this);
         getServer().getPluginManager().registerEvents(new PlayerQuit(), this);
         getServer().getPluginManager().registerEvents(new PlayerChat(), this);
+        getServer().getPluginManager().registerEvents(new PlayerSettingsChange(), this);
         getServer().getPluginManager().registerEvents(new InventoryClick(), this);
         getServer().getPluginManager().registerEvents(new PlayerCommandPreprocess(), this);
         getServer().getPluginManager().registerEvents(new SignChange(), this);
@@ -285,7 +283,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                         "(" +
                         "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
                         "`name` VARCHAR(100) NOT NULL, " +
-                        "`location` VARCHAR(100) NOT NULL, " +
+                        "`location` VARCHAR(1000) NOT NULL, " +
                         "`texture` VARCHAR(10000) NOT NULL, " +
                         "`displayname` VARCHAR(1000) NOT NULL, " +
                         "`server` varchar(100) NOT NULL" +
@@ -309,7 +307,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                         "(" +
                         "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
                         "`name` VARCHAR(100) NOT NULL UNIQUE KEY, " +
-                        "`location` VARCHAR(100) NOT NULL, " +
+                        "`location` VARCHAR(1000) NOT NULL, " +
                         "`lines` VARCHAR(1000) NOT NULL, " +
                         "`server` varchar(100) NOT NULL" +
                         ") " +
@@ -370,38 +368,23 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public NPC createNPC(String name, Location location, String texture, String displayname) {
-        return new eu.mcone.coresystem.bukkit.npc.NPC(name, location, texture, displayname);
-    }
-
-    @Override
-    public NPC createNPC(String name, Location location, SkinInfo skinInfo, String displayname) {
-        return new eu.mcone.coresystem.bukkit.npc.NPC(name, location, skinInfo, displayname);
-    }
-
-    @Override
     public Hologram createHologram(String[] text, Location location) {
         return new eu.mcone.coresystem.bukkit.hologram.Hologram(text, location);
     }
 
     @Override
-    public NpcManager initialiseNpcManager(String server) {
-        return new NpcManager(mysql1, server);
+    public NpcManager initialiseNpcManager(CorePlugin plugin) {
+        return new NpcManager(mysql1, plugin);
     }
 
     @Override
-    public HologramManager inititaliseHologramManager(String server) {
-        return new eu.mcone.coresystem.bukkit.hologram.HologramManager(this, server);
+    public HologramManager inititaliseHologramManager(CorePlugin plugin) {
+        return new eu.mcone.coresystem.bukkit.hologram.HologramManager(this, plugin);
     }
 
     @Override
     public BuildSystem initialiseBuildSystem(boolean notify, BuildSystem.BuildEvent... events) {
         return new eu.mcone.coresystem.bukkit.world.BuildSystem(this, notify, events);
-    }
-
-    @Override @Deprecated
-    public LocationManager initialiseLocationManager(String server) {
-        return new eu.mcone.coresystem.bukkit.world.LocationManager(mysql1, server);
     }
 
     @Override

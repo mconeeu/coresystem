@@ -32,10 +32,19 @@ public final class CoreLocation {
         );
     }
 
+    /**
+     * construct new CoreLocation from JSON String
+     * @param json JSON String
+     * @return new CoreLocation
+     */
     public static CoreLocation fromJson(String json) {
         return CoreSystem.getInstance().getGson().fromJson(json, CoreLocation.class);
     }
 
+    /**
+     * get CoreLocation as JSON String for example for putting it into database
+     * @return JSON String
+     */
     public String toJson() {
         return CoreSystem.getInstance().getGson().toJson(this, getClass());
     }
@@ -48,4 +57,8 @@ public final class CoreLocation {
         return new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
     }
 
+    @Override
+    public String toString() {
+        return "world="+worldName+", x="+x+", y="+y+", z="+z+", yaw="+yaw+", pitch="+pitch;
+    }
 }

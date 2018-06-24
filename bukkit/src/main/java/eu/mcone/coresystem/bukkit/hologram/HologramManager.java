@@ -9,6 +9,7 @@ package eu.mcone.coresystem.bukkit.hologram;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.HoloCMD;
@@ -35,9 +36,9 @@ public class HologramManager implements Listener, eu.mcone.coresystem.api.bukkit
     @Getter
     private Map<String, Hologram> holograms;
 
-    public HologramManager(BukkitCoreSystem instance, String server) {
+    public HologramManager(BukkitCoreSystem instance, CorePlugin plugin) {
         this.instance = instance;
-        this.server = server;
+        this.server = plugin.getPluginName();
 
         instance.getServer().getPluginManager().registerEvents(this, BukkitCoreSystem.getInstance());
         instance.getCommand("holo").setExecutor(new HoloCMD(this));

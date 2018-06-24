@@ -43,7 +43,7 @@ public class PostLogin implements Listener{
                     BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `userinfo` SET `name` = '" + p.getName() + "', `ip` = '" + ip + "' , status = 'online', `timestamp` = '" + millis / 1000 + "' WHERE `uuid`='" + p.getUniqueId().toString() + "';");
                 } else {
                     isNew = true;
-                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `userinfo` (`uuid`, `name`, `groups`, `coins`, `language`, `status`, `ip`, `timestamp`, `onlinetime`) VALUES ('" +  p.getUniqueId().toString() + "', '" +  p.getName() + "', '[11]', 20, 'GERMAN', 'online', '" + ip + "', '" +  millis / 1000 + "' , 0)");
+                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `userinfo` (`uuid`, `name`, `groups`, `coins`, `language`, `status`, `ip`, `timestamp`) VALUES ('" +  p.getUniqueId().toString() + "', '" +  p.getName() + "', '[11]', 20, 'GERMAN', 'online', '" + ip + "', '" +  millis / 1000 + "')");
                 }
             }catch (SQLException e1){
                 e1.printStackTrace();
@@ -84,7 +84,7 @@ public class PostLogin implements Listener{
             });
         }
 
-        Map<UUID, String> requests = cp.getFriendRequests();
+        Map<UUID, String> requests = cp.getFriendData().getRequests();
         if (requests.size() >= 1) {
             BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "");
             BungeeCoreSystem.getInstance().getMessager().send(p, "§7Du hast noch §f"+requests.size()+" §7offene Freundschaftsanfrage(n)!");
