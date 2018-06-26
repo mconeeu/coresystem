@@ -14,7 +14,6 @@ import eu.mcone.coresystem.bukkit.command.WorldCMD;
 import org.bukkit.*;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -74,12 +73,8 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                         }
                     } else {
                         if (world != null) {
-                            if (config.createNewFile()) {
-                                coreWorlds.add(constructNewCoreWorld(world));
-                                BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + world.getName());
-                            } else {
-                                throw new FileNotFoundException("Config File could not be created!");
-                            }
+                            coreWorlds.add(constructNewCoreWorld(world));
+                            BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + world.getName());
                         } else {
                             BukkitCoreSystem.getInstance().sendConsoleMessage("Recognized world "+dir.getName()+" but has no config! Import manually (/world import "+dir.getName()+")");
                         }
@@ -135,11 +130,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                         coreWorlds.add(w);
                     }
                 } else {
-                    if (config.createNewFile()) {
-                        coreWorlds.add(constructNewCoreWorld(world));
-                    } else {
-                        throw new FileNotFoundException("Config File could not be created!");
-                    }
+                    coreWorlds.add(constructNewCoreWorld(world));
                 }
 
                 BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + world.getName());
@@ -196,12 +187,12 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
         BukkitCoreWorld w = new BukkitCoreWorld(
                 world.getName(),
                 world.getName(),
-                world.getWorldType().toString(),
-                world.getEnvironment().toString(),
-                world.getDifficulty().toString(),
                 null,
                 null,
                 null,
+                world.getWorldType(),
+                world.getEnvironment(),
+                world.getDifficulty(),
                 world.canGenerateStructures(),
                 true,
                 world.isAutoSave(),

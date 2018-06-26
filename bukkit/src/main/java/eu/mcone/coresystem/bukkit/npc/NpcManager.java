@@ -37,7 +37,7 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
         BukkitCoreSystem.getInstance().getCommand("npc").setExecutor(new NpcCMD(this));
 
         this.reload();
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(BukkitCoreSystem.getInstance(), () -> {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
             for(NPC npc : npcs.values()){
                 for(Player p : Bukkit.getOnlinePlayers()){
                     if(npc.getLocation().getWorld().equals(p.getWorld())){

@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.api.core.player;
 
+import eu.mcone.coresystem.api.core.translation.Language;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +18,7 @@ import lombok.Setter;
 public final class PlayerSettings {
 
     private boolean enableFriendRequests = true, acceptedAgbs = false;
+    private Language language;
     private Sender privateMessages = Sender.FRIENDS, partyInvites = Sender.ALL;
 
     public enum Sender {

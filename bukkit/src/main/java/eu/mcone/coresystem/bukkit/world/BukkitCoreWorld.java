@@ -20,6 +20,7 @@ import org.bukkit.*;
 import org.bukkit.entity.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public class BukkitCoreWorld implements CoreWorld {
     private WorldType worldType = WorldType.NORMAL;
     private World.Environment environment = World.Environment.NORMAL;
     private Difficulty difficulty = Difficulty.NORMAL;
-    private boolean generateStructures = false, loadOnStartup = true, autoSave = true, pvp, allowAnimals, allowMonsters, keepSpawnInMemory = true;
+    private boolean generateStructures = false, loadOnStartup = true, autoSave = true, pvp = false, allowAnimals = false, allowMonsters = false, keepSpawnInMemory = true;
     private int[] spawnLocation = new int[]{0, 0, 0};
 
     private Map<String, CoreLocation> locations;
@@ -145,7 +146,9 @@ public class BukkitCoreWorld implements CoreWorld {
 
         try {
             File config = new File(bukkit().getWorldFolder(), WorldManager.CONFIG_NAME);
-            if (!config.exists()) config.createNewFile();
+            if (!config.exists() && !config.createNewFile()) {
+                throw new FileNotFoundException("Config File could not be created!");
+            }
 
             FileUtils.writeStringToFile(config, CoreSystem.getInstance().getGson().toJson(this, getClass()));
         } catch (IOException e) {

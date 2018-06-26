@@ -393,9 +393,9 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "`ip` varchar(100), " +
                 "`timestamp` varchar(100), " +
                 "`password` varchar(100), " +
-                "`onlinetime` int(10) NOT NULL, " +
+                "`onlinetime` int(10) NOT NULL DEFAULT '0', " +
                 "`teamspeak_uid` varchar(100), " +
-                "`msg_toggle` boolean" +
+                "`player_settings` varchar(1000) NOT NULL DEFAULT '{\"enableFriendRequests\":true, \"acceptedAgbs\":false, \"language\":\"GERMAN\", \"privateMessages\": \"FRIENDS\", \"partyInvites\":\"ALL\"}'" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         mysql.update("CREATE TABLE IF NOT EXISTS `translations` " +

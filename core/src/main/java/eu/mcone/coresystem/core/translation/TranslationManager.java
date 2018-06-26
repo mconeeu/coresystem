@@ -64,7 +64,7 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
 
     @Override
     public String get(String key, GlobalCorePlayer player) {
-        return get(key, player.getLanguage());
+        return get(key, player.getSettings().getLanguage());
     }
 
     private String getTranslation(String key, Language language) {

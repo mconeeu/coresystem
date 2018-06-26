@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.api.core.player;
 
-import eu.mcone.coresystem.api.core.translation.Language;
 import net.labymod.serverapi.LabyModConnection;
 
 import java.util.Set;
@@ -25,12 +24,6 @@ public interface GlobalCorePlayer {
      * @return uuid
      */
     UUID getUuid();
-
-    /**
-     * get players language
-     * @return language
-     */
-    Language getLanguage();
 
     /**
      * get players group
