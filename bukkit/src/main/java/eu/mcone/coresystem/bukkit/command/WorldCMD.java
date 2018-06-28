@@ -11,6 +11,7 @@ import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.world.BukkitCoreWorld;
+import lombok.Setter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -30,6 +31,9 @@ import java.util.List;
 import java.util.Map;
 
 public class WorldCMD implements CommandExecutor {
+
+    @Setter
+    private boolean enableUploadCmd;
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
@@ -149,8 +153,12 @@ public class WorldCMD implements CommandExecutor {
                                 return true;
                             } else if (args[0].equalsIgnoreCase("unload")) {
                                 if (p.hasPermission("system.bukkit.world.unload")) {
-                                    w.unload(true);
-                                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Welt wurde erfolgreich entladen! Benutze §a/world import " + w.getName() + " <environment>§2 um sie wieder zu laden!");
+                                    if (enableUploadCmd) {
+                                        w.unload(true);
+                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Welt wurde erfolgreich entladen! Benutze §a/world import " + w.getName() + " <environment>§2 um sie wieder zu laden!");
+                                    } else {
+                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Upload-Befehl wurde von keinem Plugin aktiviert!");
+                                    }
                                 } else {
                                     BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
                                 }
@@ -264,7 +272,7 @@ public class WorldCMD implements CommandExecutor {
                                         w.setKeepSpawnInMemory(Boolean.valueOf(args[2]));
                                     } else if (args[1].equalsIgnoreCase("loadOnStartup")) {
                                         w.setLoadOnStartup(Boolean.valueOf(args[2]));
-                                    } else if(args[1].equalsIgnoreCase("templateName")) {
+                                    } else if (args[1].equalsIgnoreCase("templateName")) {
                                         w.setTemplateName(args[2]);
                                     } else if (args[1].equalsIgnoreCase("seed")) {
                                         BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Seed kann nachträglich nicht verändert werden!");

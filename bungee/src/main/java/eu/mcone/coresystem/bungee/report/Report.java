@@ -38,15 +38,14 @@ public class Report {
     public void sendToTeam(){
         for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
             if (p.hasPermission("system.bungee.report")){
-                TextComponent tc = new TextComponent();
-                tc.setColor(ChatColor.DARK_GREEN);
-                tc.setText("[ANNEHMEN]");
-                tc.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§cZum Server...").create()));
-                tc.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/report accept " + this.id));
-
-                TextComponent realTc = new TextComponent("§7Der Spieler §f" + this.reporter.getName() + " §7hat §e" + this.reportedPlayer.getName() + " §7reportet (ID: " + this.id + "). §7Grund: §c" + reason.getName() + "§r  ");
-                realTc.addExtra(tc);
-                BungeeCoreSystem.getInstance().getMessager().send(p, realTc);
+                BungeeCoreSystem.getInstance().getMessager().send(p,
+                        new ComponentBuilder("[ANNEHMEN]")
+                                .color(ChatColor.GREEN)
+                                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§2Zum Server...").create()))
+                                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/report accept " + this.id))
+                                .append(TextComponent.fromLegacyText("§7Der Spieler §f" + this.reporter.getName() + " §7hat §e" + this.reportedPlayer.getName() + " §7reportet (ID: " + this.id + "). §7Grund: §c" + reason.getName()))
+                                .create()
+                );
             }
         }
     }

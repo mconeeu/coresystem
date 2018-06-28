@@ -6,21 +6,21 @@
 
 package eu.mcone.coresystem.api.core.exception;
 
-public class PlayerNotFoundException extends CoreException {
+public class PlayerNotResolvedException extends CoreException {
 
-    public PlayerNotFoundException() {
+    public PlayerNotResolvedException() {
         super();
     }
 
-    public PlayerNotFoundException(String message) {
+    public PlayerNotResolvedException(String message) {
         super(message);
     }
 
-    public PlayerNotFoundException(String message, Throwable cause) {
+    public PlayerNotResolvedException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public PlayerNotFoundException(Throwable cause) {
+    public PlayerNotResolvedException(Throwable cause) {
         super(cause);
     }
 

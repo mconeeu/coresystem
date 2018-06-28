@@ -8,7 +8,7 @@ package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
-import eu.mcone.coresystem.api.core.player.PlayerSettings;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -31,25 +31,30 @@ public class DatenschutzCMD extends Command {
                 if (p.getSettings().isAcceptedAgbs()) {
                     CoreSystem.getInstance().getMessager().send(sender, "§4Du hast die Datenschutzerklärung bereits akzeptiert!");
                 } else {
-                    PlayerSettings settings = p.getSettings();
-                    settings.setAcceptedAgbs(true);
+                    p.getSettings().setAcceptedAgbs(true);
+                    p.updateSettings();
 
-                    p.updateSettings(settings);
                     CoreSystem.getInstance().getMessager().send(sender, "§2Du hast die Datenschutzerklärung erfolgreich akzeptiert!");
                 }
             } else {
-                ComponentBuilder cb = new ComponentBuilder("§7Du musst unsere Datenschutzerklärung akzeptieren, um auf MC ONE spielen zu können!\n")
-                        .append("§f[DATENSCHUTZERKLÄRUNG ÖFFNEN]")
+                p.sendMessage("");
+                ComponentBuilder cb = new ComponentBuilder("Du musst unsere Datenschutzerklärung akzeptieren, um auf MC ONE spielen zu können!\n")
+                        .color(ChatColor.DARK_RED)
+                        .italic(true)
+                        .append("[DATENSCHUTZERKLÄRUNG ÖFFNEN]", ComponentBuilder.FormatRetention.NONE)
+                        .color(ChatColor.GRAY)
                         .event(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.mcone.eu/datenschutz.php"))
-                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7§oBrowser öffnen").create()));
+                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Browser öffnen").color(ChatColor.GRAY).italic(true).create()));
 
                 if (!p.getSettings().isAcceptedAgbs())
-                    cb.append(" ")
+                    cb.append("\n")
                             .append("§a[DATENSCHUTZERKLÄRUNG AKZEPTIEREN]")
+                            .color(ChatColor.GREEN)
                             .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/datenschutz accept"))
-                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7§oKlicke zum akzeptieren").create()));
+                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Klicke zum akzeptieren").color(ChatColor.DARK_GREEN).italic(true).create()));
 
-                p.bungee().sendMessage(cb.create());
+                cb.append("\n");
+                CoreSystem.getInstance().getMessager().send(p.bungee(), cb.create());
             }
         }
     }

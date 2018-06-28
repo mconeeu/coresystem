@@ -24,12 +24,15 @@ import java.util.Map;
 public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldManager {
 
     final static String CONFIG_NAME = "core-config.json";
+
+    private WorldCMD worldCMD;
     private List<BukkitCoreWorld> coreWorlds;
 
     public WorldManager(BukkitCoreSystem instance) {
         this.coreWorlds = new ArrayList<>();
+        this.worldCMD = new WorldCMD();
 
-        instance.getCommand("world").setExecutor(new WorldCMD());
+        instance.getCommand("world").setExecutor(worldCMD);
         reload();
     }
 
@@ -109,6 +112,11 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
             }
         }
         return null;
+    }
+
+    @Override
+    public void enableUploadCommand(boolean enable) {
+        worldCMD.setEnableUploadCmd(enable);
     }
 
     @Override

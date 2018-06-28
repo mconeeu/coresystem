@@ -22,4 +22,6 @@ public interface BungeeCorePlayer extends GlobalCorePlayer {
 
     boolean isMuted();
 
+    boolean isNew();
+
 }

@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.bungee.listener;
 
 import eu.mcone.coresystem.api.bungee.util.Preference;
-import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
+import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
@@ -40,7 +40,7 @@ public class PreLogin implements Listener {
         }
 
 		try {
-			BungeeCorePlayer p = new BungeeCorePlayer(BungeeCoreSystem.getInstance(), e.getConnection().getName());
+			BungeeCorePlayer p = new BungeeCorePlayer(BungeeCoreSystem.getInstance(), e.getConnection().getAddress().getAddress(), e.getConnection().getName());
 
 			BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT * FROM `bungeesystem_bansystem_ban` WHERE `uuid` = '" + p.getUuid().toString() + "'", rs -> {
 				try {
@@ -98,6 +98,6 @@ public class PreLogin implements Listener {
 					p.unregister();
 				}
 			}
-		} catch (PlayerNotFoundException ignored) {}
+		} catch (PlayerNotResolvedException ignored) {}
 	}
 }

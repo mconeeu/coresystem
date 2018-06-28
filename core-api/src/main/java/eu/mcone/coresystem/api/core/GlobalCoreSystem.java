@@ -48,6 +48,8 @@ public interface GlobalCoreSystem {
      */
     void runAsync(Runnable runnable);
 
+    void sendConsoleMessage(String message);
+
     /**
      * returns the BCS CoinsAPI
      * @return CoinsAPI instance

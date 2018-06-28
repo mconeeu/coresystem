@@ -10,7 +10,6 @@ import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.player.OfflinePlayer;
-import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -102,15 +101,13 @@ public class FriendCMD extends Command implements TabExecutor {
                 if (args[0].equalsIgnoreCase("req") ||args[0].equalsIgnoreCase("request") || args[0].equalsIgnoreCase("requests")){
                     if (args[1].equalsIgnoreCase("toggle")) {
                         if (cp.getSettings().isEnableFriendRequests()) {
-                            PlayerSettings settings = cp.getSettings();
-                            settings.setEnableFriendRequests(false);
-                            cp.updateSettings(settings);
+                            cp.getSettings().setEnableFriendRequests(false);
+                            cp.updateSettings();
 
                             BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§2Du hast Freundschaftsanfragen §aausgeschaltet!");
                         } else {
-                            PlayerSettings settings = cp.getSettings();
-                            settings.setEnableFriendRequests(true);
-                            cp.updateSettings(settings);
+                            cp.getSettings().setEnableFriendRequests(true);
+                            cp.updateSettings();
 
                             BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§2Du hast Freundschaftsanfragen §aeingeschaltet!");
                         }

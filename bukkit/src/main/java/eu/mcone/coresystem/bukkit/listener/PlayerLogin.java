@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
-import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
+import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.player.BukkitCorePlayer;
 import eu.mcone.coresystem.bukkit.player.PermissibleBase;
@@ -26,9 +26,9 @@ public class PlayerLogin implements Listener {
         Player p = e.getPlayer();
         setPermissions(p);
         try {
-            new BukkitCorePlayer(BukkitCoreSystem.getInstance(), p.getName());
+            new BukkitCorePlayer(BukkitCoreSystem.getInstance(), e.getAddress(), p.getName());
             p.setDisplayName(p.getName());
-        } catch (PlayerNotFoundException e1) {
+        } catch (PlayerNotResolvedException e1) {
             e1.printStackTrace();
         }
     }

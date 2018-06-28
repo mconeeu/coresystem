@@ -134,6 +134,7 @@ public class BanManager {
         }, boolean.class);
     }
 
+    @SuppressWarnings(value = "method")
 	private static Map<String, Integer> getPoints(UUID uuid) {
         return (HashMap<String, Integer>) BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `banpoints`, `mutepoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='" + uuid.toString() + "'", rs -> {
             Map<String, Integer> result = new HashMap<>();

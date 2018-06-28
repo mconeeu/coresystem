@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.core.player;
 
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
-import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
+import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
@@ -16,15 +16,17 @@ import lombok.Getter;
 import lombok.Setter;
 import net.labymod.serverapi.LabyModConnection;
 
+import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.*;
 
 public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.player.GlobalCorePlayer {
 
     protected final GlobalCoreSystem instance;
+    protected boolean isNew = false;
 
     @Getter
-    protected final String name;
+    protected final String name, ipAdress;
     @Getter
     protected UUID uuid;
     private long onlinetime, joined;
@@ -39,11 +41,12 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
     @Getter @Setter
     private LabyModConnection labyModConnection;
     @Getter @Setter
-    private PlayerSettings settings;
+    protected PlayerSettings settings;
 
-    protected GlobalCorePlayer(final GlobalCoreSystem instance, String name) throws PlayerNotFoundException {
+    protected GlobalCorePlayer(final GlobalCoreSystem instance, final InetAddress address, String name) throws PlayerNotResolvedException {
         this.instance = instance;
         this.name = name;
+        this.ipAdress = address.toString().split("/")[1];
 
         ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).select("SELECT uuid, groups, onlinetime, teamspeak_uid, player_settings FROM userinfo WHERE name='"+name+"'", rs -> {
             try {
@@ -54,18 +57,24 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
                     this.teamspeakUid = rs.getString("teamspeak_uid");
                     this.settings = ((CoreModuleCoreSystem) instance).getGson().fromJson(rs.getString("player_settings"), PlayerSettings.class);
                     this.joined = System.currentTimeMillis() / 1000;
+                } else {
+                    this.uuid = instance.getPlayerUtils().fetchUuid(name);
+                    this.groups = new HashSet<>(Collections.singletonList(Group.SPIELER));
+                    this.onlinetime = 0;
+                    this.settings = new PlayerSettings();
+                    this.joined = System.currentTimeMillis() / 1000;
+                    this.isNew = true;
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         });
 
-        if (this.uuid == null) {
-            this.uuid = instance.getPlayerUtils().fetchUuid(name);
-            this.groups = new HashSet<>(Collections.singletonList(Group.SPIELER));
-            this.onlinetime = 0;
-            this.joined = System.currentTimeMillis() / 1000;
-            throw new PlayerNotFoundException("Player is not listed in the database. Default values got loaded.");
+        if (uuid == null) {
+            throw new PlayerNotResolvedException("Player uuid could not be resolved! (isNew = "+isNew+")");
+        } else if (isNew) {
+            instance.sendConsoleMessage("§2Player §a"+name+"§2 is new! Registering in Database...");
+            ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).update("INSERT INTO `userinfo` (`uuid`, `name`, `groups`, `coins`, `status`, `ip`, `timestamp`) VALUES ('" +  uuid + "', '" +  name + "', '[11]', 20, 'online', '" + ipAdress + "', '" +  System.currentTimeMillis() / 1000 + "')");
         }
     }
 

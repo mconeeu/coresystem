@@ -31,6 +31,11 @@ public interface WorldManager {
      */
     CoreWorld getWorld(World world);
 
+    /**
+     * enables the /world upload [name] command
+     * @param enable enables the upload command
+     */
+    void enableUploadCommand(boolean enable);
 
     /**
      * To use for existing worlds

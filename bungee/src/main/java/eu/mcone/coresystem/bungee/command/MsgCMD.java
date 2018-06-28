@@ -39,15 +39,13 @@ public class MsgCMD extends Command implements TabExecutor {
                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Bitte Benutze: §c/msg §c<Player | toggle> §c[<Nachricht>]");
             } else if (args.length == 1 && args[0].equalsIgnoreCase("toggle")) {
                 if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY)) {
-                    PlayerSettings settings = ((PlayerSettings) p.getSettings());
-                    settings.setPrivateMessages(PlayerSettings.Sender.ALL);
-                    p.updateSettings(settings);
+                    p.getSettings().setPrivateMessages(PlayerSettings.Sender.ALL);
+                    p.updateSettings();
 
                     BungeeCoreSystem.getInstance().getMessager().send(p.bungee(), BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.see"));
                 } else {
-                    PlayerSettings settings = ((PlayerSettings) p.getSettings());
-                    settings.setPrivateMessages(PlayerSettings.Sender.NOBODY);
-                    p.updateSettings(settings);
+                    p.getSettings().setPrivateMessages(PlayerSettings.Sender.NOBODY);
+                    p.updateSettings();
 
                     BungeeCoreSystem.getInstance().getMessager().send(p.bungee(), BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.dontsee"));
                 }

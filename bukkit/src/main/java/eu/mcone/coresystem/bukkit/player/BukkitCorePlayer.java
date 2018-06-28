@@ -11,7 +11,7 @@ import eu.mcone.coresystem.api.bukkit.event.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
+import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.PlayerStatus;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
@@ -24,6 +24,8 @@ import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.net.InetAddress;
+
 public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer {
 
     @Getter
@@ -33,8 +35,8 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
     @Getter
     private CoreScoreboard scoreboard;
 
-    public BukkitCorePlayer(CoreSystem instance, String name) throws PlayerNotFoundException {
-        super(instance, name);
+    public BukkitCorePlayer(CoreSystem instance, InetAddress address, String name) throws PlayerNotResolvedException {
+        super(instance, address, name);
         this.status = PlayerStatus.ONLINE;
 
         ((BukkitCoreSystem) instance).getCorePlayers().put(uuid, this);
@@ -92,7 +94,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
     }
 
     @Override
-    public void updateSettings(PlayerSettings settings) {
+    public void updateSettings() {
         Bukkit.getPluginManager().callEvent(new PlayerSettingsChangeEvent(this, settings));
         CoreSystem.getInstance().getChannelHandler().sendPluginMessage(bukkit(), "PLAYER_SETTINGS", CoreSystem.getInstance().getGson().toJson(settings, PlayerSettings.class));
 

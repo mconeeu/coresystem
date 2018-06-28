@@ -26,6 +26,12 @@ public interface GlobalCorePlayer {
     UUID getUuid();
 
     /**
+     * get players IP-Adress
+     * @return IP-Adress as String
+     */
+    String getIpAdress();
+
+    /**
      * get players group
      * @return group
      */
@@ -98,10 +104,9 @@ public interface GlobalCorePlayer {
     PlayerSettings getSettings();
 
     /**
-     * changes the player settings and updates both bungee & bukkit server
-     * @param settings player settings
+     * updates the set changes to the playerSettings on both bungee & bukkit
      */
-    void updateSettings(PlayerSettings settings);
+    void updateSettings();
 
     /**
      * returns the TeamSpeak UID from the players linked TeamSpeak identity

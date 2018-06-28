@@ -27,32 +27,16 @@ import java.util.concurrent.TimeUnit;
 
 public class PostLogin implements Listener{
 
-    private static boolean isNew = false;
-
     @EventHandler
     public void on(PostLoginEvent e){
         final ProxiedPlayer p = e.getPlayer();
         final BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUniqueId());
 
-        String ip = p.getAddress().toString().split("/")[1].split(":")[0];
-        final long millis = System.currentTimeMillis();
-
-        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `uuid` FROM `userinfo` WHERE `uuid` = '" + p.getUniqueId().toString() + "'", rs -> {
-            try {
-                if (rs.next()) {
-                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `userinfo` SET `name` = '" + p.getName() + "', `ip` = '" + ip + "' , status = 'online', `timestamp` = '" + millis / 1000 + "' WHERE `uuid`='" + p.getUniqueId().toString() + "';");
-                } else {
-                    isNew = true;
-                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `userinfo` (`uuid`, `name`, `groups`, `coins`, `language`, `status`, `ip`, `timestamp`) VALUES ('" +  p.getUniqueId().toString() + "', '" +  p.getName() + "', '[11]', 20, 'GERMAN', 'online', '" + ip + "', '" +  millis / 1000 + "')");
-                }
-            }catch (SQLException e1){
-                e1.printStackTrace();
-            }
-        });
-
-        BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "\n\n§8[§7§l!§8] §3MC ONE §8» §7§o" + getRandomWelcomeMSG(p, isNew) + ", §f§o" + p.getName() + "§7§o!");
-        if (isNew) {
+        BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "\n\n\n\n§8[§7§l!§8] §3MC ONE §8» §7§o" + getRandomWelcomeMSG(p, cp.isNew()) + ", §f§o" + p.getName() + "§7§o!");
+        if (cp.isNew()) {
             BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "§8[§7§l!§8] §3MC ONE §8» §2Als kleines Willkommensgeschenk bekommst du 20 Coins gutgeschrieben!");
+        } else {
+            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `userinfo` SET `name` = '" + p.getName() + "', `ip` = '" + cp.getIpAdress() + "' , status = 'online', `timestamp` = '" + System.currentTimeMillis() / 1000 + "' WHERE `uuid`='" + p.getUniqueId().toString() + "';");
         }
 
         if(p.hasPermission("system.bungee.report")) {
@@ -91,6 +75,8 @@ public class PostLogin implements Listener{
             BungeeCoreSystem.getInstance().getMessager().send(p, "§7Benutze §f/friend req §7zum einsehen!");
         }
 
+        if (!cp.getSettings().isAcceptedAgbs()) ProxyServer.getInstance().getPluginManager().dispatchCommand(p, "datenschutz");
+
         Title title = ProxyServer.getInstance().createTitle();
         title.title(new TextComponent("§fWillkommen auf §3§lMC ONE"));
         title.subTitle(new TextComponent("§7§oDein Nummer 1 Minecraftnetzwerk"));
@@ -100,8 +86,6 @@ public class PostLogin implements Listener{
 
         title.send(p);
 
-
-        isNew = false;
 
         ProxyServer.getInstance().getScheduler().schedule(BungeeCoreSystem.getInstance(), () -> {
             if (p.getServer() != null) {

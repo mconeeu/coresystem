@@ -21,7 +21,7 @@ import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
 import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import eu.mcone.coresystem.api.core.exception.PlayerNotFoundException;
+import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.translation.TranslationField;
@@ -188,9 +188,9 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         for (Player p : Bukkit.getOnlinePlayers()) {
             PlayerLogin.setPermissions(p);
             try {
-                new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(this, p.getName());
+                new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(this, p.getAddress().getAddress(), p.getName());
                 channelHandler.sendPluginMessage(p, "UNNICK");
-            } catch (PlayerNotFoundException e) {
+            } catch (PlayerNotResolvedException e) {
                 e.printStackTrace();
             }
         }

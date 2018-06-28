@@ -10,6 +10,7 @@ import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.api.core.translation.Language;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -35,9 +36,11 @@ public final class Messager {
      * @param player player
      * @param textComponent text component
      */
-    public void send(final ProxiedPlayer player, final TextComponent textComponent) {
+    public void send(final ProxiedPlayer player, final BaseComponent[] textComponent) {
         TextComponent realTc = new TextComponent(CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, Language.ENGLISH));
-        realTc.addExtra(textComponent);
+        for (BaseComponent bc : textComponent) {
+            realTc.addExtra(bc);
+        }
         player.sendMessage(realTc);
     }
 
