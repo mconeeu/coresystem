@@ -52,6 +52,18 @@ public interface BukkitCorePlayer extends GlobalCorePlayer {
     CoreLocation getLocation();
 
     /**
+     * returns if the player afk
+     * @return player is afk
+     */
+    boolean isAfk();
+
+    /**
+     * returns the current players afk time in seconds
+     * @return afk time in seconds
+     */
+    long getAfkTime();
+
+    /**
      * opens the player an interaction inventory of a specific player
      * @param player target player
      */

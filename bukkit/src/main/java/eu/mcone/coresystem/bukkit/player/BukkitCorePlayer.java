@@ -16,7 +16,6 @@ import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.PlayerStatus;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.inventory.InteractionInventory;
-import eu.mcone.coresystem.bukkit.util.AFKCheck;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
@@ -78,6 +77,16 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
     }
 
     @Override
+    public boolean isAfk() {
+        return BukkitCoreSystem.getSystem().getAfkManager().isAfk(uuid);
+    }
+
+    @Override
+    public long getAfkTime() {
+        return BukkitCoreSystem.getSystem().getAfkManager().getAfkTime(uuid);
+    }
+
+    @Override
     public void openInteractionInventory(Player p) {
         new InteractionInventory(bukkit(), p);
     }
@@ -100,8 +109,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
     @Override
     public void unregister() {
         BukkitCoreSystem.getSystem().clearPlayerInventories(uuid);
-        AFKCheck.players.remove(uuid);
-        AFKCheck.afkPlayers.remove(uuid);
+        BukkitCoreSystem.getSystem().getAfkManager().unregisterPlayer(uuid);
 
         BukkitCoreSystem.getSystem().getCorePlayers().remove(uuid);
         BukkitCoreSystem.getInstance().sendConsoleMessage("Unloaded Player "+name);

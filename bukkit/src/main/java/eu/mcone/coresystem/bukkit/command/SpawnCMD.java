@@ -19,6 +19,10 @@ public class SpawnCMD implements CommandExecutor {
 
     public SpawnCMD(CoreWorld world) {
         this.world = world;
+
+        if (world.getLocation("spawn") == null) {
+            world.setLocation("spawn", world.bukkit().getSpawnLocation());
+        }
     }
 
     @Override

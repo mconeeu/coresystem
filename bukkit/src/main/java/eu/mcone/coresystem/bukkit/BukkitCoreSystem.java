@@ -33,7 +33,7 @@ import eu.mcone.coresystem.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.bukkit.player.CoinsAPI;
 import eu.mcone.coresystem.bukkit.player.NickManager;
 import eu.mcone.coresystem.bukkit.player.StatsAPI;
-import eu.mcone.coresystem.bukkit.util.AFKCheck;
+import eu.mcone.coresystem.bukkit.util.AfkManager;
 import eu.mcone.coresystem.bukkit.util.ActionBar;
 import eu.mcone.coresystem.bukkit.util.TablistInfo;
 import eu.mcone.coresystem.bukkit.util.Title;
@@ -68,7 +68,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private MySQL mysql3;
     private Map<UUID, CoreInventory> inventories;
     private Map<String, CorePlugin> plugins;
-    private Map<Gamemode, StatsAPI> stats;
 
     @Getter
     private TranslationManager translationManager;
@@ -84,6 +83,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private ChannelHandler channelHandler;
     @Getter
     private WorldManager worldManager;
+    @Getter
+    private AfkManager afkManager;
     @Getter
     private LabyModAPI labyModAPI;
     @Getter
@@ -132,11 +133,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         gson = new GsonBuilder().setPrettyPrinting().create();
         yamlConfig = new YAML_Config("MCONE-BukkitCoreSystem", "config.yml");
 
-        stats = new HashMap<>();
-        for (Gamemode gamemode : Gamemode.values()) {
-            stats.put(gamemode, new StatsAPI(this, gamemode));
-        }
-
         cloudsystemAvailable = checkIfCloudSystemAvailable();
         sendConsoleMessage("§7CloudSystem available: "+cloudsystemAvailable);
 
@@ -145,6 +141,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         sendConsoleMessage("§aStarting WorldManager...");
         worldManager = new WorldManager(this);
+
+        if (yamlConfig.getConfig().getBoolean("AFK-Manager")) {
+            sendConsoleMessage("§aStarting AFK-Manager...");
+            afkManager = new AfkManager();
+        }
 
         sendConsoleMessage("§aLoading Translations...");
         translationManager = new TranslationManager(mysql1);
@@ -156,9 +157,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aStarting NickManager...");
         nickManager = new NickManager(this);
 
-        sendConsoleMessage("§aLoading Commands, Events, Scheduler & Configs...");
+        sendConsoleMessage("§aLoading Commands, Events & Configs...");
         this.setupConfig();
-        this.startScheduler();
         this.registerListener();
         this.registerCommands();
         corePlayers = new HashMap<>();
@@ -201,9 +201,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Override
     public void onDisable() {
         if (yamlConfig.getConfig().getBoolean("AFK-Manager")) {
-            for (HashMap.Entry<UUID, Integer> templateEntry : AFKCheck.players.entrySet()) {
-                AFKCheck.players.put(templateEntry.getKey(), 0);
-            }
+            afkManager.stop();
         }
 
         for (BukkitCorePlayer p : getOnlineCorePlayers()) {
@@ -267,14 +265,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         getServer().getPluginManager().registerEvents(new InventoryClick(), this);
         getServer().getPluginManager().registerEvents(new PlayerCommandPreprocess(), this);
         getServer().getPluginManager().registerEvents(new SignChange(), this);
-    }
-
-    private void startScheduler() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> {
-            if (yamlConfig.getConfig().getBoolean("AFK-Manager")) {
-                AFKCheck.check();
-            }
-        }, 25, 15);
     }
 
     private void createTables(MySQL mysql) {
@@ -408,7 +398,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public StatsAPI getStatsAPI(Gamemode gamemode) {
-        return stats.getOrDefault(gamemode, null);
+        return new StatsAPI(this, gamemode);
     }
 
     @Override

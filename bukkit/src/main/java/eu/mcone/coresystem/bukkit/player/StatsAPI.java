@@ -359,15 +359,15 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 			}
 
 			if(kills == 0 && deaths == 0) {
-				return 0.00;
+				return 0.00D;
 			} else if(kills == 0) {
-				return 0.00;
+				return 0.00D;
 			} else if(deaths == 0) {
-				return kills + .00;
+				return kills + .00D;
 			} else {
 				return kills / deaths;
 			}
-		}, int.class);
+		}, double.class);
 	}
 
 	public int[] getData(final UUID uuid) {

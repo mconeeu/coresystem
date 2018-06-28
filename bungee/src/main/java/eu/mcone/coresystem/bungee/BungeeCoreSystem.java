@@ -161,6 +161,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         getProxy().getPluginManager().registerCommand(this, new WhoisCMD());
         getProxy().getPluginManager().registerCommand(this, new RestartCMD());
         getProxy().getPluginManager().registerCommand(this, new WartungCMD());
+        getProxy().getPluginManager().registerCommand(this, new DatenschutzCMD());
         getProxy().getPluginManager().registerCommand(this, new CoinsCMD());
 
         getProxy().getPluginManager().registerCommand(this, new NickCMD());

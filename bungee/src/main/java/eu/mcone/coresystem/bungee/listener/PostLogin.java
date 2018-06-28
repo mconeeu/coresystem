@@ -50,7 +50,7 @@ public class PostLogin implements Listener{
             }
         });
 
-        BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "\n\n§8[§7§l!§8] §3MC ONE §8» §7§o" + getRandomWelcomeMSG(p) + ", §f§o" + p.getName() + "§7§o!");
+        BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "\n\n§8[§7§l!§8] §3MC ONE §8» §7§o" + getRandomWelcomeMSG(p, isNew) + ", §f§o" + p.getName() + "§7§o!");
         if (isNew) {
             BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "§8[§7§l!§8] §3MC ONE §8» §2Als kleines Willkommensgeschenk bekommst du 20 Coins gutgeschrieben!");
         }
@@ -125,7 +125,7 @@ public class PostLogin implements Listener{
         },1000L, TimeUnit.MILLISECONDS);
     }
 
-    private static String getRandomWelcomeMSG(ProxiedPlayer p) {
+    private static String getRandomWelcomeMSG(ProxiedPlayer p, boolean isNew) {
         Calendar calendar = Calendar.getInstance();
         calendar.getTime();
         int hours = calendar.get(Calendar.HOUR_OF_DAY);
