@@ -52,7 +52,7 @@ public class MsgCMD extends Command implements TabExecutor {
             } else {
                 final BungeeCorePlayer t = BungeeCoreSystem.getInstance().getCorePlayer(args[0]);
                 if (t != null) {
-                    if (p.equals(t)) {
+                    if (!p.equals(t)) {
                         if (!t.getFriendData().getBlocks().contains(p.getUuid())) {
                             if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY)) {
                                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§c" + args[0] + "§4 hat private Nachrichten deaktiviert!");

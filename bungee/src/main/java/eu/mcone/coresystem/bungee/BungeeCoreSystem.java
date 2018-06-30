@@ -399,6 +399,15 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "`player_settings` varchar(1000) NOT NULL DEFAULT '{\"enableFriendRequests\":true, \"acceptedAgbs\":false, \"language\":\"GERMAN\", \"privateMessages\": \"FRIENDS\", \"partyInvites\":\"ALL\"}'" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
+        mysql.update("CREATE TABLE IF NOT EXISTS `permissions` " +
+                "(" +
+                "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+                "`name` varchar(100) NOT NULL, " +
+                "`key` varchar(100) NOT NULL, " +
+                "`value` varchar(1000), " +
+                "`server` varchar(100)" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+
         mysql.update("CREATE TABLE IF NOT EXISTS `translations` " +
                 "(" +
                 "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
@@ -429,15 +438,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "`target` varchar(100) NOT NULL, " +
                 "`key` varchar(100) NOT NULL, " +
                 "`timestamp` int(100)" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
-        mysql.update("CREATE TABLE IF NOT EXISTS `permissions` " +
-                "(" +
-                "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                "`name` varchar(100) NOT NULL, " +
-                "`key` varchar(100) NOT NULL, " +
-                "`value` varchar(1000), " +
-                "`server` varchar(100)" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_premium` " +

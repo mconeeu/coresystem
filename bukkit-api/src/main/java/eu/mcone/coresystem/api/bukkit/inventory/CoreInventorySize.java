@@ -13,7 +13,7 @@ public enum CoreInventorySize {
     ROW_3(26),
     ROW_4(35),
     ROW_5(45),
-    ROW_6(53);
+    ROW_6(54);
 
     private int value;
 
