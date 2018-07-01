@@ -30,4 +30,5 @@ public class PlayerDisconnect implements Listener{
 		if (cp.isNicked()) BungeeCoreSystem.getInstance().getNickManager().destroy(p);
 		cp.unregister();
 	}
+	
 }
