@@ -30,10 +30,12 @@ public class FlyCMD implements CommandExecutor {
                 if (args.length == 0) {
                     if (fly.contains(p.getUniqueId())) {
                         p.setAllowFlight(false);
+                        p.setFlying(false);
                         fly.remove(p.getUniqueId());
                         BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast den §fFlugmodus §2deaktiviert!");
                     } else {
                         p.setAllowFlight(true);
+                        p.setFlying(true);
                         fly.add(p.getUniqueId());
                         BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast den §fFlugmodus §2aktiviert!");
                     }

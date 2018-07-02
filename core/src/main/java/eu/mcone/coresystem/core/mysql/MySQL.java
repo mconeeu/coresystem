@@ -19,21 +19,21 @@ import java.sql.SQLException;
 public class MySQL implements eu.mcone.coresystem.api.core.mysql.MySQL {
 
     private HikariDataSource ds;
-	
-	public MySQL(Database database) {
+
+    public MySQL(Database database) {
         ds = new HikariDataSource();
         ds.setMaximumPoolSize(database.getPoolsize());
         ds.setDriverClassName("org.mariadb.jdbc.Driver");
-        ds.setJdbcUrl("jdbc:mariadb://"+database.getHostname()+":"+database.getPort()+"/"+database.getDatabase());
+        ds.setJdbcUrl("jdbc:mariadb://" + database.getHostname() + ":" + database.getPort() + "/" + database.getDatabase());
         ds.addDataSourceProperty("user", database.getUsername());
         ds.addDataSourceProperty("password", database.getPassword());
         ds.setMaxLifetime(28800000L);
 
-        System.out.println("Created pool for database "+ds.getJdbcUrl());
-	}
+        System.out.println("Created pool for database " + ds.getJdbcUrl());
+    }
 
-	public void close() {
-	    this.ds.close();
+    public void close() {
+        this.ds.close();
     }
 
     @Override
@@ -43,7 +43,7 @@ public class MySQL implements eu.mcone.coresystem.api.core.mysql.MySQL {
 
             PreparedStatement preparedstatement = con.prepareStatement(qry);
             for (int i = 0; i < parameters.length; i++) {
-                preparedstatement.setObject(i+1, parameters[i]);
+                preparedstatement.setObject(i + 1, parameters[i]);
             }
             preparedstatement.executeUpdate();
 
@@ -55,14 +55,14 @@ public class MySQL implements eu.mcone.coresystem.api.core.mysql.MySQL {
     }
 
     @Override
-    public int updateWithGetId(String qry, Object... parameters){
+    public int updateWithGetId(String qry, Object... parameters) {
         int id = -1;
-        try{
+        try {
             Connection con = this.ds.getConnection();
 
             PreparedStatement preparedStatement = con.prepareStatement(qry, PreparedStatement.RETURN_GENERATED_KEYS);
             for (int i = 0; i < parameters.length; i++) {
-                preparedStatement.setObject(i+1, parameters[i]);
+                preparedStatement.setObject(i + 1, parameters[i]);
             }
             preparedStatement.executeUpdate();
             ResultSet rs = preparedStatement.getGeneratedKeys();
@@ -74,7 +74,7 @@ public class MySQL implements eu.mcone.coresystem.api.core.mysql.MySQL {
             rs.close();
             preparedStatement.close();
             con.close();
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -82,7 +82,7 @@ public class MySQL implements eu.mcone.coresystem.api.core.mysql.MySQL {
     }
 
     @Override
-    public void select(String qry, Callback<ResultSet> cb){
+    public void select(String qry, Callback<ResultSet> cb) {
         try {
             final Connection con = this.ds.getConnection();
 
@@ -100,7 +100,7 @@ public class MySQL implements eu.mcone.coresystem.api.core.mysql.MySQL {
     }
 
     @Override
-    public void selectAsync(final String qry, final Callback<ResultSet> cb){
+    public void selectAsync(final String qry, final Callback<ResultSet> cb) {
         new Thread(() -> {
             ResultSet result = null;
             Connection con = null;
@@ -126,7 +126,7 @@ public class MySQL implements eu.mcone.coresystem.api.core.mysql.MySQL {
     }
 
     @Override
-    public <T> T select(String qry, CallbackResult<ResultSet> cb, Class<T> typeClass){
+    public <T> T select(String qry, CallbackResult<ResultSet> cb, Class<T> typeClass) {
         Object o = null;
         try {
             final Connection con = this.ds.getConnection();
@@ -146,7 +146,7 @@ public class MySQL implements eu.mcone.coresystem.api.core.mysql.MySQL {
     }
 
     public Connection getConnection() {
-	    Connection result = null;
+        Connection result = null;
         try {
             result = ds.getConnection();
         } catch (SQLException e) {

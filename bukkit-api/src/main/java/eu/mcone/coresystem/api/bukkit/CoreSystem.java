@@ -136,11 +136,10 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     /**
      * creates a new instance of BuildSystem
-     * @param notify should players get notified if they are not allowed to build?
      * @param events events that get blocked
      * @return nwe BuildSystem instance
      */
-    public abstract BuildSystem initialiseBuildSystem(boolean notify, BuildSystem.BuildEvent... events);
+    public abstract BuildSystem initialiseBuildSystem(BuildSystem.BuildEvent... events);
 
     /**
      * enables an global /server spawn command

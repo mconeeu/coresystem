@@ -373,8 +373,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public BuildSystem initialiseBuildSystem(boolean notify, BuildSystem.BuildEvent... events) {
-        return new eu.mcone.coresystem.bukkit.world.BuildSystem(this, notify, events);
+    public BuildSystem initialiseBuildSystem(BuildSystem.BuildEvent... events) {
+        return new eu.mcone.coresystem.bukkit.world.BuildSystem(this, events);
     }
 
     @Override

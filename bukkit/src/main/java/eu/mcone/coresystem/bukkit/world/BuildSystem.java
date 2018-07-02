@@ -20,22 +20,21 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.world.BuildSystem {
 
-    private static BuildSystem system;
-    private Set<UUID> allowedPlayers;
-    private boolean notify;
+    private Map<UUID, GameMode> allowedPlayers;
+    private Map<BuildEvent, Set<Material>> filteredBlocks;
 
-    public BuildSystem(BukkitCoreSystem instance, boolean notify, BuildEvent... events) {
-        system = this;
-        this.allowedPlayers = new HashSet<>();
-        this.notify = notify;
+    private boolean notify = false;
+
+    public BuildSystem(BukkitCoreSystem instance, BuildEvent... events) {
+        this.allowedPlayers = new HashMap<>();
+        this.filteredBlocks = new HashMap<>();
 
         instance.getCommand("build").setExecutor(new BuildCMD(this));
+
         for (BuildEvent event : events) {
             switch (event) {
                 case BLOCK_BREAK: {
@@ -44,9 +43,9 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                         public void on(BlockBreakEvent e) {
                             Player p = e.getPlayer();
 
-                            if (system.isNotAllowedBuild(p)) {
+                            if (isNotAllowedBuild(p) && !filteredBlocks.getOrDefault(BuildEvent.BLOCK_BREAK, new HashSet<>()).contains(e.getBlock().getType())) {
                                 e.setCancelled(true);
-                                if (system.notify)
+                                if (notify)
                                     BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst hier nicht abbauen!");
                             }
                         }
@@ -56,7 +55,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                             if (e.getRemover() instanceof Player) {
                                 Player p = (Player) e.getRemover();
 
-                                if (system.isNotAllowedBuild(p)) {
+                                if (isNotAllowedBuild(p) && !filteredBlocks.getOrDefault(BuildEvent.BLOCK_BREAK, new HashSet<>()).contains(Material.ITEM_FRAME)) {
                                     e.setCancelled(true);
                                 }
                             }
@@ -66,11 +65,11 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                         public void on(PlayerInteractEvent e) {
                             Player p = e.getPlayer();
 
-                            if (system.isNotAllowedBuild(p)) {
+                            if (isNotAllowedBuild(p) && !filteredBlocks.getOrDefault(BuildEvent.BLOCK_BREAK, new HashSet<>()).contains(Material.SOIL)) {
                                 if ((e.getAction() == Action.PHYSICAL)) {
                                     if (p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SOIL) {
                                         e.setCancelled(true);
-                                        if (system.notify)
+                                        if (notify)
                                             BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst das Feld nicht zertrampeln!");
                                     }
                                 }
@@ -85,9 +84,9 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                         public void on(BlockPlaceEvent e) {
                             Player p = e.getPlayer();
 
-                            if (system.isNotAllowedBuild(p)) {
+                            if (isNotAllowedBuild(p) && !filteredBlocks.getOrDefault(BuildEvent.BLOCK_PLACE, new HashSet<>()).contains(e.getBlock().getType())) {
                                 e.setCancelled(true);
-                                if (system.notify)
+                                if (notify)
                                     BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst hier keine Blöcke bauen!");
                             }
                         }
@@ -100,8 +99,8 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                         public void on(PlayerInteractEvent e) {
                             Player p = e.getPlayer();
 
-                            if (e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
-                                if (system.notify) BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst mit diesem Block nicht interagieren!");
+                            if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && isNotAllowedBuild(p) && !filteredBlocks.getOrDefault(BuildEvent.INTERACT, new HashSet<>()).contains(e.getClickedBlock().getType())) {
+                                if (notify) BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst mit diesem Block nicht interagieren!");
                                 e.setCancelled(true);
                             }
                         }
@@ -113,23 +112,40 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
         }
     }
 
+    @Override
+    public void setNotifying(boolean notify) {
+        this.notify = notify;
+    }
+
+    @Override
+    public void addFilter(BuildEvent event, Material... filter) {
+        if (filteredBlocks.containsKey(event)) {
+            filteredBlocks.get(event).addAll(Arrays.asList(filter));
+        } else {
+            filteredBlocks.put(event, new HashSet<>(Arrays.asList(filter)));
+        }
+    }
+
+    @Override
     public void changeBuildMode(Player p) {
-        if (allowedPlayers.contains(p.getUniqueId())) {
+        if (allowedPlayers.containsKey(p.getUniqueId())) {
+            p.setGameMode(allowedPlayers.get(p.getUniqueId()));
             allowedPlayers.remove(p.getUniqueId());
             BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du kannst nun nicht mehr bauen!");
         } else {
-            allowedPlayers.add(p.getUniqueId());
+            allowedPlayers.put(p.getUniqueId(), p.getGameMode());
             p.setGameMode(GameMode.CREATIVE);
             BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du kannst nun bauen!");
         }
     }
 
-    private boolean isNotAllowedBuild(Player p) {
-        return !allowedPlayers.contains(p.getUniqueId());
+    @Override
+    public boolean hasBuildModeEnabled(Player p) {
+        return allowedPlayers.containsKey(p.getUniqueId());
     }
 
-    public boolean hasBuildModeEnabled(Player p) {
-        return allowedPlayers.contains(p.getUniqueId());
+    private boolean isNotAllowedBuild(Player p) {
+        return !allowedPlayers.containsKey(p.getUniqueId());
     }
 
 }

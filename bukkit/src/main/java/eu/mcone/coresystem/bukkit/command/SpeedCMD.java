@@ -22,12 +22,16 @@ public class SpeedCMD implements CommandExecutor {
             if (args.length == 1) {
                 float speed = Float.valueOf(args[0]);
 
-                if (p.isFlying()) {
-                    p.setFlySpeed(speed);
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Deine Fluggeschwindigkeit wurde auf §f"+speed+"§2 gesetzt!");
+                if (speed > -1 && speed < 1) {
+                    if (p.isFlying()) {
+                        p.setFlySpeed(speed);
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Deine Fluggeschwindigkeit wurde auf §f" + speed + "§2 gesetzt!");
+                    } else {
+                        p.setWalkSpeed(speed);
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Deine Laufgeschwindigkeit wurde auf §f" + speed + "§2 gesetzt!");
+                    }
                 } else {
-                    p.setWalkSpeed(speed);
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Deine Laufgeschwindigkeit wurde auf §f"+speed+"§2 gesetzt!");
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du kannst nur Geschwindigkeiten zwischen -1 und 1 setzen!");
                 }
             }
         } else {
