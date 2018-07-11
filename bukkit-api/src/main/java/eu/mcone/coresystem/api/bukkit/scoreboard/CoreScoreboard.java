@@ -7,23 +7,25 @@
 package eu.mcone.coresystem.api.bukkit.scoreboard;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import lombok.Getter;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.ScoreboardManager;
+import org.bukkit.scoreboard.Team;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public abstract class CoreScoreboard {
 
+    private String teamName;
+    private Map<DisplaySlot, CoreObjective> objectives;
+
     @Getter
-    protected org.bukkit.scoreboard.Scoreboard scoreboard;
-    protected Map<DisplaySlot, CoreObjective> objectives;
+    private org.bukkit.scoreboard.Scoreboard scoreboard;
     @Getter
-    protected BukkitCorePlayer player;
+    private CorePlayer player;
 
     public CoreScoreboard() {
         ScoreboardManager sm = Bukkit.getScoreboardManager();
@@ -32,39 +34,38 @@ public abstract class CoreScoreboard {
         this.objectives = new HashMap<>();
     }
 
-    public CoreScoreboard set(CoreSystem instance, BukkitCorePlayer p) {
-        this.player = p;
-
-        for (BukkitCorePlayer player : instance.getOnlineCorePlayers()) {
-            setPlayerTeams(player, scoreboard);
-        }
-        p.bukkit().setScoreboard(scoreboard);
+    public CoreScoreboard set(CoreSystem instance, CorePlayer player) {
+        this.player = player;
+        this.teamName = "sb-"+ player.getUuid()+"-";
+        reload(instance);
 
         return this;
     }
 
-    /**
-     * method called when scoreboard is set to player
-     * @param p player
-     * @param sb scoreboard
-     */
-    public abstract void setPlayerTeams(BukkitCorePlayer p, org.bukkit.scoreboard.Scoreboard sb);
+    public abstract Team modifyTeam(CorePlayer owner, CorePlayer player, Team team);
 
     /**
      * reload the set scoreboard values
      * @param instance CoreSystem instance
      */
     public void reload(CoreSystem instance) {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            setPlayerTeams(instance.getCorePlayer(player), scoreboard);
+        for (CorePlayer p : instance.getOnlineCorePlayers()) {
+            Team team = scoreboard.getTeam(p.getName()) != null ? scoreboard.getTeam(p.getName()) : scoreboard.registerNewTeam(p.getName());
+            team = modifyTeam(this.player, p, team);
+            team.addEntry(p.isNicked() ? p.getNickname() : p.getName());
         }
-        player.bukkit().setScoreboard(bukkit());
+        player.bukkit().setScoreboard(scoreboard);
 
         for (CoreObjective o : objectives.values()) o.reload();
     }
 
     public void setNewObjective(CoreObjective objective) {
+        if (objectives.get(objective.getSlot()) != null) objectives.get(objective.getSlot()).unregister();
         objectives.put(objective.getSlot(), objective.set(player, scoreboard));
+    }
+
+    public void unregister() {
+        for (Team t : scoreboard.getTeams()) t.unregister();
     }
 
     public org.bukkit.scoreboard.Scoreboard bukkit() {

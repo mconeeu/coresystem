@@ -6,11 +6,11 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
+import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.event.PermissionChangeEvent;
-import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.utils.PluginMessage;
 import eu.mcone.coresystem.bungee.utils.TeamspeakVerifier;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Listener;
@@ -26,7 +26,7 @@ public class PermissionChange implements Listener {
             ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
                 BungeeCoreSystem.getInstance().getPermissionManager().reload();
                 Set<Group> groups = BungeeCoreSystem.getInstance().getPermissionManager().getChildren((Group) e.getGroups().toArray()[0]);
-                for (BungeeCorePlayer player : BungeeCoreSystem.getInstance().getOnlineCorePlayers()) {
+                for (CorePlayer player : BungeeCoreSystem.getInstance().getOnlineCorePlayers()) {
                     for (Group g : player.getGroups()) {
                         if (groups.contains(g)) {
                             player.reloadPermissions();
@@ -36,18 +36,18 @@ public class PermissionChange implements Listener {
                 }
             });
         } else if (e.getKind() == PermissionChangeEvent.Kind.USER_PERMISSION) {
-            final BungeeCorePlayer p = e.getPlayer();
+            final CorePlayer p = e.getPlayer();
 
             if (p != null) {
                 ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
                     BungeeCoreSystem.getInstance().getPermissionManager().reload();
                     p.reloadPermissions();
 
-                    new PluginMessage("Return", p.bungee().getServer().getInfo(), "EVENT", p.getUuid().toString(), "PermissionChangeEvent", "USER_PERMISSION;");
+                    CoreSystem.getInstance().getChannelHandler().createInfoRequest(p.bungee(), "EVENT", "PermissionChangeEvent", "USER_PERMISSION;");
                 });
             }
         } else if (e.getKind() == PermissionChangeEvent.Kind.GROUP_CHANGE) {
-            final BungeeCorePlayer p = e.getPlayer();
+            final CorePlayer p = e.getPlayer();
 
             if (p != null) {
                 p.setGroups(e.getGroups());
@@ -56,7 +56,7 @@ public class PermissionChange implements Listener {
                 TeamspeakVerifier tsv = BungeeCoreSystem.getSystem().getTeamspeakVerifier();
                 if (tsv != null) tsv.updateLink(p, null);
 
-                new PluginMessage("Return", p.bungee().getServer().getInfo(), "EVENT", p.getUuid().toString(), "PermissionChangeEvent", "GROUP_CHANGE;"+BungeeCoreSystem.getInstance().getPermissionManager().getJson(e.getGroups()));
+                CoreSystem.getInstance().getChannelHandler().createInfoRequest(p.bungee(), "EVENT", "PermissionChangeEvent", "GROUP_CHANGE;"+BungeeCoreSystem.getInstance().getPermissionManager().getJson(e.getGroups()));
             }
         }
     }

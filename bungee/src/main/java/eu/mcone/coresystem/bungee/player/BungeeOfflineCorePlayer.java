@@ -6,33 +6,19 @@
 
 package eu.mcone.coresystem.bungee.player;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.FriendData;
-import eu.mcone.coresystem.api.core.exception.CoreException;
-import eu.mcone.coresystem.api.core.player.Group;
-import eu.mcone.coresystem.api.core.player.PlayerSettings;
+import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
+import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
+import eu.mcone.coresystem.core.player.GlobalOfflineCorePlayer;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.sql.SQLException;
-import java.util.*;
 
-public class OfflinePlayer {
+public class BungeeOfflineCorePlayer extends GlobalOfflineCorePlayer implements OfflineCorePlayer {
 
-    @Getter
-    private UUID uuid;
-    @Getter
-    private String name, status;
-    @Getter
-    private Set<Group> groups;
-    private long joined, onlinetime;
-    @Getter @Setter
-    private Set<String> permissions;
     @Getter
     private FriendData friendData;
     @Getter
@@ -41,45 +27,26 @@ public class OfflinePlayer {
     private int banPoints, mutePoints;
     @Getter
     private long banTime, muteTime;
-    @Getter
-    private PlayerSettings settings;
 
-    public OfflinePlayer(String name) throws CoreException {
-        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT uuid, groups, status, onlinetime, player_settings FROM userinfo WHERE name='"+name+"'", rs -> {
-            try {
-                if (rs.next()) {
-                    this.uuid = UUID.fromString(rs.getString("uuid"));
-                    this.status = rs.getString("status");
-                    this.onlinetime = rs.getLong("onlinetime");
-                    this.joined = System.currentTimeMillis() / 1000;
-                    this.groups = new HashSet<>();
-                    this.settings = CoreSystem.getInstance().getGson().fromJson(rs.getString("player_settings"), PlayerSettings.class);
-                    JsonArray array = new JsonParser().parse(rs.getString("groups")).getAsJsonArray();
-
-                    for (JsonElement e : array) {
-                        groups.add(Group.getGroupById(e.getAsInt()));
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
-
-        if (this.uuid == null) throw new CoreException("Database does not contain eu.mcone.coresystem.api.core.player "+name+"!");
-        this.name = name;
+    public BungeeOfflineCorePlayer(CoreSystem instance, String name) throws PlayerNotResolvedException {
+        super(instance, name);
     }
 
-    public OfflinePlayer loadFriendData() {
+    public OfflineCorePlayer loadFriendData() {
         this.friendData = BungeeCoreSystem.getInstance().getFriendSystem().getData(uuid);
         return this;
     }
 
-    public OfflinePlayer loadPermissions() {
+    public OfflineCorePlayer loadPermissions() {
         this.permissions = BungeeCoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), groups);
         return this;
     }
 
-    public OfflinePlayer loadBanData() {
+    public boolean hasPermission(String permission) {
+        return instance.getPermissionManager().hasPermission(permissions, permission);
+    }
+
+    public OfflineCorePlayer loadBanData() {
         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `end` FROM `bungeesystem_bansystem_mute` WHERE `uuid`='"+getUuid()+"'", rs -> {
             try {
                 if (rs.next()) {
@@ -121,14 +88,6 @@ public class OfflinePlayer {
         });
 
         return this;
-    }
-
-    public boolean hasPermission(String permission) {
-        return BungeeCoreSystem.getInstance().getPermissionManager().hasPermission(permissions, permission);
-    }
-
-    public long getOnlinetime() {
-        return (((System.currentTimeMillis() / 1000) - joined) / 60) + onlinetime;
     }
 
 }

@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
-import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.friend.Party;
@@ -62,7 +62,7 @@ public class PartyCMD extends Command implements TabExecutor {
                     final Party party = Party.getParty(p);
 
                     if (t != null) {
-                        final BungeeCorePlayer tc = CoreSystem.getInstance().getCorePlayer(t);
+                        final CorePlayer tc = CoreSystem.getInstance().getCorePlayer(t);
 
                         switch (args[0]) {
                             case "invite": {

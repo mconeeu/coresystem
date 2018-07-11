@@ -6,23 +6,28 @@
 
 package eu.mcone.coresystem.core.translation;
 
+import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.api.core.translation.TranslationField;
 import eu.mcone.coresystem.core.mysql.MySQL;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class TranslationManager implements eu.mcone.coresystem.api.core.translation.TranslationManager {
 
     private MySQL mysql;
     private Map<String, TranslationField> translations;
+    private List<String> categories;
 
-    public TranslationManager(MySQL mysql) {
+    public TranslationManager(MySQL mysql, GlobalCorePlugin coreSystem, String... categories) {
         this.mysql = mysql;
         this.translations = new HashMap<>();
+        this.categories = new ArrayList<>();
+
+        this.categories.add(coreSystem.getPluginName());
+        this.categories.addAll(Arrays.asList(categories));
 
         reload();
     }
@@ -31,7 +36,12 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
     public void reload() {
         translations.clear();
 
-        mysql.select("SELECT * FROM translations", rs -> {
+        StringBuilder qry = new StringBuilder("SELECT * FROM translations WHERE category IS NULL");
+        for (String cat : categories) {
+            qry.append(" OR category='").append(cat).append("'");
+        }
+
+        mysql.select(qry.toString(), rs -> {
             try {
                 while (rs.next()) {
                     final Map<Language, String> values = new HashMap<>();
@@ -45,6 +55,14 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
                 e.printStackTrace();
             }
         });
+    }
+
+    @Override
+    public void loadCategories(GlobalCorePlugin plugin, String... categories) {
+        this.categories.add(plugin.getPluginName());
+        this.categories.addAll(Arrays.asList(categories));
+
+        reload();
     }
 
     @Override
@@ -83,8 +101,9 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
     }
 
     @Override
+    @Deprecated
     public void insertIfNotExists(final Map<String, TranslationField> translations) {
-        StringBuilder sb = new StringBuilder();
+        /*StringBuilder sb = new StringBuilder();
         sb.append("INSERT INTO translations (`key`");
         for (Language l : Language.values()) {
             sb.append(", `").append(l.getId()).append("`");
@@ -112,7 +131,7 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
             }
         }
 
-        if (i > 0) mysql.update(sb.toString());
+        if (i > 0) mysql.update(sb.toString());*/
     }
 
 }

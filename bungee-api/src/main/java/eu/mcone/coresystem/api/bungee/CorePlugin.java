@@ -7,13 +7,14 @@
 package eu.mcone.coresystem.api.bungee;
 
 import eu.mcone.coresystem.api.bungee.util.Messager;
+import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.plugin.Plugin;
 
-public abstract class CorePlugin extends Plugin {
+public abstract class CorePlugin extends Plugin implements GlobalCorePlugin {
 
     @Getter
     private String pluginName;

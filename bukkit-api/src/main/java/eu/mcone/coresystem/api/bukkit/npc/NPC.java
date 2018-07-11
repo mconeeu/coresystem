@@ -8,7 +8,6 @@ package eu.mcone.coresystem.api.bukkit.npc;
 
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -21,12 +20,6 @@ public interface NPC {
      * @return list of loaded players
      */
     List<UUID> getLoadedPlayers();
-
-    /**
-     * returns the NPCs current location
-     * @return location
-     */
-    Location getLocation();
 
     /**
      * returns the NPCs predefined skin
@@ -47,16 +40,10 @@ public interface NPC {
     UUID getUuid();
 
     /**
-     * returns the NPCs data name
-     * @return data name
+     * returns all NPC data like name, displayname & location
+     * @return NpcData object
      */
-    String getName();
-
-    /**
-     * returns the NPCs display name
-     * @return displayname
-     */
-    String getDisplayname();
+    NpcData getData();
 
     /**
      * returns if the NPC is only locally stored or saved in Database

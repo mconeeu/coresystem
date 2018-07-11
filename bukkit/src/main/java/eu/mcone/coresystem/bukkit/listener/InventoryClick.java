@@ -37,13 +37,13 @@ public class InventoryClick implements Listener{
                             if (event != null) {
                                 if (itemStack.equals(item)) {
                                     e.setCancelled(true);
-                                    event.onClick();
+                                    event.onClick(e);
                                 } else if (itemStack.getType().equals(Material.SKULL_ITEM) && item.getType().equals(Material.SKULL_ITEM)) {
                                     SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
                                     SkullMeta clickedMeta = (SkullMeta) item.getItemMeta();
 
-                                    if (meta.equals(clickedMeta)) {
-                                        event.onClick();
+                                    if (meta.equals(clickedMeta) || meta.hasOwner() ? (meta.getOwner().equals(clickedMeta.getOwner()) && meta.getDisplayName().equals(clickedMeta.getDisplayName())) : meta.getDisplayName().equals(clickedMeta.getDisplayName())) {
+                                        event.onClick(e);
                                     }
                                 }
                             }

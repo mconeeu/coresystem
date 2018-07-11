@@ -36,7 +36,7 @@ public class HoloCMD implements CommandExecutor{
                             if (i < args.length-1) line.append(" ");
                         }
 
-                        api.addHologram(args[1], p.getLocation(), line.toString());
+                        api.addHologram(args[1], p.getLocation(), line.toString().replaceAll("&", "§"));
                         BukkitCoreSystem.getInstance().getMessager().send(p, "§2Hologramm §f" + args[1] + "§2 erfolgreich hinzugefügt!");
                         return true;
                     }

@@ -50,7 +50,7 @@ public class BanManager {
             BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_bansystem_ban` (`id`, `uuid`, `template`, `reason`, `end`, `timestamp`, `team_member`) VALUES (NULL, '"+gebannt.toString()+"', '"+templateName+"', '"+grund+"', '"+banTime+"', '"+millis+"', '"+tName+"') " +
                     "ON DUPLICATE KEY UPDATE `template`='"+templateName+"', `reason`='"+grund+"', `end`='"+banTime+"', `timestamp`='"+millis+"', `team_member`='"+tName+"';");
             BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_bansystem_banhistory` (`id`, `uuid`, `template`, `reason`, `end`, `timestamp`, `team_member`) VALUES (NULL, '" + gebannt.toString() + "', '" + templateName + "', '" + grund + "', " + banTime + ", " + millis + ", '" + tName + "')");
-            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE userinfo SET status='banned' WHERE uuid='" + gebannt.toString() + "'");
+            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE userinfo SET state='3' WHERE uuid='" + gebannt.toString() + "'");
 
             if (p != null) {
                 p.disconnect(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"

@@ -9,7 +9,7 @@ package eu.mcone.coresystem.api.bukkit.event;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
 import lombok.Getter;
 import org.bukkit.event.Event;
@@ -24,7 +24,7 @@ public final class PermissionChangeEvent extends Event {
     @Getter
     private Kind kind;
     @Getter
-    private BukkitCorePlayer player;
+    private CorePlayer player;
     @Getter
     private Set<Group> groups;
 
@@ -34,7 +34,7 @@ public final class PermissionChangeEvent extends Event {
         GROUP_CHANGE
     }
 
-    public PermissionChangeEvent(BukkitCorePlayer player, String[] data) {
+    public PermissionChangeEvent(CorePlayer player, String[] data) {
         this.player = player;
 
         if (data.length >= 1) {

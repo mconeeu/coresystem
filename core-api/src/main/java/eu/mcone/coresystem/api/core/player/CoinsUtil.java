@@ -8,33 +8,16 @@ package eu.mcone.coresystem.api.core.player;
 
 import java.util.UUID;
 
-public interface CoinsAPI {
-
-    /**
-     * check if a player is registered in the mc one database
-     * @param name name
-     * @return boolean registered
-     */
-    boolean isRegistered(String name);
-
-
-    int getCoins(UUID uuid);
+public interface CoinsUtil {
 
     int getCoins(String name);
 
+    int getCoins(UUID uuid);
 
     void setCoins(UUID uuid, int coins);
 
-    void setCoins(String name, int coins);
-
-
     void addCoins(UUID uuid, int coins);
 
-    void addCoins(String name, int coins);
-
-
     void removeCoins(UUID uuid, int coins);
-
-    void removeCoins(String name, int coins);
 
 }

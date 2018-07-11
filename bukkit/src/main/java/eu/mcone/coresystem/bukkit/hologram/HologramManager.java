@@ -6,14 +6,13 @@
 
 package eu.mcone.coresystem.bukkit.hologram;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import eu.mcone.coresystem.api.bukkit.CorePlugin;
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
+import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.HoloCMD;
-import eu.mcone.coresystem.core.mysql.Database;
+import eu.mcone.coresystem.bukkit.world.BukkitCoreWorld;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,28 +21,21 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class HologramManager implements Listener, eu.mcone.coresystem.api.bukkit.hologram.HologramManager {
 
-    private BukkitCoreSystem instance;
-    private String server;
     @Getter
     private Map<String, Hologram> holograms;
 
-    public HologramManager(BukkitCoreSystem instance, CorePlugin plugin) {
-        this.instance = instance;
-        this.server = plugin.getPluginName();
+    public HologramManager(JavaPlugin plugin) {
+        plugin.getServer().getPluginManager().registerEvents(this, BukkitCoreSystem.getInstance());
+        plugin.getCommand("holo").setExecutor(new HoloCMD(this));
 
-        instance.getServer().getPluginManager().registerEvents(this, BukkitCoreSystem.getInstance());
-        instance.getCommand("holo").setExecutor(new HoloCMD(this));
-
-        this.reload();
+        reload();
     }
 
     @EventHandler
@@ -67,21 +59,11 @@ public class HologramManager implements Listener, eu.mcone.coresystem.api.bukkit
         }
 
         holograms = new HashMap<>();
-        instance.getMySQL(Database.SYSTEM).select("SELECT * FROM bukkitsystem_holograms WHERE server='" + this.server + "'", rs -> {
-            try {
-                while (rs.next()) {
-                    JsonArray array = new JsonParser().parse(rs.getString("lines").replaceAll("&", "§")).getAsJsonArray();
-                    List<String> lines = new ArrayList<>();
-                    for (JsonElement jsonElement : array) {
-                        lines.add(jsonElement.getAsString());
-                    }
-
-                    this.holograms.put(rs.getString("name"), new Hologram(lines.toArray(new String[0]), CoreLocation.fromJson(rs.getString("location")).bukkit()));
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
+        for (CoreWorld w : CoreSystem.getInstance().getWorldManager().getWorlds()) {
+            for (HologramData data : ((BukkitCoreWorld) w).getHolograms()) {
+                this.holograms.put(data.getName(), new Hologram(data));
             }
-        });
+        }
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             this.setHolograms(p);
@@ -89,17 +71,31 @@ public class HologramManager implements Listener, eu.mcone.coresystem.api.bukkit
     }
 
     public void addHologram(String name, Location loc, String line1) {
-        String json = new CoreLocation(loc).toJson();
-        instance.getMySQL(Database.SYSTEM).update("INSERT INTO bukkitsystem_holograms (`name`, `location`, `lines`, `server`) VALUES ('" + name + "', '" + json + "', '[\"" + line1 + "\"]', '" + this.server + "') " +
-                "ON DUPLICATE KEY UPDATE `location`='" + json + "'");
-        this.holograms.put(name, new Hologram(new String[]{line1.replaceAll("&", "§")}, loc));
+        addHologram(new HologramData(name, new CoreLocation(loc), new String[]{line1}));
+    }
+
+    public Hologram addHologram(HologramData data) {
+        BukkitCoreWorld w = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(data.getLocation().getWorldName());
+        w.getHolograms().add(data);
+        w.save();
+
+        Hologram hologram = new Hologram(data);
+
+        this.holograms.put(data.getName(), hologram);
         this.updateHolograms();
+
+        return hologram;
     }
 
     public void removeHologram(String name) {
-        instance.getMySQL(Database.SYSTEM).update("DELETE FROM bukkitsystem_holograms WHERE `name`='" + name + "'");
+        Hologram hologram = holograms.get(name);
+
+        BukkitCoreWorld w = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(hologram.getData().getLocation().getWorldName());
+        w.getHolograms().remove(hologram.getData());
+        w.save();
+
         if (this.holograms.containsKey(name)) {
-            this.holograms.get(name).hideAll();
+            hologram.hideAll();
             this.holograms.remove(name);
         }
     }
@@ -113,7 +109,7 @@ public class HologramManager implements Listener, eu.mcone.coresystem.api.bukkit
 
     public void setHolograms(Player p) {
         for (Hologram hologram : holograms.values()) {
-            if (hologram.getLocation().getWorld().equals(p.getWorld())) {
+            if (hologram.getData().getLocation().bukkit().getWorld().equals(p.getWorld())) {
                 hologram.showPlayer(p);
             }
         }

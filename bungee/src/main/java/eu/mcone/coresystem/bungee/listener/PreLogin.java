@@ -42,6 +42,7 @@ public class PreLogin implements Listener {
 		try {
 			BungeeCorePlayer p = new BungeeCorePlayer(BungeeCoreSystem.getInstance(), e.getConnection().getAddress().getAddress(), e.getConnection().getName());
 
+            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM `bungeesystem_bansystem_ban` WHERE end<="+System.currentTimeMillis() / 1000);
 			BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT * FROM `bungeesystem_bansystem_ban` WHERE `uuid` = '" + p.getUuid().toString() + "'", rs -> {
 				try {
 					if (rs.next()) {
@@ -90,7 +91,7 @@ public class PreLogin implements Listener {
 			}
 
 			if (BungeeCoreSystem.getSystem().getPreferences().getBoolean(Preference.MAINTENANCE)) {
-				if (p.hasPermission("system.bungee.*") || p.hasPermission("system.bungee.wartung.join") || p.hasPermission("system.*")) {
+				if (p.hasPermission("system.bungee.wartung.join")) {
 					e.setCancelled(false);
 				} else {
 					e.setCancelled(true);

@@ -10,16 +10,9 @@ import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
-import eu.mcone.coresystem.api.core.player.PlayerStatus;
 import org.bukkit.entity.Player;
 
-public interface BukkitCorePlayer extends GlobalCorePlayer {
-
-    /**
-     * returns the formatted status of the player
-     * @return formatted status
-     */
-    PlayerStatus getStatus();
+public interface CorePlayer extends GlobalCorePlayer {
 
     /**
      * returns the current nickname. null if player is not nicked
@@ -74,11 +67,5 @@ public interface BukkitCorePlayer extends GlobalCorePlayer {
      * @param scoreboard scoreboard
      */
     void setScoreboard(CoreScoreboard scoreboard);
-
-    /**
-     * change the players status
-     * @param status status
-     */
-    void setStatus(PlayerStatus status);
 
 }

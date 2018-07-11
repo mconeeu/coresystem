@@ -248,14 +248,18 @@ public class WorldCMD implements CommandExecutor {
                                         w.setAlias(args[2]);
                                     } else if (args[1].equalsIgnoreCase("type")) {
                                         w.setWorldType(WorldType.valueOf(args[2]));
+                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§6Diese Einstellung tritt erst nach einem Serverneustart in Wirkung!");
                                     } else if (args[1].equalsIgnoreCase("environment")) {
                                         w.setEnvironment(World.Environment.valueOf(args[2]));
+                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§6Diese Einstellung tritt erst nach einem Serverneustart in Wirkung!");
                                     } else if (args[1].equalsIgnoreCase("difficulty")) {
                                         w.setDifficulty(Difficulty.valueOf(args[2]));
                                     } else if (args[1].equalsIgnoreCase("generator")) {
                                         w.setGenerator(args[2]);
+                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§6Diese Einstellung tritt erst nach einem Serverneustart in Wirkung!");
                                     } else if (args[1].equalsIgnoreCase("generatorSettings")) {
                                         w.setGeneratorSettings(args[2]);
+                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§6Diese Einstellung tritt erst nach einem Serverneustart in Wirkung!");
                                     } else if (args[1].equalsIgnoreCase("generateStructures")) {
                                         w.setGenerateStructures(Boolean.valueOf(args[2]));
                                     } else if (args[1].equalsIgnoreCase("autoSave")) {

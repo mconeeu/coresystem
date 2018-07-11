@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.api.bungee.event;
 
-import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import lombok.Getter;
 import net.md_5.bungee.api.plugin.Event;
@@ -14,11 +14,11 @@ import net.md_5.bungee.api.plugin.Event;
 public final class PlayerSettingsChangeEvent extends Event {
 
     @Getter
-    private BungeeCorePlayer player;
+    private CorePlayer player;
     @Getter
     private PlayerSettings settings;
 
-    public PlayerSettingsChangeEvent(BungeeCorePlayer player, PlayerSettings settings) {
+    public PlayerSettingsChangeEvent(CorePlayer player, PlayerSettings settings) {
         this.player = player;
         this.settings = settings;
     }

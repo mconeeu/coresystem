@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
-import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.TeamspeakVerifier;
 import net.md_5.bungee.api.CommandSender;
@@ -27,7 +27,7 @@ public class TsCMD extends Command {
     public void execute(final CommandSender sender, final String[] args) {
         if (sender instanceof ProxiedPlayer) {
             ProxiedPlayer p = (ProxiedPlayer) sender;
-            BungeeCorePlayer cp = CoreSystem.getInstance().getCorePlayer(p);
+            CorePlayer cp = CoreSystem.getInstance().getCorePlayer(p);
 
             if (args.length == 0) {
                 p.sendMessage(
@@ -52,14 +52,17 @@ public class TsCMD extends Command {
                     if (tsv != null) tsv.unlink(cp);
                     BungeeCoreSystem.getInstance().getMessager().send(p, "§2Deine Identität wurde erfolgreich von deinem Minecraftaccount entfernt. Benutze §a/ts link <Identität-UID>§2 um wieder eine Identität zu verlinken.");
                 } else {
-                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du hast gerade keine TeamSpeak-Identität verlinkt! Benutze §a/ts link <Identität-UID>§2 um eine Identität zu verlinken.");
+                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du hast gerade keine TeamSpeak-Identität verlinkt! Benutze §c/ts link <Identität-UID>§4 um eine Identität zu verlinken.");
                 }
                 return;
             } else if (args.length == 2 && args[0].equalsIgnoreCase("link")) {
                 if (!cp.isTeamspeakIdLinked()) {
                     TeamspeakVerifier tsv = BungeeCoreSystem.getSystem().getTeamspeakVerifier();
-                    if (tsv != null) tsv.addRegistering(p, args[1]);
-                    BungeeCoreSystem.getInstance().getMessager().send(p, "§2Bitte wechsle zu deinem TeamSpeak Fenster und gib in dem gerade vom §f[Bot] mc1net§2 geöffneten Chat deinen §aMinecraft-Namen§2 ein, um den Vorgang abzuschließen.");
+                    if (tsv != null) {
+                        tsv.addRegistering(p, args[1]);
+                    } else {
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Die TeamSpeak Verifizierung ist nicht verfügbar! Bitte melde dies einem Teammitglied.");
+                    }
                 } else {
                     BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du kannst nicht mehr als eine TeamSpeak Identität verlinken!");
                 }

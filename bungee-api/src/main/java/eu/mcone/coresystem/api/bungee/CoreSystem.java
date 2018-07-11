@@ -7,10 +7,13 @@
 package eu.mcone.coresystem.api.bungee;
 
 import com.google.gson.Gson;
-import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.FriendSystem;
 import eu.mcone.coresystem.api.bungee.player.NickManager;
+import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
+import eu.mcone.coresystem.api.bungee.util.ChannelHandler;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
+import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import lombok.Getter;
 import net.labymod.serverapi.bungee.LabyModAPI;
 import net.md_5.bungee.api.ChatColor;
@@ -44,13 +47,24 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     public abstract Gson getGson();
 
-    public abstract BungeeCorePlayer getCorePlayer(ProxiedPlayer player);
+    public abstract ChannelHandler getChannelHandler();
 
-    public abstract BungeeCorePlayer getCorePlayer(UUID uuid);
+    public abstract CorePlayer getCorePlayer(ProxiedPlayer player);
 
-    public abstract BungeeCorePlayer getCorePlayer(String name);
+    public abstract CorePlayer getCorePlayer(UUID uuid);
 
-    public abstract Collection<BungeeCorePlayer> getOnlineCorePlayers();
+    public abstract CorePlayer getCorePlayer(String name);
+
+    public abstract Collection<CorePlayer> getOnlineCorePlayers();
+
+    /**
+     * creates an CorePlayer object for an offline or online player
+     * this object has limited abilities as it should be uses for a potentially offline player
+     * @param name Player name
+     * @return OfflineCorePlayer object
+     * @throws PlayerNotResolvedException thrown if the wished player is not in the database
+     */
+    public abstract OfflineCorePlayer getOfflineCorePlayer(String name) throws PlayerNotResolvedException;
 
     /**
      * returns an registered CorePlugin

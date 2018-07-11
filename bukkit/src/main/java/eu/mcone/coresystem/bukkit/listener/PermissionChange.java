@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.bukkit.listener;
 
 import eu.mcone.coresystem.api.bukkit.event.PermissionChangeEvent;
-import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
@@ -20,13 +20,13 @@ public class PermissionChange implements Listener {
 
     @EventHandler
     public void on(PermissionChangeEvent e) {
-        final BukkitCorePlayer p = e.getPlayer();
+        final CorePlayer p = e.getPlayer();
 
         if (e.getKind() == PermissionChangeEvent.Kind.GROUP_PERMISSION) {
             Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
                 BukkitCoreSystem.getInstance().getPermissionManager().reload();
                 Set<Group> groups = BukkitCoreSystem.getInstance().getPermissionManager().getChildren((Group) e.getGroups().toArray()[0]);
-                for (BukkitCorePlayer player : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
+                for (CorePlayer player : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
                     for (Group g : player.getGroups()) {
                         if (groups.contains(g)) {
                             player.reloadPermissions();
@@ -52,7 +52,7 @@ public class PermissionChange implements Listener {
                 e.getGroups().forEach(g -> sb.append(g.getLabel()).append(" "));
 
                 BukkitCoreSystem.getInstance().getMessager().send(p.bukkit(), "§7Deine Permissions wurden geändert! Du besitzt nun folgende Permissions-Gruppen: "+sb.toString());
-                for (BukkitCorePlayer player : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
+                for (CorePlayer player : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
                     player.getScoreboard().reload(BukkitCoreSystem.getInstance());
                 }
             }

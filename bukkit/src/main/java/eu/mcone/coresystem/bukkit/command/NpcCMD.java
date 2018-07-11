@@ -6,6 +6,8 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.npc.NpcData;
+import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.npc.NpcManager;
 import org.bukkit.command.Command;
@@ -36,7 +38,7 @@ public class NpcCMD implements CommandExecutor{
                             if (i < args.length-1) line.append(" ");
                         }
 
-                        api.addNPC(args[1], p.getLocation(), args[2], line.toString());
+                        api.addNPC(new NpcData(args[1], line.toString().replaceAll("&", "§"), args[2], new CoreLocation(p.getLocation())));
                         BukkitCoreSystem.getInstance().getMessager().send(p, "§2NPC §f" + args[1] + "§2 erfolgreich hinzugefügt!");
                         return true;
                     } else if (args[0].equalsIgnoreCase("update")) {
@@ -46,7 +48,7 @@ public class NpcCMD implements CommandExecutor{
                             if (i < args.length-1) line.append(" ");
                         }
 
-                        api.updateNPC(args[1], p.getLocation(), args[2], line.toString());
+                        api.updateNPC(args[1], p.getLocation(), args[2], line.toString().replaceAll("&", "§"));
                         BukkitCoreSystem.getInstance().getMessager().send(p, "§2NPC §f" + args[1] + "§2 erfolgreich hinzugefügt!");
                         return true;
                     }

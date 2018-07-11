@@ -61,4 +61,5 @@ public final class CoreLocation {
     public String toString() {
         return "world="+worldName+", x="+x+", y="+y+", z="+z+", yaw="+yaw+", pitch="+pitch;
     }
+
 }

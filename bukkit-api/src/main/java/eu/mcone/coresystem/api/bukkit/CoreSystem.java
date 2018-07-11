@@ -9,12 +9,11 @@ package eu.mcone.coresystem.api.bukkit;
 import com.google.gson.Gson;
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
+import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
-import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
-import eu.mcone.coresystem.api.bukkit.player.NickManager;
-import eu.mcone.coresystem.api.bukkit.player.StatsAPI;
+import eu.mcone.coresystem.api.bukkit.player.*;
 import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
 import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
 import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
@@ -22,11 +21,11 @@ import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.WorldManager;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
+import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import lombok.Getter;
 import net.labymod.serverapi.bukkit.LabyModAPI;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -62,6 +61,24 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     public abstract WorldManager getWorldManager();
 
     /**
+     * returns the BCS NpcManager
+     * @return NpcManager instance
+     */
+    public abstract NpcManager getNpcManager();
+
+    /**
+     * returns the BCS HologramManager
+     * @return HologramManager instance
+     */
+    public abstract HologramManager getHologramManager();
+
+    /**
+     * returns the BCS AfkManager
+     * @return AfkManager instance
+     */
+    public abstract AfkManager getAfkManager();
+
+    /**
      * returns the bukkit Labymod API
      * @return bukkit Labymod API instance
      */
@@ -90,49 +107,34 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @param player player
      * @return CorePlayer
      */
-    public abstract BukkitCorePlayer getCorePlayer(Player player);
+    public abstract CorePlayer getCorePlayer(Player player);
 
     /**
      * returns the CorePlayer by UUID
      * @param uuid uuid
      * @return CorePlayer
      */
-    public abstract BukkitCorePlayer getCorePlayer(UUID uuid);
+    public abstract CorePlayer getCorePlayer(UUID uuid);
 
     /**
      * returns the CorePlayer by name
      * @param name name
      * @return CorePlayer
      */
-    public abstract BukkitCorePlayer getCorePlayer(String name);
+    public abstract CorePlayer getCorePlayer(String name);
 
     /**
      * returns all online CorePlayers
      * @return List of online CorePlayers
      */
-    public abstract Collection<BukkitCorePlayer> getOnlineCorePlayers();
+    public abstract Collection<CorePlayer> getOnlineCorePlayers();
 
     /**
      * creates a new Hologram
-     * @param text array of lines that the hologram should display
-     * @param location location
+     * @param data HologramData
      * @return new Hologram
      */
-    public abstract Hologram createHologram(String[] text, Location location);
-
-    /**
-     * creates a new instance of NpcManager
-     * @param plugin CorePlugin instance
-     * @return new NpcManager instance
-     */
-    public abstract NpcManager initialiseNpcManager(CorePlugin plugin);
-
-    /**
-     * creates a new instance od HologramManager
-     * @param plugin CorePlugin instance
-     * @return new HologramManager instance
-     */
-    public abstract HologramManager inititaliseHologramManager(CorePlugin plugin);
+    public abstract Hologram createHologram(HologramData data);
 
     /**
      * creates a new instance of BuildSystem
@@ -198,5 +200,20 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return new ActionBar
      */
     public abstract CoreActionBar createActionBar();
+
+    /**
+     * creates an CorePlayer object for an offline or online player
+     * this object has limited abilities as it should be uses for a potentially offline player
+     * @param name Player name
+     * @return OfflineCorePlayer object
+     * @throws PlayerNotResolvedException thrown if the wished player is not in the database
+     */
+    public abstract OfflineCorePlayer getOfflineCorePlayer(String name) throws PlayerNotResolvedException;
+
+    /**
+     * disables all Player chat formatting
+     * @param disabled if chat should be disabled
+     */
+    public abstract void setPlayerChatDisabled(boolean disabled);
 
 }

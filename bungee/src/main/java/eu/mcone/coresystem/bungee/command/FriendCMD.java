@@ -6,10 +6,11 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
+import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.player.OfflinePlayer;
+import eu.mcone.coresystem.bungee.player.BungeeOfflineCorePlayer;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -31,19 +32,19 @@ public class FriendCMD extends Command implements TabExecutor {
     @Override
     public void execute(final CommandSender sender, final String[] args) {
         if (sender instanceof ProxiedPlayer) {
-            final ProxiedPlayer p = (ProxiedPlayer) sender;
-            final BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p);
+            final ProxiedPlayer bp = (ProxiedPlayer) sender;
+            final CorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(bp);
 
-            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUuid())) return;
 
             if (args.length == 1) {
                 switch (args[0]) {
                     case "list": {
-                        Map<UUID, String> friends = cp.getFriendData().getFriends();
+                        Map<UUID, String> friends = p.getFriendData().getFriends();
                         StringBuilder result = new StringBuilder();
 
                         if (friends.size() == 0) {
-                            BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§7Du hast momentan keine Freunde!");
+                            BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§7Du hast momentan keine Freunde!");
                             return;
                         } else if (friends.size() == 1) {
                             result.append("§7Du hast einen Freund:\n");
@@ -51,30 +52,21 @@ public class FriendCMD extends Command implements TabExecutor {
                             result.append("§7Du hast ").append(friends.size()).append(" Freunde:\n");
                         }
 
-                        int i = 0;
-                        for (String friend : friends.values()) {
-                            i++;
+                        appendListToStringBuilder(result, friends.values());
 
-                            if (i == friends.size()) {
-                                result.append("§f§o").append(friend);
-                                continue;
-                            }
-                            result.append("§f§o").append(friend).append("§7, ");
-                        }
-
-                        BungeeCoreSystem.getInstance().getMessager().sendFriend(p, result.toString());
+                        BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, result.toString());
                         return;
                     }
                     case "req":
                     case "request":
                     case "requests": {
-                        Map<UUID, String> requests = cp.getFriendData().getRequests();
+                        Map<UUID, String> requests = p.getFriendData().getRequests();
                         StringBuilder result = new StringBuilder();
 
-                        if (cp.getSettings().isEnableFriendRequests()) BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§7§oDu hast Freundschaftsanfragen deaktiviert! Aktiviere sie mit §f/friend requests toggle");
+                        if (p.getSettings().isEnableFriendRequests()) BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§7§oDu hast Freundschaftsanfragen deaktiviert! Aktiviere sie mit §f/friend requests toggle");
 
                         if (requests.size() == 0) {
-                            BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§7Du hast momentan keine Freundschaftsanfragen!");
+                            BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§7Du hast momentan keine Freundschaftsanfragen!");
                             return;
                         } else if (requests.size() == 1) {
                             result.append("§7Du hast eine Freundschaftsanfrage von:\n");
@@ -82,65 +74,56 @@ public class FriendCMD extends Command implements TabExecutor {
                             result.append("§7Du hast ").append(requests.size()).append(" Freundschaftsanfragen von:\n");
                         }
 
-                        int i = 0;
-                        for (String request : requests.values()) {
-                            i++;
+                        appendListToStringBuilder(result, requests.values());
 
-                            if (i == requests.size()) {
-                                result.append("§f§o").append(request);
-                                continue;
-                            }
-                            result.append("§f§o").append(request).append("§7, ");
-                        }
-
-                        BungeeCoreSystem.getInstance().getMessager().sendFriend(p, result.toString());
+                        BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, result.toString());
                         return;
                     }
                 }
             } else if (args.length == 2) {
                 if (args[0].equalsIgnoreCase("req") ||args[0].equalsIgnoreCase("request") || args[0].equalsIgnoreCase("requests")){
                     if (args[1].equalsIgnoreCase("toggle")) {
-                        if (cp.getSettings().isEnableFriendRequests()) {
-                            cp.getSettings().setEnableFriendRequests(false);
-                            cp.updateSettings();
+                        if (p.getSettings().isEnableFriendRequests()) {
+                            p.getSettings().setEnableFriendRequests(false);
+                            p.updateSettings();
 
-                            BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§2Du hast Freundschaftsanfragen §aausgeschaltet!");
+                            BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§2Du hast Freundschaftsanfragen §aausgeschaltet!");
                         } else {
-                            cp.getSettings().setEnableFriendRequests(true);
-                            cp.updateSettings();
+                            p.getSettings().setEnableFriendRequests(true);
+                            p.updateSettings();
 
-                            BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§2Du hast Freundschaftsanfragen §aeingeschaltet!");
+                            BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§2Du hast Freundschaftsanfragen §aeingeschaltet!");
                         }
                     }
                     return;
                 } else if (!p.getName().equalsIgnoreCase(args[1])) {
                     String target = args[1];
                     try {
-                        OfflinePlayer t = new OfflinePlayer(target).loadFriendData().loadPermissions();
+                        OfflineCorePlayer t = new BungeeOfflineCorePlayer(BungeeCoreSystem.getSystem(), target).loadFriendData().loadPermissions();
 
                         switch (args[0]) {
                             case "add": {
-                                if (!cp.getFriendData().getFriends().containsKey(t.getUuid())) {
-                                    if (cp.getFriendData().getFriends().size() <= 44) {
-                                        if (!t.getFriendData().getBlocks().contains(p.getUniqueId())) {
-                                            if (cp.getFriendData().getRequests().containsKey(t.getUuid())) {
-                                                BungeeCoreSystem.getInstance().getFriendSystem().addFriend(p.getUniqueId(), t.getUuid(), target);
-                                                BungeeCoreSystem.getInstance().getFriendSystem().addFriend(t.getUuid(), p.getUniqueId(), p.getName());
-                                                BungeeCoreSystem.getInstance().getFriendSystem().removeRequest(p.getUniqueId(), t.getUuid());
+                                if (!p.getFriendData().getFriends().containsKey(t.getUuid())) {
+                                    if (p.getFriendData().getFriends().size() <= 44) {
+                                        if (!t.getFriendData().getBlocks().contains(p.getUuid())) {
+                                            if (p.getFriendData().getRequests().containsKey(t.getUuid())) {
+                                                BungeeCoreSystem.getInstance().getFriendSystem().addFriend(p.getUuid(), t.getUuid(), target);
+                                                BungeeCoreSystem.getInstance().getFriendSystem().addFriend(t.getUuid(), p.getUuid(), p.getName());
+                                                BungeeCoreSystem.getInstance().getFriendSystem().removeRequest(p.getUuid(), t.getUuid());
 
-                                                BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§2Du bist nun mit §f" + target + " §2befreundet!");
+                                                BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§2Du bist nun mit §f" + target + " §2befreundet!");
 
                                                 ProxiedPlayer f = ProxyServer.getInstance().getPlayer(t.getUuid());
                                                 if (f != null) {
                                                     BungeeCoreSystem.getInstance().getMessager().sendFriend(f, "§f" + p.getName() + "§2 hat deine Freundschaftanfrage angenommen!");
                                                 }
-                                            } else if (t.getFriendData().getRequests().containsKey(p.getUniqueId())) {
+                                            } else if (!t.getFriendData().getRequests().containsKey(p.getUuid())) {
                                                 if (t.getSettings().isEnableFriendRequests()) {
-                                                    BungeeCoreSystem.getInstance().getFriendSystem().addRequest(BungeeCoreSystem.getInstance().getPlayerUtils().fetchUuid(target), p.getUniqueId(), p.getName());
-                                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§2Du hast §f" + target + "§2 eine Freundschaftsanfrage geschickt!");
+                                                    BungeeCoreSystem.getInstance().getFriendSystem().addRequest(BungeeCoreSystem.getInstance().getPlayerUtils().fetchUuid(target), p.getUuid(), p.getName());
+                                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§2Du hast §f" + target + "§2 eine Freundschaftsanfrage geschickt!");
 
                                                     if (t.getFriendData().getFriends().size() > 44) {
-                                                        BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§c" + target + "§4 hat die maximale Anzahl an Freunden erreicht und kann gerade keine weiteren Freundschaftsanfragen annehmen! Die Anfrage wurde trotzdem versendet.");
+                                                        BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§c" + target + "§4 hat die maximale Anzahl an Freunden erreicht und kann gerade keine weiteren Freundschaftsanfragen annehmen! Die Anfrage wurde trotzdem versendet.");
                                                     }
 
                                                     ProxiedPlayer f = ProxyServer.getInstance().getPlayer(t.getUuid());
@@ -161,104 +144,104 @@ public class FriendCMD extends Command implements TabExecutor {
                                                         );
                                                     }
                                                 } else {
-                                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§c" + target + "§4 hat Freundschaftsanfragen deaktiviert!");
+                                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§c" + target + "§4 hat Freundschaftsanfragen deaktiviert!");
                                                 }
                                             } else {
-                                                BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§4Du hast §c" + target + "§4 bereits eine Freundschaftsanfrage geschickt!");
+                                                BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§4Du hast §c" + target + "§4 bereits eine Freundschaftsanfrage geschickt!");
                                             }
                                         } else {
-                                            BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§c" + target + "§4 hat dich blockiert!");
+                                            BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§c" + target + "§4 hat dich blockiert!");
                                         }
                                     } else {
-                                        BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§4Du kannst nicht mehr als 44 Freunde gleichzeitig haben!");
+                                        BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§4Du kannst nicht mehr als 44 Freunde gleichzeitig haben!");
                                     }
                                 } else {
-                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§4Du bist bereits mit §c" + target + "§4 befreundet!");
+                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§4Du bist bereits mit §c" + target + "§4 befreundet!");
                                 }
                                 return;
                             }
                             case "delete":
                             case "remove": {
-                                if (cp.getFriendData().getFriends().containsKey(t.getUuid())) {
-                                    BungeeCoreSystem.getInstance().getFriendSystem().removeFriend(p.getUniqueId(), t.getUuid());
-                                    BungeeCoreSystem.getInstance().getFriendSystem().removeFriend(t.getUuid(), p.getUniqueId());
-                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§f" + target + "§2 wurde aus deiner §2Freundesliste entfernt!");
+                                if (p.getFriendData().getFriends().containsKey(t.getUuid())) {
+                                    BungeeCoreSystem.getInstance().getFriendSystem().removeFriend(p.getUuid(), t.getUuid());
+                                    BungeeCoreSystem.getInstance().getFriendSystem().removeFriend(t.getUuid(), p.getUuid());
+                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§f" + target + "§2 wurde aus deiner §2Freundesliste entfernt!");
 
                                     ProxiedPlayer f = ProxyServer.getInstance().getPlayer(t.getUuid());
                                     if (f != null) {
                                         BungeeCoreSystem.getInstance().getMessager().sendFriend(f, "§c" + p.getName() + "§4 hat dich aus seiner Freundesliste entfernt!");
                                     }
                                 } else {
-                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§c" + target + "§4 befindet sich nicht in deiner Freundeliste!");
+                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§c" + target + "§4 befindet sich nicht in deiner Freundeliste!");
                                 }
                                 return;
                             }
                             case "accept": {
-                                if (cp.getFriendData().getFriends().size() <= 44) {
-                                    Map<UUID, String> reqests = cp.getFriendData().getRequests();
+                                if (p.getFriendData().getFriends().size() <= 44) {
+                                    Map<UUID, String> reqests = p.getFriendData().getRequests();
 
                                     if (reqests.containsKey(t.getUuid())) {
-                                        BungeeCoreSystem.getInstance().getFriendSystem().addFriend(p.getUniqueId(), t.getUuid(), target);
-                                        BungeeCoreSystem.getInstance().getFriendSystem().addFriend(t.getUuid(), p.getUniqueId(), p.getName());
-                                        BungeeCoreSystem.getInstance().getFriendSystem().removeRequest(p.getUniqueId(), t.getUuid());
+                                        BungeeCoreSystem.getInstance().getFriendSystem().addFriend(p.getUuid(), t.getUuid(), target);
+                                        BungeeCoreSystem.getInstance().getFriendSystem().addFriend(t.getUuid(), p.getUuid(), p.getName());
+                                        BungeeCoreSystem.getInstance().getFriendSystem().removeRequest(p.getUuid(), t.getUuid());
 
-                                        BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§2Du hast die Freundschaftsanfrage von §f" + target + " §2erfolgreich angenommen!");
+                                        BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§2Du hast die Freundschaftsanfrage von §f" + target + " §2erfolgreich angenommen!");
 
                                         ProxiedPlayer f = ProxyServer.getInstance().getPlayer(t.getUuid());
                                         if (f != null) {
                                             BungeeCoreSystem.getInstance().getMessager().sendFriend(f, "§f" + p.getName() + "§2 hat deine Freundschaftanfrage angenommen!");
                                         }
                                     } else {
-                                        BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§c" + target + " §4hat dir keine Freundschaftsanfrage geschickt!");
+                                        BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§c" + target + " §4hat dir keine Freundschaftsanfrage geschickt!");
                                     }
                                 } else {
-                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§4Du kannst nicht mehr als 44 Freunde gleichzeitig haben! Entferne einen Freund und versuche es erneut.");
+                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§4Du kannst nicht mehr als 44 Freunde gleichzeitig haben! Entferne einen Freund und versuche es erneut.");
                                 }
                                 return;
                             }
                             case "deny":
                             case "decline": {
-                                Map<UUID, String> reqests = cp.getFriendData().getRequests();
+                                Map<UUID, String> reqests = p.getFriendData().getRequests();
 
                                 if (reqests.containsKey(t.getUuid())) {
-                                    BungeeCoreSystem.getInstance().getFriendSystem().removeRequest(p.getUniqueId(), t.getUuid());
-                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§2Du hast die Freundschaftsanfrage von §f" + target + " §2erfolgreich abgelehnt!");
+                                    BungeeCoreSystem.getInstance().getFriendSystem().removeRequest(p.getUuid(), t.getUuid());
+                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§2Du hast die Freundschaftsanfrage von §f" + target + " §2erfolgreich abgelehnt!");
 
                                     ProxiedPlayer f = ProxyServer.getInstance().getPlayer(t.getUuid());
                                     if (f != null) {
                                         BungeeCoreSystem.getInstance().getMessager().sendFriend(f, "§c" + p.getName() + "§4 hat deine Freundschaftanfrage abgelehnt!");
                                     }
                                 } else {
-                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§c" + target + " §4hat dir keine Freundschaftsanfrage geschickt!");
+                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§c" + target + " §4hat dir keine Freundschaftsanfrage geschickt!");
                                 }
                                 return;
                             }
                             case "block": {
                                 if (!t.hasPermission("group.team")) {
-                                    if (!cp.getFriendData().getBlocks().contains(t.getUuid())) {
-                                        BungeeCoreSystem.getInstance().getFriendSystem().addBlock(p.getUniqueId(), t.getUuid());
-                                        BungeeCoreSystem.getInstance().getFriendSystem().removeFriend(p.getUniqueId(), t.getUuid());
-                                        BungeeCoreSystem.getInstance().getFriendSystem().removeFriend(t.getUuid(), p.getUniqueId());
+                                    if (!p.getFriendData().getBlocks().contains(t.getUuid())) {
+                                        BungeeCoreSystem.getInstance().getFriendSystem().addBlock(p.getUuid(), t.getUuid());
+                                        BungeeCoreSystem.getInstance().getFriendSystem().removeFriend(p.getUuid(), t.getUuid());
+                                        BungeeCoreSystem.getInstance().getFriendSystem().removeFriend(t.getUuid(), p.getUuid());
 
                                         ProxiedPlayer f = ProxyServer.getInstance().getPlayer(t.getUuid());
                                         if (f != null) {
                                             BungeeCoreSystem.getInstance().getMessager().sendFriend(f, "§c" + p.getName() + "§4 hat dich aus seiner Freundesliste entfernt!");
                                         }
-                                        BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§2Du hast §f" + target + "§2 erfolgreich blockiert!");
+                                        BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§2Du hast §f" + target + "§2 erfolgreich blockiert!");
                                     } else {
-                                        BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§4Du hast §c" + target + "§4 bereits blockiert!");
+                                        BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§4Du hast §c" + target + "§4 bereits blockiert!");
                                     }
                                 } else {
-                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§4Du darft kein §cTeam-Mitglied §4blockieren!");
+                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§4Du darft kein §cTeam-Mitglied §4blockieren!");
                                 }
                                 return;
                             }
                             case "unblock": {
-                                if (cp.getFriendData().getBlocks().contains(t.getUuid())) {
-                                    BungeeCoreSystem.getInstance().getFriendSystem().removeBlock(p.getUniqueId(), t.getUuid());
-                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§2Du hast §f" + target + "§2 erfolgreich aus deinen blockierten Spielern gelöscht!");
+                                if (p.getFriendData().getBlocks().contains(t.getUuid())) {
+                                    BungeeCoreSystem.getInstance().getFriendSystem().removeBlock(p.getUuid(), t.getUuid());
+                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§2Du hast §f" + target + "§2 erfolgreich aus deinen blockierten Spielern gelöscht!");
                                 } else {
-                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§4Du hast §c" + target + "§4 nicht blockiert!");
+                                    BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§4Du hast §c" + target + "§4 nicht blockiert!");
                                 }
                                 return;
                             }
@@ -268,19 +251,18 @@ public class FriendCMD extends Command implements TabExecutor {
                         return;
                     }
                 } else {
-                    BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§4Bitte wähle einen anderen Spieler als dich selbst!");
+                    BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§4Bitte wähle einen anderen Spieler als dich selbst!");
                     return;
                 }
             }
 
-            BungeeCoreSystem.getInstance().getMessager().sendFriend(p, "§4Bitte benutze: §c/friend <list | requests | accept | deny | add | remove | block | unblock> §c[<name>] §4oder §c/friend request toggle");
+            BungeeCoreSystem.getInstance().getMessager().sendFriend(bp, "§4Bitte benutze: §c/friend <list | requests | accept | deny | add | remove | block | unblock> §c[<name>] §4oder §c/friend request toggle");
         } else {
             BungeeCoreSystem.getInstance().getMessager().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 
-    public Iterable<String> onTabComplete(final CommandSender sender, final String[] args)
-    {
+    public Iterable<String> onTabComplete(final CommandSender sender, final String[] args) {
         List<String> result = new ArrayList<>();
         if (args.length == 1) {
             result.addAll(Arrays.asList("list", "requests", "accept", "deny", "add", "remove", "block", "unblock"));
@@ -293,6 +275,19 @@ public class FriendCMD extends Command implements TabExecutor {
         }
 
         return result;
+    }
+
+    private void appendListToStringBuilder(StringBuilder sb, Collection<String> list) {
+        int i = 0;
+        for (String friend : list) {
+            i++;
+
+            if (i == list.size()) {
+                sb.append("§f§o").append(friend);
+                continue;
+            }
+            sb.append("§f§o").append(friend).append("§7, ");
+        }
     }
 
 }

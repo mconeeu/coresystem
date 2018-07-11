@@ -6,11 +6,12 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
-import eu.mcone.coresystem.bungee.player.OfflinePlayer;
+import eu.mcone.coresystem.bungee.player.BungeeOfflineCorePlayer;
 import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -55,7 +56,7 @@ public class PremiumCMD extends Command implements TabExecutor {
                 if (args.length == 2) {
                     String target = args[1];
                     try {
-                        OfflinePlayer t = new OfflinePlayer(target).loadPermissions();
+                        OfflineCorePlayer t = new BungeeOfflineCorePlayer(BungeeCoreSystem.getSystem(), target).loadPermissions();
 
                         if (t != null) {
                             if (args[0].equalsIgnoreCase("check")) {
@@ -125,7 +126,7 @@ public class PremiumCMD extends Command implements TabExecutor {
                     String target = args[1];
                     Group group = Group.getGroupbyName(args[2]);
                     try {
-                        OfflinePlayer t = new OfflinePlayer(target).loadPermissions();
+                        OfflineCorePlayer t = new BungeeOfflineCorePlayer(BungeeCoreSystem.getSystem(), target).loadPermissions();
 
                         if (group != null) {
                             if (t != null) {
@@ -153,7 +154,7 @@ public class PremiumCMD extends Command implements TabExecutor {
                     Group group = Group.getGroupbyName(args[2]);
                     int months = Integer.valueOf(args[3]);
                     try {
-                        OfflinePlayer t = new OfflinePlayer(target).loadPermissions();
+                        OfflineCorePlayer t = new BungeeOfflineCorePlayer(BungeeCoreSystem.getSystem(), target).loadPermissions();
 
                         if (group != null) {
                             if (t != null) {

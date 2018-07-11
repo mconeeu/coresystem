@@ -6,9 +6,9 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
+import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.event.CoinsChangeEvent;
-import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
-import eu.mcone.coresystem.bungee.utils.PluginMessage;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -16,8 +16,8 @@ public class CoinsChange implements Listener {
 
     @EventHandler
     public void on(CoinsChangeEvent e) {
-        BungeeCorePlayer p = e.getPlayer();
-        new PluginMessage("Return", p.bungee().getServer().getInfo(), "COINS", p.getUuid().toString());
+        CorePlayer p = e.getPlayer();
+        CoreSystem.getInstance().getChannelHandler().createInfoRequest(p.bungee(), "COINS", String.valueOf(p.getCoins()));
     }
 
 }

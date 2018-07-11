@@ -6,8 +6,6 @@
 
 package eu.mcone.coresystem.api.bukkit.hologram;
 
-import org.bukkit.Location;
-
 public interface HologramManager {
 
     /**
@@ -17,11 +15,9 @@ public interface HologramManager {
 
     /**
      * adds a new hologram
-     * @param name data name
-     * @param location location
-     * @param line1 fist line
+     * @param data HologramData
      */
-    void addHologram(String name, Location location, String line1);
+    Hologram addHologram(HologramData data);
 
     /**
      * deletes an hologram

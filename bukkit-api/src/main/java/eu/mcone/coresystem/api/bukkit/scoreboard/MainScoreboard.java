@@ -6,21 +6,18 @@
 
 package eu.mcone.coresystem.api.bukkit.scoreboard;
 
-import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
-import eu.mcone.coresystem.api.core.util.Random;
 import org.bukkit.scoreboard.Team;
 
 public final class MainScoreboard extends CoreScoreboard {
 
     @Override
-    public void setPlayerTeams(BukkitCorePlayer p, org.bukkit.scoreboard.Scoreboard sb) {
+    public Team modifyTeam(CorePlayer owner, CorePlayer p, Team t) {
         Group g = p.isNicked() ? Group.SPIELER : p.getMainGroup();
-
-        Team t = sb.registerNewTeam(g.getScore()+new Random(6).nextString());
         t.setPrefix(g.getPrefix());
-        //if (p.isNicked()) t.setSuffix(getNickSuffix(p.getName()));
-        t.addEntry(!p.isNicked() ? p.getName() : p.getNickname());
+
+        return t;
     }
 
     private String getNickSuffix(String name) {

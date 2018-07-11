@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.api.core;
 
 import eu.mcone.coresystem.api.core.mysql.MySQL;
-import eu.mcone.coresystem.api.core.player.CoinsAPI;
+import eu.mcone.coresystem.api.core.player.CoinsUtil;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.PermissionManager;
 import eu.mcone.coresystem.api.core.player.PlayerUtils;
@@ -23,6 +23,12 @@ public interface GlobalCoreSystem {
      * @return mc1data database
      */
     MySQL getMySQL();
+
+    /**
+     * returns the CoinsUtil
+     * @return CoinsUtil instance
+     */
+    CoinsUtil getCoinsUtil();
 
     /**
      * returns the BCS TranslationManager
@@ -47,14 +53,6 @@ public interface GlobalCoreSystem {
      * @param runnable
      */
     void runAsync(Runnable runnable);
-
-    void sendConsoleMessage(String message);
-
-    /**
-     * returns the BCS CoinsAPI
-     * @return CoinsAPI instance
-     */
-    CoinsAPI getCoinsAPI();
 
     /**
      * returns the BCS CooldownSystem

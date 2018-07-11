@@ -6,11 +6,13 @@
 
 package eu.mcone.coresystem.bukkit.hologram;
 
+import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import lombok.Getter;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.EntityArmorStand;
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -20,22 +22,20 @@ import java.util.List;
 
 public class Hologram implements eu.mcone.coresystem.api.bukkit.hologram.Hologram {
 
-    private List<EntityArmorStand> entitylist;
-    private String[] Text;
-    @Getter
-    private Location location;
-    private double DISTANCE;
-    @Getter
-    private int count;
-    @Getter
-    private List<Player> playerList;
+    private static final double DISTANCE = 0.25;
 
-    public Hologram(String[] Text, final Location location) {
+    private final List<EntityArmorStand> entitylist;
+    private List<Player> playerList;
+    private int count;
+
+    @Getter
+    private HologramData data;
+
+    public Hologram(HologramData data) {
         this.entitylist = new ArrayList<>();
         this.playerList = new ArrayList<>();
-        this.DISTANCE = 0.25;
-        this.Text = Text;
-        this.location = location;
+
+        this.data = data;
         this.create();
     }
 
@@ -83,19 +83,19 @@ public class Hologram implements eu.mcone.coresystem.api.bukkit.hologram.Hologra
 
     private void create() {
         String[] text;
-        for (int length = (text = this.Text).length, j = 0; j < length; ++j) {
+        for (int length = (text = data.getText()).length, j = 0; j < length; ++j) {
             final String Text = text[j];
-            final EntityArmorStand entity = new EntityArmorStand(((CraftWorld) this.location.getWorld()).getHandle(), this.location.getX(), this.location.getY()-1.8, this.location.getZ());
+            final EntityArmorStand entity = new EntityArmorStand(((CraftWorld) data.getLocation().bukkit().getWorld()).getHandle(), data.getLocation().bukkit().getX(), data.getLocation().bukkit().getY()-1.8, data.getLocation().bukkit().getZ());
             entity.setCustomName(Text);
             entity.setCustomNameVisible(true);
             entity.setInvisible(true);
             entity.setGravity(false);
             this.entitylist.add(entity);
-            this.location.subtract(0.0, this.DISTANCE, 0.0);
+            data.getLocation().bukkit().subtract(0.0, DISTANCE, 0.0);
             ++this.count;
         }
         for (int i = 0; i < this.count; ++i) {
-            this.location.add(0.0, this.DISTANCE, 0.0);
+            data.getLocation().bukkit().add(0.0, DISTANCE, 0.0);
         }
         this.count = 0;
     }

@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
-import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -25,7 +25,7 @@ public class DatenschutzCMD extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (sender instanceof ProxiedPlayer) {
-            BungeeCorePlayer p = CoreSystem.getInstance().getCorePlayer((ProxiedPlayer) sender);
+            CorePlayer p = CoreSystem.getInstance().getCorePlayer((ProxiedPlayer) sender);
 
             if (args.length == 1 && (args[0].equalsIgnoreCase("accept") || args[0].equalsIgnoreCase("akzeptieren"))) {
                 if (p.getSettings().isAcceptedAgbs()) {

@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.api.bukkit.event;
 
-import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.StatsAPI;
 import lombok.Getter;
 import org.bukkit.event.Event;
@@ -18,9 +18,9 @@ public final class StatsChangeEvent extends Event {
     @Getter
     private final StatsAPI stats;
     @Getter
-    private final BukkitCorePlayer player;
+    private final CorePlayer player;
 
-    public StatsChangeEvent(BukkitCorePlayer player, StatsAPI stats) {
+    public StatsChangeEvent(CorePlayer player, StatsAPI stats) {
         this.player = player;
         this.stats = stats;
     }

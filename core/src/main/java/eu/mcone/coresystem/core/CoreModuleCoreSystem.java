@@ -21,6 +21,8 @@ public interface CoreModuleCoreSystem {
         }
     }
 
+    void sendConsoleMessage(String message);
+
     MySQL getMySQL(Database database);
 
     Gson getGson();

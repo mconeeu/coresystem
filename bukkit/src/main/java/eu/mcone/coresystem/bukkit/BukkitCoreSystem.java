@@ -10,11 +10,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.config.YAML_Config;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
-import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
+import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
-import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
 import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
@@ -24,16 +24,12 @@ import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
-import eu.mcone.coresystem.api.core.translation.TranslationField;
-import eu.mcone.coresystem.bukkit.channel.ChannelHandler;
-import eu.mcone.coresystem.bukkit.channel.PluginChannelListener;
+import eu.mcone.coresystem.bukkit.channel.*;
 import eu.mcone.coresystem.bukkit.command.*;
+import eu.mcone.coresystem.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.bukkit.listener.*;
 import eu.mcone.coresystem.bukkit.npc.NpcManager;
-import eu.mcone.coresystem.bukkit.player.CoinsAPI;
-import eu.mcone.coresystem.bukkit.player.NickManager;
-import eu.mcone.coresystem.bukkit.player.StatsAPI;
-import eu.mcone.coresystem.bukkit.util.AfkManager;
+import eu.mcone.coresystem.bukkit.player.*;
 import eu.mcone.coresystem.bukkit.util.ActionBar;
 import eu.mcone.coresystem.bukkit.util.TablistInfo;
 import eu.mcone.coresystem.bukkit.util.Title;
@@ -49,10 +45,8 @@ import lombok.Getter;
 import net.labymod.serverapi.bukkit.LabyModAPI;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -78,24 +72,26 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private NickManager nickManager;
     @Getter
-    private CoinsAPI coinsAPI;
-    @Getter
     private ChannelHandler channelHandler;
     @Getter
     private WorldManager worldManager;
     @Getter
-    private AfkManager afkManager;
+    private CoreAfkManager afkManager;
+    @Getter
+    private NpcManager npcManager;
+    @Getter
+    private HologramManager hologramManager;
     @Getter
     private LabyModAPI labyModAPI;
     @Getter
     private PlayerUtils playerUtils;
     @Getter
+    private CoinsUtil coinsUtil;
+    @Getter
     private Gson gson;
 
     @Getter
-    private YAML_Config yamlConfig;
-    @Getter
-    private Map<UUID, BukkitCorePlayer> corePlayers;
+    private Map<UUID, CorePlayer> corePlayers;
     @Getter
     private boolean cloudsystemAvailable;
 
@@ -105,7 +101,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         system = this;
         inventories = new HashMap<>();
         plugins = new HashMap<>();
-        createPluginDir("worlds");
 
         Bukkit.getConsoleSender().sendMessage("§f\n" +
                 "      __  _____________  _   ________                                                    \n" +
@@ -127,11 +122,10 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         createTables(mysql1);
 
         cooldownSystem = new CooldownSystem();
-        coinsAPI = new CoinsAPI(this);
+        coinsUtil = new CoinsUtil(this);
         channelHandler = new ChannelHandler();
         playerUtils = new PlayerUtils(mysql1);
         gson = new GsonBuilder().setPrettyPrinting().create();
-        yamlConfig = new YAML_Config("MCONE-BukkitCoreSystem", "config.yml");
 
         cloudsystemAvailable = checkIfCloudSystemAvailable();
         sendConsoleMessage("§7CloudSystem available: "+cloudsystemAvailable);
@@ -142,14 +136,17 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aStarting WorldManager...");
         worldManager = new WorldManager(this);
 
-        if (yamlConfig.getConfig().getBoolean("AFK-Manager")) {
-            sendConsoleMessage("§aStarting AFK-Manager...");
-            afkManager = new AfkManager();
-        }
+        sendConsoleMessage("§aStarting NpcManager...");
+        npcManager = new NpcManager(this);
+
+        sendConsoleMessage("§aStarting HologramManager...");
+        hologramManager = new HologramManager(this);
+
+        sendConsoleMessage("§aStarting AFK-Manager...");
+        afkManager = new CoreAfkManager();
 
         sendConsoleMessage("§aLoading Translations...");
-        translationManager = new TranslationManager(mysql1);
-        registerTranslations();
+        translationManager = new TranslationManager(mysql1, this);
 
         sendConsoleMessage("§aLoading Permissions & Groups...");
         permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), mysql1, gson);
@@ -157,56 +154,44 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aStarting NickManager...");
         nickManager = new NickManager(this);
 
-        sendConsoleMessage("§aLoading Commands, Events & Configs...");
-        this.setupConfig();
+        sendConsoleMessage("§aLoading Commands, Events...");
         this.registerListener();
         this.registerCommands();
         corePlayers = new HashMap<>();
 
         sendConsoleMessage("§aRegistering BungeeCord Messaging Channel...");
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        getServer().getMessenger().registerIncomingPluginChannel(this, "Return", new PluginChannelListener());
-        getServer().getMessenger().registerIncomingPluginChannel(this, "EventHandler", new PluginChannelListener());
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "WDL|CONTROL");
+        getServer().getMessenger().registerIncomingPluginChannel(this, "MC_ONE_RETURN", new ReturnPluginChannelListener());
+        getServer().getMessenger().registerIncomingPluginChannel(this, "MC_ONE_INFO", new InfoPluginChannelListener());
+        getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordReturnPluginChannelListener());
+        getServer().getMessenger().registerIncomingPluginChannel(this, "WDL|INIT", new AntiWorldDownloader());
 
-        StringBuilder functions = new StringBuilder();
-        int i = 0;
-        for (String key : yamlConfig.getConfig().getKeys(true)) {
-            if (yamlConfig.getConfig().getBoolean(key)) {
-                if ((key == null) || key.equals("") || key.equals(" ")) {
-                    return;
-                } else if (i == 0) {
-                    functions = new StringBuilder("§a" + key);
-                    i++;
-                } else if (i > 0) {
-                    functions.append("§7, §a").append(key);
-                }
-            }
-        }
-        sendConsoleMessage("§7Following functions got activated: " + functions.toString());
         sendConsoleMessage("§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             PlayerLogin.setPermissions(p);
             try {
                 new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(this, p.getAddress().getAddress(), p.getName());
-                channelHandler.sendPluginMessage(p, "UNNICK");
+                channelHandler.createSetRequest(p, "UNNICK");
             } catch (PlayerNotResolvedException e) {
                 e.printStackTrace();
             }
         }
 
-        for (BukkitCorePlayer p : getOnlineCorePlayers()) p.setScoreboard(new MainScoreboard());
+        for (CorePlayer p : getOnlineCorePlayers()) p.setScoreboard(new MainScoreboard());
     }
 
     @Override
     public void onDisable() {
-        if (yamlConfig.getConfig().getBoolean("AFK-Manager")) {
-            afkManager.stop();
-        }
+        afkManager.disable();
+        npcManager.unsetNPCs();
+        hologramManager.unsetHolograms();
 
-        for (BukkitCorePlayer p : getOnlineCorePlayers()) {
+        for (CorePlayer p : getOnlineCorePlayers()) {
+            p.getScoreboard().unregister();
             if (p.isNicked()) {
-                nickManager.unnick(p.bukkit());
+                nickManager.unnick(p.bukkit(), false);
             }
         }
 
@@ -216,25 +201,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         labyModAPI.disable();
         getCorePlayers().clear();
+
+        getServer().getMessenger().unregisterIncomingPluginChannel(this);
+        getServer().getMessenger().unregisterOutgoingPluginChannel(this);
+
         getServer().getConsoleSender().sendMessage("§cPlugin disabled!");
-    }
-
-    private void registerTranslations() {
-        translationManager.insertIfNotExists(
-                new HashMap<String, TranslationField>() {{
-                    put("system.bukkit.chat", new TranslationField("§7%Player% §8» §7Nachricht"));
-                }}
-        );
-    }
-
-    private void setupConfig() {
-        yamlConfig.getConfig().options().copyDefaults(true);
-
-        yamlConfig.getConfig().addDefault("Tablist", true);
-        yamlConfig.getConfig().addDefault("UserChat", true);
-        yamlConfig.getConfig().addDefault("AFK-Manager", true);
-
-        yamlConfig.save();
     }
 
 
@@ -260,7 +231,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         getServer().getPluginManager().registerEvents(new PlayerJoin(), this);
         getServer().getPluginManager().registerEvents(new PlayerLogin(), this);
         getServer().getPluginManager().registerEvents(new PlayerQuit(), this);
-        getServer().getPluginManager().registerEvents(new PlayerChat(), this);
+        getServer().getPluginManager().registerEvents(new AsyncPlayerChat(), this);
         getServer().getPluginManager().registerEvents(new PlayerSettingsChange(), this);
         getServer().getPluginManager().registerEvents(new InventoryClick(), this);
         getServer().getPluginManager().registerEvents(new PlayerCommandPreprocess(), this);
@@ -268,19 +239,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     private void createTables(MySQL mysql) {
-        mysql.update(
-                "CREATE TABLE IF NOT EXISTS `bukkitsystem_npcs`" +
-                        "(" +
-                        "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                        "`name` VARCHAR(100) NOT NULL, " +
-                        "`location` VARCHAR(1000) NOT NULL, " +
-                        "`texture` VARCHAR(10000) NOT NULL, " +
-                        "`displayname` VARCHAR(1000) NOT NULL, " +
-                        "`server` varchar(100) NOT NULL" +
-                        ") " +
-                        "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
-        );
-
         mysql.update(
                 "CREATE TABLE IF NOT EXISTS `bukkitsystem_textures`" +
                         "(" +
@@ -291,27 +249,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                         ") " +
                         "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
         );
-
-        mysql.update(
-                "CREATE TABLE IF NOT EXISTS `bukkitsystem_holograms`" +
-                        "(" +
-                        "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                        "`name` VARCHAR(100) NOT NULL UNIQUE KEY, " +
-                        "`location` VARCHAR(1000) NOT NULL, " +
-                        "`lines` VARCHAR(1000) NOT NULL, " +
-                        "`server` varchar(100) NOT NULL" +
-                        ") " +
-                        "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
-        );
-    }
-
-    private void createPluginDir(String path) {
-        String s = File.separator;
-        File file = new File(System.getProperty("user.dir") + s + "plugins" + s + path);
-
-        if (!file.exists()) {
-            file.mkdir();
-        }
     }
 
     public MySQL getMySQL(Database database) {
@@ -332,16 +269,16 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         return mysql3;
     }
 
-    public BukkitCorePlayer getCorePlayer(Player p) {
+    public CorePlayer getCorePlayer(Player p) {
         return corePlayers.getOrDefault(p.getUniqueId(), null);
     }
 
-    public BukkitCorePlayer getCorePlayer(UUID uuid) {
+    public CorePlayer getCorePlayer(UUID uuid) {
         return corePlayers.getOrDefault(uuid, null);
     }
 
-    public BukkitCorePlayer getCorePlayer(String name) {
-        for (BukkitCorePlayer p : corePlayers.values()) {
+    public CorePlayer getCorePlayer(String name) {
+        for (CorePlayer p : corePlayers.values()) {
             if (p.getName().equals(name)) return p;
         }
         return null;
@@ -353,23 +290,13 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public Collection<BukkitCorePlayer> getOnlineCorePlayers() {
+    public Collection<CorePlayer> getOnlineCorePlayers() {
         return corePlayers.values();
     }
 
     @Override
-    public Hologram createHologram(String[] text, Location location) {
-        return new eu.mcone.coresystem.bukkit.hologram.Hologram(text, location);
-    }
-
-    @Override
-    public NpcManager initialiseNpcManager(CorePlugin plugin) {
-        return new NpcManager(mysql1, plugin);
-    }
-
-    @Override
-    public HologramManager inititaliseHologramManager(CorePlugin plugin) {
-        return new eu.mcone.coresystem.bukkit.hologram.HologramManager(this, plugin);
+    public Hologram createHologram(HologramData data) {
+        return hologramManager.addHologram(data);
     }
 
     @Override
@@ -427,7 +354,18 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
+    public OfflineCorePlayer getOfflineCorePlayer(String name) throws PlayerNotResolvedException {
+        return new BukkitOfflineCorePlayer(this, name);
+    }
+
+    @Override
+    public void setPlayerChatDisabled(boolean disabled) {
+        AsyncPlayerChat.disabled = disabled;
+    }
+
+    @Override
     public void runAsync(Runnable runnable) {
         getServer().getScheduler().runTaskAsynchronously(this, runnable);
     }
+
 }

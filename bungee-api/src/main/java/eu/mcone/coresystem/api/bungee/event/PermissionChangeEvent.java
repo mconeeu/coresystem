@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.api.bungee.event;
 
-import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
 import lombok.Getter;
 import net.md_5.bungee.api.plugin.Event;
@@ -20,7 +20,7 @@ public final class PermissionChangeEvent extends Event {
     @Getter
     private Kind kind;
     @Getter
-    private BungeeCorePlayer player;
+    private CorePlayer player;
     @Getter
     private Set<Group> groups;
 
@@ -30,12 +30,12 @@ public final class PermissionChangeEvent extends Event {
         GROUP_CHANGE
     }
 
-    public PermissionChangeEvent(Kind k, BungeeCorePlayer p) {
+    public PermissionChangeEvent(Kind k, CorePlayer p) {
         this.kind = k;
         this.player = p;
     }
 
-    public PermissionChangeEvent(Kind k, BungeeCorePlayer p, Set<Group> groups) {
+    public PermissionChangeEvent(Kind k, CorePlayer p, Set<Group> groups) {
         this.kind = k;
         this.player = p;
         this.groups = groups;

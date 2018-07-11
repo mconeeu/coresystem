@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
-import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -28,7 +28,7 @@ public class Chat implements Listener {
         final long millis = System.currentTimeMillis() / 1000;
         final String msg = e.getMessage();
         final ProxiedPlayer p = (ProxiedPlayer) e.getSender();
-        final BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUniqueId());
+        final CorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUniqueId());
 
         if (p.hasPermission("system.bungee.cmd.bypass")) {
             return;

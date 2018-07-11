@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -45,13 +45,13 @@ public class BukkitCMD implements CommandExecutor {
                 BukkitCoreSystem.getInstance().getMessager().send(sender, "§aPermissions werden neu geladen...");
                 Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
                     BukkitCoreSystem.getInstance().getPermissionManager().reload();
-                    for (BukkitCorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
+                    for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
                         cp.reloadPermissions();
                     }
                 });
 
                 BukkitCoreSystem.getInstance().getMessager().send(sender, "§aScorebard wird neu geladen...");
-                for (BukkitCorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
+                for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
                     cp.getScoreboard().reload(BukkitCoreSystem.getInstance());
                 }
             } else if (args.length == 2) {
@@ -62,13 +62,13 @@ public class BukkitCMD implements CommandExecutor {
                     BukkitCoreSystem.getInstance().getMessager().send(sender, "§aPermissions werden neu geladen...");
                     Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
                         BukkitCoreSystem.getInstance().getPermissionManager().reload();
-                        for (BukkitCorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
+                        for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
                             cp.reloadPermissions();
                         }
                     });
                 } else if (args[1].equalsIgnoreCase("scoreboard")) {
                     BukkitCoreSystem.getInstance().getMessager().send(sender, "§aScorebard wird neu geladen...");
-                    for (BukkitCorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
+                    for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
                         cp.getScoreboard().reload(BukkitCoreSystem.getInstance());
                     }
                 }

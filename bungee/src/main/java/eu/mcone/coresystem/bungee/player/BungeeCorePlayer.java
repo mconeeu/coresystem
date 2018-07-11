@@ -8,12 +8,12 @@ package eu.mcone.coresystem.bungee.player;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.event.PlayerSettingsChangeEvent;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.FriendData;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.utils.PluginMessage;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
@@ -26,10 +26,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import java.net.InetAddress;
 import java.sql.SQLException;
 
-public class BungeeCorePlayer extends GlobalCorePlayer implements eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer {
+public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer {
 
-    @Getter
-    private final String status;
     @Getter
     private long muteTime;
     @Getter
@@ -51,8 +49,6 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
                 e.printStackTrace();
             }
         });
-
-        this.status = "online";
 
         ((BungeeCoreSystem) instance).getCorePlayers().put(uuid, this);
         reloadPermissions();
@@ -82,7 +78,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
     @Override
     public void updateSettings() {
         ProxyServer.getInstance().getPluginManager().callEvent(new PlayerSettingsChangeEvent(this, settings));
-        new PluginMessage("Return", bungee().getServer().getInfo(), "PLAYER_SETTINGS", uuid.toString(), CoreSystem.getInstance().getGson().toJson(settings, PlayerSettings.class));
+        CoreSystem.getInstance().getChannelHandler().createInfoRequest(bungee(), "PLAYER_SETTINGS", CoreSystem.getInstance().getGson().toJson(settings, PlayerSettings.class));
 
         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update(
                 "UPDATE userinfo SET player_settings='"+((CoreModuleCoreSystem) instance).getGson().toJson(settings, PlayerSettings.class)+"' WHERE uuid ='"+uuid+"'"

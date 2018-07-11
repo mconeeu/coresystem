@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
-import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.TeamspeakVerifier;
 import eu.mcone.coresystem.core.mysql.Database;
@@ -30,13 +30,13 @@ public class PostLogin implements Listener{
     @EventHandler
     public void on(PostLoginEvent e){
         final ProxiedPlayer p = e.getPlayer();
-        final BungeeCorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUniqueId());
+        final CorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUniqueId());
 
         BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "\n\n\n\n§8[§7§l!§8] §3MC ONE §8» §7§o" + getRandomWelcomeMSG(p, cp.isNew()) + ", §f§o" + p.getName() + "§7§o!");
         if (cp.isNew()) {
             BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "§8[§7§l!§8] §3MC ONE §8» §2Als kleines Willkommensgeschenk bekommst du 20 Coins gutgeschrieben!");
         } else {
-            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `userinfo` SET `name` = '" + p.getName() + "', `ip` = '" + cp.getIpAdress() + "' , status = 'online', `timestamp` = '" + System.currentTimeMillis() / 1000 + "' WHERE `uuid`='" + p.getUniqueId().toString() + "';");
+            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `userinfo` SET `name` = '" + p.getName() + "', `ip` = '" + cp.getIpAdress() + "' , state = '1', `timestamp` = '" + System.currentTimeMillis() / 1000 + "' WHERE `uuid`='" + p.getUniqueId().toString() + "';");
         }
 
         if(p.hasPermission("system.bungee.report")) {

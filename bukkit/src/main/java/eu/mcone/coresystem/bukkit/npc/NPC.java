@@ -9,6 +9,7 @@ package eu.mcone.coresystem.bukkit.npc;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
+import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
@@ -18,7 +19,6 @@ import lombok.Setter;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -33,37 +33,22 @@ public class NPC implements eu.mcone.coresystem.api.bukkit.npc.NPC {
     @Getter
     private List<UUID> loadedPlayers;
     @Getter
-    private Location location;
+    private NpcData data;
     @Getter
     private SkinInfo skin;
     @Getter
     private EntityPlayer entity;
     @Getter
     private UUID uuid;
-    @Getter
-    private String name, displayname;
     @Getter @Setter
     private boolean local = false;
 
-    public NPC(String name, Location location, SkinInfo skin, String displayname){
-        this.name = name;
-        this.displayname = displayname;
-        this.uuid = UUID.randomUUID();
-        this.location = location;
-        this.loadedPlayers = new ArrayList<>();
-        this.skin = skin;
-
-        createProfile();
-    }
-
-    public NPC(String name, Location location, String skinName, String displayname){
+    public NPC(NpcData data){
         try {
-            this.name = name;
-            this.displayname = displayname;
+            this.data = data;
             this.uuid = UUID.randomUUID();
-            this.location = location;
             this.loadedPlayers = new ArrayList<>();
-            this.skin = new eu.mcone.coresystem.core.player.SkinInfo(BukkitCoreSystem.getSystem().getMySQL(Database.SYSTEM), skinName).downloadSkinData();
+            this.skin = new eu.mcone.coresystem.core.player.SkinInfo(BukkitCoreSystem.getSystem().getMySQL(Database.SYSTEM), data.getSkinName()).downloadSkinData();
 
             createProfile();
         } catch (CoreException e) {
@@ -75,14 +60,14 @@ public class NPC implements eu.mcone.coresystem.api.bukkit.npc.NPC {
         MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
         WorldServer world = ((CraftWorld) Bukkit.getWorlds().get(0)).getHandle();
 
-        GameProfile gameprofile = new GameProfile(uuid, ChatColor.translateAlternateColorCodes('&', displayname));
+        GameProfile gameprofile = new GameProfile(uuid, ChatColor.translateAlternateColorCodes('&', data.getDisplayname()));
         gameprofile.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
 
         entity = new EntityPlayer(server, world, gameprofile, new PlayerInteractManager(world));
 
         entity.playerConnection = new PlayerConnection(MinecraftServer.getServer(), new NetworkManager(EnumProtocolDirection.SERVERBOUND), entity);
-        entity.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
-        ((CraftWorld) location.getWorld()).getHandle().addEntity(entity);
+        entity.setPositionRotation(data.getLocation().getX(), data.getLocation().getY(), data.getLocation().getZ(), data.getLocation().getYaw(), data.getLocation().getPitch());
+        ((CraftWorld) data.getLocation().bukkit().getWorld()).getHandle().addEntity(entity);
     }
 
     public void set(Player p) {
@@ -92,8 +77,8 @@ public class NPC implements eu.mcone.coresystem.api.bukkit.npc.NPC {
         PlayerConnection connection = ((CraftPlayer)p).getHandle().playerConnection;
         connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entity));
         connection.sendPacket(new PacketPlayOutNamedEntitySpawn(entity));
-        connection.sendPacket(new PacketPlayOutEntityHeadRotation(entity, ((byte) (int) (location.getYaw()*256.0F/360.0F))));
-        connection.sendPacket(new PacketPlayOutEntity.PacketPlayOutEntityLook(entity.getId(), (byte) location.getYaw(), (byte) location.getPitch(), false));
+        connection.sendPacket(new PacketPlayOutEntityHeadRotation(entity, ((byte) (int) (data.getLocation().getYaw()*256.0F/360.0F))));
+        connection.sendPacket(new PacketPlayOutEntity.PacketPlayOutEntityLook(entity.getId(), (byte) data.getLocation().getYaw(), (byte) data.getLocation().getPitch(), false));
         connection.sendPacket(new PacketPlayOutEntityMetadata(entity.getId(), watcher, true));
         entity.getBukkitEntity().getPlayer().setPlayerListName("");
 
@@ -144,7 +129,7 @@ public class NPC implements eu.mcone.coresystem.api.bukkit.npc.NPC {
     }
 
     public void destroy() {
-        ((CraftWorld) location.getWorld()).getHandle().removeEntity(entity);
+        ((CraftWorld) data.getLocation().bukkit().getWorld()).getHandle().removeEntity(entity);
     }
 
 }

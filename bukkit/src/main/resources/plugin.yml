@@ -1,5 +1,5 @@
 name: MCONE-BukkitCoreSystem
-version: 10.0.0-SNAPHOT
+version: 10.1.0-SNAPHOT
 authors: [Domink Lippl, Rufus Maiwald]
 softdepend: [MCONE-CloudPlugin]
 main: eu.mcone.coresystem.bukkit.BukkitCoreSystem

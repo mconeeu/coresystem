@@ -7,6 +7,7 @@
 package eu.mcone.coresystem.bukkit.inventory;
 
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
 import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Material;
@@ -20,9 +21,9 @@ import java.util.List;
 class PartyInventory extends CoreInventory {
 
     PartyInventory(Player p) {
-        super("§8» §5§lMeine Party", p, 54, Option.FILL_EMPTY_SLOTS);
+        super("§8» §5§lMeine Party", p, InventorySlot.ROW_6, Option.FILL_EMPTY_SLOTS);
 
-        BukkitCoreSystem.getInstance().getChannelHandler().sendPluginMessage(player, member -> {
+        BukkitCoreSystem.getInstance().getChannelHandler().createGetRequest(player, member -> {
             if (!member.equals("false")) {
                 String[] members = member.split(",");
                 boolean isPartyLeader = isPartyLeader(player, members);
@@ -36,35 +37,35 @@ class PartyInventory extends CoreInventory {
                     if (data.length>2 && data[2].equals("leader")) lores.add("§e\u2600 Leader");
                     if (isPartyLeader && !data[0].equalsIgnoreCase(player.getName())) lores.addAll(Arrays.asList("", "§8» §f§nRechtsklick§8 | §7§oAktionen"));
 
-                    setItem(i, ItemBuilder.createSkullItem(data[0], 1).displayName("§f§l" + data[0]).lore((String[]) lores.toArray()).create(), () -> {
+                    setItem(i, ItemBuilder.createSkullItem(data[0], 1).displayName("§f§l" + data[0]).lore((String[]) lores.toArray()).create(), e -> {
                         new PartyMemberInventory(p, data[0]);
                         p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
                     });
                     i++;
                 }
 
-                setItem(45, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), () -> {
+                setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
                     p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
                     new ProfileInventory(p);
                 });
 
                 if (isPartyLeader)
-                    setItem(49, new ItemBuilder(Material.BARRIER, 1, 0).displayName("§cParty löschen").create(), () -> {
+                    setItem(InventorySlot.ROW_6_SLOT_5, new ItemBuilder(Material.BARRIER, 1, 0).displayName("§cParty löschen").create(), e -> {
                         p.closeInventory();
-                        BukkitCoreSystem.getInstance().getChannelHandler().sendPluginMessage(p, "CMD" ,"party delete");
+                        BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD" ,"party delete");
                     });
 
-                setItem(53, new ItemBuilder(Material.SLIME_BALL, 1, 0).displayName("§4Party verlassen").create(), () -> {
+                setItem(InventorySlot.ROW_6_SLOT_9, new ItemBuilder(Material.SLIME_BALL, 1, 0).displayName("§4Party verlassen").create(), e -> {
                     p.closeInventory();
-                    BukkitCoreSystem.getInstance().getChannelHandler().sendPluginMessage(p, "CMD" ,"party leave");
+                    BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD" ,"party leave");
                 });
             } else {
-                setItem(22, new ItemBuilder(Material.CAKE, 1, 0).displayName("§5Party erstellen").create(), () -> {
+                setItem(InventorySlot.ROW_3_SLOT_5, new ItemBuilder(Material.CAKE, 1, 0).displayName("§5Party erstellen").create(), e -> {
                     p.closeInventory();
-                    BukkitCoreSystem.getInstance().getChannelHandler().sendPluginMessage(p, "CMD" ,"party create");
+                    BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD" ,"party create");
                 });
 
-                setItem(45, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), () -> {
+                setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
                     p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
                     new ProfileInventory(p);
                 });

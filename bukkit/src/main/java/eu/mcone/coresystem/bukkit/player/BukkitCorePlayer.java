@@ -7,13 +7,15 @@
 package eu.mcone.coresystem.bukkit.player;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.event.CoinsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.event.PlayerSettingsChangeEvent;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
-import eu.mcone.coresystem.api.core.player.PlayerStatus;
+import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.inventory.InteractionInventory;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
@@ -26,10 +28,10 @@ import org.bukkit.entity.Player;
 
 import java.net.InetAddress;
 
-public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer {
+public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
 
     @Getter
-    private PlayerStatus status;
+    private PlayerState status;
     @Getter @Setter
     private String nickname;
     @Getter
@@ -37,7 +39,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
 
     public BukkitCorePlayer(CoreSystem instance, InetAddress address, String name) throws PlayerNotResolvedException {
         super(instance, address, name);
-        this.status = PlayerStatus.ONLINE;
+        this.status = PlayerState.ONLINE;
 
         ((BukkitCoreSystem) instance).getCorePlayers().put(uuid, this);
         reloadPermissions();
@@ -51,14 +53,27 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
     }
 
     @Override
-    public void setScoreboard(CoreScoreboard sb) {
-        this.scoreboard = sb.set(BukkitCoreSystem.getInstance(), this);
+    public void addCoins(int amount) {
+        this.coins += amount;
+        Bukkit.getScheduler().runTaskAsynchronously((BukkitCoreSystem) instance, () -> {
+            ((BukkitCoreSystem) instance).getMySQL(Database.SYSTEM).update("UPDATE userinfo SET coins="+coins+" WHERE uuid='"+uuid+"'");
+            Bukkit.getServer().getPluginManager().callEvent(new CoinsChangeEvent(this));
+        });
     }
 
     @Override
-    public void setStatus(final PlayerStatus status) {
-        this.status = status;
-        Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> ((BukkitCoreSystem) instance).getMySQL(Database.SYSTEM).update("UPDATE userinfo SET status='"+status.toString().toLowerCase()+"' WHERE uuid='"+uuid+"'"));
+    public void removeCoins(int amount) {
+        this.coins -= amount;
+        Bukkit.getScheduler().runTaskAsynchronously((BukkitCoreSystem) instance, () -> {
+            ((BukkitCoreSystem) instance).getMySQL(Database.SYSTEM).update("UPDATE userinfo SET coins="+coins+" WHERE uuid='"+uuid+"'");
+            Bukkit.getPluginManager().callEvent(new CoinsChangeEvent(this));
+        });
+    }
+
+    @Override
+    public void setScoreboard(CoreScoreboard sb) {
+        if (this.scoreboard != null) scoreboard.unregister();
+        this.scoreboard = sb.set(BukkitCoreSystem.getInstance(), this);
     }
 
     @Override
@@ -96,7 +111,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
     @Override
     public void updateSettings() {
         Bukkit.getPluginManager().callEvent(new PlayerSettingsChangeEvent(this, settings));
-        CoreSystem.getInstance().getChannelHandler().sendPluginMessage(bukkit(), "PLAYER_SETTINGS", CoreSystem.getInstance().getGson().toJson(settings, PlayerSettings.class));
+        CoreSystem.getInstance().getChannelHandler().createSetRequest(bukkit(), "PLAYER_SETTINGS", CoreSystem.getInstance().getGson().toJson(settings, PlayerSettings.class));
 
         BukkitCoreSystem.getSystem().getMySQL(Database.SYSTEM).update(
                 "UPDATE userinfo SET player_settings='"+((CoreModuleCoreSystem) instance).getGson().toJson(settings, PlayerSettings.class)+"' WHERE uuid ='"+uuid+"'"
@@ -110,6 +125,8 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements eu.mcone.cores
 
     @Override
     public void unregister() {
+        scoreboard.unregister();
+
         BukkitCoreSystem.getSystem().clearPlayerInventories(uuid);
         BukkitCoreSystem.getSystem().getAfkManager().unregisterPlayer(uuid);
 

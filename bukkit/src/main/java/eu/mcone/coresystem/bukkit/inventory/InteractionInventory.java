@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bukkit.inventory;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
 import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
@@ -25,16 +26,16 @@ import java.sql.SQLException;
 public class InteractionInventory extends CoreInventory {
 
     public InteractionInventory(Player p, Player clicked) {
-        super("§8» §3Interaktionsmenü", p, 27, CoreInventory.Option.FILL_EMPTY_SLOTS);
+        super("§8» §3Interaktionsmenü", p, InventorySlot.ROW_3, CoreInventory.Option.FILL_EMPTY_SLOTS);
 
         BukkitCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT status, coins, onlinetime FROM userinfo WHERE uuid='" + clicked.getUniqueId().toString() + "'", rs -> {
             try {
                 if (rs.next()) {
                     double onlinetime = Math.floor((rs.getInt("onlinetime") / 60) * 100) / 100;
                     int coins = rs.getInt("coins");
-                    String status = CoreSystem.getInstance().getCorePlayer(clicked).getStatus().getName();
+                    String status = CoreSystem.getInstance().getCorePlayer(clicked).getState().getName();
 
-                    setItem(4, ItemBuilder.createSkullItem(clicked.getName(), 1).displayName("§f§l" + clicked.getName()).lore(
+                    setItem(InventorySlot.ROW_1_SLOT_5, ItemBuilder.createSkullItem(clicked.getName(), 1).displayName("§f§l" + clicked.getName()).lore(
                                 CoreSystem.getInstance().getCorePlayer(clicked).getMainGroup().getLabel(),
                                 "",
                                 "§7Coins: §f" + coins ,
@@ -42,7 +43,7 @@ public class InteractionInventory extends CoreInventory {
                             ).create()
                     );
 
-                    setItem(20, ItemBuilder.createSkullItemFromURL("http://textures.minecraft.net/texture/6f74f58f541342393b3b16787dd051dfacec8cb5cd3229c61e5f73d63947ad", 1).displayName("§7Online-Profil Ansehen").create(), () -> {
+                    setItem(InventorySlot.ROW_3_SLOT_3, ItemBuilder.createSkullItemFromURL("http://textures.minecraft.net/texture/6f74f58f541342393b3b16787dd051dfacec8cb5cd3229c61e5f73d63947ad", 1).displayName("§7Online-Profil Ansehen").create(), e -> {
                         TextComponent tc0 = new TextComponent(TextComponent.fromLegacyText(CoreSystem.getInstance().getTranslationManager().get("lobby.prefix") + "§2Das Profil von " + clicked.getName() + " findest du "));
 
                         TextComponent tc = new TextComponent();
@@ -58,20 +59,20 @@ public class InteractionInventory extends CoreInventory {
                     BukkitCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT uuid FROM `bungeesystem_friends` WHERE `uuid`='"+player.getUniqueId()+"' AND `target`='"+clicked.getUniqueId()+"' AND `key`='friend';", rs1 -> {
                         try {
                             if (rs1.next()) {
-                                setItem(22, new ItemBuilder(Material.BARRIER, 1, 0).displayName("§4Freund entfernen").create(), () -> {
+                                setItem(InventorySlot.ROW_3_SLOT_5, new ItemBuilder(Material.BARRIER, 1, 0).displayName("§4Freund entfernen").create(), e -> {
                                     p.closeInventory();
-                                    CoreSystem.getInstance().getChannelHandler().sendPluginMessage(p, "CMD", "friend remove " + clicked);
+                                    CoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "friend remove " + clicked);
                                 });
                             } else {
-                                setItem(22, new ItemBuilder(Material.SKULL_ITEM, 1, 3).displayName("§7Freund hinzufügen").create(), () -> {
+                                setItem(InventorySlot.ROW_3_SLOT_5, new ItemBuilder(Material.SKULL_ITEM, 1, 3).displayName("§7Freund hinzufügen").create(), e -> {
                                     p.closeInventory();
-                                    CoreSystem.getInstance().getChannelHandler().sendPluginMessage(p, "CMD", "friend add " + clicked);
+                                    CoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "friend add " + clicked);
                                 });
                             }
 
-                            setItem(24, new ItemBuilder(Material.CAKE, 1, 0).displayName("§7In §5Party §7einladen").create(), () -> {
+                            setItem(InventorySlot.ROW_3_SLOT_7, new ItemBuilder(Material.CAKE, 1, 0).displayName("§7In §5Party §7einladen").create(), e -> {
                                 p.closeInventory();
-                                CoreSystem.getInstance().getChannelHandler().sendPluginMessage(p, "CMD", "party invite " + clicked);
+                                CoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "party invite " + clicked);
                             });
 
                             openInventory();

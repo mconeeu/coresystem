@@ -10,6 +10,8 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
+import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.core.annotation.DontObfuscate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +24,9 @@ import org.bukkit.entity.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -37,7 +42,9 @@ public class BukkitCoreWorld implements CoreWorld {
     private boolean generateStructures = false, loadOnStartup = true, autoSave = true, pvp = false, allowAnimals = false, allowMonsters = false, keepSpawnInMemory = true;
     private int[] spawnLocation = new int[]{0, 0, 0};
 
-    private Map<String, CoreLocation> locations;
+    private Map<String, CoreLocation> locations = new HashMap<>();
+    private List<NpcData> npcs = new ArrayList<>();
+    private List<HologramData> holograms = new ArrayList<>();
 
     @Override
     public World bukkit() {
@@ -163,6 +170,7 @@ public class BukkitCoreWorld implements CoreWorld {
         w.setSpawnLocation(spawnLocation[0], spawnLocation[1], spawnLocation[2]);
         w.setPVP(pvp);
         w.setKeepSpawnInMemory(keepSpawnInMemory);
+        w.setAutoSave(autoSave);
 
         if (!allowAnimals) {
             w.setAnimalSpawnLimit(0);

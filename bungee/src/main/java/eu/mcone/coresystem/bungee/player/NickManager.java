@@ -6,15 +6,18 @@
 
 package eu.mcone.coresystem.bungee.player;
 
+import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
+import eu.mcone.coresystem.api.core.util.Random;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.utils.PluginMessage;
 import eu.mcone.coresystem.core.mysql.Database;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickManager {
 
@@ -41,21 +44,21 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
     }
 
     private SkinInfo getNick() {
-        for (HashMap.Entry<SkinInfo, ProxiedPlayer> entry : nicks.entrySet()) {
-            if (entry.getValue() == null && ProxyServer.getInstance().getPlayer(entry.getKey().getName()) == null) {
-                return entry.getKey();
-            }
-        }
-        return null;
+        List<SkinInfo> available = new ArrayList<>();
+        nicks.forEach((skin, p) -> {
+            if (p == null) available.add(skin);
+        });
+
+        return available.get(Random.randomInt(0, available.size()));
     }
 
     public void nick(ProxiedPlayer p) {
-        eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer cp = instance.getCorePlayer(p);
+        CorePlayer cp = instance.getCorePlayer(p);
         SkinInfo nick = cp.getNickedSkin() != null ? cp.getNickedSkin() : getNick();
         nicks.put(nick, p);
 
         if (nick != null) {
-            new PluginMessage("Return", p.getServer().getInfo(), "NICK", p.getUniqueId().toString(), nick.getName(), nick.getValue(), nick.getSignature());
+            CoreSystem.getInstance().getChannelHandler().createInfoRequest(p, "NICK", nick.getName(), nick.getValue(), nick.getSignature());
             ((BungeeCorePlayer) cp).setNickedSkin(nick);
             ((BungeeCorePlayer) cp).setNicked(true);
         } else {
@@ -64,15 +67,15 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
     }
 
     public void unnick(ProxiedPlayer p) {
-        eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer cp = instance.getCorePlayer(p);
-        new PluginMessage("Return", p.getServer().getInfo(), "UNNICK", p.getUniqueId().toString());
+        CorePlayer cp = instance.getCorePlayer(p);
+        CoreSystem.getInstance().getChannelHandler().createInfoRequest(p, "UNNICK");
         nicks.put(cp.getNickedSkin(), null);
         ((BungeeCorePlayer) cp).setNickedSkin(null);
         ((BungeeCorePlayer) cp).setNicked(false);
     }
 
     public void destroy(ProxiedPlayer p) {
-        eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer cp = instance.getCorePlayer(p);
+        CorePlayer cp = instance.getCorePlayer(p);
         nicks.put(cp.getNickedSkin(), null);
         ((BungeeCorePlayer) cp).setNickedSkin(null);
         ((BungeeCorePlayer) cp).setNicked(false);

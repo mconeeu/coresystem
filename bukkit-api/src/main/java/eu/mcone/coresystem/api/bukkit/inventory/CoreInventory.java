@@ -49,28 +49,6 @@ public abstract class CoreInventory {
     }
 
     /**
-     * creates new CoreInventory
-     * @param name inventory title
-     * @param player target player
-     * @param size inventory size
-     * @param args options
-     */
-    protected CoreInventory(String name, Player player, CoreInventorySize size, Option... args) {
-        this.inventory = Bukkit.createInventory(null, size.getValue(), name);
-        this.player = player;
-        this.events = new HashMap<>();
-
-        CoreSystem.getInstance().registerInventory(this);
-
-        List<Option> options = new ArrayList<>(Arrays.asList(args));
-        if (options.contains(Option.FILL_EMPTY_SLOTS)) {
-            for (int i = 0; i < size.getValue(); i++) {
-                inventory.setItem(i, new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 7).displayName("§8//§oMCONE§8//").create());
-            }
-        }
-    }
-
-    /**
      * sets an item in the inventory
      * @param slot inventory slot
      * @param item item stack
@@ -79,7 +57,6 @@ public abstract class CoreInventory {
     public void setItem(int slot, ItemStack item, CoreItemEvent event) {
         inventory.setItem(slot, item);
         events.put(item, event);
-
     }
 
     /**

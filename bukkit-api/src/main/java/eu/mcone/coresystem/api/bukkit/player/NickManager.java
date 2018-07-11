@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.api.bukkit.player;
 
+import eu.mcone.coresystem.api.core.player.SkinInfo;
 import org.bukkit.entity.Player;
 
 public interface NickManager {
@@ -14,15 +15,34 @@ public interface NickManager {
      * nicks a player with a specific name and skin
      * @param player player
      * @param name nickname
-     * @param value skin mojang-value
-     * @param signature skin mojang-signature
+     * @param skin SkinInfo object
      */
-    void nick(Player player, String name, String value, String signature);
+    void nick(Player player, String name, SkinInfo skin);
+
+    /**
+     * nicks a player with a specific name and without skin
+     * @param player player
+     * @param name nickname
+     */
+    void nick(Player player, String name);
 
     /**
      * unnicks a player
      * @param player player
+     * @param bypassSkin should the skin be bypassed by unnick?
      */
-    void unnick(Player player);
+    void unnick(Player player, boolean bypassSkin);
+
+    /**
+     * if false the default /nick command will only change the name but not the skin
+     * @return /nick command is allowed to change skins
+     */
+    boolean isAllowSkinChange();
+
+    /**
+     * if false the default /nick command will only change the name but not the skin
+     * @param allowSkinChange allows to change skin on /nick
+     */
+    void setAllowSkinChange(boolean allowSkinChange);
 
 }

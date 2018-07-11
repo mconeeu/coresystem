@@ -8,27 +8,28 @@ package eu.mcone.coresystem.bukkit.player;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.bukkit.listener.PlayerDeath;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickManager {
 
     private BukkitCoreSystem instance;
     private Map<UUID, SkinInfo> oldProfiles;
     @Getter @Setter
-    private boolean allowNicking = true;
+    private boolean allowSkinChange = true;
 
     public NickManager(BukkitCoreSystem instance) {
         this.instance = instance;
@@ -36,28 +37,39 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
     }
 
     @Override
-    public void nick(Player p, String name, String value, String signature) {
-        if (allowNicking) {
-            eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer cp = instance.getCorePlayer(p);
+    public void nick(Player p, String name, SkinInfo skin) {
+        CorePlayer cp = instance.getCorePlayer(p);
 
-            if (!cp.isNicked()) {
-                setNick(p, name, instance.getPlayerUtils().constructSkinInfo(name, value, signature));
+        if (!cp.isNicked()) {
+            ((BukkitCorePlayer) cp).setNickname(name);
+            ((BukkitCorePlayer) cp).setNicked(true);
+            p.setDisplayName(name);
 
-                ((BukkitCorePlayer) cp).setNickname(name);
-                ((BukkitCorePlayer) cp).setNicked(true);
-                p.setDisplayName(name);
-
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§2Dein Nickname ist nun §f" + name);
-            } else {
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du bist bereits genickt!");
-            }
+            setNick(p, name, skin);
+            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Dein Nickname ist nun §f" + name);
         } else {
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du kannst dich während des Spiels nicht nicken!");
+            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du bist bereits genickt!");
+        }
+    }
+
+    @Override
+    public void nick(Player p, String name) {
+        CorePlayer cp = instance.getCorePlayer(p);
+
+        if (!cp.isNicked()) {
+            ((BukkitCorePlayer) cp).setNickname(name);
+            ((BukkitCorePlayer) cp).setNicked(true);
+            p.setDisplayName(name);
+
+            setNick(p, name, ((CraftPlayer) p).getHandle().getProfile());
+            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Dein Nickname ist nun §f" + name);
+        } else {
+            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du bist bereits genickt!");
         }
     }
 
     public void setNicks(Player p) {
-        for (eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer cp : instance.getOnlineCorePlayers()) {
+        for (CorePlayer cp : instance.getOnlineCorePlayers()) {
             if (cp.isNicked()) {
                 Player player = cp.bukkit();
                 EntityPlayer ep = ((CraftPlayer) player).getHandle();
@@ -73,24 +85,23 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
     }
 
     @Override
-    public void unnick(Player p) {
-        if (allowNicking) {
-            eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer cp = instance.getCorePlayer(p);
+    public void unnick(Player p, boolean bypassSkin) {
+        CorePlayer cp = instance.getCorePlayer(p);
 
-            if (cp.isNicked()) {
+        if (cp.isNicked()) {
+            ((BukkitCorePlayer) cp).setNickname(null);
+            ((BukkitCorePlayer) cp).setNicked(false);
+            p.setDisplayName(cp.getName());
+
+            if (!bypassSkin) {
                 setNick(p, cp.getName(), oldProfiles.get(p.getUniqueId()));
-
-                ((BukkitCorePlayer) cp).setNickname(null);
-                ((BukkitCorePlayer) cp).setNicked(false);
-                p.setDisplayName(cp.getName());
                 oldProfiles.remove(p.getUniqueId());
-
-                BukkitCoreSystem.getInstance().getMessager().send(p, "Du bist nun nicht mehr genickt!");
             } else {
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du bist nicht genickt!");
+                setNick(p, cp.getName(), ((CraftPlayer) p).getProfile());
             }
+            BukkitCoreSystem.getInstance().getMessager().send(p, "Du bist nun nicht mehr genickt!");
         } else {
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du kannst dich während des Spiels nicht entnicken!");
+            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du bist nicht genickt!");
         }
     }
 
@@ -105,26 +116,53 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
         }
         gp.getProperties().removeAll("textures");
         gp.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
-        setGameProfileName(gp, name);
 
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            PlayerConnection connection = ((CraftPlayer) player).getHandle().playerConnection;
-            connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, ep));
+        ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, ep));
 
-            if (!player.equals(p)) {
-                connection.sendPacket(new PacketPlayOutEntityDestroy(p.getEntityId()));
-                connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ep));
-                connection.sendPacket(new PacketPlayOutNamedEntitySpawn(((CraftPlayer) p).getHandle()));
+        Bukkit.getScheduler().runTaskLater(CoreSystem.getInstance(), () -> {
+            boolean flying = p.isFlying();
+            Location location = p.getLocation();
+            int level = p.getLevel();
+            float xp = p.getExp();
+            double maxHealth = p.getMaxHealth();
+            double health = p.getHealth();
 
-                instance.getCorePlayer(player).getScoreboard().reload(BukkitCoreSystem.getInstance());
-            } else {
-                PlayerDeath.nicking.add(p);
-                connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ep));
+            ep.playerConnection.sendPacket(new PacketPlayOutRespawn(0, ((CraftWorld) p.getWorld()).getHandle().getDifficulty(), ((CraftWorld) p.getWorld()).getHandle().worldData.getType(), WorldSettings.EnumGamemode.getById(p.getGameMode().getValue())));
+
+            p.setFlying(flying);
+            p.teleport(location);
+            p.updateInventory();
+            p.setLevel(level);
+            p.setExp(xp);
+            p.setMaxHealth(maxHealth);
+            p.setHealth(health);
+
+            ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ep));
+        }, 1);
+
+        setNick(p, name, gp);
+    }
+
+    private void setNick(Player p, String name, GameProfile gameProfile) {
+        setGameProfileName(gameProfile, name);
+
+        Bukkit.getScheduler().runTask(CoreSystem.getInstance(), () -> {
+            List<Player> canSee = new ArrayList<>();
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player.canSee(p)) {
+                    canSee.add(player);
+                    player.hidePlayer(p);
+                }
             }
-        }
+            for (Player player : canSee) {
+                player.showPlayer(p);
+                instance.getCorePlayer(player).getScoreboard().reload(BukkitCoreSystem.getInstance());
+            }
+        });
 
         p.setDisplayName(name);
         instance.getCorePlayer(p).getScoreboard().reload(BukkitCoreSystem.getInstance());
+        CoreSystem.getInstance().createTitle().subTitle("§2§oDu bist nun genickt!").send(p);
     }
 
     public static void setGameProfileName(GameProfile gp, String name) {

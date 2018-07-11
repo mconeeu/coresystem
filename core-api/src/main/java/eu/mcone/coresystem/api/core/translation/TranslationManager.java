@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.api.core.translation;
 
+import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 
 import java.util.Map;
@@ -13,7 +14,7 @@ import java.util.Map;
 public interface TranslationManager {
 
     /**
-     * reloads all translations from database
+     * reloads all translation fields from set categories from database
      */
     void reload();
 
@@ -47,6 +48,12 @@ public interface TranslationManager {
      * @return translation
      */
     String get(String key, GlobalCorePlayer player);
+
+    /**
+     * loads all new Translations from a specific categories
+     * @param categories categories name
+     */
+    void loadCategories(GlobalCorePlugin plugin, String... categories);
 
     /**
      * insert predefined translations as Map

@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.api.bukkit.util;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.translation.Language;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
@@ -56,7 +56,7 @@ public final class Messager {
      * @param translation translation name/key
      */
     public void sendTransl(final Player player, String... translation) {
-        BukkitCorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
+        CorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
         StringBuilder sb = new StringBuilder(CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, cp));
         for (String s : translation) {
             sb.append(CoreSystem.getInstance().getTranslationManager().get(s, cp));

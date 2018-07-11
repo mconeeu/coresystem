@@ -7,11 +7,12 @@
 package eu.mcone.coresystem.api.bukkit;
 
 import eu.mcone.coresystem.api.bukkit.util.Messager;
+import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public abstract class CorePlugin extends JavaPlugin {
+public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin {
 
     @Getter
     private String pluginName;

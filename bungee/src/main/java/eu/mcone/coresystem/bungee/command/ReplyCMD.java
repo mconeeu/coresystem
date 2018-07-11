@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
-import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
@@ -23,12 +23,12 @@ public class ReplyCMD extends Command {
 
     public void execute(final CommandSender sender, final String[] args) {
         if (sender instanceof ProxiedPlayer) {
-            BungeeCorePlayer p = CoreSystem.getInstance().getCorePlayer((ProxiedPlayer) sender);
+            CorePlayer p = CoreSystem.getInstance().getCorePlayer((ProxiedPlayer) sender);
             if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUuid()))
                 return;
 
             if (MsgCMD.reply.containsKey(p.getUuid())) {
-                BungeeCorePlayer t = CoreSystem.getInstance().getCorePlayer(MsgCMD.reply.get(p.getUuid()));
+                CorePlayer t = CoreSystem.getInstance().getCorePlayer(MsgCMD.reply.get(p.getUuid()));
 
                 if (t != null) {
                     if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY)) {

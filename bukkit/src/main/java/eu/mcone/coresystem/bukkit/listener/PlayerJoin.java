@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
-import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.player.NickManager;
 import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
@@ -20,16 +20,14 @@ public class PlayerJoin implements Listener{
 	@EventHandler
 	public void on(PlayerJoinEvent e){
 		Player bp = e.getPlayer();
-		BukkitCorePlayer p = BukkitCoreSystem.getInstance().getCorePlayer(bp);
+		CorePlayer p = BukkitCoreSystem.getInstance().getCorePlayer(bp);
 
 		e.setJoinMessage(null);
         p.setScoreboard(new MainScoreboard());
 		((NickManager) BukkitCoreSystem.getInstance().getNickManager()).setNicks(bp);
 
-		if (BukkitCoreSystem.getSystem().getYamlConfig().getConfig().getBoolean("Tablist")){
-		    for (BukkitCorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
-		    	cp.getScoreboard().reload(BukkitCoreSystem.getInstance());
-			}
+		for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
+			cp.getScoreboard().reload(BukkitCoreSystem.getInstance());
 		}
 	}
 

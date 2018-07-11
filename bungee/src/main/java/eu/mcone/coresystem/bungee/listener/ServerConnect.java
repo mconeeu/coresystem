@@ -8,8 +8,10 @@ package eu.mcone.coresystem.bungee.listener;
 
 import eu.mcone.cloud.api.plugin.CloudAPI;
 import eu.mcone.cloud.api.plugin.bungee.BungeeCloudPlugin;
+import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.friend.Party;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -24,8 +26,9 @@ public class ServerConnect implements Listener {
     public void on(ServerConnectEvent e) {
         ServerInfo target = e.getTarget();
         ProxiedPlayer p = e.getPlayer();
+        boolean cloudSystemAvailable = BungeeCoreSystem.getSystem().isCloudsystemAvailable();
 
-        if (p.getServer() == null || !p.getServer().getInfo().equals(target) && BungeeCoreSystem.getSystem().isCloudsystemAvailable()) {
+        if (p.getServer() == null || !p.getServer().getInfo().equals(target)) {
             if (!target.getName().contains("Lobby")) {
                 //Ping target server
                 target.ping((result, error) -> {
@@ -71,9 +74,15 @@ public class ServerConnect implements Listener {
 
                                         for (ProxiedPlayer kick : kickable) {
                                             if (toKick == 0) break;
-                                            kick.connect(((BungeeCloudPlugin) CloudAPI.getInstance().getPlugin()).getFallbackServer());
-                                            BungeeCoreSystem.getInstance().getMessager().send(kick, "§4Du wurdest aus der Runde gekickt, da ein höher rangiger Spieler den Server betreten hat!" +
-                                                    "\n§7Hol' dir den §6Premium Rang §7um nicht mehr gekickt zu werden! Benutze §f/premium §7 für mehr Infos!");
+
+                                            if (cloudSystemAvailable) {
+                                                kick.connect(((BungeeCloudPlugin) CloudAPI.getInstance().getPlugin()).getFallbackServer());
+                                                BungeeCoreSystem.getInstance().getMessager().send(kick, CoreSystem.getInstance().getTranslationManager().get("system.bungee.kick.premium", CoreSystem.getInstance().getCorePlayer(p)));
+                                            } else {
+                                                kick.disconnect(new TextComponent(TextComponent.fromLegacyText(
+                                                        CoreSystem.getInstance().getTranslationManager().get("system.bungee.kick.premium", CoreSystem.getInstance().getCorePlayer(p))
+                                                )));
+                                            }
                                             toKick--;
                                         }
                                     }
@@ -81,7 +90,7 @@ public class ServerConnect implements Listener {
                                     if (partyMember > free) {
                                         e.setCancelled(true);
                                         party.sendAll("§4Der Server §c" + target.getName() + "§4 hat nicht genügend Platz für alle Partyteilnehmer!" +
-                                                "\n§7Hol' dir den §6Premium Rang §7um um andere aus der Runde zu kicken! Benutze §f/premium §7 für mehr Infos!");
+                                                "\n§7Hol' dir den §6Premium Rang §7um um andere Spieler aus der Runde zu kicken! Benutze §f/premium §7 für mehr Infos!");
                                         return;
                                     }
                                 }
@@ -116,9 +125,15 @@ public class ServerConnect implements Listener {
                                 int i = 1;
                                 for (ProxiedPlayer kick : kickable) {
                                     if (i < 1) break;
-                                    kick.connect(((BungeeCloudPlugin) CloudAPI.getInstance().getPlugin()).getFallbackServer());
-                                    BungeeCoreSystem.getInstance().getMessager().send(kick, "§4Du wurdest aus der Runde gekickt, da ein höher rangiger Spieler den Server betreten hat!" +
-                                            "\n§7Hol' dir den §6Premium Rang §7um nicht mehr gekickt zu werden! Benutze §f/premium §7 für mehr Infos!");
+
+                                    if (cloudSystemAvailable) {
+                                        kick.connect(((BungeeCloudPlugin) CloudAPI.getInstance().getPlugin()).getFallbackServer());
+                                        BungeeCoreSystem.getInstance().getMessager().send(kick, CoreSystem.getInstance().getTranslationManager().get("system.bungee.kick.premium", CoreSystem.getInstance().getCorePlayer(p)));
+                                    } else {
+                                        kick.disconnect(new TextComponent(TextComponent.fromLegacyText(
+                                                CoreSystem.getInstance().getTranslationManager().get("system.bungee.kick.premium", CoreSystem.getInstance().getCorePlayer(p))
+                                        )));
+                                    }
                                     i--;
                                 }
                             } else {

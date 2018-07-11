@@ -10,7 +10,7 @@ import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public interface BungeeCorePlayer extends GlobalCorePlayer {
+public interface CorePlayer extends GlobalCorePlayer {
 
     long getMuteTime();
 

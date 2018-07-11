@@ -10,17 +10,22 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import eu.mcone.coresystem.api.bungee.CorePlugin;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
-import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
+import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
+import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
-import eu.mcone.coresystem.api.core.translation.TranslationField;
+import eu.mcone.coresystem.api.core.player.PlayerSettings;
+import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.bungee.command.*;
 import eu.mcone.coresystem.bungee.friend.FriendSystem;
 import eu.mcone.coresystem.bungee.listener.*;
-import eu.mcone.coresystem.bungee.player.CoinsAPI;
+import eu.mcone.coresystem.bungee.player.BungeeOfflineCorePlayer;
+import eu.mcone.coresystem.bungee.player.CoinsUtil;
 import eu.mcone.coresystem.bungee.player.NickManager;
 import eu.mcone.coresystem.bungee.runnable.Broadcast;
 import eu.mcone.coresystem.bungee.runnable.OnlineTime;
 import eu.mcone.coresystem.bungee.runnable.PremiumCheck;
+import eu.mcone.coresystem.bungee.utils.ChannelHandler;
 import eu.mcone.coresystem.bungee.utils.PreferencesManager;
 import eu.mcone.coresystem.bungee.utils.TeamspeakVerifier;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
@@ -46,7 +51,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private static BungeeCoreSystem system;
     @Getter
-    private static boolean cloudsystemAvailable;
+    private boolean cloudsystemAvailable;
 
     private Map<String, CorePlugin> plugins;
 
@@ -65,9 +70,11 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private TeamspeakVerifier teamspeakVerifier = null;
     @Getter
-    private CoinsAPI coinsAPI;
+    private ChannelHandler channelHandler;
     @Getter
     private PlayerUtils playerUtils;
+    @Getter
+    private CoinsUtil coinsUtil;
     @Getter
     private LabyModAPI labyModAPI;
     @Getter
@@ -76,7 +83,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private MySQL database;
     @Getter
-    private Map<UUID, BungeeCorePlayer> corePlayers;
+    private Map<UUID, CorePlayer> corePlayers;
 
     public void onEnable() {
         system = this;
@@ -96,21 +103,22 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "  /_____/\\__,_/_/ /_/\\__, /\\___/\\___/\\____/\\____/_/   \\___/____/\\__, /____/\\__/\\___/_/ /_/ /_/ \n" +
                 "                    /____/                                     /____/\n")));
 
+        gson = new GsonBuilder().setPrettyPrinting().create();
+
         sendConsoleMessage("§aInitializing MariaDB Connections...");
         createTables(database = new MySQL(Database.SYSTEM));
 
         cooldownSystem = new CooldownSystem();
+        channelHandler = new ChannelHandler();
         preferences = new PreferencesManager(database);
         playerUtils = new PlayerUtils(database);
-        coinsAPI = new CoinsAPI(this);
-        gson = new GsonBuilder().setPrettyPrinting().create();
+        coinsUtil = new CoinsUtil(this);
 
         cloudsystemAvailable = checkIfCloudSystemAvailable();
         sendConsoleMessage("§7CloudSystem available: "+cloudsystemAvailable);
 
         sendConsoleMessage("§aLoading Translations...");
-        translationManager = new TranslationManager(database);
-        registerTranslations();
+        translationManager = new TranslationManager(database, this);
 
         sendConsoleMessage("§aLoading Permissions & Groups...");
         permissionManager = new PermissionManager("Proxy", database, gson);
@@ -138,15 +146,16 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         loadSchedulers();
 
         sendConsoleMessage("§aRegistering Plugin Messaging Channel...");
-        getProxy().registerChannel("Return");
+        getProxy().registerChannel("MC_ONE_RETURN");
+        getProxy().registerChannel("MC_ONE_INFO");
 
         sendConsoleMessage("§aVersion: §f" + this.getDescription().getVersion() + "§a enabled!");
     }
 
     public void onDisable() {
         if (teamspeakVerifier != null) teamspeakVerifier.close();
-        for (ProxiedPlayer p : getProxy().getPlayers()) {
-            database.update("UPDATE userinfo SET status='offline' WHERE uuid='" + p.getUniqueId() + "'");
+        for (CorePlayer p : getOnlineCorePlayers()) {
+            ((eu.mcone.coresystem.core.player.GlobalCorePlayer) p).setState(PlayerState.OFFLINE);
         }
 
         database.close();
@@ -217,169 +226,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         getProxy().getPluginManager().registerListener(this, new PluginMessage());
     }
 
-    private void registerTranslations() {
-        translationManager.insertIfNotExists(
-                new HashMap<String, TranslationField>() {{
-                    //Prefix
-                    put("system.prefix", new TranslationField("§8[§7§l!§8]§f System §8» §7"));
-                    put("system.prefix.server", new TranslationField("§8[§7§l!§8]§f Server §8» §7"));
-                    put("system.prefix.party", new TranslationField("§8[§7§l!§8] §5Party §8» §7"));
-                    put("system.prefix.friend", new TranslationField("§8[§7§l!§8] §9Freunde §8» §7"));
-
-                    //Error
-                    put("system.error", new TranslationField("§4Es ist ein Fehler aufgetreten."));
-
-                    //Server
-                    put("system.server.lobby", new TranslationField("§7Du wirst zur §fLobby §7gesendet."));
-                    put("system.server.alreadyonthisserver", new TranslationField("§4Du befindest dich bereits auf diesem Server!"));
-
-                    //Command
-                    put("system.command.noperm", new TranslationField("§4Du hast keine Berechtigung für diesen Befehl!"));
-                    put("system.command.wronguse", new TranslationField("§4Diese Befehlsstruktur existiert nicht!"));
-                    put("system.command.consolesender", new TranslationField("§4Nur ein Spieler kann diesen Befehl ausführen!"));
-
-                    //Player
-                    put("system.player.notonline", new TranslationField("§4Dieser Spieler ist nicht online!"));
-
-                    //ProxyPing-Wartung
-                    put("system.bungee.ping", new TranslationField(
-                            "§f§lMCONE.EU §3Minigamenetzwerk §8» §f§lMC 1.12 §7§o[1.8 PVP]" +
-                                    "\n§7§oDein Nummer 1 Minecraftnetzwerk"
-                    ));
-                    put("system.bungee.ping.maintenance", new TranslationField(
-                            "§f§lMCONE.EU §3Minigamenetzwerk §8» §f§lMC 1.12 §7§o[1.8 PVP]" +
-                                    "\n§4§oWir führen gerade Wartungsarbeiten durch."
-                    ));
-                    put("system.bungee.ping.outdated", new TranslationField(
-                            "§f§lMCONE.EU §3Minigamenetzwerk §8» §c§lMC 1.12 §7§o[1.8 PVP]" +
-                                    "\n§f§oWir empfehlen LabyMod für 1.12 (mcone.eu/launcher)!"
-                    ));
-                    put("system.bungee.ping.cracked", new TranslationField(
-                            "§f§lMCONE.EU §3Minigamenetzwerk §8» §f§lMC 1.12 §7§o[Online]" +
-                                    "\n§4Du benutzt keinen gekauften Minecraftaccount!"
-                    ));
-
-                    //Post-Login
-                    put("system.bungee.kick.maintenance", new TranslationField(
-                            "§f§lMC ONE §3Minecraftnetzwerk" +
-                                    "\n§4§oWir führen gerade Wartungsarbeiten durch" +
-                                    "\n§r" +
-                                    "\n§7Mehr Infos findest du auf §fstatus.mcone.eu§7."
-                    ));
-
-                    //Restart
-                    put("system.bungee.kick.restart", new TranslationField(
-                            "\u00A7f\u00A7lMC ONE\u00A7r \u00A73Minecraftnetzwerk\n\u00A77\u00A7r" +
-                                    "\n\u00A77Der Netzwerk Server startet neu.\u00A7r" +
-                                    "\n\u00A77\u00A7oDies sollte nicht l\u00E4nger als ein paar Sekunden dauern."
-                    ));
-
-                    //Chat
-                    put("system.bungee.chat.filter", new TranslationField("§4Bitte achte auf deine Ausdrucksweise!"));
-                    put("system.bungee.chat.private.dontsee", new TranslationField("§2Du hast private Nachrichten deaktiviert!"));
-                    put("system.bungee.chat.private.see", new TranslationField("§2Du hast private Nachrichten wieder aktiviert!"));
-                    put("system.bungee.chat.private.fromme", new TranslationField("§8[§7§l!§8] §fMSG §8| §3Du §7-> §f%Msg-Target% §8» §7"));
-                    put("system.bungee.chat.private.tome", new TranslationField("§8[§7§l!§8] §fMSG §8| §f%Msg-Player% §7-> §3Dir §8» §7"));
-                    put("system.bungee.chat.team", new TranslationField("§8[§7§l!§8] §fTeamchat §8| %playername% §8» §7"));
-
-                    //Commands
-                    put("system.bungee.command.premium", new TranslationField(
-                            "§8§m----------------§r§8§m| §6Premium §8§m|----------------" +
-                                    "\n§7Du möchtest uns unterstützen und dir dafür ein paar ingame Coins verdienen? Dann ist der §6Premium §7oder §6Premium+ §7Rang auf MC ONE die richtige Wahl." +
-                                    "\n%button%" +
-                                    "\n§8§m----------------§r§8§m| §6Premium §8§m|----------------"
-                    ));
-                    put("system.bungee.command.bug", new TranslationField(
-                            "§8§m----------------§r§8§m| §cBug §8§m|----------------" +
-                                    "\n§7Du hast einen §cBug §7gefunden und möchtest uns helfen in zu fixen?" +
-                                    "\n%button%" +
-                                    "\n§8§m----------------§r§8§m| §cBug §8§m|----------------"
-                    ));
-                    put("system.bungee.command.yt", new TranslationField(
-                            "§8§m----------------§r§8§m| §5Youtuber §8§m|----------------" +
-                                    "\n§7Für den YouTuber Rang benötigst du mindestens §52 Tausend §7Abonennten. Für alle weiteren Infos und Vereinbarungen stehen dir die Admins zu Verfügung. Um den YouTuber Rang behalten zu dürfen musst du abhängig von deiner Abonenntenzahl §5Lets Plays auf MC ONE hochladen§7. " +
-                                    "\n§r" +
-                                    "\n§7Falls du die Anforderungen nicht erfüllst steht dir der §6Premium+ §7Rang ab 500 Abos kostenlos zu Verfügung." +
-                                    "\n§r" +
-                                    "\n%button%" +
-                                    "\n§8§m----------------§r§8§m| §5Youtuber §8§m|----------------"
-                    ));
-                    put("system.bungee.command.vote", new TranslationField(
-                            "§8§m----------------§r§8§m| §5Vote §8§m|----------------" +
-                                    "\n§7Für ein Vote erhälst du §620 §7Coins." +
-                                    "\n%button%" +
-                                    "\n§8§m----------------§r§8§m| §5Vote §8§m|----------------"
-                    ));
-                    put("system.bungee.command.apply", new TranslationField(
-                            "§8§m----------------§r§8§m| §fBewerben §8§m|----------------" +
-                                    "\n§7Wir suchen im Moment Bewerber aus den Bereichen §b§lEntwicklung§7, §e§lBuilding§7 und §2§lSupporting§7." +
-                                    "\n%button%" +
-                                    "\n§8§m----------------§r§8§m| §fBewerben §8§m|----------------"
-                    ));
-                    put("system.bungee.command.ts", new TranslationField(
-                            "§8§m----------------§r§8| §3Teamspeak §8§m|----------------" +
-                                    "\n§7Unseren TeamSpeak erreichst du über die IP §fts.mcone.eu§7." +
-                                    "\n%button%" +
-                                    "\n§8§m----------------§r§8| §3Teamspeak §8§m|----------------"));
-                    put("system.bungee.command.team", new TranslationField(
-                            "§8§m----------------§r§8| §bTeam §8§m|----------------" +
-                                    "\n§7Unsere aktuellen Teammitglieder findest du auf unserer Homepage" +
-                                    "\n%button%" +
-                                    "\n§8§m----------------§r§8| §bTeam §8§m|----------------"
-                    ));
-                    put("system.bungee.command.rules", new TranslationField(
-                            "§8§m----------------§r§8| §cRegeln §8§m|----------------" +
-                                    "\n§7Mit dem Spielen auf MC ONE akzeptierst du unsere Regeln " +
-                                    "\nund erklärst dich damit einverstanden sie einzuhalten!" +
-                                    "\n%button%" +
-                                    "\n§8§m----------------§r§8| §cRegeln §8§m|----------------"
-                    ));
-                    put("system.bungee.command.help", new TranslationField(
-                            "§8§m----------------|§r §f§lMC ONE §3Hilfe §8§m|----------------" +
-                                    "\n§7» §f/friends §8- §7Verwalte deine Freunde auf MC ONE" +
-                                    "\n§7» §f/party §8- §7Erstelle deine Party mit deinen Freunden" +
-                                    "\n§7» §f/msg §8- §7Schreibe anderen Spielern Privatnachrichten" +
-                                    "\n§7» §f/lobby §8- §7Teleportiert dich zurück zur Lobby Spielmodiauswahl" +
-                                    "\n§7» §f/report §8- §7Reporte Spieler die gegen unsere Regeln verstoßen" +
-                                    "\n§7» §f/regeln §8- §7Hier findest du den Link zu unseren Regeln" +
-                                    "\n§7» §f/vote §8- §7Mit deisem Befehl kannst du für MC ONE Voten" +
-                                    "\n§7» §f/register §8- §7Registriert dich auf der MC ONE Homepage" +
-                                    "\n§7» §f/forgotpass §8- §7Lässt dich dein Passwort auf der Homepage ändern" +
-                                    "\n§8§m----------------|§r §f§lMC ONE §3Hilfe §8§m|----------------"
-                    ));
-
-                    //Broadcast
-                    put("system.bungee.broadcast1", new TranslationField("" +
-                            "\n§8[§7§l!§8] §7Du möchtest als §a§lSupporter§7, §e§lBuilder§7 oder §b§lDeveloper§7" +
-                            "\n§8[§7§l!§8] §7 dem Team beitreten?" +
-                            "\n§8[§7§l!§8] §7Dann bewirb dich über unsere Homepage!" +
-                            "\n§8[§7§l!§8] §7Alle Infos über §f/bewerben" +
-                            "\n"));
-                    put("system.bungee.broadcast2", new TranslationField("" +
-                            "\n§8[§7§l!§8] §7Bleibe immer auf dem neuesten Stand über unsere Homepage" +
-                            "\n§8[§7§l!§8] §fhttps://www.mcone.eu" +
-                            "\n§8[§7§l!§8] §7Registriere dich um Blog Posts liken und kommentieren zu" +
-                            "\n§8[§7§l!§8] §7können. §3/register" +
-                            "\n"));
-                    put("system.bungee.broadcast3", new TranslationField("" +
-                            "\n§8[§7§l!§8] §7Du hast einen Spieler gesehen der gegen die Regeln" +
-                            "\n§8[§7§l!§8] §7verstößt?" +
-                            "\n§8[§7§l!§8] §7Reporte ihn mit §c/report" +
-                            "\n"));
-                    put("system.bungee.broadcast4", new TranslationField("" +
-                            "\n§8[§7§l!§8] §7Mit dem Betreten des MC ONE Netzwerks akzeptierst" +
-                            "\n§8[§7§l!§8] §7du unsere Regeln." +
-                            "\n§8[§7§l!§8] §7Alle Infos dazu findest du auf §3https://www.mcone.eu/regeln" +
-                            "\n"));
-                    put("system.bungee.broadcast5", new TranslationField("" +
-                            "\n§8[§7§l!§8] §7Supporte uns auf allen bekannten sozialen Netzwerken" +
-                            "\n§8[§7§l!§8] §7mit dem Nutzernamen §f@mconeeu" +
-                            "\n§8[§7§l!§8] §b§lTwitter§7, §9§lFacebook§7 oder §c§lYouTube" +
-                            "\n"));
-                }}
-        );
-    }
-
     private void createTables(MySQL mysql) {
         mysql.update("CREATE TABLE IF NOT EXISTS `userinfo` " +
                 "( " +
@@ -387,16 +233,16 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "`uuid` varchar(100) NOT NULL UNIQUE KEY, " +
                 "`name` varchar(20) NOT NULL, " +
                 "`groups` varchar(20), " +
-                "`coins` int(100), " +
+                "`coins` int(100) NOT NULL, " +
                 "`about` varchar(500), " +
-                "`status` varchar(200), " +
+                "`state` int(10) NOT NULL, " +
                 "`email` varchar(100), " +
                 "`ip` varchar(100), " +
                 "`timestamp` varchar(100), " +
                 "`password` varchar(100), " +
                 "`onlinetime` int(10) NOT NULL DEFAULT '0', " +
                 "`teamspeak_uid` varchar(100), " +
-                "`player_settings` varchar(1000) NOT NULL DEFAULT '{\"enableFriendRequests\":true, \"acceptedAgbs\":false, \"language\":\"GERMAN\", \"privateMessages\": \"FRIENDS\", \"partyInvites\":\"ALL\"}'" +
+                "`player_settings` varchar(1000) NOT NULL DEFAULT '"+gson.toJson(new PlayerSettings(), PlayerSettings.class)+"'" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         mysql.update("CREATE TABLE IF NOT EXISTS `permissions` " +
@@ -412,6 +258,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "(" +
                 "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
                 "`key` varchar(100) NOT NULL UNIQUE KEY, " +
+                "`category` varchar(20), " +
                 "`DE` varchar(2000), " +
                 "`EN` varchar(2000), " +
                 "`FR` varchar(2000)" +
@@ -522,8 +369,9 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_teamspeak_icons` " +
                 "(" +
                 "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                "`uuid` varchar(100), " +
-                "`icon_id` varchar(100)" +
+                "`uuid` varchar(100) NOT NULL UNIQUE KEY, " +
+                "`icon_id` varchar(100) NOT NULL, " +
+                "`bytes` longblob NOT NULL" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
     }
 
@@ -548,16 +396,16 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         return null;
     }
 
-    public BungeeCorePlayer getCorePlayer(ProxiedPlayer p) {
+    public CorePlayer getCorePlayer(ProxiedPlayer p) {
         return corePlayers.getOrDefault(p.getUniqueId(), null);
     }
 
-    public BungeeCorePlayer getCorePlayer(UUID uuid) {
+    public CorePlayer getCorePlayer(UUID uuid) {
         return corePlayers.getOrDefault(uuid, null);
     }
 
-    public BungeeCorePlayer getCorePlayer(String name) {
-        for (BungeeCorePlayer p : corePlayers.values()) {
+    public CorePlayer getCorePlayer(String name) {
+        for (CorePlayer p : corePlayers.values()) {
             if (p.getName().equals(name)) return p;
         }
         return null;
@@ -568,8 +416,13 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         return getCorePlayer(uuid);
     }
 
-    public Collection<BungeeCorePlayer> getOnlineCorePlayers() {
+    public Collection<CorePlayer> getOnlineCorePlayers() {
         return corePlayers.values();
+    }
+
+    @Override
+    public OfflineCorePlayer getOfflineCorePlayer(String name) throws PlayerNotResolvedException {
+        return new BungeeOfflineCorePlayer(this, name);
     }
 
     @Override

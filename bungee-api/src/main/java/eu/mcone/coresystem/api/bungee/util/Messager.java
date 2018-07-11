@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.api.bungee.util;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
-import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.translation.Language;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -59,7 +59,7 @@ public final class Messager {
      * @param translation translation name/key
      */
     public void sendTransl(final ProxiedPlayer player, String... translation) {
-        BungeeCorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
+        CorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
         StringBuilder sb = new StringBuilder(CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, cp));
         for (String s : translation) {
             sb.append(CoreSystem.getInstance().getTranslationManager().get(s, cp));

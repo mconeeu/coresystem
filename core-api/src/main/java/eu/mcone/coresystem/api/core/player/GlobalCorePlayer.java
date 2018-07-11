@@ -44,6 +44,31 @@ public interface GlobalCorePlayer {
     long getOnlinetime();
 
     /**
+     * returns the amount of coins that the player has
+     * @return players coins amount
+     */
+    int getCoins();
+
+    /**
+     * sets the given coin amount
+     * @param coins amount
+     */
+    void setCoins(int coins);
+
+    /**
+     * adds the given amount to the players coins
+     * @param amount amount
+     */
+    void addCoins(int amount);
+
+    /**
+     * removes the given amount from the players coins
+     * if wished amount subtracted from his current is smaller than 0 it will be set to 0
+     * @param amount amount
+     */
+    void removeCoins(int amount);
+
+    /**
      * get players permissions
      * @return permission set
      */
@@ -60,6 +85,20 @@ public interface GlobalCorePlayer {
      * reload permissions from PermissionManager
      */
     void reloadPermissions();
+
+    /**
+     * adds the player a specific permission
+     * this permission gets removed after the PermissionManager or the players permissions get reloaded
+     * @param permission permission String
+     */
+    void addSemiPermission(String permission);
+
+    /**
+     * removes either a normal or a semi permission
+     * if its a normal permission, it gets added after the PermissionManager or the players permissions get reloaded
+     * @param permission permission String
+     */
+    void removeSemiPermission(String permission);
 
     /**
      * returns the players main group
@@ -102,6 +141,12 @@ public interface GlobalCorePlayer {
      * @return player settings
      */
     PlayerSettings getSettings();
+
+    /**
+     * returns the current PlayerState
+     * @return state
+     */
+    PlayerState getState();
 
     /**
      * updates the set changes to the playerSettings on both bungee & bukkit

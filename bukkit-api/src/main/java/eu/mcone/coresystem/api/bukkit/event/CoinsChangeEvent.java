@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.api.bukkit.event;
 
-import eu.mcone.coresystem.api.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import lombok.Getter;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -15,9 +15,9 @@ public final class CoinsChangeEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
     @Getter
-    private final BukkitCorePlayer player;
+    private final CorePlayer player;
 
-    public CoinsChangeEvent(BukkitCorePlayer p) {
+    public CoinsChangeEvent(CorePlayer p) {
         this.player = p;
     }
 

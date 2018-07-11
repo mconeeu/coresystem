@@ -6,11 +6,12 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
-import eu.mcone.coresystem.bungee.player.OfflinePlayer;
+import eu.mcone.coresystem.bungee.player.BungeeOfflineCorePlayer;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -25,7 +26,7 @@ public class WhoisCMD extends Command {
     public void execute(CommandSender sender, String[] args) {
         if (args.length == 1) {
             try {
-                OfflinePlayer p = new OfflinePlayer(args[0]).loadPermissions().loadBanData();
+                OfflineCorePlayer p = new BungeeOfflineCorePlayer(BungeeCoreSystem.getSystem(), args[0]).loadPermissions().loadBanData();
                 ProxiedPlayer pp = ProxyServer.getInstance().getPlayer(args[0]);
                 StringBuilder message = new StringBuilder();
 
@@ -35,7 +36,7 @@ public class WhoisCMD extends Command {
                 }
 
                 String permInfo = "§2Hier ein paar Infos über §a" + p.getName() + "§2:" +
-                        "\n§8» §7Status: §f" + p.getStatus() +
+                        "\n§8» §7Status: §f" + p.getState().getName() +
                         "\n" +
                         "\n§8» §7UUID: §f" + p.getUuid() +
                         "\n§8» §7Gruppen: " + groups.toString() +

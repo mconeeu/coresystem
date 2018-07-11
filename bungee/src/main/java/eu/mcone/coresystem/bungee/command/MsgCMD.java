@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
-import eu.mcone.coresystem.api.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
@@ -32,7 +32,7 @@ public class MsgCMD extends Command implements TabExecutor {
 
     public void execute(final CommandSender sender, final String[] args) {
         if (sender instanceof ProxiedPlayer) {
-            final BungeeCorePlayer p = CoreSystem.getInstance().getCorePlayer((ProxiedPlayer) sender);
+            final CorePlayer p = CoreSystem.getInstance().getCorePlayer((ProxiedPlayer) sender);
             if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUuid())) return;
 
             if (args.length < 1) {
@@ -50,7 +50,7 @@ public class MsgCMD extends Command implements TabExecutor {
                     BungeeCoreSystem.getInstance().getMessager().send(p.bungee(), BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.dontsee"));
                 }
             } else {
-                final BungeeCorePlayer t = BungeeCoreSystem.getInstance().getCorePlayer(args[0]);
+                final CorePlayer t = BungeeCoreSystem.getInstance().getCorePlayer(args[0]);
                 if (t != null) {
                     if (!p.equals(t)) {
                         if (!t.getFriendData().getBlocks().contains(p.getUuid())) {

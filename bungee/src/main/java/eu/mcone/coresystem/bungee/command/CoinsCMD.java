@@ -6,7 +6,10 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.api.core.player.CoinsAPI;
+import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
+import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
+import eu.mcone.coresystem.api.core.player.CoinsUtil;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -21,7 +24,7 @@ public class CoinsCMD extends Command{
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (sender instanceof ProxiedPlayer) {
-            CoinsAPI coinsAPI = BungeeCoreSystem.getInstance().getCoinsAPI();
+            CoinsUtil coinsAPI = BungeeCoreSystem.getInstance().getCoinsUtil();
 
             ProxiedPlayer p = (ProxiedPlayer) sender;
             if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
@@ -39,12 +42,7 @@ public class CoinsCMD extends Command{
                         BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/coins set <Spieler> <Anzahl>");
                     } else {
                         String name = args[0];
-                        if (coinsAPI.isRegistered(name)) {
-                            int coins = coinsAPI.getCoins(name);
-                            BungeeCoreSystem.getInstance().getMessager().send(p, "§7Der Spieler §f" + name + "§7 hat momentan §a" + coins + " Coins!");
-                        } else {
-                            BungeeCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler war noch nie auf MC ONE");
-                        }
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§7Der Spieler §f" + name + "§7 hat momentan §a" + coinsAPI.getCoins(name) + " Coins!");
                     }
                 } else if (args.length == 2) {
                     if (args[0].equalsIgnoreCase("add")) {
@@ -59,34 +57,35 @@ public class CoinsCMD extends Command{
                 } else if (args.length == 3) {
                     if (args[0].equalsIgnoreCase("add")) {
                         String name = args[1];
-                        if (coinsAPI.isRegistered(name)) {
+                        try {
+                            OfflineCorePlayer o = CoreSystem.getInstance().getOfflineCorePlayer(name);
                             int coins = Integer.valueOf(args[2]);
-                            coinsAPI.addCoins(name, coins);
+
+                            o.addCoins(coins);
                             BungeeCoreSystem.getInstance().getMessager().send(p, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins§2 hinzugefügt");
-                        } else {
+                        } catch (PlayerNotResolvedException e) {
                             BungeeCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler war noch nie auf MC ONE");
                         }
                     } else if (args[0].equalsIgnoreCase("remove")) {
                         String name = args[1];
-                        if (coinsAPI.isRegistered(name)) {
+                        try {
+                            OfflineCorePlayer o = CoreSystem.getInstance().getOfflineCorePlayer(name);
                             int coins = Integer.valueOf(args[2]);
-                            int coins2 = coinsAPI.getCoins(p.getUniqueId());
-                            if (coins2 <= 0) {
-                                BungeeCoreSystem.getInstance().getMessager().send(p, " §4Du kannst dem Spieler §f" + name + " §4keine Coins mehr wegnehmen");
-                            } else {
-                                coinsAPI.removeCoins(name, coins);
-                                BungeeCoreSystem.getInstance().getMessager().send(p, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins §2abgezogen");
-                            }
-                        } else {
+
+                            o.removeCoins(coins);
+                            BungeeCoreSystem.getInstance().getMessager().send(p, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins §2abgezogen");
+                        } catch (PlayerNotResolvedException e) {
                             BungeeCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler war noch nie auf MC ONE");
                         }
                     } else if (args[0].equalsIgnoreCase("set")) {
                         String name = args[1];
-                        if (coinsAPI.isRegistered(name)) {
+                        try {
+                            OfflineCorePlayer o = CoreSystem.getInstance().getOfflineCorePlayer(name);
                             int coins = Integer.valueOf(args[2]);
-                            coinsAPI.setCoins(name, coins);
+
+                            o.setCoins(coins);
                             BungeeCoreSystem.getInstance().getMessager().send(p, "§f" + name + "§2 hat nun §a" + coins + " Coins§2!");
-                        } else {
+                        } catch (PlayerNotResolvedException e) {
                             BungeeCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler war noch nie auf MC ONE");
                         }
                     } else {

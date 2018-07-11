@@ -6,8 +6,10 @@
 
 package eu.mcone.coresystem.api.bukkit.inventory;
 
+import org.bukkit.event.inventory.InventoryClickEvent;
+
 public interface CoreItemEvent {
 
-    void onClick();
+    void onClick(InventoryClickEvent e);
 
 }
