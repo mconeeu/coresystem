@@ -10,7 +10,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.config.YAML_Config;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
@@ -127,9 +126,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         channelHandler = new ChannelHandler();
         playerUtils = new PlayerUtils(mysql1);
         gson = new GsonBuilder().setPrettyPrinting().create();
-
-        YAML_Config config = new YAML_Config(this, "test.yml");
-        config.save();
 
         cloudsystemAvailable = checkIfCloudSystemAvailable();
         sendConsoleMessage("§7CloudSystem available: "+cloudsystemAvailable);
