@@ -74,7 +74,7 @@ class PlayerSettingsInventory extends CoreInventory {
         });
 
         setItem(InventorySlot.ROW_2_SLOT_6, new ItemBuilder(Material.PAPER).displayName("§f§lPrivate Nachrichten erhalten").create());
-        setItem(InventorySlot.ROW_3_SLOT_6, getSenderItem(cp.getSettings().getPrivateMessages()).lore("§7§oKlicke zum ändern").create(), e -> {
+        setItem(InventorySlot.ROW_3_SLOT_6, getSenderItem(cp.getSettings().getPrivateMessages()).lore("§7§oKlicke um auszuwählen von wem", "§7§odu private Nachrichten erhalten", "§7möchtest.").create(), e -> {
             switch (cp.getSettings().getPrivateMessages()) {
                 case ALL: cp.getSettings().setPrivateMessages(PlayerSettings.Sender.FRIENDS); break;
                 case FRIENDS: cp.getSettings().setPrivateMessages(PlayerSettings.Sender.NOBODY); break;
@@ -86,7 +86,7 @@ class PlayerSettingsInventory extends CoreInventory {
         });
 
         setItem(InventorySlot.ROW_2_SLOT_7, new ItemBuilder(Material.CAKE).displayName("§f§lPartyanfragenanfragen erhalten").create());
-        setItem(InventorySlot.ROW_3_SLOT_7, getSenderItem(cp.getSettings().getPrivateMessages()).lore("§7§oKlicke zum ändern").create(), e -> {
+        setItem(InventorySlot.ROW_3_SLOT_7, getSenderItem(cp.getSettings().getPartyInvites()).lore("§7§oKlicke um auszuwählen von wem", "§7§odu Partyanfragen erhalten", "§7möchtest.").create(), e -> {
             switch (cp.getSettings().getPartyInvites()) {
                 case ALL: cp.getSettings().setPartyInvites(PlayerSettings.Sender.FRIENDS); break;
                 case FRIENDS: cp.getSettings().setPartyInvites(PlayerSettings.Sender.NOBODY); break;

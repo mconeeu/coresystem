@@ -8,6 +8,7 @@ package eu.mcone.coresystem.api.bukkit.scoreboard;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.core.util.Random;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -19,7 +20,6 @@ import java.util.Map;
 
 public abstract class CoreScoreboard {
 
-    private String teamName;
     private Map<DisplaySlot, CoreObjective> objectives;
 
     @Getter
@@ -36,7 +36,6 @@ public abstract class CoreScoreboard {
 
     public CoreScoreboard set(CoreSystem instance, CorePlayer player) {
         this.player = player;
-        this.teamName = "sb-"+ player.getUuid()+"-";
         reload(instance);
 
         return this;
@@ -50,7 +49,7 @@ public abstract class CoreScoreboard {
      */
     public void reload(CoreSystem instance) {
         for (CorePlayer p : instance.getOnlineCorePlayers()) {
-            Team team = scoreboard.getTeam(p.getName()) != null ? scoreboard.getTeam(p.getName()) : scoreboard.registerNewTeam(p.getName());
+            Team team = scoreboard.registerNewTeam(p.getMainGroup().getScore()+new Random(6).nextString());
             team = modifyTeam(this.player, p, team);
             team.addEntry(p.isNicked() ? p.getNickname() : p.getName());
         }

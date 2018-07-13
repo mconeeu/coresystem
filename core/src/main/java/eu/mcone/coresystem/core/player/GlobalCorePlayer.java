@@ -85,7 +85,7 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
             throw new PlayerNotResolvedException("Player uuid could not be resolved! (isNew = "+isNew+")");
         } else if (isNew) {
             ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a"+name+"§2 is new! Registering in Database...");
-            ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).update("INSERT INTO `userinfo` (`uuid`, `name`, `groups`, `coins`, `status`, `ip`, `timestamp`) VALUES ('" +  uuid + "', '" +  name + "', '[11]', 20, 'online', '" + ipAdress + "', '" +  System.currentTimeMillis() / 1000 + "')");
+            ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).update("INSERT INTO `userinfo` (`uuid`, `name`, `groups`, `coins`, `state`, `ip`, `timestamp`) VALUES ('" +  uuid + "', '" +  name + "', '[11]', 20, '"+PlayerState.ONLINE.getId()+"', '" + ipAdress + "', '" +  System.currentTimeMillis() / 1000 + "')");
         }
     }
 
