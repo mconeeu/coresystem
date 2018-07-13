@@ -25,8 +25,8 @@ public class YAML_Config {
     public YAML_Config(CorePlugin plugin, String fileName) {
         this.pluginName = plugin.getPluginName();
         this.fileName = fileName;
-        File dir = new File("./plugins/" + plugin);
-        File file = new File("./plugins/" + plugin, fileName);
+        File dir = new File("./plugins/" + this.pluginName);
+        File file = new File("./plugins/" + this.pluginName, fileName);
         if (!dir.exists()) {
             dir.mkdir();
         }
@@ -46,8 +46,8 @@ public class YAML_Config {
         this.pluginName = plugin.getPluginName();
         this.fileName = fileName;
         this.path = path;
-        File dir = new File(path + plugin);
-        File file = new File(path + plugin, fileName);
+        File dir = new File(path + this.pluginName);
+        File file = new File(path + this.pluginName, fileName);
         if (!dir.exists()) {
             dir.mkdir();
         }
