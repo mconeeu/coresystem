@@ -100,10 +100,15 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
 
     public void updateNPC(String name, Location loc, String skinName, String displayname) {
         if (npcs.containsKey(name)) {
+            NPC oldNPC = npcs.get(name);
             NpcData data = new NpcData(name, displayname, skinName, new CoreLocation(loc));
 
             NPC npc = new NPC(data);
-            npc.setLocal(npcs.get(name).isLocal());
+            npc.setLocal(oldNPC.isLocal());
+
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                oldNPC.unset(p);
+            }
 
             if (!npc.isLocal()) {
                 BukkitCoreWorld w = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(data.getLocation().getWorldName());

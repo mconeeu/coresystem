@@ -10,6 +10,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 
+@Deprecated
 public class TextComponent {
 
     private net.md_5.bungee.api.chat.TextComponent textComponent;

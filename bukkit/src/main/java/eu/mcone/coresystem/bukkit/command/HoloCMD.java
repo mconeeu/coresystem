@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.hologram.HologramManager;
 import org.bukkit.command.Command;
@@ -13,7 +14,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class HoloCMD implements CommandExecutor{
+public class HoloCMD implements CommandExecutor {
 
     private HologramManager api;
 
@@ -30,14 +31,18 @@ public class HoloCMD implements CommandExecutor{
             if (p.hasPermission("system.bukkit.holo")) {
                 if (args.length >= 3) {
                     if (args[0].equalsIgnoreCase("add")) {
-                        StringBuilder line = new StringBuilder();
-                        for (int i = 2; i < args.length; i++) {
-                            line.append(args[i]);
-                            if (i < args.length-1) line.append(" ");
-                        }
+                        if (!api.getHolograms().containsKey(args[1])) {
+                            StringBuilder line = new StringBuilder();
+                            for (int i = 2; i < args.length; i++) {
+                                line.append(args[i]);
+                                if (i < args.length - 1) line.append(" ");
+                            }
 
-                        api.addHologram(args[1], p.getLocation(), line.toString().replaceAll("&", "§"));
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Hologramm §f" + args[1] + "§2 erfolgreich hinzugefügt!");
+                            api.addHologram(args[1], p.getLocation(), line.toString().replaceAll("&", "§"));
+                            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Hologramm §f" + args[1] + "§2 erfolgreich hinzugefügt!");
+                        } else {
+                            CoreSystem.getInstance().getMessager().send(p, "§4Ein Hologramm mit diesem Namen existiert bereits!");
+                        }
                         return true;
                     }
                 } else if (args.length == 2) {
