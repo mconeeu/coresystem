@@ -73,7 +73,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
     @Override
     public void setScoreboard(CoreScoreboard sb) {
         if (this.scoreboard != null) scoreboard.unregister();
-        this.scoreboard = sb.set(BukkitCoreSystem.getInstance(), this);
+        this.scoreboard = sb.set(this);
     }
 
     @Override

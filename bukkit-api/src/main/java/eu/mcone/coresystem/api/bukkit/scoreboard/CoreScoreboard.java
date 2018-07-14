@@ -34,9 +34,9 @@ public abstract class CoreScoreboard {
         this.objectives = new HashMap<>();
     }
 
-    public CoreScoreboard set(CoreSystem instance, CorePlayer player) {
+    public CoreScoreboard set(CorePlayer player) {
         this.player = player;
-        reload(instance);
+        reload();
 
         return this;
     }
@@ -45,10 +45,9 @@ public abstract class CoreScoreboard {
 
     /**
      * reload the set scoreboard values
-     * @param instance CoreSystem instance
      */
-    public void reload(CoreSystem instance) {
-        for (CorePlayer p : instance.getOnlineCorePlayers()) {
+    public void reload() {
+        for (CorePlayer p : CoreSystem.getInstance().getOnlineCorePlayers()) {
             Team team = scoreboard.registerNewTeam(p.getMainGroup().getScore()+new Random(6).nextString());
             team = modifyTeam(this.player, p, team);
             team.addEntry(p.isNicked() ? p.getNickname() : p.getName());

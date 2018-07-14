@@ -79,7 +79,7 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
                 connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ((CraftPlayer) player).getHandle()));
                 connection.sendPacket(player != p ? new PacketPlayOutNamedEntitySpawn(((CraftPlayer) p).getHandle()) : new PacketPlayOutRespawn(p.getEntityId(), EnumDifficulty.EASY, ep.world.G(), ep.playerInteractManager.getGameMode()));
 
-                instance.getCorePlayer(p).getScoreboard().reload(BukkitCoreSystem.getInstance());
+                instance.getCorePlayer(p).getScoreboard().reload();
             }
         }
     }
@@ -156,12 +156,12 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
             }
             for (Player player : canSee) {
                 player.showPlayer(p);
-                instance.getCorePlayer(player).getScoreboard().reload(BukkitCoreSystem.getInstance());
+                instance.getCorePlayer(player).getScoreboard().reload();
             }
         });
 
         p.setDisplayName(name);
-        instance.getCorePlayer(p).getScoreboard().reload(BukkitCoreSystem.getInstance());
+        instance.getCorePlayer(p).getScoreboard().reload();
         CoreSystem.getInstance().createTitle().subTitle("§2§oDu bist nun genickt!").send(p);
     }
 

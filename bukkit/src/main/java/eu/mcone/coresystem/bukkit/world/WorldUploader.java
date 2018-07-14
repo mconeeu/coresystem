@@ -6,9 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.world;
 
-import com.google.gson.Gson;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import eu.mcone.coresystem.api.bukkit.world.WorldProperties;
 import eu.mcone.coresystem.api.core.util.Zip;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.World;
@@ -17,9 +15,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 class WorldUploader {
 
@@ -52,17 +47,16 @@ class WorldUploader {
             if (rs.next()) {
                 build = rs.getInt("build");
 
-                send = con.prepareStatement("UPDATE mc1cloud.cloudwrapper_worlds SET build=?, `name`=?, `template_name`=?, bytes=? WHERE `name`='" + world.getName() + "'");
+                send = con.prepareStatement("UPDATE mc1cloud.cloudwrapper_worlds SET build=?, `name`=?, bytes=? WHERE `name`='" + world.getName() + "'");
             } else {
-                send = con.prepareStatement("INSERT INTO mc1cloud.cloudwrapper_worlds (build, `name`, template_name, bytes) VALUES (?, ?, ?, ?)");
+                send = con.prepareStatement("INSERT INTO mc1cloud.cloudwrapper_worlds (build, `name`, bytes) VALUES (?, ?, ?)");
             }
 
             FileInputStream fis = new FileInputStream(zipFile);
 
             send.setInt(1, ++build);
             send.setString(2, world.getName());
-            send.setString(3, world.getTemplateName());
-            send.setBytes(4, IOUtils.toByteArray(fis));
+            send.setBytes(3, IOUtils.toByteArray(fis));
             send.executeUpdate();
 
             fis.close();

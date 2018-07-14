@@ -1,0 +1,8 @@
+.gitignore
+.idea/*
+bukkit-api/target/
+bukkit/target/
+bungee-api/target/
+bungee/target/
+core-api/target/
+core/target/

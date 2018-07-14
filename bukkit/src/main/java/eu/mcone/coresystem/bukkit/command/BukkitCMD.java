@@ -52,7 +52,7 @@ public class BukkitCMD implements CommandExecutor {
 
                 BukkitCoreSystem.getInstance().getMessager().send(sender, "§aScorebard wird neu geladen...");
                 for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
-                    cp.getScoreboard().reload(BukkitCoreSystem.getInstance());
+                    cp.getScoreboard().reload();
                 }
             } else if (args.length == 2) {
                 if (args[1].equalsIgnoreCase("tranlsations")) {
@@ -69,7 +69,7 @@ public class BukkitCMD implements CommandExecutor {
                 } else if (args[1].equalsIgnoreCase("scoreboard")) {
                     BukkitCoreSystem.getInstance().getMessager().send(sender, "§aScorebard wird neu geladen...");
                     for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
-                        cp.getScoreboard().reload(BukkitCoreSystem.getInstance());
+                        cp.getScoreboard().reload();
                     }
                 }
             }

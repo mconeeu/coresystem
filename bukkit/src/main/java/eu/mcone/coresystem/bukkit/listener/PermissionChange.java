@@ -53,7 +53,7 @@ public class PermissionChange implements Listener {
 
                 BukkitCoreSystem.getInstance().getMessager().send(p.bukkit(), "§7Deine Permissions wurden geändert! Du besitzt nun folgende Permissions-Gruppen: "+sb.toString());
                 for (CorePlayer player : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
-                    player.getScoreboard().reload(BukkitCoreSystem.getInstance());
+                    player.getScoreboard().reload();
                 }
             }
         }
