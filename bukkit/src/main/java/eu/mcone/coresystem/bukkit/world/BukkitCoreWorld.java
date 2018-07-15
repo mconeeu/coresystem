@@ -181,6 +181,7 @@ public class BukkitCoreWorld implements CoreWorld {
         }
     }
 
+    @Override
     public void purgeAnimals() {
         for (Entity entity : bukkit().getEntities()) {
             if (entity instanceof Squid || entity instanceof Animals) {
@@ -189,6 +190,7 @@ public class BukkitCoreWorld implements CoreWorld {
         }
     }
 
+    @Override
     public void purgeMonsters() {
         for (Entity entity : bukkit().getEntities()) {
             if (entity instanceof Slime || entity instanceof Monster || entity instanceof Ghast || entity instanceof EnderDragon) {

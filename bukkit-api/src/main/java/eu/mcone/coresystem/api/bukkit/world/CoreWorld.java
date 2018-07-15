@@ -217,9 +217,18 @@ public interface CoreWorld {
     /**
      * change the worlds name
      * @param name new name
-     * @return this
      */
     void changeName(String name);
+
+    /**
+     * purge all animals
+     */
+    void purgeAnimals();
+
+    /**
+     * purge all monsters
+     */
+    void purgeMonsters();
 
     /**
      * unloads the world from Bukkit

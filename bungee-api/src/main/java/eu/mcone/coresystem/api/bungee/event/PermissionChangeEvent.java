@@ -18,11 +18,11 @@ import java.util.Set;
 public final class PermissionChangeEvent extends Event {
 
     @Getter
-    private Kind kind;
+    private final Kind kind;
     @Getter
-    private CorePlayer player;
+    private final CorePlayer player;
     @Getter
-    private Set<Group> groups;
+    private final Set<Group> groups;
 
     public enum Kind {
         USER_PERMISSION,
@@ -33,6 +33,7 @@ public final class PermissionChangeEvent extends Event {
     public PermissionChangeEvent(Kind k, CorePlayer p) {
         this.kind = k;
         this.player = p;
+        this.groups = null;
     }
 
     public PermissionChangeEvent(Kind k, CorePlayer p, Set<Group> groups) {
@@ -43,6 +44,7 @@ public final class PermissionChangeEvent extends Event {
 
     public PermissionChangeEvent(Kind k, Group group) {
         this.kind = k;
+        this.player = null;
         this.groups = new HashSet<>(Collections.singletonList(group));
     }
 

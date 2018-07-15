@@ -7,20 +7,20 @@
 package eu.mcone.coresystem.api.bungee.event;
 
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
-import eu.mcone.coresystem.api.core.player.PlayerSettings;
+import eu.mcone.coresystem.api.core.translation.Language;
 import lombok.Getter;
 import net.md_5.bungee.api.plugin.Event;
 
-public final class PlayerSettingsChangeEvent extends Event {
+public class LanguageChangeEvent extends Event {
 
     @Getter
     private final CorePlayer player;
     @Getter
-    private final PlayerSettings settings;
+    private final Language language;
 
-    public PlayerSettingsChangeEvent(CorePlayer player, PlayerSettings settings) {
+    public LanguageChangeEvent(CorePlayer player, Language language) {
         this.player = player;
-        this.settings = settings;
+        this.language = language;
     }
 
 }

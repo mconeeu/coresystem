@@ -70,6 +70,11 @@ public class HologramManager implements Listener, eu.mcone.coresystem.api.bukkit
         }
     }
 
+    public void reload(Player p) {
+        unsetHolograms(p);
+        setHolograms(p);
+    }
+    
     public void addHologram(String name, Location loc, String line1) {
         addHologram(new HologramData(name, new CoreLocation(loc), new String[]{line1}));
     }

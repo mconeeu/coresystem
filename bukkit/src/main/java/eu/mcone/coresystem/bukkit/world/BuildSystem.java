@@ -11,6 +11,7 @@ import eu.mcone.coresystem.bukkit.command.BuildCMD;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,6 +19,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.*;
@@ -105,6 +107,12 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                             }
                         }
 
+                        @EventHandler
+                        public void on(PlayerInteractAtEntityEvent e) {
+                            if (e.getRightClicked().getType().equals(EntityType.ARMOR_STAND)) {
+                                e.setCancelled(true);
+                            }
+                        }
                     }, instance);
                     break;
                 }

@@ -99,6 +99,14 @@ public class PreLogin implements Listener {
 					p.unregister();
 				}
 			}
-		} catch (PlayerNotResolvedException ignored) {}
+		} catch (PlayerNotResolvedException ex) {
+        	e.setCancelled(true);
+        	e.setCancelReason(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
+					+ "\n§4§oTut uns leid! Es ist ein Fehler aufgetreten."
+					+ "\n§r"
+					+ "\n§7Wir konnten deine UUID wegen eines Datenbankfehlers nicht ermitteln!"
+					+ "\n§7Bitte melde diesen Fehler einem Teammitglied."
+			)));
+		}
 	}
 }

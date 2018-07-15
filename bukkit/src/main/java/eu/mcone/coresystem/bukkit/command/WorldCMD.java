@@ -102,81 +102,98 @@ public class WorldCMD implements CommandExecutor {
                     }
                 } else {
                     if (args.length == 2) {
-                        CoreWorld w = BukkitCoreSystem.getInstance().getWorldManager().getWorld(args[1]);
-
-                        if (w != null) {
-                            if (args[0].equalsIgnoreCase("tp")) {
-                                p.teleport(w.bukkit().getSpawnLocation());
-                                BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest zur Welt §a" + w.getName() + "§2 teleportiert!");
-
-                                return true;
-                            } else if (args[0].equalsIgnoreCase("info")) {
-                                World bw = w.bukkit();
-                                p.sendMessage("");
-                                BukkitCoreSystem.getInstance().getMessager().send(p, "§2Bitteschön, Ein paar Infos über die Welt §a" + args[1] + "§2:" +
-                                        "\n§7§oalias: §f" + w.getAlias() +
-                                        "\n§7§ospawn-location: §f" + bw.getSpawnLocation() +
-                                        "\n§7§oseed: §f" + bw.getSeed() +
-                                        "\n§7§otype: §f" + bw.getWorldType() +
-                                        "\n§7§oenvironment: §f" + bw.getEnvironment() +
-                                        "\n§7§odifficulty: §f" + bw.getDifficulty() +
-                                        "\n§7§ogenerator: §f" + w.getGenerator() +
-                                        "\n§7§ogeneratorSettings: §f" + w.getGeneratorSettings() +
-                                        "\n§7§ogenerateStructures: §f" + bw.canGenerateStructures() +
-                                        "\n§7§oautoSave: §f" + bw.isAutoSave() +
-                                        "\n§7§opvp: §f" + bw.getPVP() +
-                                        "\n§7§oallowAnimals: §f" + w.isAllowAnimals() +
-                                        "\n§7§oallowMonsters: §f" + w.isAllowMonsters() +
-                                        "\n§7§okeepSpawnInMemory: §f" + bw.getKeepSpawnInMemory() +
-                                        "\n§7§oloadOnStartup: §f" + w.isLoadOnStartup() +
-                                        "\n§7§otemplateName: §f" + w.getTemplateName()
-                                );
-
-                                return true;
-                            } else if (args[0].equalsIgnoreCase("upload")) {
-                                if (p.hasPermission("system.bukkit.world.upload")) {
-                                    BukkitCoreSystem.getInstance().getMessager().send(p, "§7Die Welt wird hochgeladen...");
-                                    BukkitCoreSystem.getInstance().sendConsoleMessage("Uploading world " + w.getName() + " to database. Initialized by " + p.getName());
-                                    for (Player player : Bukkit.getOnlinePlayers()) {
-                                        if (player.hasPermission("group.builder") && player != p)
-                                            BukkitCoreSystem.getInstance().getMessager().send(player, "§3" + p.getName() + "§7 lädt gerade die Welt §f" + w.getName() + "§7 in die Datenbank hoch...");
-                                    }
-
-                                    if (w.upload()) {
-                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Welt wurde erfolgreich abgespeichert und kann nun wieder modifiziert werden!");
-                                    } else {
-                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Es ist ein Fehler beim speichern der Welt aufgetreten!");
-                                    }
+                        if (args[0].equalsIgnoreCase("purge")) {
+                            if (p.hasPermission("system.bukkit.world.purge")) {
+                                if (args[1].equalsIgnoreCase("animals")) {
+                                    CoreSystem.getInstance().getCorePlayer(p).getWorld().purgeAnimals();
+                                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Es wurden alle Tiere in deiner Welt gelöscht");
+                                } else if (args[1].equalsIgnoreCase("monsters")) {
+                                    CoreSystem.getInstance().getCorePlayer(p).getWorld().purgeMonsters();
+                                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Es wurden alle Monster in deiner Welt gelöscht");
                                 } else {
-                                    BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
+                                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/world purge <animals | monsters>");
                                 }
-                                return true;
-                            } else if (args[0].equalsIgnoreCase("unload")) {
-                                if (p.hasPermission("system.bukkit.world.unload")) {
-                                    if (enableUploadCmd) {
-                                        w.unload(true);
-                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Welt wurde erfolgreich entladen! Benutze §a/world import " + w.getName() + " <environment>§2 um sie wieder zu laden!");
+                            } else {
+                                BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
+                            }
+                            return true;
+                        } else {
+                            CoreWorld w = BukkitCoreSystem.getInstance().getWorldManager().getWorld(args[1]);
+
+                            if (w != null) {
+                                if (args[0].equalsIgnoreCase("tp")) {
+                                    p.teleport(w.bukkit().getSpawnLocation());
+                                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest zur Welt §a" + w.getName() + "§2 teleportiert!");
+
+                                    return true;
+                                } else if (args[0].equalsIgnoreCase("info")) {
+                                    World bw = w.bukkit();
+                                    p.sendMessage("");
+                                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Bitteschön, Ein paar Infos über die Welt §a" + args[1] + "§2:" +
+                                            "\n§7§oalias: §f" + w.getAlias() +
+                                            "\n§7§ospawn-location: §f" + bw.getSpawnLocation() +
+                                            "\n§7§oseed: §f" + bw.getSeed() +
+                                            "\n§7§otype: §f" + bw.getWorldType() +
+                                            "\n§7§oenvironment: §f" + bw.getEnvironment() +
+                                            "\n§7§odifficulty: §f" + bw.getDifficulty() +
+                                            "\n§7§ogenerator: §f" + w.getGenerator() +
+                                            "\n§7§ogeneratorSettings: §f" + w.getGeneratorSettings() +
+                                            "\n§7§ogenerateStructures: §f" + bw.canGenerateStructures() +
+                                            "\n§7§oautoSave: §f" + bw.isAutoSave() +
+                                            "\n§7§opvp: §f" + bw.getPVP() +
+                                            "\n§7§oallowAnimals: §f" + w.isAllowAnimals() +
+                                            "\n§7§oallowMonsters: §f" + w.isAllowMonsters() +
+                                            "\n§7§okeepSpawnInMemory: §f" + bw.getKeepSpawnInMemory() +
+                                            "\n§7§oloadOnStartup: §f" + w.isLoadOnStartup() +
+                                            "\n§7§otemplateName: §f" + w.getTemplateName()
+                                    );
+
+                                    return true;
+                                } else if (args[0].equalsIgnoreCase("upload")) {
+                                    if (p.hasPermission("system.bukkit.world.upload")) {
+                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§7Die Welt wird hochgeladen...");
+                                        BukkitCoreSystem.getInstance().sendConsoleMessage("Uploading world " + w.getName() + " to database. Initialized by " + p.getName());
+                                        for (Player player : Bukkit.getOnlinePlayers()) {
+                                            if (player.hasPermission("group.builder") && player != p)
+                                                BukkitCoreSystem.getInstance().getMessager().send(player, "§3" + p.getName() + "§7 lädt gerade die Welt §f" + w.getName() + "§7 in die Datenbank hoch...");
+                                        }
+
+                                        if (w.upload()) {
+                                            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Welt wurde erfolgreich abgespeichert und kann nun wieder modifiziert werden!");
+                                        } else {
+                                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Es ist ein Fehler beim speichern der Welt aufgetreten!");
+                                        }
                                     } else {
-                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Upload-Befehl wurde von keinem Plugin aktiviert!");
+                                        BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
                                     }
-                                } else {
-                                    BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
-                                }
-                            } else if (args[0].equalsIgnoreCase("delete")) {
-                                if (p.hasPermission("system.bukkit.world.delete")) {
-                                    if (w.delete()) {
-                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Welt wurde erfolgreich gelöscht!");
+                                    return true;
+                                } else if (args[0].equalsIgnoreCase("unload")) {
+                                    if (p.hasPermission("system.bukkit.world.unload")) {
+                                        if (enableUploadCmd) {
+                                            w.unload(true);
+                                            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Welt wurde erfolgreich entladen! Benutze §a/world import " + w.getName() + " <environment>§2 um sie wieder zu laden!");
+                                        } else {
+                                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Upload-Befehl wurde von keinem Plugin aktiviert!");
+                                        }
                                     } else {
-                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Es ist ein Fehler beim löschen der Welt aufgetreten!");
+                                        BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
                                     }
-                                } else {
-                                    BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
+                                } else if (args[0].equalsIgnoreCase("delete")) {
+                                    if (p.hasPermission("system.bukkit.world.delete")) {
+                                        if (w.delete()) {
+                                            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Welt wurde erfolgreich gelöscht!");
+                                        } else {
+                                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Es ist ein Fehler beim löschen der Welt aufgetreten!");
+                                        }
+                                    } else {
+                                        BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
+                                    }
+                                    return true;
                                 }
+                            } else {
+                                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Diese Welt existiert nicht!");
                                 return true;
                             }
-                        } else {
-                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Diese Welt existiert nicht!");
-                            return true;
                         }
                     } else if (args.length == 3) {
                         if (args[0].equalsIgnoreCase("location")) {

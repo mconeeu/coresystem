@@ -28,8 +28,9 @@ public class PlayerLogin implements Listener {
         try {
             new BukkitCorePlayer(BukkitCoreSystem.getInstance(), e.getAddress(), p.getName());
             p.setDisplayName(p.getName());
-        } catch (PlayerNotResolvedException e1) {
-            e1.printStackTrace();
+        } catch (PlayerNotResolvedException ex) {
+            p.kickPlayer("Ein Fehler ist aufgetreten. UUID could not be fetched from database...");
+            ex.printStackTrace();
         }
     }
 

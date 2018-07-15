@@ -24,7 +24,7 @@ public final class PermissionChangeEvent extends Event {
     @Getter
     private Kind kind;
     @Getter
-    private CorePlayer player;
+    private final CorePlayer player;
     @Getter
     private Set<Group> groups;
 

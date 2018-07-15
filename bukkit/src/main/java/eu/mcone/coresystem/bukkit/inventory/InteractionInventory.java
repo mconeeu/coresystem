@@ -11,7 +11,6 @@ import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
-import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
 import net.md_5.bungee.api.ChatColor;
@@ -31,15 +30,11 @@ public class InteractionInventory extends CoreInventory {
         super("§8» §3Interaktionsmenü", p, InventorySlot.ROW_3, CoreInventory.Option.FILL_EMPTY_SLOTS);
         CorePlayer c = CoreSystem.getInstance().getCorePlayer(clicked);
 
-        double onlinetime = c.getOnlinetime();
-        int coins = c.getCoins();
-        PlayerState state = c.getState();
-
         setItem(InventorySlot.ROW_1_SLOT_5, ItemBuilder.createSkullItem(clicked.getName(), 1).displayName("§f§l" + clicked.getName()).lore(
                 CoreSystem.getInstance().getCorePlayer(clicked).getMainGroup().getLabel(),
                 "",
-                "§7Coins: §f" + coins,
-                "§7Onlinetime: §f" + onlinetime + " Stunden", "§7Status: " + state.getName()
+                "§7Coins: §f" + c.getCoins(),
+                "§7Onlinetime: §f" + c.getOnlinetime() + " Stunden", "§7Status: " + c.getState().getName()
                 ).create()
         );
 
