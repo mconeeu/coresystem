@@ -49,7 +49,11 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
             if (p == null) available.add(skin);
         });
 
-        return available.get(Random.randomInt(0, available.size()));
+        if (available.size() > 0) {
+            return available.get(Random.randomInt(0, available.size()));
+        } else {
+            return null;
+        }
     }
 
     public void nick(ProxiedPlayer p) {

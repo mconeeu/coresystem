@@ -36,6 +36,7 @@ public class BuildCMD implements CommandExecutor {
 
                     if (t != null) {
                         buildSystem.changeBuildMode(t);
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast den Build-Modus von §a"+args[0]+"§2 verändert!");
                     } else {
                         BukkitCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler ist nicht online!");
                     }

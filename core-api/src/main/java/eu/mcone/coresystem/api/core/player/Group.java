@@ -17,7 +17,7 @@ public enum Group {
     MODERATOR(4, "Moderator", "§2§oModerator", "§8[§2Mod§8] §7", 40, -1),
     SUPPORTER(5, "Supporter", "§a§oSupporter", "§8[§aSup§8] §7", 50, -1),
     JRSUPPORTER(6, "JrSupporter", "§a§oJrSupporter", "§8[§aJrSup§8] §7", 55, -1),
-    TEAM(7, "Team", "f§oTeam", "§8[§fTeam§8] §7", 1000, -1),
+    TEAM(7, "Team", "§f§oTeam", "§8[§fTeam§8] §7", 1000, -1),
     YOUTUBER(8, "YouTuber", "§5§oYoutuber", "§8[§5YT§8] §7", 60, 20),
     PREMIUMPLUS(9, "Premium+", "§6§oPremium+", "§8[§6P+§8] §7", 70, 21),
     PREMIUM(10, "Premium", "§6§oPremium", "§8[§6P§8] §7", 80, 22),

@@ -57,12 +57,6 @@ public interface CorePlayer extends GlobalCorePlayer {
     long getAfkTime();
 
     /**
-     * opens the player an interaction inventory of a specific player
-     * @param player target player
-     */
-    void openInteractionInventory(Player player);
-
-    /**
      * sets the player a custom scoreboard
      * @param scoreboard scoreboard
      */

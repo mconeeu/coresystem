@@ -98,6 +98,7 @@ public abstract class CoreSidebarObjective extends CoreObjective {
             team.setSuffix(lastColors + contents.get(1).substring(0, Math.min(contents.get(1).length(), 10)));
         } else {
             team.setPrefix(content);
+            team.setSuffix("");
         }
 
         this.objective.getScore(scoreName).setScore(score);

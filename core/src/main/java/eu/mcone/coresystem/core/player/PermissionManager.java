@@ -56,7 +56,7 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
                         case "parent":
                             addParent(Group.getGroupById(rs.getInt("name")), Group.getGroupById(rs.getInt("value")));
                             break;
-                        case "eu.mcone.coresystem.api.core.player-permission":
+                        case "player-permission":
                             addPermissiontoPlayer(rs.getString("name"), rs.getString("value"));
                     }
                 }

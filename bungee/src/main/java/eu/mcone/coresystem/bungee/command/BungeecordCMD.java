@@ -6,6 +6,8 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -43,6 +45,9 @@ public class BungeecordCMD extends Command {
 
                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§aPermissions werden neu geladen...");
                 BungeeCoreSystem.getInstance().getPermissionManager().reload();
+                for (CorePlayer p : CoreSystem.getInstance().getOnlineCorePlayers()) {
+                    p.reloadPermissions();
+                }
 
                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§aNicks werden neu geladen...");
                 BungeeCoreSystem.getInstance().getNickManager().reload();

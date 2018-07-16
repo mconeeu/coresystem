@@ -17,7 +17,6 @@ import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.bukkit.inventory.InteractionInventory;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
@@ -101,11 +100,6 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
     @Override
     public long getAfkTime() {
         return BukkitCoreSystem.getSystem().getAfkManager().getAfkTime(uuid);
-    }
-
-    @Override
-    public void openInteractionInventory(Player p) {
-        new InteractionInventory(bukkit(), p);
     }
 
     @Override

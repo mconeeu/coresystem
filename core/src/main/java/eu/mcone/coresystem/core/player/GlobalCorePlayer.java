@@ -20,6 +20,7 @@ import lombok.Setter;
 import net.labymod.serverapi.LabyModConnection;
 
 import java.net.InetAddress;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -58,23 +59,31 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
         ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).select("SELECT uuid, groups, coins, state, onlinetime, teamspeak_uid, player_settings FROM userinfo WHERE name='"+name+"'", rs -> {
             try {
                 if (rs.next()) {
-                    this.uuid = UUID.fromString(rs.getString("uuid"));
-                    this.groups = instance.getPermissionManager().getGroups(rs.getString("groups"));
-                    this.onlinetime = rs.getLong("onlinetime");
-                    this.coins = rs.getInt("coins");
-                    this.teamspeakUid = rs.getString("teamspeak_uid");
-                    this.settings = ((CoreModuleCoreSystem) instance).getGson().fromJson(rs.getString("player_settings"), PlayerSettings.class);
-                    this.state = PlayerState.getPlayerStateById(rs.getInt("state"));
-                    this.joined = System.currentTimeMillis() / 1000;
+                    setDatabaseValues(rs);
                 } else {
-                    this.uuid = instance.getPlayerUtils().fetchUuid(name);
-                    this.groups = new HashSet<>(Collections.singletonList(Group.SPIELER));
-                    this.onlinetime = 0;
-                    this.coins = 20;
-                    this.settings = new PlayerSettings();
-                    this.state = PlayerState.ONLINE;
-                    this.joined = System.currentTimeMillis() / 1000;
-                    this.isNew = true;
+                    this.uuid = instance.getPlayerUtils().fetchUuidFromMojangAPI(name);
+                    ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).select("SELECT uuid, name, groups, coins, state, onlinetime, teamspeak_uid, player_settings FROM userinfo WHERE uuid='"+this.uuid.toString()+"'", rs1 -> {
+                        try {
+                            if (rs1.next()) {
+                                ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a"+name+"§2 changed his name from §f"+rs1.getString("name")+"§2. Applying to database...");
+                                ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).update("UPDATE userinfo SET name='"+name+"' WHERE uuid='"+this.uuid.toString()+"'");
+                                setDatabaseValues(rs1);
+                            } else {
+                                ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a"+name+"§2 is new! Registering in Database...");
+                                ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).update("INSERT INTO `userinfo` (`uuid`, `name`, `groups`, `coins`, `state`, `ip`, `timestamp`) VALUES ('" +  instance.getPlayerUtils().fetchUuidFromMojangAPI(name) + "', '" +  name + "', '[11]', 20, '"+PlayerState.ONLINE.getId()+"', '" + ipAdress + "', '" +  System.currentTimeMillis() / 1000 + "')");
+
+                                this.groups = new HashSet<>(Collections.singletonList(Group.SPIELER));
+                                this.onlinetime = 0;
+                                this.coins = 20;
+                                this.settings = new PlayerSettings();
+                                this.state = PlayerState.ONLINE;
+                                this.joined = System.currentTimeMillis() / 1000;
+                                this.isNew = true;
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    });
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -83,9 +92,21 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
 
         if (uuid == null) {
             throw new PlayerNotResolvedException("Player uuid could not be resolved! (isNew = "+isNew+")");
-        } else if (isNew) {
-            ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a"+name+"§2 is new! Registering in Database...");
-            ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).update("INSERT INTO `userinfo` (`uuid`, `name`, `groups`, `coins`, `state`, `ip`, `timestamp`) VALUES ('" +  uuid + "', '" +  name + "', '[11]', 20, '"+PlayerState.ONLINE.getId()+"', '" + ipAdress + "', '" +  System.currentTimeMillis() / 1000 + "')");
+        }
+    }
+
+    private void setDatabaseValues(ResultSet rs) {
+        try {
+            this.uuid = UUID.fromString(rs.getString("uuid"));
+            this.groups = instance.getPermissionManager().getGroups(rs.getString("groups"));
+            this.onlinetime = rs.getLong("onlinetime");
+            this.coins = rs.getInt("coins");
+            this.teamspeakUid = rs.getString("teamspeak_uid");
+            this.settings = ((CoreModuleCoreSystem) instance).getGson().fromJson(rs.getString("player_settings"), PlayerSettings.class);
+            this.state = PlayerState.getPlayerStateById(rs.getInt("state"));
+            this.joined = System.currentTimeMillis() / 1000;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

@@ -56,6 +56,25 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
         }, UUID.class);
         if (dbUuid != null) return dbUuid;
 
+        return fetchUuidFromMojangAPI(name);
+    }
+
+    @Override
+    public String fetchName(final UUID uuid) {
+        return mySQL.select("SELECT name FROM userinfo WHERE uuid='" + uuid.toString() + "'", rs -> {
+            try {
+                if (rs.next()) {
+                    return rs.getString("uuid");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }, String.class);
+    }
+
+    @Override
+    public UUID fetchUuidFromMojangAPI(final String name) {
         try {
             URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + name);
             InputStream stream = url.openStream();
@@ -89,20 +108,6 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
             e.printStackTrace();
         }
         return null;
-    }
-
-    @Override
-    public String fetchName(final UUID uuid) {
-        return mySQL.select("SELECT name FROM userinfo WHERE uuid='" + uuid.toString() + "'", rs -> {
-            try {
-                if (rs.next()) {
-                    return rs.getString("uuid");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }, String.class);
     }
 
     private static String fromTrimmed(final String trimmedUUID) throws IllegalArgumentException {

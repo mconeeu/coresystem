@@ -18,6 +18,13 @@ public interface PlayerUtils {
     UUID fetchUuid(String name);
 
     /**
+     * fetch uuid from name with mojang api
+     * @param name name
+     * @return uuid
+     */
+    UUID fetchUuidFromMojangAPI(String name);
+
+    /**
      * fetch name from uuid, first method is getting from database
      * @param uuid uuid
      * @return name

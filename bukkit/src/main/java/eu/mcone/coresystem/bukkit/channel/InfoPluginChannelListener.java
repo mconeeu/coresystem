@@ -54,6 +54,7 @@ public class InfoPluginChannelListener implements PluginMessageListener {
                 }
                 case "NICK": {
                     SkinInfo info = CoreSystem.getInstance().getPlayerUtils().constructSkinInfo(in.readUTF(), in.readUTF(), in.readUTF());
+                    System.out.println("nick: "+p.getName()+" "+info.toString());
 
                     if (CoreSystem.getInstance().getNickManager().isAllowSkinChange()) {
                         NickEvent event = new NickEvent(cp, true);

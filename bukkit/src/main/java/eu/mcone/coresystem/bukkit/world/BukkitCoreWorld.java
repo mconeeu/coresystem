@@ -136,10 +136,11 @@ public class BukkitCoreWorld implements CoreWorld {
 
     @Override
     public boolean delete() {
+        File worldFolder = bukkit().getWorldFolder();
         unload(false);
 
         try {
-            FileUtils.deleteDirectory(bukkit().getWorldFolder());
+            FileUtils.deleteDirectory(worldFolder);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
