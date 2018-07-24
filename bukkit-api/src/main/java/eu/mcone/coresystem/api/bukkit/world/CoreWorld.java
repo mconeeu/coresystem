@@ -6,12 +6,15 @@
 
 package eu.mcone.coresystem.api.bukkit.world;
 
+import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
+import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldType;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Map;
 
 public interface CoreWorld {
@@ -215,6 +218,32 @@ public interface CoreWorld {
     CoreWorld removeLocation(String name);
 
     /**
+     * returns all NPC that are registered for this world
+     * @return NPC List
+     */
+    List<NPC> getNPCs();
+
+    /**
+     * get a specific NPC by name
+     * @param name name of wished NPC
+     * @return NPC object
+     */
+    NPC getNPC(String name);
+
+    /**
+     * returns all Hologram that are registered for this world
+     * @return Hologram List
+     */
+    List<Hologram> getHolograms();
+
+    /**
+     * get a specific Hologram by name
+     * @param name name of wished Hologram
+     * @return Hologram object
+     */
+    Hologram getHologram(String name);
+
+    /**
      * change the worlds name
      * @param name new name
      */
@@ -246,6 +275,8 @@ public interface CoreWorld {
      * upload the world to the cloudsystem database
      */
     boolean upload();
+
+    boolean betaUpload();
 
     /**
      * save latest changes to bukkit

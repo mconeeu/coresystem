@@ -8,8 +8,6 @@ package eu.mcone.coresystem.api.bukkit;
 
 import com.google.gson.Gson;
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
-import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
-import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
@@ -128,13 +126,6 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return List of online CorePlayers
      */
     public abstract Collection<CorePlayer> getOnlineCorePlayers();
-
-    /**
-     * creates a new Hologram
-     * @param data HologramData
-     * @return new Hologram
-     */
-    public abstract Hologram createHologram(HologramData data);
 
     /**
      * creates a new instance of BuildSystem

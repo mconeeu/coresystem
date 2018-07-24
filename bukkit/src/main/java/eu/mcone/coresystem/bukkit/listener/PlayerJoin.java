@@ -7,9 +7,9 @@
 package eu.mcone.coresystem.bukkit.listener;
 
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.player.NickManager;
-import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

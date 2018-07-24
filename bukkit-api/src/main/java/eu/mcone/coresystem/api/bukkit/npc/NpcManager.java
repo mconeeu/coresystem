@@ -6,10 +6,11 @@
 
 package eu.mcone.coresystem.api.bukkit.npc;
 
-import org.bukkit.Location;
+import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.util.Map;
+import java.util.List;
 
 public interface NpcManager {
 
@@ -21,29 +22,43 @@ public interface NpcManager {
     /**
      * creates new local NPC that dont gets saved in the database
      * @param data NpcData
+     * @param world world
      */
-    void addLocalNPC(NpcData data);
+    void addLocalNPC(NpcData data, World world);
+
+    /**
+     * creates new local NPC that dont gets saved in the database
+     * @param data NpcData
+     * @param world world
+     */
+    void addLocalNPC(NpcData data, CoreWorld world);
 
     /**
      * create new NPC
      * @param data NpcData
+     * @param world world
      */
-    void addNPC(NpcData data);
+    void addNPC(NpcData data, World world);
 
     /**
-     * update existing NPC
-     * @param name data name
-     * @param location location
-     * @param texture texture name
-     * @param displayname displayname
+     * create new NPC
+     * @param data NpcData
+     * @param world world
      */
-    void updateNPC(String name, Location location, String texture, String displayname);
+    void addNPC(NpcData data, CoreWorld world);
+
+    /**
+     * updates the NpcData of an existing NPC
+     * @param oldNpc old NPC object
+     * @param newData new data
+     */
+    void updateNPC(NPC oldNpc, NpcData newData);
 
     /**
      * remove existing npc
-     * @param name data name
+     * @param npc npc
      */
-    void removeNPC(String name);
+    void removeNPC(NPC npc);
 
     /**
      * check name is a NPCs name
@@ -76,15 +91,16 @@ public interface NpcManager {
 
     /**
      * returns a NPC with the given name. null if no NPC with this name exists
+     * @param world world
      * @param name data name
      * @return NPC
      */
-    NPC getNPC(String name);
+    NPC getNPC(CoreWorld world, String name);
 
     /**
      * returns all loaded NPCs
      * @return Map with all NPCs
      */
-    Map<String, NPC> getNPCs();
+    List<NPC> getNPCs();
 
 }

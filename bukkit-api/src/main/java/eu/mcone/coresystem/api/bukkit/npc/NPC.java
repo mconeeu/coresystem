@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.api.bukkit.npc;
 
+import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import org.bukkit.entity.Player;
@@ -26,6 +27,12 @@ public interface NPC {
      * @return skin
      */
     SkinInfo getSkin();
+
+    /**
+     * returns the world in which the NPC is standing
+     * @return world
+     */
+    CoreWorld getWorld();
 
     /**
      * returns the EntityPlayer object of this NPC
@@ -63,13 +70,6 @@ public interface NPC {
      * @param player player
      */
     void setSkin(SkinInfo skin, Player player);
-
-    /**
-     * sets a specific player a new name for this NPC
-     * @param displayname displayname
-     * @param player player
-     */
-    void setName(String displayname, Player player);
 
     /**
      * hides this NPC from the specific player

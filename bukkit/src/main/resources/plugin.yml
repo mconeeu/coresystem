@@ -43,10 +43,10 @@ commands:
     permission: system.bukkit.vanish
   holo:
     description: Manage holograms
-    permission: system.bukkit.holo
+    permission: system.bukkit.world.holo
   npc:
     descirption: Spawns an NPC
-    permission: system.bukkit.npc
+    permission: system.bukkit.world.npc
   build:
     description: Allows to bypass build restrictions
     permission: system.bukkit.build
@@ -56,6 +56,10 @@ commands:
     aliases: [worlds,w]
     description: Manage worlds
     permission: system.bukkit.world
+  location:
+    aliases: loc
+    description: Manage Locations
+    permission: system.bukkit.world.location
   speed:
     description: in- or decreases the walk or fly speed
     permission: system.bukkit.speed
@@ -88,10 +92,6 @@ permissions:
             description: Vanishes the eu.mcone.coresystem.api.core.player for all other players
           system.bukkit.reload:
             description: Reload the CoreSystem
-          system.bukkit.holo:
-            description: Access the holograms
-          system.bukkit.npc:
-            description: Allows to set NonCharacterPlayers
           system.bukkit.sign:
             dexcription: Allows to create colored signs
           system.bukkit.build:
@@ -107,6 +107,12 @@ permissions:
           system.bukkit.world:
             description: Basic Permission for /world info and /world list
             children:
+              system.bukkit.world.npc:
+                description: Allows to set NonCharacterPlayers
+              system.bukkit.world.holo:
+                description: Access the holograms
+              system.bukkit.world.location:
+                description: Allows to manage all locations
               system.bukkit.world.setspawn:
                 description: Allows to set the current worlds spawn
               system.bukkit.world.upload:

@@ -6,9 +6,14 @@
 
 package eu.mcone.coresystem.api.bukkit.hologram;
 
+import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import org.bukkit.entity.Player;
 
 public interface Hologram {
+
+    HologramData getData();
+
+    CoreWorld getWorld();
 
     /**
      * shows the hologram a player for a specific time
@@ -36,8 +41,13 @@ public interface Hologram {
     void hidePlayer(Player player);
 
     /**
-     * shows the hologram all players
+     * shows the hologram to all players
      */
     void showAll();
+
+    /**
+     * hides the hologram from all players
+     */
+    void hideAll();
 
 }

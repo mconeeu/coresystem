@@ -7,12 +7,15 @@
 package eu.mcone.coresystem.bukkit.world;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
+import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.core.annotation.DontObfuscate;
+import eu.mcone.coresystem.core.mysql.Database;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,8 +46,8 @@ public class BukkitCoreWorld implements CoreWorld {
     private int[] spawnLocation = new int[]{0, 0, 0};
 
     private Map<String, CoreLocation> locations = new HashMap<>();
-    private List<NpcData> npcs = new ArrayList<>();
-    private List<HologramData> holograms = new ArrayList<>();
+    private List<NpcData> npcData = new ArrayList<>();
+    private List<HologramData> hologramData = new ArrayList<>();
 
     @Override
     public World bukkit() {
@@ -92,8 +95,46 @@ public class BukkitCoreWorld implements CoreWorld {
         return this;
     }
 
+    @Override
+    public List<NPC> getNPCs() {
+        List<NPC> result = new ArrayList<>();
+
+        for (NPC npc : CoreSystem.getInstance().getNpcManager().getNPCs()) {
+            if (npc.getWorld().equals(this)) result.add(npc);
+        }
+
+        return result;
+    }
+
+    @Override
+    public NPC getNPC(String name) {
+        return CoreSystem.getInstance().getNpcManager().getNPC(this, name);
+    }
+
+    @Override
+    public List<Hologram> getHolograms() {
+        List<Hologram> result = new ArrayList<>();
+
+        for (Hologram hologram : CoreSystem.getInstance().getHologramManager().getHolograms()) {
+            if (hologram.getWorld().equals(this)) result.add(hologram);
+        }
+
+        return result;
+    }
+
+    @Override
+    public Hologram getHologram(String name) {
+        return CoreSystem.getInstance().getHologramManager().getHologram(this, name);
+    }
+
+    @Override
     public boolean upload() {
         return new WorldUploader(this).upload();
+    }
+
+    @Override
+    public boolean betaUpload() {
+        return new WorldUploader(this, Database.DATA, "bukkitsystem_beta_worlds").upload();
     }
 
     @Override

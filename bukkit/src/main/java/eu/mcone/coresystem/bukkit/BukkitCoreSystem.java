@@ -10,8 +10,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
-import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
@@ -119,7 +117,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         mysql1 = new MySQL(Database.SYSTEM);
         mysql2 = new MySQL(Database.STATS);
         mysql3 = new MySQL(Database.DATA);
-        createTables(mysql1);
+        createTables();
 
         cooldownSystem = new CooldownSystem();
         coinsUtil = new CoinsUtil(this);
@@ -239,14 +237,25 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         getServer().getPluginManager().registerEvents(new SignChange(), this);
     }
 
-    private void createTables(MySQL mysql) {
-        mysql.update(
+    private void createTables() {
+        mysql1.update(
                 "CREATE TABLE IF NOT EXISTS `bukkitsystem_textures`" +
                         "(" +
                         "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
                         "`name` VARCHAR(100) NOT NULL UNIQUE KEY REFERENCES bukkitsystem_npcs(`texture`) ON DELETE SET NULL ON UPDATE SET NULL, " +
                         "`texture_value` VARCHAR(500) NOT NULL, " +
                         "`texture_signature` VARCHAR(1000) NOT NULL" +
+                        ") " +
+                        "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
+        );
+
+        mysql3.update(
+                "CREATE TABLE IF NOT EXISTS `bukkitsystem_beta_worlds`" +
+                        "(" +
+                        "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
+                        "`build` int NOT NULL, " +
+                        "`name` varchar(50) NOT NULL UNIQUE KEY, " +
+                        "`bytes` longblob NOT NULL" +
                         ") " +
                         "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
         );
@@ -293,11 +302,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Override
     public Collection<CorePlayer> getOnlineCorePlayers() {
         return corePlayers.values();
-    }
-
-    @Override
-    public Hologram createHologram(HologramData data) {
-        return hologramManager.addHologram(data);
     }
 
     @Override

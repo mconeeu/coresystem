@@ -78,6 +78,20 @@ public final class Messager {
     }
 
     /**
+     * send Translation with prefix to player
+     * @param player player
+     * @param translation translation name/key
+     */
+    public void sendSimpleTransl(final Player player, String... translation) {
+        CorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
+        StringBuilder sb = new StringBuilder();
+        for (String s : translation) {
+            sb.append(CoreSystem.getInstance().getTranslationManager().get(s, cp));
+        }
+        player.sendMessage(sb.toString());
+    }
+
+    /**
      * send message to player
      * @param player player
      * @param message message

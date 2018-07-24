@@ -10,6 +10,7 @@ import com.google.gson.stream.JsonReader;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.bukkit.command.LocationCMD;
 import eu.mcone.coresystem.bukkit.command.WorldCMD;
 import org.bukkit.*;
 
@@ -33,6 +34,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
         this.worldCMD = new WorldCMD();
 
         instance.getCommand("world").setExecutor(worldCMD);
+        instance.getCommand("location").setExecutor(new LocationCMD());
         reload();
     }
 

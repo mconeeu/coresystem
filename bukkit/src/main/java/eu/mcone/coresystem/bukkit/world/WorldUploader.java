@@ -6,8 +6,11 @@
 
 package eu.mcone.coresystem.bukkit.world;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.util.Zip;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.core.mysql.Database;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.World;
 
@@ -19,9 +22,17 @@ import java.sql.*;
 class WorldUploader {
 
     private CoreWorld world;
+    private Database database;
+    private String table = "mc1cloud.cloudwrapper_worlds";
 
     WorldUploader(CoreWorld world) {
         if (world.bukkit() != null) this.world = world;
+    }
+
+    WorldUploader(CoreWorld world, Database database, String table) {
+        this.world = world;
+        this.database = database;
+        this.table = table;
     }
 
     boolean upload() {
@@ -38,8 +49,8 @@ class WorldUploader {
         new Zip(worldFile, zipFile);
 
         try {
-            Connection con = DriverManager.getConnection("jdbc:mariadb://db.mcone.eu:3306/mc1cloud", "core-system", "RugQsbRUDABCG6zHrjLva4L7cLryL8tEScDDW3g2GGVg3M9zA9fEVkg2yU9r9KHG");
-            PreparedStatement ps = con.prepareStatement("SELECT build FROM mc1cloud.cloudwrapper_worlds WHERE `name`='" + world.getName() + "'");
+            Connection con = this.database != null ? BukkitCoreSystem.getSystem().getMySQL(this.database).getConnection() : DriverManager.getConnection("jdbc:mariadb://db.mcone.eu:3306/mc1cloud", "core-system", "RugQsbRUDABCG6zHrjLva4L7cLryL8tEScDDW3g2GGVg3M9zA9fEVkg2yU9r9KHG");
+            PreparedStatement ps = con.prepareStatement("SELECT build FROM "+this.table+" WHERE `name`='" + world.getName() + "'");
             ResultSet rs = ps.executeQuery();
 
             int build = 0;
@@ -47,9 +58,9 @@ class WorldUploader {
             if (rs.next()) {
                 build = rs.getInt("build");
 
-                send = con.prepareStatement("UPDATE mc1cloud.cloudwrapper_worlds SET build=?, `name`=?, bytes=? WHERE `name`='" + world.getName() + "'");
+                send = con.prepareStatement("UPDATE "+this.table+" SET build=?, `name`=?, bytes=? WHERE `name`='" + world.getName() + "'");
             } else {
-                send = con.prepareStatement("INSERT INTO mc1cloud.cloudwrapper_worlds (build, `name`, bytes) VALUES (?, ?, ?)");
+                send = con.prepareStatement("INSERT INTO "+this.table+" (build, `name`, bytes) VALUES (?, ?, ?)");
             }
 
             FileInputStream fis = new FileInputStream(zipFile);

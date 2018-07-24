@@ -6,6 +6,10 @@
 
 package eu.mcone.coresystem.api.bukkit.hologram;
 
+import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
+
+import java.util.List;
+
 public interface HologramManager {
 
     /**
@@ -16,14 +20,30 @@ public interface HologramManager {
     /**
      * adds a new hologram
      * @param data HologramData
+     * @param world world in which the hologram should be shown
      */
-    Hologram addHologram(HologramData data);
+    Hologram addHologram(HologramData data, CoreWorld world);
 
     /**
      * deletes an hologram
-     * @param name data name
+     * @param hologram hologram
      */
-    void removeHologram(String name);
+    void removeHologram(Hologram hologram);
+
+    /**
+     * returns the wished Hologram of the given world
+     * null if the hologram does not exist in this world
+     * @param world target world
+     * @param name database name
+     * @return Hologram object
+     */
+    Hologram getHologram(CoreWorld world, String name);
+
+    /**
+     * returns a list of all Holograms on the server
+     * @return List of Holograms
+     */
+    List<Hologram> getHolograms();
 
     /**
      * update all hologram to all players

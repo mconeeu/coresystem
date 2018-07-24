@@ -16,26 +16,27 @@ import eu.mcone.coresystem.bukkit.command.NpcCMD;
 import eu.mcone.coresystem.bukkit.world.BukkitCoreWorld;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.NpcManager {
 
-    private HashMap<String, NPC> npcs;
+    private List<NPC> npcs;
 
     public NpcManager(JavaPlugin plugin) {
         BukkitCoreSystem.getInstance().getServer().getPluginManager().registerEvents(this, BukkitCoreSystem.getInstance());
         BukkitCoreSystem.getInstance().getCommand("npc").setExecutor(new NpcCMD(this));
 
         this.reload();
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-            for (NPC npc : npcs.values()) {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+            for (NPC npc : npcs) {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     if (npc.getData().getLocation().bukkit().getWorld().equals(p.getWorld())) {
                         if (npc.getData().getLocation().bukkit().distance(p.getLocation()) > 60 && npc.getLoadedPlayers().contains(p.getUniqueId())) {
@@ -62,14 +63,14 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
                 this.unsetNPCs(p);
             }
         } else {
-            this.npcs = new HashMap<>();
+            this.npcs = new ArrayList<>();
         }
 
         this.npcs.clear();
         for (CoreWorld w : CoreSystem.getInstance().getWorldManager().getWorlds()) {
-            for (NpcData data : ((BukkitCoreWorld) w).getNpcs()) {
+            for (NpcData data : ((BukkitCoreWorld) w).getNpcData()) {
                 if (data.getSkinName() != null) {
-                    this.npcs.put(data.getName(), new NPC(data));
+                    this.npcs.add(new NPC(w, data));
                 } else {
                     throw new RuntimeCoreException("NPC " + data.getName() + " besitzt keine Textur!");
                 }
@@ -78,65 +79,103 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
     }
 
     @Override
-    public void addLocalNPC(NpcData data) {
-        NPC npc = new NPC(data);
+    public List<eu.mcone.coresystem.api.bukkit.npc.NPC> getNPCs() {
+        return new ArrayList<>(npcs);
+    }
+
+    @Override
+    public void addLocalNPC(NpcData data, World world) {
+        addLocalNPC(data, CoreSystem.getInstance().getWorldManager().getWorld(world));
+    }
+
+    @Override
+    public void addLocalNPC(NpcData data, CoreWorld world) {
+        NPC npc = new NPC(world, data);
         npc.setLocal(true);
 
-        this.npcs.put(data.getName(), npc);
+        this.npcs.add(npc);
         this.updateNPCs();
     }
 
     @Override
-    public void addNPC(NpcData data) {
-        NPC npc = new NPC(data);
+    public void addNPC(NpcData data, World world) {
+        addNPC(data, CoreSystem.getInstance().getWorldManager().getWorld(world));
+    }
 
-        this.npcs.put(data.getName(), npc);
+    @Override
+    public void addNPC(NpcData data, CoreWorld world) {
+        NPC npc = new NPC(world, data);
+
+        this.npcs.add(npc);
         this.updateNPCs();
 
         BukkitCoreWorld w = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(data.getLocation().getWorldName());
-        w.getNpcs().add(data);
+        w.getNpcData().add(data);
         w.save();
     }
 
-    public void updateNPC(String name, Location loc, String skinName, String displayname) {
-        if (npcs.containsKey(name)) {
-            NPC oldNPC = npcs.get(name);
-            NpcData data = new NpcData(name, displayname, skinName, new CoreLocation(loc));
+    public void removeNPC(CoreWorld w, String name) {
+        NPC npc = getNPC(w, name);
 
-            NPC npc = new NPC(data);
-            npc.setLocal(oldNPC.isLocal());
-
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                oldNPC.unset(p);
-            }
-
-            if (!npc.isLocal()) {
-                BukkitCoreWorld w = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(data.getLocation().getWorldName());
-                w.getNpcs().remove(npcs.get(name).getData());
-                w.getNpcs().add(data);
-                w.save();
-            }
-
-            this.npcs.put(name, npc);
-            this.updateNPCs();
+        if (npc != null) {
+            removeNPC(npc);
+        } else {
+            throw new RuntimeCoreException("Tried to remove NPC "+name+" on world "+w.getName()+", but npcs list in NpcManager does not cointain it!");
         }
     }
 
-    public void removeNPC(String name) {
-        NPC npc = npcs.get(name);
+    @Override
+    public void removeNPC(eu.mcone.coresystem.api.bukkit.npc.NPC npc) {
+        ((BukkitCoreWorld) npc.getWorld()).getNpcData().remove(npc.getData());
 
-        BukkitCoreWorld w = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(npc.getData().getLocation().getWorldName());
-        w.getNpcs().remove(npc.getData());
+        npc.unsetAll();
+        npc.destroy();
+        npcs.remove(npc);
+    }
 
-        if (this.npcs.containsKey(name)) {
-            npc.unsetAll();
-            npc.destroy();
-            npcs.remove(name);
+    @Override
+    public void updateNPC(eu.mcone.coresystem.api.bukkit.npc.NPC oldNpc, NpcData newData) {
+        BukkitCoreWorld w = (BukkitCoreWorld) oldNpc.getWorld();
+
+        NPC npc = new NPC(w, newData);
+        npc.setLocal(oldNpc.isLocal());
+
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            oldNpc.unset(p);
         }
+
+        if (!oldNpc.isLocal()) {
+            w.getNpcData().remove(oldNpc.getData());
+            w.getNpcData().add(newData);
+            w.save();
+        }
+
+        this.npcs.remove(oldNpc);
+        this.npcs.add(npc);
+        this.updateNPCs();
+    }
+
+    public void updateNPC(CoreWorld w, String name, Location loc, String skinName, String displayname) {
+        NPC oldNPC = getNPC(w, name);
+
+        if (oldNPC != null) {
+            updateNPC(oldNPC, new NpcData(name, displayname, skinName, new CoreLocation(loc)));
+        } else {
+            throw new RuntimeCoreException("Tried to update NPC "+name+" on w "+w.getName()+", but npcs list in NpcManager does not cointain it!");
+        }
+    }
+
+    public NPC getNPC(CoreWorld world, String name) {
+        for (NPC npc : npcs) {
+            if (npc.getWorld().equals(world) && npc.getData().getName().equals(name)) {
+                return npc;
+            }
+        }
+        return null;
     }
 
     public boolean isNPC(String playerName) {
-        for (NPC npc : npcs.values()) {
+        for (eu.mcone.coresystem.api.bukkit.npc.NPC npc : npcs) {
             if (npc.getData().getDisplayname().equalsIgnoreCase(playerName)) {
                 return true;
             }
@@ -152,7 +191,7 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
     }
 
     public void unsetNPCs(Player p) {
-        for (NPC npc : this.npcs.values()) {
+        for (NPC npc : this.npcs) {
             npc.unset(p);
         }
     }
@@ -163,27 +202,10 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
         }
     }
 
-    public NPC getNPC(String name) {
-        for (NPC npc : npcs.values()) {
-            if (npc.getData().getName().equals(name)) {
-                return npc;
-            }
-        }
-        return null;
-    }
-
-    public Map<String, eu.mcone.coresystem.api.bukkit.npc.NPC> getNPCs() {
-        Map<String, eu.mcone.coresystem.api.bukkit.npc.NPC> result = new HashMap<>();
-        for (HashMap.Entry<String, NPC> e : npcs.entrySet()) {
-            result.put(e.getKey(), e.getValue());
-        }
-
-        return result;
-    }
-
     public void setNPCs(Player p) {
-        for (NPC npc : npcs.values()) {
+        for (NPC npc : npcs) {
             npc.set(p);
         }
     }
+
 }
