@@ -38,7 +38,7 @@ import java.util.Map;
 @DontObfuscate
 public class BukkitCoreWorld implements CoreWorld {
 
-    private String name, alias, generator, generatorSettings, templateName;
+    private String name, alias, generator, generatorSettings;
     private WorldType worldType = WorldType.NORMAL;
     private World.Environment environment = World.Environment.NORMAL;
     private Difficulty difficulty = Difficulty.NORMAL;

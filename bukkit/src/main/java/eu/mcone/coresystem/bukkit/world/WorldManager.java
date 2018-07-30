@@ -125,10 +125,8 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     public boolean importWorld(String name, World.Environment environment) {
         if (new File(name).exists()) {
             try {
-                File uid = new File(name, "level.dat");
-                if (uid.exists()) {
-                    uid.delete();
-                }
+                File uid = new File(name, "uid.dat");
+                if (uid.exists()) uid.delete();
 
                 World world = new WorldCreator(name).environment(environment).createWorld();
                 File config = new File(name, CONFIG_NAME);
@@ -197,7 +195,6 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
         BukkitCoreWorld w = new BukkitCoreWorld(
                 world.getName(),
                 world.getName(),
-                null,
                 null,
                 null,
                 world.getWorldType(),

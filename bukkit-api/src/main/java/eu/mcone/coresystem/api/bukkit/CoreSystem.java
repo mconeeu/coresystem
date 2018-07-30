@@ -8,8 +8,12 @@ package eu.mcone.coresystem.api.bukkit;
 
 import com.google.gson.Gson;
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
+import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
+import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.npc.NPC;
+import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.api.bukkit.player.*;
 import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
@@ -133,6 +137,22 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return nwe BuildSystem instance
      */
     public abstract BuildSystem initialiseBuildSystem(BuildSystem.BuildEvent... events);
+
+    /**
+     * constructs a new NPC without automatically setting it for all players
+     * you have to manually set them through the NPCs methods
+     * @param npcData data
+     * @return NPC instance
+     */
+    public abstract NPC constructNpc(NpcData npcData);
+
+    /**
+     * constructs a new Hologram without automatically setting it for all players
+     * you have to manually set them through the Holograms methods
+     * @param hologramData data
+     * @return Hologram instance
+     */
+    public abstract Hologram constructHologram(HologramData hologramData);
 
     /**
      * enables an global /server spawn command

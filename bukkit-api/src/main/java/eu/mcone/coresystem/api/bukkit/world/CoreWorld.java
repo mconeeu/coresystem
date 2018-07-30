@@ -62,12 +62,6 @@ public interface CoreWorld {
     String getGeneratorSettings();
 
     /**
-     * get the template name
-     * @return template name
-     */
-    String getTemplateName();
-
-    /**
      * check if world is generating structures
      * @return generating structures
      */
@@ -150,12 +144,6 @@ public interface CoreWorld {
      * @param load boolean to load on startup
      */
     void setLoadOnStartup(boolean load);
-
-    /**
-     * set Template name for CloudSystem
-     * @param name template name
-     */
-    void setTemplateName(String name);
 
     /**
      * set spawn location

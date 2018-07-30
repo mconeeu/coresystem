@@ -10,7 +10,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
+import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.npc.NPC;
+import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
@@ -307,6 +311,16 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Override
     public BuildSystem initialiseBuildSystem(BuildSystem.BuildEvent... events) {
         return new eu.mcone.coresystem.bukkit.world.BuildSystem(this, events);
+    }
+
+    @Override
+    public NPC constructNpc(NpcData npcData) {
+        return new eu.mcone.coresystem.bukkit.npc.NPC(worldManager.getWorld(npcData.getLocation().getWorldName()), npcData);
+    }
+
+    @Override
+    public Hologram constructHologram(HologramData hologramData) {
+        return new eu.mcone.coresystem.bukkit.hologram.Hologram(worldManager.getWorld(hologramData.getLocation().getWorldName()), hologramData);
     }
 
     @Override
