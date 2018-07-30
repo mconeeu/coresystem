@@ -149,8 +149,7 @@ public class WorldCMD implements CommandExecutor {
                                         "\n§7§oallowAnimals: §f" + w.isAllowAnimals() +
                                         "\n§7§oallowMonsters: §f" + w.isAllowMonsters() +
                                         "\n§7§okeepSpawnInMemory: §f" + bw.getKeepSpawnInMemory() +
-                                        "\n§7§oloadOnStartup: §f" + w.isLoadOnStartup() +
-                                        "\n§7§otemplateName: §f" + w.getTemplateName()
+                                        "\n§7§oloadOnStartup: §f" + w.isLoadOnStartup()
                                 );
 
                                 return true;
@@ -263,8 +262,6 @@ public class WorldCMD implements CommandExecutor {
                                     w.setKeepSpawnInMemory(Boolean.valueOf(args[2]));
                                 } else if (args[1].equalsIgnoreCase("loadOnStartup")) {
                                     w.setLoadOnStartup(Boolean.valueOf(args[2]));
-                                } else if (args[1].equalsIgnoreCase("templateName")) {
-                                    w.setTemplateName(args[2]);
                                 } else if (args[1].equalsIgnoreCase("seed")) {
                                     BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Seed kann nachträglich nicht verändert werden!");
                                     return true;
