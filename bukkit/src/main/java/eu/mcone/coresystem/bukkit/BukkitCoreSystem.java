@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
@@ -64,6 +65,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private MySQL mysql3;
     private Map<UUID, CoreInventory> inventories;
     private Map<String, CorePlugin> plugins;
+    private Map<String, CoreCommand> coreCommands;
 
     @Getter
     private TranslationManager translationManager;
@@ -102,6 +104,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         setInstance(this);
         system = this;
         inventories = new HashMap<>();
+        coreCommands = new HashMap<>();
         plugins = new HashMap<>();
 
         Bukkit.getConsoleSender().sendMessage("§f\n" +
@@ -212,19 +215,19 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
 
     private void registerCommands() {
-        getCommand("bukkit").setExecutor(new BukkitCMD());
-        getCommand("feed").setExecutor(new FeedCMD());
-        getCommand("fly").setExecutor(new FlyCMD());
-        getCommand("gamemode").setExecutor(new GamemodeCMD());
-        getCommand("heal").setExecutor(new HealCMD());
-        getCommand("tp").setExecutor(new TpCMD());
-        getCommand("tphere").setExecutor(new TphereCMD());
-        getCommand("tpall").setExecutor(new TpallCMD());
-        getCommand("tppos").setExecutor(new TpposCMD());
-        getCommand("stats").setExecutor(new StatsCMD());
-        getCommand("speed").setExecutor(new SpeedCMD());
-        getCommand("vanish").setExecutor(new VanishCMD());
-        getCommand("profil").setExecutor(new ProfileCMD());
+        new BukkitCMD();
+        new FeedCMD();
+        new FlyCMD();
+        new GamemodeCMD();
+        new HealCMD();
+        new TpCMD();
+        new TphereCMD();
+        new TpallCMD();
+        new TpposCMD();
+        new StatsCMD();
+        new SpeedCMD();
+        new VanishCMD();
+        new ProfileCMD();
     }
 
     private void registerListener() {
@@ -325,7 +328,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public void enableSpawnCommand(CoreWorld world) {
-        getCommand("spawn").setExecutor(new SpawnCMD(world));
+        new SpawnCMD(world);
     }
 
     @Override
@@ -336,6 +339,16 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Override
     public Collection<CoreInventory> getInventories() {
         return inventories.values();
+    }
+
+    @Override
+    public void registerCoreCommand(CoreCommand coreCommand) {
+        coreCommands.put(coreCommand.getCommand(), coreCommand);
+    }
+
+    @Override
+    public Map<String, CoreCommand> getCoreCommands() {
+        return coreCommands;
     }
 
     public void clearPlayerInventories(UUID uuid) {

@@ -32,7 +32,7 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
 
     public NpcManager(JavaPlugin plugin) {
         BukkitCoreSystem.getInstance().getServer().getPluginManager().registerEvents(this, BukkitCoreSystem.getInstance());
-        BukkitCoreSystem.getInstance().getCommand("npc").setExecutor(new NpcCMD(this));
+        new NpcCMD(this);
 
         this.reload();
         Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {

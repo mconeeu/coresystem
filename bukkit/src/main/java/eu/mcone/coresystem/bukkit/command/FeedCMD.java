@@ -6,16 +6,21 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class FeedCMD implements CommandExecutor{
-	
+public class FeedCMD extends CoreCommand {
+
+	public FeedCMD() {
+		super(CoreSystem.getInstance(), "feed");
+	}
+
 	public boolean onCommand(CommandSender sender, Command cmd, String cmdlabel, String[] args){
 		if (sender instanceof Player) {
 			Player p = (Player) sender;

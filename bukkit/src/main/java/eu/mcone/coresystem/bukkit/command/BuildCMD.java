@@ -6,21 +6,23 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.world.BuildSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class BuildCMD implements CommandExecutor {
+public class BuildCMD extends CoreCommand {
 
     private BuildSystem buildSystem;
 
     public BuildCMD(BuildSystem buildSystem) {
+        super(BukkitCoreSystem.getInstance(), "build");
         this.buildSystem = buildSystem;
     }
+
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {

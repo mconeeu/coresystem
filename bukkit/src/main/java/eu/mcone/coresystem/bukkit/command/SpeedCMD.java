@@ -6,13 +6,18 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class SpeedCMD implements CommandExecutor {
+public class SpeedCMD extends CoreCommand {
+
+    public SpeedCMD() {
+        super(CoreSystem.getInstance(), "speed");
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {

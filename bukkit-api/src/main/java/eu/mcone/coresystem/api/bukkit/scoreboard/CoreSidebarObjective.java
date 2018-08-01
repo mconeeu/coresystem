@@ -77,17 +77,18 @@ public abstract class CoreSidebarObjective extends CoreObjective {
 
     /**
      * Set text for a specific Score
-     * @param score the score id
+     *
+     * @param score   the score id
      * @param content text that should be shown (can be up to 32 chars)
      */
     public void setScore(int score, String content) {
         Team team;
         String scoreName = getTeamName(score);
 
-        if (this.scoreboard.getTeam(TEAM_NAME_PREFIX+score) != null) {
-            team = this.scoreboard.getTeam(TEAM_NAME_PREFIX+score);
+        if (this.scoreboard.getTeam(TEAM_NAME_PREFIX + score) != null) {
+            team = this.scoreboard.getTeam(TEAM_NAME_PREFIX + score);
         } else {
-            team = this.scoreboard.registerNewTeam(TEAM_NAME_PREFIX+score);
+            team = this.scoreboard.registerNewTeam(TEAM_NAME_PREFIX + score);
         }
 
         if (content.length() > 16) {

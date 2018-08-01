@@ -35,7 +35,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
         this.allowedPlayers = new HashMap<>();
         this.filteredBlocks = new HashMap<>();
 
-        instance.getCommand("build").setExecutor(new BuildCMD(this));
+        new BuildCMD(this);
 
         for (BuildEvent event : events) {
             switch (event) {

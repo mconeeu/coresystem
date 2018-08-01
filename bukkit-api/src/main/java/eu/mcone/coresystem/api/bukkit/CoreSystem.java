@@ -8,6 +8,7 @@ package eu.mcone.coresystem.api.bukkit;
 
 import com.google.gson.Gson;
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
+import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
@@ -31,6 +32,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.UUID;
 
 public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem {
@@ -173,6 +175,18 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return list of all CoreInventories
      */
     public abstract Collection<CoreInventory> getInventories();
+
+    /**
+     * registers a new CoreCommand (not necessary, extending the CoreInventory class will do this)
+     * @param coreCommand CoreCommand
+     */
+    public abstract void registerCoreCommand(CoreCommand coreCommand);
+
+    /**
+     * returns all current saved CoreCommands
+     * @return Map of all CoreCommands
+     */
+    public abstract Map<String, CoreCommand> getCoreCommands();
 
     /**
      * returns the StatsAPI for a specific Gamemode

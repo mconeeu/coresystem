@@ -32,9 +32,8 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     public WorldManager(BukkitCoreSystem instance) {
         this.coreWorlds = new ArrayList<>();
         this.worldCMD = new WorldCMD();
+        new LocationCMD();
 
-        instance.getCommand("world").setExecutor(worldCMD);
-        instance.getCommand("location").setExecutor(new LocationCMD());
         reload();
     }
 

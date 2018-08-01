@@ -7,6 +7,7 @@
 package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.world.BukkitCoreWorld;
@@ -20,7 +21,6 @@ import org.bukkit.Difficulty;
 import org.bukkit.World;
 import org.bukkit.WorldType;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -29,10 +29,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WorldCMD implements CommandExecutor {
+public class WorldCMD extends CoreCommand {
 
     @Setter
     private boolean enableUploadCmd;
+
+    public WorldCMD() {
+        super(CoreSystem.getInstance(), "world");
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {

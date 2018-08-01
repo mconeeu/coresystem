@@ -6,15 +6,20 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.inventory.ProfileInventory;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class ProfileCMD implements CommandExecutor {
+public class ProfileCMD extends CoreCommand {
+
+    public ProfileCMD() {
+        super(CoreSystem.getInstance(), "profile");
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {

@@ -32,7 +32,7 @@ public class HologramManager implements Listener, eu.mcone.coresystem.api.bukkit
 
     public HologramManager(JavaPlugin plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, BukkitCoreSystem.getInstance());
-        plugin.getCommand("holo").setExecutor(new HoloCMD(this));
+        new HoloCMD(this);
 
         reload();
     }

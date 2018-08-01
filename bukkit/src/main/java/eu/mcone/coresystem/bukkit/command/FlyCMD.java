@@ -6,9 +6,10 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -16,9 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class FlyCMD implements CommandExecutor {
+public class FlyCMD extends CoreCommand {
 
     private static List<UUID> fly = new ArrayList<>();
+
+    public FlyCMD() {
+        super(CoreSystem.getInstance(), "fly");
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {

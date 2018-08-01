@@ -7,6 +7,7 @@
 package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
@@ -17,19 +18,20 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class HoloCMD implements CommandExecutor {
+public class HoloCMD extends CoreCommand {
 
     private HologramManager api;
 
     public HoloCMD(HologramManager api) {
+       super(CoreSystem.getInstance(), "holo");
         this.api = api;
     }
+
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
