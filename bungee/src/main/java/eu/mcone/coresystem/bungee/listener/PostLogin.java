@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 public class PostLogin implements Listener{
 
+    private HashMap<String, Object> updateHash = new HashMap<>();
     @EventHandler
     public void on(PostLoginEvent e){
         final ProxiedPlayer p = e.getPlayer();
@@ -36,7 +37,12 @@ public class PostLogin implements Listener{
         if (cp.isNew()) {
             BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "§8[§7§l!§8] §3MC ONE §8» §2Als kleines Willkommensgeschenk bekommst du 20 Coins gutgeschrieben!");
         } else {
-            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `userinfo` SET `name` = '" + p.getName() + "', `ip` = '" + cp.getIpAdress() + "' , state = '1', `timestamp` = '" + System.currentTimeMillis() / 1000 + "' WHERE `uuid`='" + p.getUniqueId().toString() + "';");
+            updateHash.put("ip", cp.getIpAdress());
+            updateHash.put("state", "1");
+            updateHash.put("timestamp", System.currentTimeMillis() / 1000);
+            BungeeCoreSystem.getSystem().getMongoDBManager().updateDocument("uuid", p.getUniqueId(),  updateHash,"userinfo");
+
+            //BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `userinfo` SET `name` = '" + p.getName() + "', `ip` = '" + cp.getIpAdress() + "' , state = '1', `timestamp` = '" + System.currentTimeMillis() / 1000 + "' WHERE `uuid`='" + p.getUniqueId().toString() + "';");
         }
 
         if(p.hasPermission("system.bungee.report")) {

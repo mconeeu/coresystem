@@ -8,6 +8,7 @@ package eu.mcone.coresystem.api.core.mysql;
 
 import java.sql.ResultSet;
 
+@Deprecated
 public interface MySQL {
 
     /**

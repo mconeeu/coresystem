@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Deprecated
 public class MySQL implements eu.mcone.coresystem.api.core.mysql.MySQL {
 
     private HikariDataSource ds;

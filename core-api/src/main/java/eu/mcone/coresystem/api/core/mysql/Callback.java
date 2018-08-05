@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.api.core.mysql;
 
+@Deprecated
 public interface Callback<rs> {
     void run(rs rs);
 }

@@ -7,14 +7,34 @@
 package eu.mcone.coresystem.bungee.runnable;
 
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.core.mysql.Database;
+import org.bson.Document;
 
-import java.sql.SQLException;
 import java.util.UUID;
 
-public class PremiumCheck implements Runnable{
-	 
-	public void run() {
+import static com.mongodb.client.model.Filters.eq;
+
+public class PremiumCheck implements Runnable {
+
+    public void run() {
+
+        for (Document premiumDocument : BungeeCoreSystem.getSystem().getMongoDBManager().getDocumentsInCollection("bungeesystem_premium")) {
+            long millis = System.currentTimeMillis() / 1000;
+
+            if (premiumDocument.getLong("timestamp") - millis < 0) {
+                BungeeCoreSystem.getInstance().sendConsoleMessage("§7Dem Spieler §f" + BungeeCoreSystem.getInstance().getPlayerUtils().fetchName(UUID.fromString(premiumDocument.getString("uuid"))) + " §7wird der Rang §f" + premiumDocument.getString("group") + " §7entzogen");
+                BungeeCoreSystem.getSystem().getMongoDBManager().updateDocument("uuid", premiumDocument.getString("uuid"), "group", premiumDocument.getString("odl_group"), "userinfo");
+
+                for (Document infoDocument : BungeeCoreSystem.getSystem().getMongoDBManager().getCollection("").find(eq("uuid", premiumDocument.getString("uuid")))) {
+                    if (infoDocument.getString("grupper").equalsIgnoreCase("Spieler")) {
+                        BungeeCoreSystem.getSystem().getMongoDBManager().deleteDocument("uuid", infoDocument.getString("uuid"), "bungeesystem_premium");
+                    } else {
+                        BungeeCoreSystem.getInstance().sendConsoleMessage("§7[§cMySQL ERROR§7] §4DER SPIELER KONNTE NICHT GELÖSCHT WERDEN OBWOHL SEIN PREMIUM RANG ABGLAUFEN IST!");
+                    }
+                }
+            }
+        }
+
+        /*
         BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).selectAsync("SELECT * FROM bungeesystem_premium", rs -> {
             long millis = System.currentTimeMillis() / 1000;
 
@@ -45,6 +65,6 @@ public class PremiumCheck implements Runnable{
                 e.printStackTrace();
             }
         });
+        */
     }
-	   
 }

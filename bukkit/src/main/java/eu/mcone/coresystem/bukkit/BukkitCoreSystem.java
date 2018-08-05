@@ -38,6 +38,7 @@ import eu.mcone.coresystem.bukkit.util.TablistInfo;
 import eu.mcone.coresystem.bukkit.util.Title;
 import eu.mcone.coresystem.bukkit.world.WorldManager;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
+import eu.mcone.coresystem.core.mongoDB.MongoDBManager;
 import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.mysql.MySQL;
 import eu.mcone.coresystem.core.player.PermissionManager;
@@ -63,6 +64,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private MySQL mysql1;
     private MySQL mysql2;
     private MySQL mysql3;
+    private MongoDBManager mongoDBManager;
     private Map<UUID, CoreInventory> inventories;
     private Map<String, CorePlugin> plugins;
     private Map<String, CoreCommand> coreCommands;
@@ -124,6 +126,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         mysql1 = new MySQL(Database.SYSTEM);
         mysql2 = new MySQL(Database.STATS);
         mysql3 = new MySQL(Database.DATA);
+        mongoDBManager = new MongoDBManager(Database.MONGO_SYSTEM);
+        mongoDBManager.connectAuthentication();
         createTables();
 
         cooldownSystem = new CooldownSystem();
@@ -284,6 +288,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Override
     public eu.mcone.coresystem.api.core.mysql.MySQL getMySQL() {
         return mysql3;
+    }
+
+    @Override
+    public MongoDBManager getMongoDBManager() {
+        return mongoDBManager;
     }
 
     public CorePlayer getCorePlayer(Player p) {

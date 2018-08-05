@@ -9,8 +9,9 @@ package eu.mcone.coresystem.bungee.utils;
 import eu.mcone.coresystem.api.bungee.util.Preference;
 import eu.mcone.coresystem.api.bungee.util.Preferences;
 import eu.mcone.coresystem.api.core.mysql.MySQL;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import org.bson.Document;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +31,11 @@ public class PreferencesManager implements Preferences {
     public void reload() {
         preferences.clear();
 
+        for (Document preferencesDocument : BungeeCoreSystem.getSystem().getMongoDBManager().getDocumentsInCollection("bungeesystem_preferences")) {
+            preferences.put(Preference.valueOf(preferencesDocument.getString("key")), preferencesDocument.getString("value"));
+        }
+
+        /*
         mySQL.select("SELECT `key`, `value` FROM `bungeesystem_preferences`", rs -> {
             try {
                 while (rs.next()) {
@@ -39,11 +45,17 @@ public class PreferencesManager implements Preferences {
                 e.printStackTrace();
             }
         });
+        */
     }
 
     @Override
     public void setPreference(Preference preference, String value) {
-        mySQL.update("INSERT INTO `bungeesystem_preferences` (`key`, `value`) VALUES ('"+preference.toString()+"', '"+value+"') ON DUPLICATE KEY UPDATE `value`='"+value+"'");
+        if (BungeeCoreSystem.getSystem().getMongoDBManager().containsValue("value", value)) {
+            System.out.println("preference Problem");
+        }
+
+        BungeeCoreSystem.getSystem().getMongoDBManager().insertDocument(new Document("key", preference.toString()), "bungeesystem_preferences");
+        //mySQL.update("INSERT INTO `bungeesystem_preferences` (`key`, `value`) VALUES ('" + preference.toString() + "', '" + value + "') ON DUPLICATE KEY UPDATE `value`='" + value + "'");
         preferences.put(preference, value);
     }
 
@@ -64,6 +76,9 @@ public class PreferencesManager implements Preferences {
 
     @Override
     public String getLiveString(Preference preference) {
+        return (String) BungeeCoreSystem.getSystem().getMongoDBManager().getObject("key", preference, "value", "bungeesystem_preferences");
+
+        /*
         return mySQL.select("SELECT `value` FROM `bungeesystem_preferences` WHERE `key`='" + preference + "'", rs -> {
             try {
                 if (rs.next()) {
@@ -74,10 +89,14 @@ public class PreferencesManager implements Preferences {
             }
             return null;
         }, String.class);
+        */
     }
 
     @Override
     public int getLiveInt(Preference preference) {
+        return (int) BungeeCoreSystem.getSystem().getMongoDBManager().getObject("key", preference, "value", "bungeesystem_preferences");
+
+        /*
         return mySQL.select("SELECT `value` FROM `bungeesystem_preferences` WHERE `key`='" + preference + "'", rs -> {
             try {
                 if (rs.next()) {
@@ -88,10 +107,14 @@ public class PreferencesManager implements Preferences {
             }
             return null;
         }, int.class);
+        */
     }
 
     @Override
     public boolean getLiveBoolean(Preference preference) {
+        return (boolean) BungeeCoreSystem.getSystem().getMongoDBManager().getObject("key", preference, "value", "bungeesystem_preferences");
+
+        /*
         return mySQL.select("SELECT `value` FROM `bungeesystem_preferences` WHERE `key`='" + preference + "'", rs -> {
             try {
                 if (rs.next()) {
@@ -102,6 +125,6 @@ public class PreferencesManager implements Preferences {
             }
             return null;
         }, boolean.class);
+        */
     }
-
 }

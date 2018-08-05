@@ -29,6 +29,7 @@ import eu.mcone.coresystem.bungee.utils.ChannelHandler;
 import eu.mcone.coresystem.bungee.utils.PreferencesManager;
 import eu.mcone.coresystem.bungee.utils.TeamspeakVerifier;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
+import eu.mcone.coresystem.core.mongoDB.MongoDBManager;
 import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.mysql.MySQL;
 import eu.mcone.coresystem.core.player.PermissionManager;
@@ -83,6 +84,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private MySQL database;
     @Getter
+    private MongoDBManager mongoDBManager;
+    @Getter
     private Map<UUID, CorePlayer> corePlayers;
 
     public void onEnable() {
@@ -107,6 +110,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         sendConsoleMessage("§aInitializing MariaDB Connections...");
         createTables(database = new MySQL(Database.SYSTEM));
+        mongoDBManager = new MongoDBManager(Database.MONGO_SYSTEM);
+        mongoDBManager.connectAuthentication();
 
         cooldownSystem = new CooldownSystem();
         channelHandler = new ChannelHandler();
@@ -131,7 +136,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         if (!Boolean.valueOf(System.getProperty("DisableTsQuery"))) {
             sendConsoleMessage("§aLoading TeamSpeakQuery...");
-            teamspeakVerifier = new TeamspeakVerifier();
+            //teamspeakVerifier = new TeamspeakVerifier();
         } else {
             sendConsoleMessage("§cTeamSpeakQuery disabled by JVM Argument");
         }
@@ -389,6 +394,11 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             default:
                 return null;
         }
+    }
+
+    @Override
+    public MongoDBManager getMongoDBManager() {
+        return mongoDBManager;
     }
 
     @Override
