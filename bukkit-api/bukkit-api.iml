@@ -19,8 +19,8 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: eu.mcone.cloud:plugin-api-bukkit:1.1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: eu.mcone.cloud:plugin-api:1.1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: eu.mcone.cloud:core:1.1.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.mariadb.jdbc:mariadb-java-client:2.2.3" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: com.zaxxer:HikariCP:2.7.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.mariadb.jdbc:mariadb-java-client:2.2.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.zaxxer:HikariCP:3.1.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:slf4j-simple:1.7.9" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.md-5:bungeecord-config:1.12-SNAPSHOT" level="project" />

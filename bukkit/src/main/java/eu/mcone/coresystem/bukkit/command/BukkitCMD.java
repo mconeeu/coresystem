@@ -6,23 +6,21 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class BukkitCMD extends CoreCommand {
 
     public BukkitCMD() {
-        super(CoreSystem.getInstance(), "bukkit");
+        super("bukkit");
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(CommandSender sender, String[] args) {
         if (args.length == 0) {
             sender.sendMessage("");
             sender.sendMessage("§8§m---------- §r§3§lMCONE-BukkitCoreSystem §8§m----------");

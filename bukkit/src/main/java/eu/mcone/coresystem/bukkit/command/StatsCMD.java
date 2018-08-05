@@ -6,30 +6,20 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.bukkit.inventory.StatsInventory;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class StatsCMD extends CoreCommand {
+public class StatsCMD extends CorePlayerCommand {
 
-	public StatsCMD() {
-		super(CoreSystem.getInstance(), "stats");
-	}
+    public StatsCMD() {
+        super("stats");
+    }
 
-	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (sender instanceof Player) {
-			if (!BukkitCoreSystem.getInstance().getCooldownSystem().addAndCheck(BukkitCoreSystem.getInstance(), this.getClass(), ((Player) sender).getUniqueId())) return false;
-			new StatsInventory((Player) sender);
-		} else {
-			BukkitCoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.consolesender");
-		}
+    @Override
+    public boolean onPlayerCommand(Player p, String[] args) {
+        new StatsInventory(p);
+        return true;
+    }
 
-		return true;
-	}
-	
 }

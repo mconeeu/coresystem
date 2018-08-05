@@ -20,9 +20,11 @@ import java.util.*;
 public abstract class CoreInventory {
 
     @Getter
-    protected Inventory inventory;
+    private String name;
     @Getter
-    protected Player player;
+    private Inventory inventory;
+    @Getter
+    private Player player;
     @Getter
     private Map<ItemStack, CoreItemEvent> events;
 
@@ -34,11 +36,12 @@ public abstract class CoreInventory {
      * @param args options
      */
     protected CoreInventory(String name, Player player, int size, Option... args) {
+        this.name = name;
         this.inventory = Bukkit.createInventory(null, size, name);
         this.player = player;
         this.events = new HashMap<>();
 
-        CoreSystem.getInstance().registerInventory(this);
+        CoreSystem.getInstance().getPluginManager().registerCoreInventory(this, CoreSystem.getInstance());
 
         List<Option> options = new ArrayList<>(Arrays.asList(args));
         if (options.contains(Option.FILL_EMPTY_SLOTS)) {

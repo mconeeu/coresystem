@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.world;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.BuildCMD;
 import org.bukkit.GameMode;
@@ -35,7 +36,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
         this.allowedPlayers = new HashMap<>();
         this.filteredBlocks = new HashMap<>();
 
-        new BuildCMD(this);
+        instance.getPluginManager().registerCoreCommand(new BuildCMD(this), CoreSystem.getInstance());
 
         for (BuildEvent event : events) {
             switch (event) {

@@ -4,66 +4,6 @@ authors: [Domink Lippl, Rufus Maiwald]
 softdepend: [MCONE-CloudPlugin]
 main: eu.mcone.coresystem.bukkit.BukkitCoreSystem
 
-commands:
-  bukkit:
-    description: Shows some information about the plugin and the server
-  profile:
-    aliases: profil
-    description: Opens the profile menu
-  feed:
-    description: Sets the food bar to 10
-    permission: system.bukkit.feed
-  gamemode:
-    aliases: gm
-    description: Changes your gamemode
-    permission: system.bukkit.gamemode
-  heal:
-    description: Sets the heal bar to 10
-    permission: system.bukkit.heal
-  stats:
-    description: Opens the stats menu
-  fly:
-    description: Changes fly mode
-    permission: system.bukkit.fly
-  tp:
-    aliases: teleport
-    description: Teleports you or another eu.mcone.coresystem.api.core.player
-    permission: system.bukkit.tp
-  tphere:
-    description: Teleports another eu.mcone.coresystem.api.core.player to yourself
-    permission: system.bukkit.tp.others
-  tpall:
-    description: Teleports all players to another eu.mcone.coresystem.api.core.player
-    permission: system.bukkit.tp.all
-  tppos:
-    description: Teleports the eu.mcone.coresystem.api.core.player to a coordinate
-    permission: system.bukkit.tp.pos
-  vanish:
-    description: Hides the eu.mcone.coresystem.api.core.player from tab and makes him invisible
-    permission: system.bukkit.vanish
-  holo:
-    description: Manage holograms
-    permission: system.bukkit.world.holo
-  npc:
-    descirption: Spawns an NPC
-    permission: system.bukkit.world.npc
-  build:
-    description: Allows to bypass build restrictions
-    permission: system.bukkit.build
-  spawn:
-    description: Allows to teleport to several registered spawns
-  world:
-    aliases: [worlds,w]
-    description: Manage worlds
-    permission: system.bukkit.world
-  location:
-    aliases: loc
-    description: Manage Locations
-    permission: system.bukkit.world.location
-  speed:
-    description: in- or decreases the walk or fly speed
-    permission: system.bukkit.speed
-
 permissions:
   system:
     description: Bypass all MCONE-System Permissions

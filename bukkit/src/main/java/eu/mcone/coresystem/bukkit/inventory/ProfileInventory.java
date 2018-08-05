@@ -24,8 +24,8 @@ public class ProfileInventory extends CoreInventory {
     public ProfileInventory(Player p) {
         super("§8» §3§l"+p.getName()+"'s Profil", p, InventorySlot.ROW_4, Option.FILL_EMPTY_SLOTS);
 
-        BukkitCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT coins, onlinetime FROM userinfo WHERE uuid='" + player.getUniqueId().toString() + "'", rs -> {
-            CorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(player);
+        BukkitCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT coins, onlinetime FROM userinfo WHERE uuid='" + p.getUniqueId().toString() + "'", rs -> {
+            CorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(p);
 
             try {
                 if (rs.next()) {
@@ -33,7 +33,7 @@ public class ProfileInventory extends CoreInventory {
                     int coins = rs.getInt("coins");
                     String status = cp.getState().getName();
 
-                    setItem(InventorySlot.ROW_1_SLOT_5, ItemBuilder.createSkullItem(player.getName(), 1).displayName("§f§l" + player.getName()).lore(
+                    setItem(InventorySlot.ROW_1_SLOT_5, ItemBuilder.createSkullItem(p.getName(), 1).displayName("§f§l" + p.getName()).lore(
                                 cp.getMainGroup().getLabel(),
                                 "",
                                 "§7Coins: §f" + coins,
@@ -64,7 +64,7 @@ public class ProfileInventory extends CoreInventory {
 
                     openInventory();
                 } else {
-                    throw new RuntimeCoreException("Player "+player+" is not registred in the database");
+                    throw new RuntimeCoreException("Player "+p+" is not registred in the database");
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

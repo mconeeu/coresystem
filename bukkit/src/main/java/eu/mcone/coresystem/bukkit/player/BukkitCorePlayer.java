@@ -120,11 +120,9 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
     @Override
     public void unregister() {
         scoreboard.unregister();
-
-        BukkitCoreSystem.getSystem().clearPlayerInventories(uuid);
         BukkitCoreSystem.getSystem().getAfkManager().unregisterPlayer(uuid);
-
         BukkitCoreSystem.getSystem().getCorePlayers().remove(uuid);
+
         BukkitCoreSystem.getInstance().sendConsoleMessage("Unloaded Player "+name);
     }
 

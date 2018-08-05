@@ -21,7 +21,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +29,12 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
 
     private List<NPC> npcs;
 
-    public NpcManager(JavaPlugin plugin) {
+    public NpcManager(BukkitCoreSystem instance) {
         BukkitCoreSystem.getInstance().getServer().getPluginManager().registerEvents(this, BukkitCoreSystem.getInstance());
-        new NpcCMD(this);
+        instance.getPluginManager().registerCoreCommand(new NpcCMD(this), CoreSystem.getInstance());
 
         this.reload();
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(instance, () -> {
             for (NPC npc : npcs) {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     if (npc.getData().getLocation().bukkit().getWorld().equals(p.getWorld())) {

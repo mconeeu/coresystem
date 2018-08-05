@@ -6,82 +6,63 @@
 
 package eu.mcone.coresystem.api.bukkit.command;
 
-
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.core.translation.Language;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandMap;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import java.lang.reflect.Field;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 
-public abstract class CoreCommand implements CommandExecutor {
+public abstract class CoreCommand extends Command {
 
-    private Field bukkitCommandMap;
+    private final static String NO_PERM_MESSAGE = CoreSystem.getInstance().getTranslationManager().get("system.prefix.server", Language.ENGLISH)+CoreSystem.getInstance().getTranslationManager().get("system.command.noperm", Language.ENGLISH);
+
     @Getter
-    private JavaPlugin instance;
-    @Getter
-    private String command;
-    @Getter
-    private CommandExecutor commandExecutor;
-    @Getter
-    private Boolean unregistered = false;
+    private final String permission;
 
-    public CoreCommand(final JavaPlugin instance, final String command) {
-        try {
-            this.instance = instance;
-            this.command = command;
-            this.commandExecutor = this;
+    public CoreCommand(String name) {
+        this(name, null, "", "");
+    }
 
-            this.bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
-            this.bukkitCommandMap.setAccessible(true);
-            this.addCommand();
-        } catch (Exception e) {
-            e.printStackTrace();
+    public CoreCommand(String name, String permission) {
+        this(name, permission, "", "");
+    }
+
+    public CoreCommand(String name, String permission, String description, String usage, String... aliases) {
+        super(name);
+
+        this.permission = permission;
+        setDescription(description);
+        setUsage(usage);
+        setAliases(Arrays.asList(aliases));
+        setPermissionMessage(NO_PERM_MESSAGE);
+    }
+
+    @Override
+    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+        if (sender instanceof Player && !CoreSystem.getInstance().getCooldownSystem().addAndCheck(CoreSystem.getInstance(), this.getClass(), ((Player) sender).getUniqueId()))
+            return false;
+
+        if (permission == null || sender.hasPermission(permission)) {
+            return onCommand(sender, args);
+        } else {
+            if (sender instanceof Player) CoreSystem.getInstance().getMessager().sendTransl((Player) sender, "system.command.noperm");
+            return false;
         }
     }
 
-    private void addCommand() {
-        this.instance.getCommand(this.command).setExecutor(this.commandExecutor);
-        CoreSystem.getInstance().registerCoreCommand(this);
+    @Override
+    public List<String> tabComplete(CommandSender sender, String alais, String[] args) {
+        return onTabComplete(sender, args);
     }
 
-    public void unregisterCommand() {
-        try {
-            if (unregistered) {
-                CoreSystem.getInstance().sendConsoleMessage("§cThe command " + this.command + " has already been unregistered");
-            } else {
-                CommandMap commandMap = (CommandMap) this.bukkitCommandMap.get(Bukkit.getServer());
-                Field knownCommands = commandMap.getClass().getDeclaredField("knownCommands");
-                knownCommands.setAccessible(true);
-                Map<String, Command> cmds = (Map<String, Command>) knownCommands.get(commandMap);
-                cmds.remove(this.command);
-                knownCommands.set(commandMap, cmds);
-                this.unregistered = true;
-            }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+    public abstract boolean onCommand(CommandSender sender, String[] args);
+
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        return null;
     }
 
-    public void registerCommand() {
-        try {
-            if (unregistered) {
-                CommandMap commandMap = (CommandMap) this.bukkitCommandMap.get(Bukkit.getServer());
-                Field knownCommands = commandMap.getClass().getDeclaredField("knownCommands");
-                knownCommands.setAccessible(true);
-                Map<String, Command> cmds = (Map<String, Command>) knownCommands.get(commandMap);
-                cmds.put(this.command, this.instance.getCommand(this.command));
-                knownCommands.set(commandMap, cmds);
-                this.unregistered = false;
-            } else {
-                CoreSystem.getInstance().sendConsoleMessage("§cThe command " + this.command + " has already been registered");
-            }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
 }
