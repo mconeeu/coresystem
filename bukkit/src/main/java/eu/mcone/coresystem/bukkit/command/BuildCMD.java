@@ -6,53 +6,44 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
-import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
+import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.world.BuildSystem;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class BuildCMD extends CoreCommand {
+public class BuildCMD extends CorePlayerCommand {
 
     private BuildSystem buildSystem;
 
     public BuildCMD(BuildSystem buildSystem) {
-        super(BukkitCoreSystem.getInstance(), "build");
+        super("build", "system.bukkit.build");
         this.buildSystem = buildSystem;
     }
 
-
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        if (sender instanceof Player) {
-            Player p = (Player) sender;
+    public boolean onPlayerCommand(Player p, String[] args) {
+        if (p.hasPermission("system.bukkit.build")) {
+            if (args.length == 0) {
+                buildSystem.changeBuildMode(p);
+                return true;
+            } else if (args.length == 1) {
+                Player t = Bukkit.getPlayer(args[0]);
 
-            if (p.hasPermission("system.bukkit.build")) {
-                if (args.length == 0) {
-                    buildSystem.changeBuildMode(p);
-                    return true;
-                } else if (args.length == 1) {
-                    Player t = Bukkit.getPlayer(args[0]);
-
-                    if (t != null) {
-                        buildSystem.changeBuildMode(t);
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast den Build-Modus von §a"+args[0]+"§2 verändert!");
-                    } else {
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler ist nicht online!");
-                    }
-                    return true;
+                if (t != null) {
+                    buildSystem.changeBuildMode(t);
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast den Build-Modus von §a" + args[0] + "§2 verändert!");
+                } else {
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler ist nicht online!");
                 }
-            } else {
-                BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
                 return true;
             }
         } else {
-            BukkitCoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.consolesender");
+            BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
+            return true;
         }
 
-        BukkitCoreSystem.getInstance().getMessager().send(sender, "§4Bitte benutze: §c/build [<Spieler>]");
+        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/build [<Spieler>]");
         return true;
     }
 

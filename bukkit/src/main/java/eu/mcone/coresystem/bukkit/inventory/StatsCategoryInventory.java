@@ -17,10 +17,9 @@ import org.bukkit.entity.Player;
 class StatsCategoryInventory extends CoreInventory {
 
     StatsCategoryInventory(Player p, StatsAPI stats) {
-
         super("§8» §3MCONE-Stats", p, InventorySlot.ROW_3, Option.FILL_EMPTY_SLOTS);
 
-        int[] result = stats.getData(player.getUniqueId());
+        int[] result = stats.getData(p.getUniqueId());
 
         setItem(InventorySlot.ROW_2_SLOT_5, new ItemBuilder(Material.ITEM_FRAME, 1, 0).displayName("§3§l" + stats.getGamemode().getLabel() + " §8| §7Global Stats").lore(
                         "§7Platz: §f" + result[0],

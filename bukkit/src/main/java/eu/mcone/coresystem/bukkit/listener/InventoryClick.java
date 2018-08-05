@@ -25,7 +25,7 @@ public class InventoryClick implements Listener{
 	public void on(InventoryClickEvent e){
 		if((e.getRawSlot() < e.getInventory().getSize()) && (e.getCurrentItem() != null)) {
 			if (e.getCurrentItem() != null && !e.getSlotType().equals(InventoryType.SlotType.OUTSIDE)) {
-                for (CoreInventory inv : BukkitCoreSystem.getInstance().getInventories()) {
+                for (CoreInventory inv : BukkitCoreSystem.getInstance().getPluginManager().getCoreInventories()) {
                     if (e.getInventory().equals(inv.getInventory())) {
                         ItemStack item = e.getCurrentItem();
                         e.setCancelled(true);

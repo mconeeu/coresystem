@@ -21,7 +21,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +29,9 @@ public class HologramManager implements Listener, eu.mcone.coresystem.api.bukkit
 
     private List<Hologram> holograms;
 
-    public HologramManager(JavaPlugin plugin) {
-        plugin.getServer().getPluginManager().registerEvents(this, BukkitCoreSystem.getInstance());
-        new HoloCMD(this);
+    public HologramManager(BukkitCoreSystem instance) {
+        instance.getServer().getPluginManager().registerEvents(this, BukkitCoreSystem.getInstance());
+        instance.getPluginManager().registerCoreCommand(new HoloCMD(this), CoreSystem.getInstance());
 
         reload();
     }

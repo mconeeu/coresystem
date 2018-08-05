@@ -19,7 +19,7 @@ class FriendsInventory extends CoreInventory {
     FriendsInventory(Player p) {
         super("§8» §9§lMeine Freunde", p, InventorySlot.ROW_6, Option.FILL_EMPTY_SLOTS);
 
-        BukkitCoreSystem.getInstance().getChannelHandler().createGetRequest(player, friends -> {
+        BukkitCoreSystem.getInstance().getChannelHandler().createGetRequest(p, friends -> {
             int i = 0;
             for (String friend : friends.split(",")) {
                 if (friend.equals("") || i > 44) continue;

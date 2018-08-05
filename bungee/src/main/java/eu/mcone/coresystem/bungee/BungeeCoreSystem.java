@@ -80,6 +80,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private LabyModAPI labyModAPI;
     @Getter
     private Gson gson;
+    @Getter
+    private Gson simpleGson;
 
     @Getter
     private MySQL database;
@@ -107,6 +109,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "                    /____/                                     /____/\n")));
 
         gson = new GsonBuilder().setPrettyPrinting().create();
+        simpleGson = new Gson();
 
         sendConsoleMessage("§aInitializing MariaDB Connections...");
         createTables(database = new MySQL(Database.SYSTEM));
@@ -126,7 +129,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         translationManager = new TranslationManager(database, this);
 
         sendConsoleMessage("§aLoading Permissions & Groups...");
-        permissionManager = new PermissionManager("Proxy", database, gson);
+        permissionManager = new PermissionManager("Proxy", database, simpleGson);
 
         sendConsoleMessage("§aLoading FriendSystem...");
         friendSystem = new FriendSystem(database);

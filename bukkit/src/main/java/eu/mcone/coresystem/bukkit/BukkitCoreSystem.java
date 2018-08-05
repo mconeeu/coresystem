@@ -74,7 +74,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private PermissionManager permissionManager;
     @Getter
-    private CooldownSystem cooldownSystem;
+    private PluginManager pluginManager;
     @Getter
     private NickManager nickManager;
     @Getter
@@ -95,6 +95,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private CoinsUtil coinsUtil;
     @Getter
     private Gson gson;
+    @Getter
+    private Gson simpleGson;
 
     @Getter
     private Map<UUID, CorePlayer> corePlayers;
@@ -105,9 +107,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     public void onEnable() {
         setInstance(this);
         system = this;
-        inventories = new HashMap<>();
-        coreCommands = new HashMap<>();
-        plugins = new HashMap<>();
 
         Bukkit.getConsoleSender().sendMessage("§f\n" +
                 "      __  _____________  _   ________                                                    \n" +
@@ -130,14 +129,18 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         mongoDBManager.connectAuthentication();
         createTables();
 
-        cooldownSystem = new CooldownSystem();
+        pluginManager = new PluginManager();
         coinsUtil = new CoinsUtil(this);
         channelHandler = new ChannelHandler();
         playerUtils = new PlayerUtils(mysql1);
         gson = new GsonBuilder().setPrettyPrinting().create();
+        simpleGson = new Gson();
 
         cloudsystemAvailable = checkIfCloudSystemAvailable();
         sendConsoleMessage("§7CloudSystem available: "+cloudsystemAvailable);
+
+        sendConsoleMessage("§aLoading Translations...");
+        translationManager = new TranslationManager(mysql1, this);
 
         sendConsoleMessage("§aInitializing LabyModAPI...");
         labyModAPI = new LabyModAPI(this);
@@ -154,11 +157,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aStarting AFK-Manager...");
         afkManager = new CoreAfkManager();
 
-        sendConsoleMessage("§aLoading Translations...");
-        translationManager = new TranslationManager(mysql1, this);
-
         sendConsoleMessage("§aLoading Permissions & Groups...");
-        permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), mysql1, gson);
+        permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), mysql1, simpleGson);
 
         sendConsoleMessage("§aStarting NickManager...");
         nickManager = new NickManager(this);
@@ -209,7 +209,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         mysql3.close();
 
         labyModAPI.disable();
-        getCorePlayers().clear();
+        pluginManager.disable();
 
         getServer().getMessenger().unregisterIncomingPluginChannel(this);
         getServer().getMessenger().unregisterOutgoingPluginChannel(this);
@@ -217,21 +217,20 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         getServer().getConsoleSender().sendMessage("§cPlugin disabled!");
     }
 
-
     private void registerCommands() {
-        new BukkitCMD();
-        new FeedCMD();
-        new FlyCMD();
-        new GamemodeCMD();
-        new HealCMD();
-        new TpCMD();
-        new TphereCMD();
-        new TpallCMD();
-        new TpposCMD();
-        new StatsCMD();
-        new SpeedCMD();
-        new VanishCMD();
-        new ProfileCMD();
+        pluginManager.registerCoreCommand(new BukkitCMD(), this);
+        pluginManager.registerCoreCommand(new FeedCMD(), this);
+        pluginManager.registerCoreCommand(new FlyCMD(), this);
+        pluginManager.registerCoreCommand(new GamemodeCMD(), this);
+        pluginManager.registerCoreCommand(new HealCMD(), this);
+        pluginManager.registerCoreCommand(new TpCMD(), this);
+        pluginManager.registerCoreCommand(new TphereCMD(), this);
+        pluginManager.registerCoreCommand(new TpallCMD(), this);
+        pluginManager.registerCoreCommand(new TpposCMD(), this);
+        pluginManager.registerCoreCommand(new StatsCMD(), this);
+        pluginManager.registerCoreCommand(new SpeedCMD(), this);
+        pluginManager.registerCoreCommand(new VanishCMD(), this);
+        pluginManager.registerCoreCommand(new ProfileCMD(), this);
     }
 
     private void registerListener() {
@@ -341,42 +340,13 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public void registerInventory(CoreInventory inventory) {
-        inventories.put(inventory.getPlayer().getUniqueId(), inventory);
-    }
-
-    @Override
-    public Collection<CoreInventory> getInventories() {
-        return inventories.values();
-    }
-
-    @Override
-    public void registerCoreCommand(CoreCommand coreCommand) {
-        coreCommands.put(coreCommand.getCommand(), coreCommand);
-    }
-
-    @Override
-    public Map<String, CoreCommand> getCoreCommands() {
-        return coreCommands;
-    }
-
-    public void clearPlayerInventories(UUID uuid) {
-        inventories.remove(uuid);
+    public CooldownSystem getCooldownSystem() {
+        return pluginManager.getCooldownSystem();
     }
 
     @Override
     public StatsAPI getStatsAPI(Gamemode gamemode) {
         return new StatsAPI(this, gamemode);
-    }
-
-    @Override
-    public void registerPlugin(CorePlugin plugin) {
-        plugins.put(plugin.getPluginName(), plugin);
-    }
-
-    @Override
-    public CorePlugin getPlugin(String name) {
-        return plugins.getOrDefault(name, null);
     }
 
     @Override

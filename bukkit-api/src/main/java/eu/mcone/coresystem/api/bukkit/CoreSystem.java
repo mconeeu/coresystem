@@ -8,16 +8,15 @@ package eu.mcone.coresystem.api.bukkit;
 
 import com.google.gson.Gson;
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
-import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
-import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.api.bukkit.player.*;
 import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
+import eu.mcone.coresystem.api.bukkit.util.CorePluginManager;
 import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
 import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
@@ -32,7 +31,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.UUID;
 
 public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem {
@@ -51,6 +49,12 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
             CoreSystem.instance = instance;
         }
     }
+
+    /**
+     * returns the BCS PluginManager
+     * @return CorePluginManager instance
+     */
+    public abstract CorePluginManager getPluginManager();
 
     /**
      * returns the BCS NickManager
@@ -99,6 +103,12 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return gson instance
      */
     public abstract Gson getGson();
+
+    /**
+     * returns the CoreSystems instance of Gson without pretty-printing.
+     * @return gson instance (pretty printing disabled)
+     */
+    public abstract Gson getSimpleGson();
 
     /**
      * returns if the mc one Cloudsystem is available
@@ -165,48 +175,11 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     public abstract void enableSpawnCommand(CoreWorld world);
 
     /**
-     * registers a new CoreInventory (not necessary, extending the CoreInventory class will do this)
-     * @param inventory CoreInventory
-     */
-    public abstract void registerInventory(CoreInventory inventory);
-
-    /**
-     * returns all current saved CoreInventories
-     * @return list of all CoreInventories
-     */
-    public abstract Collection<CoreInventory> getInventories();
-
-    /**
-     * registers a new CoreCommand (not necessary, extending the CoreInventory class will do this)
-     * @param coreCommand CoreCommand
-     */
-    public abstract void registerCoreCommand(CoreCommand coreCommand);
-
-    /**
-     * returns all current saved CoreCommands
-     * @return Map of all CoreCommands
-     */
-    public abstract Map<String, CoreCommand> getCoreCommands();
-
-    /**
      * returns the StatsAPI for a specific Gamemode
      * @param gamemode gamemode
      * @return StatsAPI
      */
     public abstract StatsAPI getStatsAPI(Gamemode gamemode);
-
-    /**
-     * returns an registered CorePlugin
-     * @param name plugin name
-     * @return CorePlugin
-     */
-    public abstract CorePlugin getPlugin(String name);
-
-    /**
-     * registers a new CorePlugin in the CoreSystem
-      * @param plugin extended CorePlugin Object
-     */
-    public abstract void registerPlugin(CorePlugin plugin);
 
     /**
      * creates a new player title

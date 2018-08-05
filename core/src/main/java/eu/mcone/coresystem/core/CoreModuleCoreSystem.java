@@ -30,4 +30,6 @@ public interface CoreModuleCoreSystem {
 
     Gson getGson();
 
+    Gson getSimpleGson();
+
 }

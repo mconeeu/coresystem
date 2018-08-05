@@ -8,6 +8,7 @@ package eu.mcone.coresystem.api.bukkit;
 
 import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.api.core.GlobalCorePlugin;
+import eu.mcone.coresystem.api.core.exception.CoreException;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -25,7 +26,13 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin 
         this.consolePrefix = "§8[" + pluginColor + pluginName + "§8] §7";
         this.messager = new Messager(prefixTranslation);
 
-        if (CoreSystem.getInstance() != null) CoreSystem.getInstance().registerPlugin(this);
+        if (CoreSystem.getInstance() != null) {
+            try {
+                CoreSystem.getInstance().getPluginManager().registerCorePlugin(this);
+            } catch (CoreException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void sendConsoleMessage(String message) {

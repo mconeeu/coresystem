@@ -47,6 +47,8 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     public abstract Gson getGson();
 
+    public abstract Gson getSimpleGson();
+
     public abstract ChannelHandler getChannelHandler();
 
     public abstract CorePlayer getCorePlayer(ProxiedPlayer player);

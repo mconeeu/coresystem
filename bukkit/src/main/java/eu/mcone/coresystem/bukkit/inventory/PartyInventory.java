@@ -23,10 +23,10 @@ class PartyInventory extends CoreInventory {
     PartyInventory(Player p) {
         super("§8» §5§lMeine Party", p, InventorySlot.ROW_6, Option.FILL_EMPTY_SLOTS);
 
-        BukkitCoreSystem.getInstance().getChannelHandler().createGetRequest(player, member -> {
+        BukkitCoreSystem.getInstance().getChannelHandler().createGetRequest(p, member -> {
             if (!member.equals("false")) {
                 String[] members = member.split(",");
-                boolean isPartyLeader = isPartyLeader(player, members);
+                boolean isPartyLeader = isPartyLeader(p, members);
 
                 int i = 0;
                 for (String m : members) {
@@ -35,7 +35,7 @@ class PartyInventory extends CoreInventory {
 
                     List<String> lores = new ArrayList<>();
                     if (data.length>2 && data[2].equals("leader")) lores.add("§e\u2600 Leader");
-                    if (isPartyLeader && !data[0].equalsIgnoreCase(player.getName())) lores.addAll(Arrays.asList("", "§8» §f§nRechtsklick§8 | §7§oAktionen"));
+                    if (isPartyLeader && !data[0].equalsIgnoreCase(p.getName())) lores.addAll(Arrays.asList("", "§8» §f§nRechtsklick§8 | §7§oAktionen"));
 
                     setItem(i, ItemBuilder.createSkullItem(data[0], 1).displayName("§f§l" + data[0]).lore((String[]) lores.toArray()).create(), e -> {
                         new PartyMemberInventory(p, data[0]);

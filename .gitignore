@@ -1,5 +1,5 @@
 .gitignore
-.idea/*
+.idea/
 bukkit-api/target/
 bukkit/target/
 bungee-api/target/
