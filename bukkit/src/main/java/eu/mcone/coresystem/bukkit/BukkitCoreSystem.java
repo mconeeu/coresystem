@@ -8,12 +8,9 @@ package eu.mcone.coresystem.bukkit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
-import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
@@ -34,17 +31,19 @@ import eu.mcone.coresystem.bukkit.listener.*;
 import eu.mcone.coresystem.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.bukkit.player.*;
 import eu.mcone.coresystem.bukkit.util.ActionBar;
+import eu.mcone.coresystem.bukkit.util.PluginManager;
 import eu.mcone.coresystem.bukkit.util.TablistInfo;
 import eu.mcone.coresystem.bukkit.util.Title;
 import eu.mcone.coresystem.bukkit.world.WorldManager;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.coresystem.core.mongoDB.MongoDBManager;
 import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.mysql.MySQL;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
 import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CooldownSystem;
+import eu.mcone.networkmanager.core.api.database.MongoDBManager;
+import eu.mcone.networkmanager.core.database.MongoConnection;
 import lombok.Getter;
 import net.labymod.serverapi.bukkit.LabyModAPI;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
@@ -64,11 +63,12 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private MySQL mysql1;
     private MySQL mysql2;
     private MySQL mysql3;
-    private MongoDBManager mongoDBManager;
-    private Map<UUID, CoreInventory> inventories;
-    private Map<String, CorePlugin> plugins;
-    private Map<String, CoreCommand> coreCommands;
+    private MongoDBManager mongoDatabase1;
+    private MongoDBManager mongoDatabase2;
+    private MongoDBManager mongoDatabase3;
 
+    @Getter
+    private MongoConnection mongoConnection;
     @Getter
     private TranslationManager translationManager;
     @Getter
@@ -125,9 +125,13 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         mysql1 = new MySQL(Database.SYSTEM);
         mysql2 = new MySQL(Database.STATS);
         mysql3 = new MySQL(Database.DATA);
-        mongoDBManager = new MongoDBManager(Database.MONGO_SYSTEM);
-        mongoDBManager.connectAuthentication();
-        createTables();
+
+        mongoConnection = new MongoConnection("db.mcone.eu", "admin", "T6KIq8gjmmF1k7futx0cJiJinQXgfguYXruds1dFx1LF5IsVPQjuDTnlI1zltpD9", "admin", 27017);
+        mongoConnection.connect();
+
+        mongoDatabase1 = mongoConnection.getDatabase(eu.mcone.networkmanager.core.api.database.Database.SYSTEM);
+        mongoDatabase1 = mongoConnection.getDatabase(eu.mcone.networkmanager.core.api.database.Database.STATS);
+        mongoDatabase1 = mongoConnection.getDatabase(eu.mcone.networkmanager.core.api.database.Database.DATA);
 
         pluginManager = new PluginManager();
         coinsUtil = new CoinsUtil(this);
@@ -137,7 +141,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         simpleGson = new Gson();
 
         cloudsystemAvailable = checkIfCloudSystemAvailable();
-        sendConsoleMessage("§7CloudSystem available: "+cloudsystemAvailable);
+        sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
 
         sendConsoleMessage("§aLoading Translations...");
         translationManager = new TranslationManager(mysql1, this);
@@ -285,13 +289,27 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
+    public MongoDBManager getMongoDatabase(eu.mcone.networkmanager.core.api.database.Database database) {
+        switch (database) {
+            case SYSTEM:
+                return mongoDatabase1;
+            case STATS:
+                return mongoDatabase2;
+            case DATA:
+                return mongoDatabase3;
+            default:
+                return null;
+        }
+    }
+
+    @Override
     public eu.mcone.coresystem.api.core.mysql.MySQL getMySQL() {
         return mysql3;
     }
 
     @Override
-    public MongoDBManager getMongoDBManager() {
-        return mongoDBManager;
+    public MongoDBManager getMongoDatabase() {
+        return mongoDatabase3;
     }
 
     public CorePlayer getCorePlayer(Player p) {

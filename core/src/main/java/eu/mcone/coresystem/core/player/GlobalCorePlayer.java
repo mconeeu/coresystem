@@ -7,6 +7,7 @@
 package eu.mcone.coresystem.core.player;
 
 import com.mongodb.MongoException;
+import com.mongodb.client.MongoCollection;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.exception.RuntimeCoreException;
@@ -15,6 +16,7 @@ import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
+import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import lombok.Setter;
 import net.labymod.serverapi.LabyModConnection;
@@ -22,6 +24,10 @@ import org.bson.Document;
 
 import java.net.InetAddress;
 import java.util.*;
+
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.combine;
+import static com.mongodb.client.model.Updates.set;
 
 public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.player.GlobalCorePlayer, GlobalOfflineCorePlayer {
 
@@ -59,35 +65,46 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
         this.instance = instance;
         this.name = name;
         this.ipAdress = address.toString().split("/")[1];
+        final MongoCollection<Document> collection = ((CoreModuleCoreSystem) instance).getMongoDatabase(Database.SYSTEM).getCollection("userinfo");
 
         try {
-            for (Document userinfoDocument : instance.getMongoDBManager().getDocumentsInCollection("userinfo")) {
-                if (userinfoDocument.containsValue(name)) {
-                    setDatabaseValues(userinfoDocument);
-                } else {
-                    if (userinfoDocument.containsValue(this.uuid)) {
-                        ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 changed his name from §f" + userinfoDocument.getString("name") + "§2. Applying to database...");
-                        instance.getMongoDBManager().updateDocument("uuid", this.uuid, "name", name, "userinfo");
-                        setDatabaseValues(userinfoDocument);
-                    } else {
-                        ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 is new! Registering in Database...");
-                        instance.getMongoDBManager().insertDocument(new Document("uuid", instance.getPlayerUtils().fetchUuidFromMojangAPI(name))
-                                .append("name", name)
-                                .append("groups", "[11]")
-                                .append("coins", "20")
-                                .append("stats", PlayerState.ONLINE.getId())
-                                .append("ip", ipAdress)
-                                .append("timestamp", System.currentTimeMillis() / 1000), "userinfo");
+            Map<String, Document> names = new HashMap<>();
+            for (Document userinfoDocument : collection.find()) {
+                names.put(userinfoDocument.getString("name"), userinfoDocument);
+            }
 
-                        this.groups = new HashSet<>(Collections.singletonList(Group.SPIELER));
-                        this.groups = new HashSet<>(Collections.singletonList(Group.SPIELER));
-                        this.onlinetime = 0;
-                        this.coins = 20;
-                        this.settings = new PlayerSettings();
-                        this.state = PlayerState.ONLINE;
-                        this.joined = System.currentTimeMillis() / 1000;
-                        this.isNew = true;
-                    }
+            if (names.containsKey(name)) {
+                setDatabaseValues(names.get(name));
+            } else {
+                this.uuid = instance.getPlayerUtils().fetchUuidFromMojangAPI(name);
+
+                Map<UUID, Document> uuids = new HashMap<>();
+                for (Document userinfoDocument : collection.find()) {
+                    uuids.put(UUID.fromString(userinfoDocument.getString("uuid")), userinfoDocument);
+                }
+
+                if (uuids.containsKey(uuid)) {
+                    ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 changed his name from §f" + uuids.get(uuid).getString("name") + "§2. Applying to database...");
+                    collection.updateOne(eq("uuid", this.uuid.toString()), combine(set("name", name)));
+                    setDatabaseValues(uuids.get(uuid));
+                } else {
+                    ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 is new! Registering in Database...");
+                    collection.insertOne(new Document("uuid", instance.getPlayerUtils().fetchUuidFromMojangAPI(name).toString())
+                            .append("name", name)
+                            .append("groups", "[11]")
+                            .append("coins", "20")
+                            .append("ip", ipAdress)
+                            .append("timestamp", System.currentTimeMillis() / 1000)
+                            .append("player_settings", ((CoreModuleCoreSystem) instance).getSimpleGson().toJson(new PlayerSettings(), PlayerSettings.class))
+                            .append("stats", PlayerState.ONLINE.getId()));
+
+                    this.groups = new HashSet<>(Collections.singletonList(Group.SPIELER));
+                    this.onlinetime = 0;
+                    this.coins = 20;
+                    this.settings = new PlayerSettings();
+                    this.state = PlayerState.ONLINE;
+                    this.joined = System.currentTimeMillis() / 1000;
+                    this.isNew = true;
                 }
             }
 
@@ -141,9 +158,9 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
 
     private void setDatabaseValues(Document userinfoDocument) {
         try {
-            this.uuid = (UUID) userinfoDocument.get("uuid");
+            this.uuid = UUID.fromString(userinfoDocument.getString("uuid"));
             this.groups = instance.getPermissionManager().getGroups(userinfoDocument.getString("groups"));
-            this.onlinetime = userinfoDocument.getLong("onlinetime");
+            this.onlinetime = userinfoDocument.getInteger("online_time");
             this.coins = userinfoDocument.getInteger("coins");
             this.teamspeakUid = userinfoDocument.getString("teamspeak_uid");
             this.settings = ((CoreModuleCoreSystem) instance).getGson().fromJson(userinfoDocument.getString("player_settings"), PlayerSettings.class);
@@ -240,7 +257,7 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
     public void setState(PlayerState state) {
         this.state = state;
 
-        instance.getMongoDBManager().updateDocument("uuid", uuid.toString(), "state", state.getId(), "userinfo");
+        ((CoreModuleCoreSystem) instance).getMongoDatabase(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), combine(set("state", state.getId())));
         //instance.runAsync(() -> ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).update("UPDATE userinfo SET state='" + state.getId() + "' WHERE uuid='" + uuid + "'"));
     }
 

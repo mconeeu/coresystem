@@ -29,13 +29,14 @@ import eu.mcone.coresystem.bungee.utils.ChannelHandler;
 import eu.mcone.coresystem.bungee.utils.PreferencesManager;
 import eu.mcone.coresystem.bungee.utils.TeamspeakVerifier;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.coresystem.core.mongoDB.MongoDBManager;
 import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.mysql.MySQL;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
 import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CooldownSystem;
+import eu.mcone.networkmanager.core.api.database.MongoDBManager;
+import eu.mcone.networkmanager.core.database.MongoConnection;
 import lombok.Getter;
 import net.labymod.serverapi.bungee.LabyModAPI;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -55,6 +56,11 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private boolean cloudsystemAvailable;
 
     private Map<String, CorePlugin> plugins;
+
+    @Getter
+    private MongoConnection mongoConnection;
+    @Getter
+    private MongoDBManager mongoDatabase;
 
     @Getter
     private TranslationManager translationManager;
@@ -85,8 +91,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Getter
     private MySQL database;
-    @Getter
-    private MongoDBManager mongoDBManager;
+
     @Getter
     private Map<UUID, CorePlayer> corePlayers;
 
@@ -111,10 +116,12 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         gson = new GsonBuilder().setPrettyPrinting().create();
         simpleGson = new Gson();
 
+        mongoConnection = new MongoConnection("db.mcone.eu", "admin", "T6KIq8gjmmF1k7futx0cJiJinQXgfguYXruds1dFx1LF5IsVPQjuDTnlI1zltpD9", "admin", 27017);
+        mongoConnection.connect();
+
         sendConsoleMessage("§aInitializing MariaDB Connections...");
         createTables(database = new MySQL(Database.SYSTEM));
-        mongoDBManager = new MongoDBManager(Database.MONGO_SYSTEM);
-        mongoDBManager.connectAuthentication();
+        this.mongoDatabase = mongoConnection.getDatabase(eu.mcone.networkmanager.core.api.database.Database.SYSTEM);
 
         cooldownSystem = new CooldownSystem();
         channelHandler = new ChannelHandler();
@@ -123,7 +130,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         coinsUtil = new CoinsUtil(this);
 
         cloudsystemAvailable = checkIfCloudSystemAvailable();
-        sendConsoleMessage("§7CloudSystem available: "+cloudsystemAvailable);
+        sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
 
         sendConsoleMessage("§aLoading Translations...");
         translationManager = new TranslationManager(database, this);
@@ -250,7 +257,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "`password` varchar(100), " +
                 "`onlinetime` int(10) NOT NULL DEFAULT '0', " +
                 "`teamspeak_uid` varchar(100), " +
-                "`player_settings` varchar(1000) NOT NULL DEFAULT '"+gson.toJson(new PlayerSettings(), PlayerSettings.class)+"'" +
+                "`player_settings` varchar(1000) NOT NULL DEFAULT '" + gson.toJson(new PlayerSettings(), PlayerSettings.class) + "'" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         mysql.update("CREATE TABLE IF NOT EXISTS `permissions` " +
@@ -400,8 +407,13 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public MongoDBManager getMongoDBManager() {
-        return mongoDBManager;
+    public MongoDBManager getMongoDatabase(eu.mcone.networkmanager.core.api.database.Database database) {
+        switch (database) {
+            case SYSTEM:
+                return this.mongoDatabase;
+            default:
+                return null;
+        }
     }
 
     @Override

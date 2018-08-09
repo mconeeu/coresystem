@@ -12,21 +12,23 @@ import org.bson.Document;
 import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.combine;
+import static com.mongodb.client.model.Updates.set;
 
 public class PremiumCheck implements Runnable {
 
     public void run() {
 
-        for (Document premiumDocument : BungeeCoreSystem.getSystem().getMongoDBManager().getDocumentsInCollection("bungeesystem_premium")) {
+        for (Document premiumDocument : BungeeCoreSystem.getSystem().getMongoDatabase().getDocumentsInCollection("bungeesystem_premium")) {
             long millis = System.currentTimeMillis() / 1000;
 
             if (premiumDocument.getLong("timestamp") - millis < 0) {
                 BungeeCoreSystem.getInstance().sendConsoleMessage("§7Dem Spieler §f" + BungeeCoreSystem.getInstance().getPlayerUtils().fetchName(UUID.fromString(premiumDocument.getString("uuid"))) + " §7wird der Rang §f" + premiumDocument.getString("group") + " §7entzogen");
-                BungeeCoreSystem.getSystem().getMongoDBManager().updateDocument("uuid", premiumDocument.getString("uuid"), "group", premiumDocument.getString("odl_group"), "userinfo");
+                BungeeCoreSystem.getSystem().getMongoDatabase().getCollection("userinfo").updateOne(eq("uuid", premiumDocument.getString("uuid")), combine(set("group", premiumDocument.getString("odl_group"))));
 
-                for (Document infoDocument : BungeeCoreSystem.getSystem().getMongoDBManager().getCollection("").find(eq("uuid", premiumDocument.getString("uuid")))) {
+                for (Document infoDocument : BungeeCoreSystem.getSystem().getMongoDatabase().getCollection("").find(eq("uuid", premiumDocument.getString("uuid")))) {
                     if (infoDocument.getString("grupper").equalsIgnoreCase("Spieler")) {
-                        BungeeCoreSystem.getSystem().getMongoDBManager().deleteDocument("uuid", infoDocument.getString("uuid"), "bungeesystem_premium");
+                        BungeeCoreSystem.getSystem().getMongoDatabase().getCollection("bungeesystem_premium").deleteOne(eq("uuid", infoDocument.getString("uuid")));
                     } else {
                         BungeeCoreSystem.getInstance().sendConsoleMessage("§7[§cMySQL ERROR§7] §4DER SPIELER KONNTE NICHT GELÖSCHT WERDEN OBWOHL SEIN PREMIUM RANG ABGLAUFEN IST!");
                     }

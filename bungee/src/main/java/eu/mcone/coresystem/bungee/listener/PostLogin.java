@@ -25,11 +25,14 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class PostLogin implements Listener{
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.combine;
+import static com.mongodb.client.model.Updates.set;
 
-    private HashMap<String, Object> updateHash = new HashMap<>();
+public class PostLogin implements Listener {
+
     @EventHandler
-    public void on(PostLoginEvent e){
+    public void on(PostLoginEvent e) {
         final ProxiedPlayer p = e.getPlayer();
         final CorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUniqueId());
 
@@ -37,15 +40,11 @@ public class PostLogin implements Listener{
         if (cp.isNew()) {
             BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "§8[§7§l!§8] §3MC ONE §8» §2Als kleines Willkommensgeschenk bekommst du 20 Coins gutgeschrieben!");
         } else {
-            updateHash.put("ip", cp.getIpAdress());
-            updateHash.put("state", "1");
-            updateHash.put("timestamp", System.currentTimeMillis() / 1000);
-            BungeeCoreSystem.getSystem().getMongoDBManager().updateDocument("uuid", p.getUniqueId(),  updateHash,"userinfo");
-
+            BungeeCoreSystem.getSystem().getMongoDatabase(eu.mcone.networkmanager.core.api.database.Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", p.getUniqueId()), combine(set("ip", cp.getIpAdress()), set("state", "1"), set("timestamp", System.currentTimeMillis() / 1000)));
             //BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `userinfo` SET `name` = '" + p.getName() + "', `ip` = '" + cp.getIpAdress() + "' , state = '1', `timestamp` = '" + System.currentTimeMillis() / 1000 + "' WHERE `uuid`='" + p.getUniqueId().toString() + "';");
         }
 
-        if(p.hasPermission("system.bungee.report")) {
+        if (p.hasPermission("system.bungee.report")) {
             BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `id`, `title` FROM `website_ticket` WHERE `cat`='Spielerreport' AND `state`='pending';", rs -> {
                 try {
                     int desc = 0;
@@ -77,11 +76,12 @@ public class PostLogin implements Listener{
         Map<UUID, String> requests = cp.getFriendData().getRequests();
         if (requests.size() >= 1) {
             BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "");
-            BungeeCoreSystem.getInstance().getMessager().send(p, "§7Du hast noch §f"+requests.size()+" §7offene Freundschaftsanfrage(n)!");
+            BungeeCoreSystem.getInstance().getMessager().send(p, "§7Du hast noch §f" + requests.size() + " §7offene Freundschaftsanfrage(n)!");
             BungeeCoreSystem.getInstance().getMessager().send(p, "§7Benutze §f/friend req §7zum einsehen!");
         }
 
-        if (!cp.getSettings().isAcceptedAgbs()) ProxyServer.getInstance().getPluginManager().dispatchCommand(p, "datenschutz");
+        if (!cp.getSettings().isAcceptedAgbs())
+            ProxyServer.getInstance().getPluginManager().dispatchCommand(p, "datenschutz");
 
         Title title = ProxyServer.getInstance().createTitle();
         title.title(new TextComponent("§fWillkommen auf §3§lMC ONE"));
@@ -101,7 +101,7 @@ public class PostLogin implements Listener{
                 );
             }
 
-            BungeeCoreSystem.getInstance().getLabyModAPI().sendPermissions(p, new HashMap<LabyPermission, Boolean>(){{
+            BungeeCoreSystem.getInstance().getLabyModAPI().sendPermissions(p, new HashMap<LabyPermission, Boolean>() {{
                 put(LabyPermission.IMPROVED_LAVA, true);
                 put(LabyPermission.CROSSHAIR_SYNC, true);
                 put(LabyPermission.REFILL_FIX, true);
@@ -112,7 +112,7 @@ public class PostLogin implements Listener{
 
             TeamspeakVerifier tsv = BungeeCoreSystem.getSystem().getTeamspeakVerifier();
             if (cp.isTeamspeakIdLinked() && tsv != null) tsv.updateLink(cp, null);
-        },1000L, TimeUnit.MILLISECONDS);
+        }, 1000L, TimeUnit.MILLISECONDS);
     }
 
     private static String getRandomWelcomeMSG(ProxiedPlayer p, boolean isNew) {
@@ -122,22 +122,22 @@ public class PostLogin implements Listener{
 
         String part;
 
-        if (hours<=4) {
+        if (hours <= 4) {
             part = "Nacht";
-        } else if (hours<=11) {
+        } else if (hours <= 11) {
             part = "Morgen";
-        } else if (hours<=14) {
+        } else if (hours <= 14) {
             part = "Mittag";
-        } else if (hours<=17) {
+        } else if (hours <= 17) {
             part = "Nachmittag";
-        } else if (hours<=24) {
+        } else if (hours <= 24) {
             part = "Abend";
         } else {
             part = "Tag";
         }
 
         String[] welcomeSpecial = {"Ey Alde", "Piss dich Alde", "Piss dich du arschgefickte Besenfotze", "Was geht ab du Fotze", "Halt mal dein Maul", "EEEEYYYYYYYY!!!!", "Halt die Fresse jetzt"};
-        String[] welcomeMSG = {"Willkommen zurück auf MC ONE", "Schön dich wieder zu sehen", "Was geht ab", "Viel Spaß auf MC ONE", "Servus", "Moin", "Guten "+part};
+        String[] welcomeMSG = {"Willkommen zurück auf MC ONE", "Schön dich wieder zu sehen", "Was geht ab", "Viel Spaß auf MC ONE", "Servus", "Moin", "Guten " + part};
 
         if (isNew) {
             return "Willkommen auf MC ONE! Du scheinst neu zu sein";

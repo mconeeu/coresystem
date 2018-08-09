@@ -7,9 +7,9 @@
 package eu.mcone.coresystem.core;
 
 import com.google.gson.Gson;
-import eu.mcone.coresystem.core.mongoDB.MongoDBManager;
 import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.mysql.MySQL;
+import eu.mcone.networkmanager.core.api.database.MongoDBManager;
 
 public interface CoreModuleCoreSystem {
 
@@ -26,7 +26,7 @@ public interface CoreModuleCoreSystem {
 
     MySQL getMySQL(Database database);
 
-    MongoDBManager getMongoDBManager();
+    MongoDBManager getMongoDatabase(eu.mcone.networkmanager.core.api.database.Database database);
 
     Gson getGson();
 

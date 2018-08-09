@@ -35,9 +35,10 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.mongodb</groupId>
-            <artifactId>mongodb-driver</artifactId>
-            <version>3.8.0</version>
+            <groupId>eu.mcone.networkmanager</groupId>
+            <artifactId>core-api</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

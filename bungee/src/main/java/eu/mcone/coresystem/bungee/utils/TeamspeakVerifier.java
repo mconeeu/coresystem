@@ -37,6 +37,10 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.combine;
+import static com.mongodb.client.model.Updates.set;
+
 public class TeamspeakVerifier {
 
     private final static TS3Config CONFIG = new TS3Config()
@@ -128,7 +132,7 @@ public class TeamspeakVerifier {
                                 registering.put(players.get(0).getUuid(), clientInfo.getUniqueIdentifier());
                                 api.sendPrivateMessage(clientInfo.getId(), "[b][color=grey]Bitte schreibe hier deinen [/color][color=white]Minecraftnamen[/color][color=grey], um deinen TeamSpeak Account zu verknüpfen und alle Funktionen des TeamSpeaks nutzen zu können![/color][/b]");
                             }
-                        } else if (BungeeCoreSystem.getSystem().getMongoDBManager().containsValue(clientInfo.getUniqueIdentifier(), "userinfo")) {
+                        } else if (BungeeCoreSystem.getSystem().getMongoDatabase().containsValue(clientInfo.getUniqueIdentifier(), "userinfo")) {
                             return;
                         } else {
                             unsetLinkedGroups(clientInfo);
@@ -160,7 +164,7 @@ public class TeamspeakVerifier {
     }
 
     public void addRegistering(ProxiedPlayer p, String ts3Uid) {
-        if (BungeeCoreSystem.getSystem().getMongoDBManager().containsValue(ts3Uid, "userinfo")) {
+        if (BungeeCoreSystem.getSystem().getMongoDatabase().containsValue(ts3Uid, "userinfo")) {
             BungeeCoreSystem.getInstance().getMessager().send(p, "§4Diese TeamSpeak ID wurde bereits von einem anderen Spieler registriert. Bitte melde dich bei unserem Support oder erstelle ein Support Ticket, wenn das deine ID ist.");
         } else {
             api.getClientByUId(ts3Uid)
@@ -211,7 +215,7 @@ public class TeamspeakVerifier {
                 }
 
                 ((GlobalCorePlayer) p).setTeamspeakUid(null);
-                BungeeCoreSystem.getSystem().getMongoDBManager().updateDocument("uuid", p.getUuid(), "teamspeak_uid", "NULL", "userinfo");
+                BungeeCoreSystem.getSystem().getMongoDatabase().getCollection("userinfo").updateOne(eq("uuid", p.getUuid()), combine(set("teamspeak_uid", "")));
                 //BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE userinfo SET teamspeak_uid=NULL WHERE uuid='" + p.getUuid() + "'");
             });
         } else {
@@ -221,7 +225,7 @@ public class TeamspeakVerifier {
 
     private void link(CorePlayer p, String ts3Uid) {
         ((GlobalCorePlayer) p).setTeamspeakUid(ts3Uid);
-        BungeeCoreSystem.getSystem().getMongoDBManager().updateDocument("uuid", p.getUuid(), "teamspeak_uid", ts3Uid, "userinfo");
+        BungeeCoreSystem.getSystem().getMongoDatabase().getCollection("userinfo").updateOne(eq("uuid", p.getUuid()), combine(set("teamspeak_uid", ts3Uid)));
         //BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE userinfo SET teamspeak_uid='" + ts3Uid + "' WHERE uuid='" + p.getUuid() + "'");
 
         updateLink(p, clientInfo -> {
@@ -290,7 +294,7 @@ public class TeamspeakVerifier {
     }
 
     private void loadIcons() {
-        for (Document iconDocuments : BungeeCoreSystem.getSystem().getMongoDBManager().getDocumentsInCollection("bungeesystem_teamspeak_icons")) {
+        for (Document iconDocuments : BungeeCoreSystem.getSystem().getMongoDatabase().getDocumentsInCollection("bungeesystem_teamspeak_icons")) {
             icons.put(UUID.fromString(iconDocuments.getString("uuid")), new TeamspeakIcon(iconDocuments.get("bytes", org.bson.types.Binary.class).getData(), iconDocuments.getLong("icon_id")));
         }
 
@@ -344,9 +348,8 @@ public class TeamspeakVerifier {
 
             System.out.println("uploaded icon direct " + iconId);
             api.addClientPermission(clientInfo.getDatabaseId(), "i_icon_id", (int) icon, false).onFailure(Throwable::printStackTrace);
-            BungeeCoreSystem.getSystem().getMongoDBManager().insertDocument(new Document("uuid", uuid)
-                    .append("icon_id", iconId)
-                    .append("bytes", bytes), "bungeesystem_teamspeak_icons");
+            BungeeCoreSystem.getSystem().getMongoDatabase().getCollection("bungeesystem_teamspeak_icons")
+                    .insertOne(new Document("uuid", uuid).append("icon_id", iconId).append("bytes", bytes));
 
             /*
             BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO bungeesystem_teamspeak_icons (uuid, icon_id, bytes) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE icon_id=?, bytes=?",
@@ -364,7 +367,7 @@ public class TeamspeakVerifier {
     private void removeIcon(UUID uuid, int databaseId, long iconId, Runnable then) {
         api.deleteClientPermission(databaseId, "i_icon_id").onSuccess(aVoid ->
                 api.deleteIcon(iconId).onSuccess(bVoid -> {
-                    BungeeCoreSystem.getSystem().getMongoDBManager().deleteDocument("uuid", uuid, "bungeesystem_teamspeak_icons");
+                    BungeeCoreSystem.getSystem().getMongoDatabase().getCollection("bungeesystem_teamspeak_icons").deleteOne(eq("uuid", uuid));
                     //BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM bungeesystem_teamspeak_icons WHERE uuid='" + uuid + "'");
                     icons.remove(uuid);
                     System.out.println("deleted icon " + icons.get(uuid));
