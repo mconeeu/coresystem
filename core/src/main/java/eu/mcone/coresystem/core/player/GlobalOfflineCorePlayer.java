@@ -13,13 +13,16 @@ import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.coresystem.core.mysql.Database;
+import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.Document;
 
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api.core.player.GlobalOfflineCorePlayer {
 
@@ -46,20 +49,15 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         this.name = name;
         this.instance = instance;
 
-        ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).select("SELECT uuid, groups, coins, state, onlinetime, player_settings FROM userinfo WHERE name='"+name+"'", rs -> {
-            try {
-                if (rs.next()) {
-                    this.uuid = UUID.fromString(rs.getString("uuid"));
-                    this.groups = instance.getPermissionManager().getGroups(rs.getString("groups"));
-                    this.coins = rs.getInt("coins");
-                    this.state = PlayerState.getPlayerStateById(rs.getInt("state"));
-                    this.onlinetime = rs.getLong("onlinetime");
-                    this.settings = ((CoreModuleCoreSystem) instance).getGson().fromJson(rs.getString("player_settings"), PlayerSettings.class);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+        Document entry = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("name", name)).first();
+        if (entry != null) {
+            this.uuid = UUID.fromString(entry.getString("uuid"));
+            this.groups = instance.getPermissionManager().getGroups(entry.get("groups", new ArrayList<>()));
+            this.coins = entry.getInteger("coins");
+            this.state = PlayerState.getPlayerStateById(entry.getInteger("state"));
+            this.onlinetime = entry.getLong("online_time");
+            this.settings = ((CoreModuleCoreSystem) instance).getGson().fromJson(entry.get("player_settings", Document.class).toJson(), PlayerSettings.class);
+        }
 
         if (this.uuid == null) throw new PlayerNotResolvedException("Database does not contain player "+name+"!");
     }

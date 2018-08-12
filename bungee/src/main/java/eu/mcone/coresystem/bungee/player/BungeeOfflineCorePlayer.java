@@ -11,7 +11,7 @@ import eu.mcone.coresystem.api.bungee.player.FriendData;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.core.mysql.Database;
+import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import eu.mcone.coresystem.core.player.GlobalOfflineCorePlayer;
 import lombok.Getter;
 
@@ -47,7 +47,7 @@ public class BungeeOfflineCorePlayer extends GlobalOfflineCorePlayer implements 
     }
 
     public OfflineCorePlayer loadBanData() {
-        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `end` FROM `bungeesystem_bansystem_mute` WHERE `uuid`='"+getUuid()+"'", rs -> {
+        BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT `end` FROM `bungeesystem_bansystem_mute` WHERE `uuid`='"+getUuid()+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.muted = true;
@@ -60,7 +60,7 @@ public class BungeeOfflineCorePlayer extends GlobalOfflineCorePlayer implements 
             }
         });
 
-        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `end` FROM `bungeesystem_bansystem_ban` WHERE `uuid`='"+getUuid()+"'", rs -> {
+        BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT `end` FROM `bungeesystem_bansystem_ban` WHERE `uuid`='"+getUuid()+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.banned = true;
@@ -73,7 +73,7 @@ public class BungeeOfflineCorePlayer extends GlobalOfflineCorePlayer implements 
             }
         });
 
-        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `banpoints`, `mutepoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='"+getUuid()+"'", rs -> {
+        BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT `banpoints`, `mutepoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='"+getUuid()+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.banPoints = rs.getInt("banpoints");

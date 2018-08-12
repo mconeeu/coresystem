@@ -9,7 +9,7 @@ package eu.mcone.coresystem.bungee.player;
 import eu.mcone.coresystem.api.bungee.event.CoinsChangeEvent;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.core.mysql.Database;
+import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import net.md_5.bungee.api.ProxyServer;
 
@@ -25,7 +25,7 @@ public class CoinsUtil implements eu.mcone.coresystem.api.core.player.CoinsUtil 
     }
 
     public int getCoins(UUID uuid){
-        return instance.getMySQL(Database.SYSTEM).select("SELECT coins FROM userinfo WHERE uuid='" + uuid.toString() + "'", rs -> {
+        return instance.getMySQL(MySQLDatabase.SYSTEM).select("SELECT coins FROM userinfo WHERE uuid='" + uuid.toString() + "'", rs -> {
             try {
                 if (rs.next()) {
                     return rs.getInt("coins");
@@ -38,7 +38,7 @@ public class CoinsUtil implements eu.mcone.coresystem.api.core.player.CoinsUtil 
     }
 
     public int getCoins(String name) {
-        return instance.getMySQL(Database.SYSTEM).select("SELECT coins FROM userinfo WHERE name='" + name + "'", rs -> {
+        return instance.getMySQL(MySQLDatabase.SYSTEM).select("SELECT coins FROM userinfo WHERE name='" + name + "'", rs -> {
             try {
                 if (rs.next()) {
                     return rs.getInt("coins");
@@ -52,7 +52,7 @@ public class CoinsUtil implements eu.mcone.coresystem.api.core.player.CoinsUtil 
 
 	public void setCoins(final UUID uuid, final int coins){
         instance.runAsync(() -> {
-            instance.getMySQL(Database.SYSTEM).update("UPDATE userinfo SET coins=" + coins + " WHERE uuid='" + uuid.toString() + "'");
+            instance.getMySQL(MySQLDatabase.SYSTEM).update("UPDATE userinfo SET coins=" + coins + " WHERE uuid='" + uuid.toString() + "'");
 
             CorePlayer cp = instance.getCorePlayer(uuid);
             if (cp != null) {
@@ -64,7 +64,7 @@ public class CoinsUtil implements eu.mcone.coresystem.api.core.player.CoinsUtil 
 
 	public void addCoins(final UUID uuid, final int coins){
         instance.runAsync(() -> {
-            instance.getMySQL(Database.SYSTEM).update("UPDATE userinfo SET coins=coins+" + coins + " WHERE uuid='" + uuid.toString() + "'");
+            instance.getMySQL(MySQLDatabase.SYSTEM).update("UPDATE userinfo SET coins=coins+" + coins + " WHERE uuid='" + uuid.toString() + "'");
 
             CorePlayer cp = instance.getCorePlayer(uuid);
             if (cp != null) {
@@ -76,7 +76,7 @@ public class CoinsUtil implements eu.mcone.coresystem.api.core.player.CoinsUtil 
 
 	public void removeCoins(final UUID uuid, final int coins){
         instance.runAsync(() -> {
-            instance.getMySQL(Database.SYSTEM).update("UPDATE userinfo SET coins=coins-" + coins + " WHERE uuid='" + uuid.toString() + "'");
+            instance.getMySQL(MySQLDatabase.SYSTEM).update("UPDATE userinfo SET coins=coins-" + coins + " WHERE uuid='" + uuid.toString() + "'");
 
             CorePlayer cp = instance.getCorePlayer(uuid);
             if (cp != null) {

@@ -26,11 +26,6 @@ public class ActionBar implements CoreActionBar {
         return this;
     }
 
-    public ActionBar stay(int stay) {
-        this.stay = stay;
-        return this;
-    }
-
     public ActionBar reset() {
         this.message = null;
         this.stay = -1;
@@ -41,7 +36,7 @@ public class ActionBar implements CoreActionBar {
     public ActionBar send(Player p) {
         if (message != null && stay > 0) {
             PacketPlayOutChat packet = new PacketPlayOutChat(
-                    IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + message + "\"}"), (byte) stay
+                    IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + message + "\"}"), (byte) 2
             );
 
             ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);

@@ -29,12 +29,13 @@ import eu.mcone.coresystem.bungee.utils.ChannelHandler;
 import eu.mcone.coresystem.bungee.utils.PreferencesManager;
 import eu.mcone.coresystem.bungee.utils.TeamspeakVerifier;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.mysql.MySQL;
+import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
 import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CooldownSystem;
+import eu.mcone.networkmanager.core.api.database.Database;
 import eu.mcone.networkmanager.core.api.database.MongoDBManager;
 import eu.mcone.networkmanager.core.database.MongoConnection;
 import lombok.Getter;
@@ -57,10 +58,9 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     private Map<String, CorePlugin> plugins;
 
-    @Getter
     private MongoConnection mongoConnection;
     @Getter
-    private MongoDBManager mongoDatabase;
+    private MongoDBManager mongoDB;
 
     @Getter
     private TranslationManager translationManager;
@@ -118,10 +118,10 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         mongoConnection = new MongoConnection("db.mcone.eu", "admin", "T6KIq8gjmmF1k7futx0cJiJinQXgfguYXruds1dFx1LF5IsVPQjuDTnlI1zltpD9", "admin", 27017);
         mongoConnection.connect();
+        mongoDB = mongoConnection.getDatabase(Database.SYSTEM);
 
         sendConsoleMessage("§aInitializing MariaDB Connections...");
-        createTables(database = new MySQL(Database.SYSTEM));
-        this.mongoDatabase = mongoConnection.getDatabase(eu.mcone.networkmanager.core.api.database.Database.SYSTEM);
+        createTables(database = new MySQL(MySQLDatabase.SYSTEM));
 
         cooldownSystem = new CooldownSystem();
         channelHandler = new ChannelHandler();
@@ -173,6 +173,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             ((eu.mcone.coresystem.core.player.GlobalCorePlayer) p).setState(PlayerState.OFFLINE);
         }
 
+        mongoConnection.disconnect();
         database.close();
         sendConsoleMessage("§cPlugin disabled!");
     }
@@ -397,7 +398,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public MySQL getMySQL(Database database) {
+    public MySQL getMySQL(MySQLDatabase database) {
         switch (database) {
             case SYSTEM:
                 return this.database;
@@ -407,10 +408,10 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public MongoDBManager getMongoDatabase(eu.mcone.networkmanager.core.api.database.Database database) {
+    public MongoDBManager getMongoDB(eu.mcone.networkmanager.core.api.database.Database database) {
         switch (database) {
             case SYSTEM:
-                return this.mongoDatabase;
+                return this.mongoDB;
             default:
                 return null;
         }

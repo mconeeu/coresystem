@@ -8,7 +8,7 @@ package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.listener.Chat;
-import eu.mcone.coresystem.core.mysql.Database;
+import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -50,7 +50,7 @@ public class ChatlogCMD extends Command{
                                             String msg = msgEntry.getValue();
                                             String time = String.valueOf(msgEntry.getKey());
 
-                                            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO bungeesystem_chatlog (uuid, nachricht, timestamp) VALUES ('" + t.getUniqueId().toString() + "', '" + msg + "', " + time + ")");
+                                            BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).update("INSERT INTO bungeesystem_chatlog (uuid, nachricht, timestamp) VALUES ('" + t.getUniqueId().toString() + "', '" + msg + "', " + time + ")");
                                         } else {
                                             break;
                                         }

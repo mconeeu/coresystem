@@ -19,7 +19,7 @@ public class OnlineTime implements Runnable {
 	@Override
 	public void run() {
 		for(ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-			BungeeCoreSystem.getSystem().getMongoDatabase(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid",  p.getUniqueId().toString()), inc("online_time", 1));
+			BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid",  p.getUniqueId().toString()), inc("online_time", 1));
 			//BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `userinfo` SET onlinetime=onlinetime+1 WHERE `uuid`='" + p.getUniqueId() + "'");
 		}
 	} 

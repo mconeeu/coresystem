@@ -12,7 +12,7 @@ import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
 import eu.mcone.coresystem.api.core.exception.RuntimeCoreException;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.core.mysql.Database;
+import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -24,7 +24,7 @@ public class ProfileInventory extends CoreInventory {
     public ProfileInventory(Player p) {
         super("§8» §3§l"+p.getName()+"'s Profil", p, InventorySlot.ROW_4, Option.FILL_EMPTY_SLOTS);
 
-        BukkitCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT coins, onlinetime FROM userinfo WHERE uuid='" + p.getUniqueId().toString() + "'", rs -> {
+        BukkitCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT coins, onlinetime FROM userinfo WHERE uuid='" + p.getUniqueId().toString() + "'", rs -> {
             CorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(p);
 
             try {

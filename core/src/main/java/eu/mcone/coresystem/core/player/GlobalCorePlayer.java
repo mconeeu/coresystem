@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.core.player;
 
-import com.mongodb.MongoException;
 import com.mongodb.client.MongoCollection;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
@@ -65,110 +64,56 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
         this.instance = instance;
         this.name = name;
         this.ipAdress = address.toString().split("/")[1];
-        final MongoCollection<Document> collection = ((CoreModuleCoreSystem) instance).getMongoDatabase(Database.SYSTEM).getCollection("userinfo");
 
-        try {
-            Map<String, Document> names = new HashMap<>();
-            for (Document userinfoDocument : collection.find()) {
-                names.put(userinfoDocument.getString("name"), userinfoDocument);
-            }
+        final MongoCollection<Document> collection = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo");
+        Document nameEntry = collection.find(eq("name", name)).first();
+        System.out.println(name);
 
-            if (names.containsKey(name)) {
-                setDatabaseValues(names.get(name));
+        if (nameEntry != null) {
+            setDatabaseValues(nameEntry);
+        } else {
+            this.uuid = instance.getPlayerUtils().fetchUuidFromMojangAPI(name);
+            Document uuidEntry = collection.find(eq("uuid", this.uuid)).first();
+
+            if (uuidEntry != null) {
+                ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 changed his name from §f" + uuidEntry.getString("name") + "§2. Applying to database...");
+                collection.updateOne(eq("uuid", this.uuid.toString()), combine(set("name", name)));
+                setDatabaseValues(uuidEntry);
             } else {
-                this.uuid = instance.getPlayerUtils().fetchUuidFromMojangAPI(name);
+                this.groups = new HashSet<>(Collections.singletonList(Group.SPIELER));
+                this.onlinetime = 0;
+                this.coins = 20;
+                this.settings = new PlayerSettings();
+                this.state = PlayerState.ONLINE;
+                this.joined = System.currentTimeMillis() / 1000;
+                this.isNew = true;
 
-                Map<UUID, Document> uuids = new HashMap<>();
-                for (Document userinfoDocument : collection.find()) {
-                    uuids.put(UUID.fromString(userinfoDocument.getString("uuid")), userinfoDocument);
-                }
-
-                if (uuids.containsKey(uuid)) {
-                    ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 changed his name from §f" + uuids.get(uuid).getString("name") + "§2. Applying to database...");
-                    collection.updateOne(eq("uuid", this.uuid.toString()), combine(set("name", name)));
-                    setDatabaseValues(uuids.get(uuid));
-                } else {
-                    ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 is new! Registering in Database...");
-                    collection.insertOne(new Document("uuid", instance.getPlayerUtils().fetchUuidFromMojangAPI(name).toString())
-                            .append("name", name)
-                            .append("groups", "[11]")
-                            .append("coins", "20")
-                            .append("ip", ipAdress)
-                            .append("timestamp", System.currentTimeMillis() / 1000)
-                            .append("player_settings", ((CoreModuleCoreSystem) instance).getSimpleGson().toJson(new PlayerSettings(), PlayerSettings.class))
-                            .append("stats", PlayerState.ONLINE.getId()));
-
-                    this.groups = new HashSet<>(Collections.singletonList(Group.SPIELER));
-                    this.onlinetime = 0;
-                    this.coins = 20;
-                    this.settings = new PlayerSettings();
-                    this.state = PlayerState.ONLINE;
-                    this.joined = System.currentTimeMillis() / 1000;
-                    this.isNew = true;
-                }
+                ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 is new! Registering in Database...");
+                collection.insertOne(new Document("uuid", instance.getPlayerUtils().fetchUuidFromMojangAPI(name).toString())
+                        .append("name", name)
+                        .append("groups", new ArrayList<>(Collections.singletonList(11)))
+                        .append("coins", coins)
+                        .append("ip", ipAdress)
+                        .append("timestamp", System.currentTimeMillis() / 1000)
+                        .append("player_settings", Document.parse(((CoreModuleCoreSystem) instance).getSimpleGson().toJson(new PlayerSettings(), PlayerSettings.class)))
+                        .append("state", PlayerState.ONLINE.getId())
+                        .append("online_time", onlinetime)
+                );
             }
-
-            if (uuid == null) {
-                throw new PlayerNotResolvedException("Player uuid could not be resolved! (isNew = " + isNew + ")");
-            }
-        } catch (MongoException e) {
-            e.printStackTrace();
         }
 
-        /* Deprecated Mysql
-        ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).select("SELECT uuid, groups, coins, state, onlinetime, teamspeak_uid, player_settings FROM userinfo WHERE name='" + name + "'", rs -> {
-            try {
-                if (rs.next()) {
-                    setDatabaseValues(rs);
-                } else {
-                    this.uuid = instance.getPlayerUtils().fetchUuidFromMojangAPI(name);
-                    ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).select("SELECT uuid, name, groups, coins, state, onlinetime, teamspeak_uid, player_settings FROM userinfo WHERE uuid='" + this.uuid.toString() + "'", rs1 -> {
-                        try {
-                            if (rs1.next()) {
-                                ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 changed his name from §f" + rs1.getString("name") + "§2. Applying to database...");
-                                ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).update("UPDATE userinfo SET name='" + name + "' WHERE uuid='" + this.uuid.toString() + "'");
-                                setDatabaseValues(rs1);
-                            } else {
-                                ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 is new! Registering in Database...");
-                                ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).update("INSERT INTO `userinfo` (`uuid`, `name`, `groups`, `coins`, `state`, `ip`, `timestamp`) VALUES ('" + instance.getPlayerUtils().fetchUuidFromMojangAPI(name) + "', '" + name + "', '[11]', 20, '" + PlayerState.ONLINE.getId() + "', '" + ipAdress + "', '" + System.currentTimeMillis() / 1000 + "')");
-
-                                this.groups = new HashSet<>(Collections.singletonList(Group.SPIELER));
-                                this.onlinetime = 0;
-                                this.coins = 20;
-                                this.settings = new PlayerSettings();
-                                this.state = PlayerState.ONLINE;
-                                this.joined = System.currentTimeMillis() / 1000;
-                                this.isNew = true;
-                            }
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
-
-        if (uuid == null) {
-            throw new PlayerNotResolvedException("Player uuid could not be resolved! (isNew = " + isNew + ")");
-        }
-        */
+        if (uuid == null) throw new PlayerNotResolvedException("Player uuid could not be resolved! (isNew = " + isNew + ")");
     }
 
     private void setDatabaseValues(Document userinfoDocument) {
-        try {
-            this.uuid = UUID.fromString(userinfoDocument.getString("uuid"));
-            this.groups = instance.getPermissionManager().getGroups(userinfoDocument.getString("groups"));
-            this.onlinetime = userinfoDocument.getInteger("online_time");
-            this.coins = userinfoDocument.getInteger("coins");
-            this.teamspeakUid = userinfoDocument.getString("teamspeak_uid");
-            this.settings = ((CoreModuleCoreSystem) instance).getGson().fromJson(userinfoDocument.getString("player_settings"), PlayerSettings.class);
-            this.state = PlayerState.getPlayerStateById(userinfoDocument.getInteger("state"));
-            this.joined = System.currentTimeMillis() / 1000;
-        } catch (MongoException e) {
-            e.printStackTrace();
-        }
+        this.uuid = UUID.fromString(userinfoDocument.getString("uuid"));
+        this.groups = instance.getPermissionManager().getGroups(userinfoDocument.get("groups", new ArrayList<>()));
+        this.onlinetime = userinfoDocument.getLong("online_time");
+        this.coins = userinfoDocument.getInteger("coins");
+        this.teamspeakUid = userinfoDocument.getString("teamspeak_uid");
+        this.settings = ((CoreModuleCoreSystem) instance).getGson().fromJson(userinfoDocument.get("player_settings", Document.class).toJson(), PlayerSettings.class);
+        this.state = PlayerState.getPlayerStateById(userinfoDocument.getInteger("state"));
+        this.joined = System.currentTimeMillis() / 1000;
     }
 
     @Override
@@ -256,9 +201,7 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
 
     public void setState(PlayerState state) {
         this.state = state;
-
-        ((CoreModuleCoreSystem) instance).getMongoDatabase(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), combine(set("state", state.getId())));
-        //instance.runAsync(() -> ((CoreModuleCoreSystem) instance).getMySQL(Database.SYSTEM).update("UPDATE userinfo SET state='" + state.getId() + "' WHERE uuid='" + uuid + "'"));
+        ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), combine(set("state", state.getId())));
     }
 
     public void updateCoinsAmount(int amount) {

@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.api.core.player;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -54,10 +55,10 @@ public interface PermissionManager {
 
     /**
      * get all groups from json String
-     * @param json json String
+     * @param groups List of group-ids
      * @return group set
      */
-    Set<Group> getGroups(String json);
+    Set<Group> getGroups(List<Integer> groups);
 
     /**
      * get json String from group set

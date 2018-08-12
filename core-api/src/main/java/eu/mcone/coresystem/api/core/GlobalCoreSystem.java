@@ -29,7 +29,7 @@ public interface GlobalCoreSystem {
      * returns the mc1data MongoDB database
      * @return mc1data MongoDB database
      */
-    MongoDBManager getMongoDatabase();
+    MongoDBManager getMongoDB();
 
     /**
      * returns the CoinsUtil

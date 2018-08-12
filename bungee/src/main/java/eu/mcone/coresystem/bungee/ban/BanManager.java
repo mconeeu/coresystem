@@ -6,33 +6,38 @@
 
 package eu.mcone.coresystem.bungee.ban;
 
+import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.core.mysql.Database;
+import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import org.bson.Document;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.lte;
+import static com.mongodb.client.model.Updates.*;
+
 public class BanManager {
 
-	public static void ban(UUID gebannt, BanTemplate template, String grund, UUID team_member){
-        CoreSystem.getInstance().sendConsoleMessage("Banning user with uuid \""+gebannt.toString()+"\" with template \""+template.getName()+"\" with reason \""+grund+"\" by team member with uuid \""+team_member.toString()+"\"");
+    public static void ban(UUID gebannt, BanTemplate template, String grund, UUID team_member) {
+        CoreSystem.getInstance().sendConsoleMessage("Banning user with uuid \"" + gebannt.toString() + "\" with template \"" + template.getName() + "\" with reason \"" + grund + "\" by team member with uuid \"" + team_member.toString() + "\"");
         long millis = System.currentTimeMillis() / 1000;
 
-	    String templateName = template.getName();
-	    addPoints(gebannt, template.getBanPoints(), template.getMutePoints());
+        String templateName = template.getName();
+        addPoints(gebannt, template.getBanPoints(), template.getMutePoints());
 
-	    Map<String, Integer> points = getPoints(gebannt);
-	    int banpoints = points.get("ban");
-	    int mutepoints = points.get("mute");
+        Map<String, Integer> points = getPoints(gebannt);
+        int banpoints = points.get("ban");
+        int mutepoints = points.get("mute");
 
-        long banTime = millis+getBanTimestampByPoints(banpoints);
-	    long muteTime = millis+getMuteTimestampByPoints(mutepoints);
+        long banTime = millis + getBanTimestampByPoints(banpoints);
+        long muteTime = millis + getMuteTimestampByPoints(mutepoints);
 
 
         ProxiedPlayer p = ProxyServer.getInstance().getPlayer(gebannt);
@@ -45,12 +50,28 @@ public class BanManager {
             tName = "System";
         }
 
-	    if (banTime > millis && template.getBanPoints() > 0) {
-
-            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_bansystem_ban` (`id`, `uuid`, `template`, `reason`, `end`, `timestamp`, `team_member`) VALUES (NULL, '"+gebannt.toString()+"', '"+templateName+"', '"+grund+"', '"+banTime+"', '"+millis+"', '"+tName+"') " +
-                    "ON DUPLICATE KEY UPDATE `template`='"+templateName+"', `reason`='"+grund+"', `end`='"+banTime+"', `timestamp`='"+millis+"', `team_member`='"+tName+"';");
-            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_bansystem_banhistory` (`id`, `uuid`, `template`, `reason`, `end`, `timestamp`, `team_member`) VALUES (NULL, '" + gebannt.toString() + "', '" + templateName + "', '" + grund + "', " + banTime + ", " + millis + ", '" + tName + "')");
-            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE userinfo SET state='3' WHERE uuid='" + gebannt.toString() + "'");
+        if (banTime > millis && template.getBanPoints() > 0) {
+            BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_ban").updateOne(
+                    eq("uuid", gebannt.toString()),
+                    combine(
+                            set("uuid", gebannt.toString()),
+                            set("template", templateName),
+                            set("reason", grund),
+                            set("end", banTime),
+                            set("timestamp", millis),
+                            set("team_member", tName)
+                    ),
+                    new UpdateOptions().upsert(true)
+            );
+            BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_banhistory").insertOne(
+                    new Document("uuid", gebannt.toString())
+                            .append("template", templateName)
+                            .append("reason", grund)
+                            .append("end", banTime)
+                            .append("timestamp", millis)
+                            .append("team_member", tName)
+            );
+            BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", gebannt.toString()), set("state", 3));
 
             if (p != null) {
                 p.disconnect(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
@@ -67,10 +88,26 @@ public class BanManager {
         }
 
         if (muteTime > millis && template.getMutePoints() > 0) {
-
-            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_bansystem_mute` (`id`, `uuid`, `template`, `reason`, `end`, `timestamp`, `team_member`) VALUES (NULL, '"+gebannt.toString()+"', '"+templateName+"', '"+grund+"', '"+muteTime+"', '"+millis+"', '"+tName+"') " +
-                    "ON DUPLICATE KEY UPDATE `template`='"+templateName+"', `reason`='"+grund+"', `end`='"+muteTime+"', `timestamp`='"+millis+"', `team_member`='"+tName+"';");
-            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_bansystem_mutehistory` (`id`, `uuid`, `template`, `reason`, `end`, `timestamp`, `team_member`) VALUES (NULL, '" + gebannt.toString() + "', '" + templateName + "', '" + grund + "', " + muteTime + ", " + millis + ", '" + tName + "')");
+            BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").updateOne(
+                    eq("uuid", gebannt.toString()),
+                    combine(
+                            set("uuid", gebannt.toString()),
+                            set("template", templateName),
+                            set("reason", grund),
+                            set("end", muteTime),
+                            set("timestamp", millis),
+                            set("team_member", tName)
+                    ),
+                    new UpdateOptions().upsert(true)
+            );
+            BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mutehistory").insertOne(
+                    new Document("uuid", gebannt.toString())
+                            .append("template", templateName)
+                            .append("reason", grund)
+                            .append("end", muteTime)
+                            .append("timestamp", millis)
+                            .append("team_member", tName)
+            );
 
             if (p != null) {
                 BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "\n§8§m----------------§r§8 [§7§l!§8] §fSystem §8§m----------------"
@@ -87,94 +124,77 @@ public class BanManager {
                         + "\n§8§m----------------------------------------\n");
             }
         }
-	}
-	
-	public static void unban(UUID uuid){
-		BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM bungeesystem_bansystem_ban WHERE uuid ='" + uuid.toString() + "'");
-	}
-
-	public static void unmute(UUID uuid) {
-		BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM bungeesystem_bansystem_mute WHERE uuid ='" + uuid.toString() + "'");
-	}
-	
-    public static boolean isBanned(UUID uuid){
-        long millis = System.currentTimeMillis() / 1000;
-        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM `bungeesystem_bansystem_ban` WHERE end<="+millis);
-		return BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `template` FROM `bungeesystem_bansystem_ban` WHERE `uuid`='" + uuid.toString() + "'", rs -> {
-            try {
-                return rs.next();
-            }catch (SQLException e){
-                e.printStackTrace();
-            }
-            return false;
-        }, boolean.class);
-	}
-
-	public static boolean isMuted(UUID uuid){
-        long millis = System.currentTimeMillis() / 1000;
-        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM `bungeesystem_bansystem_mute` WHERE end<="+millis);
-		return BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `template` FROM `bungeesystem_bansystem_mute` WHERE `uuid` ='" + uuid.toString() + "'", rs -> {
-            try {
-                return rs.next();
-            }catch (SQLException e){
-                e.printStackTrace();
-            }
-            return false;
-        }, boolean.class);
-	}
-
-	private static boolean hasPoints(UUID uuid) {
-        return BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `banpoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='" + uuid.toString() + "'", rs -> {
-            try{
-                return rs.next();
-            }catch (SQLException e){
-                e.printStackTrace();
-            }
-            return false;
-        }, boolean.class);
     }
 
-    @SuppressWarnings(value = "method")
-	private static Map<String, Integer> getPoints(UUID uuid) {
-        return (HashMap<String, Integer>) BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `banpoints`, `mutepoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='" + uuid.toString() + "'", rs -> {
-            Map<String, Integer> result = new HashMap<>();
-            try{
-                if (rs.next()) {
-                    result.put("ban", rs.getInt("banpoints"));
-                    result.put("mute", rs.getInt("mutepoints"));
-                }
-            }catch (SQLException e){
-                e.printStackTrace();
-            }
-            return result;
-        }, Map.class);
+    public static void unban(UUID uuid) {
+        BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_ban").deleteOne(eq("uuid", uuid.toString()));
+    }
+
+    public static void unmute(UUID uuid) {
+        BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").deleteOne(eq("uuid", uuid.toString()));
+    }
+
+    public static boolean isBanned(UUID uuid) {
+        BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_ban").deleteMany(lte("end", System.currentTimeMillis() / 1000));
+        return BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_ban").find(eq("uuid", uuid.toString())).first() != null;
+    }
+
+    public static boolean isMuted(UUID uuid) {
+        BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").deleteMany(lte("end", System.currentTimeMillis() / 1000));
+        return BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").find(eq("uuid", uuid.toString())).first() != null;
+    }
+
+    private static boolean hasPoints(UUID uuid) {
+        return BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_points").find(eq("uuid", uuid.toString())).first() != null;
+    }
+
+    private static Map<String, Integer> getPoints(UUID uuid) {
+        Map<String, Integer> result = new HashMap<>();
+
+        Document entry = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_points").find(eq("uuid", uuid.toString())).first();
+        if (entry != null) {
+            result.put("ban", entry.getInteger("banpoints"));
+            result.put("mute", entry.getInteger("mutepoints"));
+        }
+
+        return result;
     }
 
     private static void addPoints(UUID uuid, int banpoints, int mutepoints) {
-	    if (hasPoints(uuid)) {
-            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `bungeesystem_bansystem_points` SET banpoints=banpoints+" + banpoints + ", mutepoints=mutepoints+" + mutepoints + " WHERE `uuid`='" + uuid.toString() + "'");
+        if (hasPoints(uuid)) {
+            BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_points").updateOne(
+                    eq("uuid", uuid.toString()),
+                    combine(
+                            inc("banpoints", banpoints),
+                            inc("mutepoints", mutepoints)
+                    )
+            );
         } else {
-            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `bungeesystem_bansystem_points` (`id`, `uuid`, `banpoints`, `mutepoints`) VALUES (NULL, '" + uuid.toString() + "', " + banpoints + ", " + mutepoints + ")");
+            BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_points").insertOne(
+                    new Document("uuid", uuid.toString())
+                            .append("banpoints", banpoints)
+                            .append("mutepoints", mutepoints)
+            );
         }
     }
 
     private static long getBanTimestampByPoints(int points) {
-	    long result;
+        long result;
 
-	    if (points >= 20) {
-	        result = 60*60*24*365*10;
-	    } else if (points >= 15) {
-            result = 60*60*24*60;
-	    } else if (points >= 10) {
-            result = 60*60*24*30;
+        if (points >= 20) {
+            result = 60 * 60 * 24 * 365 * 10;
+        } else if (points >= 15) {
+            result = 60 * 60 * 24 * 60;
+        } else if (points >= 10) {
+            result = 60 * 60 * 24 * 30;
         } else if (points >= 5) {
-            result = 60*60*24*7;
+            result = 60 * 60 * 24 * 7;
         } else if (points >= 2) {
-            result = 60*60*24;
+            result = 60 * 60 * 24;
         } else if (points >= 1) {
-            result = 60*60*12;
+            result = 60 * 60 * 12;
         } else {
-	        result = 0;
+            result = 0;
         }
 
         return result;
@@ -184,48 +204,48 @@ public class BanManager {
         long result;
 
         if (points >= 20) {
-            result = 60*60*24*365*10;
+            result = 60 * 60 * 24 * 365 * 10;
         } else if (points >= 15) {
-            result = 60*60*24*60;
+            result = 60 * 60 * 24 * 60;
         } else if (points >= 10) {
-            result = 60*60*24*30;
+            result = 60 * 60 * 24 * 30;
         } else if (points >= 5) {
-            result = 60*60*24*14;
+            result = 60 * 60 * 24 * 14;
         } else if (points >= 2) {
-            result = 60*60*24*2;
+            result = 60 * 60 * 24 * 2;
         } else if (points >= 1) {
-            result = 60*60*24;
+            result = 60 * 60 * 24;
         } else {
             result = 0;
         }
 
         return result;
     }
-    
+
     public static String getEndeString(long end) {
         long millis = System.currentTimeMillis() / 1000;
 
-        if(end > 60*60*24*365+millis) {
+        if (end > 60 * 60 * 24 * 365 + millis) {
             return "§eimmer";
-        }else {
-             long seconds = end - millis, minutes = 0, hours = 0, days = 0;
+        } else {
+            long seconds = end - millis, minutes = 0, hours = 0, days = 0;
 
-             while (seconds > 60) {
-                 seconds -= 60;
-                 minutes++;
-             }
+            while (seconds > 60) {
+                seconds -= 60;
+                minutes++;
+            }
 
-             while (minutes > 60) {
-                 minutes -=60;
-                 hours++;
-             }
+            while (minutes > 60) {
+                minutes -= 60;
+                hours++;
+            }
 
-             while (hours > 24) {
-                 hours -= 24;
-                 days++;
-             }
+            while (hours > 24) {
+                hours -= 24;
+                days++;
+            }
 
-             return  "§e" + days + " §7Tag(e), §e" + hours + " §7Stunde(n) und §e" + minutes + " §7Minute(n)";
+            return "§e" + days + " §7Tag(e), §e" + hours + " §7Stunde(n) und §e" + minutes + " §7Minute(n)";
         }
     }
 }

@@ -8,8 +8,6 @@ package eu.mcone.coresystem.core.player;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.core.mysql.MySQL;
 
@@ -131,15 +129,15 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
     }
 
     @Override
-    public Set<Group> getGroups(String json) {
-        Set<Group> groups = new HashSet<>();
-        JsonArray array = new JsonParser().parse(json).getAsJsonArray();
+    public Set<Group> getGroups(List<Integer> groups) {
+        System.out.println(groups);
+        Set<Group> result = new HashSet<>();
 
-        for (JsonElement e : array) {
-            groups.add(Group.getGroupById(e.getAsInt()));
+        for (Integer id : groups) {
+            result.add(Group.getGroupById(id));
         }
 
-        return groups;
+        return result;
     }
 
     @Override
@@ -153,11 +151,11 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
     @Override
     public Set<Group> getLiveGroups(UUID uuid) {
         return (Set<Group>) mySQL.select("SELECT groups FROM userinfo WHERE uuid='"+uuid+"'", rs -> {
-            try {
+            /*try {
                 if (rs.next()) return getGroups(rs.getString("gruppe"));
             } catch (SQLException e) {
                 e.printStackTrace();
-            }
+            }*/
             return null;
         }, Set.class);
     }

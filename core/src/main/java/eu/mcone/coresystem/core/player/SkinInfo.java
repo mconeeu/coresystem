@@ -40,7 +40,7 @@ public class SkinInfo implements eu.mcone.coresystem.api.core.player.SkinInfo {
             value = cachedSkins.get(name)[0];
             signature = cachedSkins.get(name)[1];
         } else {
-            mySQL.select("SELECT * FROM bukkitsystem_textures WHERE name='" + name + "'", rs -> {
+            mySQL.select("SELECT * FROM bungeesystem_textures WHERE name='" + name + "'", rs -> {
                 try {
                     if (rs.next()) {
                         value = rs.getString("texture_value");

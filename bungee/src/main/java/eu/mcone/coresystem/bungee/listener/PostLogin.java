@@ -9,7 +9,8 @@ package eu.mcone.coresystem.bungee.listener;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.TeamspeakVerifier;
-import eu.mcone.coresystem.core.mysql.Database;
+import eu.mcone.coresystem.core.mysql.MySQLDatabase;
+import eu.mcone.networkmanager.core.api.database.Database;
 import net.labymod.serverapi.LabyPermission;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -40,12 +41,11 @@ public class PostLogin implements Listener {
         if (cp.isNew()) {
             BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "§8[§7§l!§8] §3MC ONE §8» §2Als kleines Willkommensgeschenk bekommst du 20 Coins gutgeschrieben!");
         } else {
-            BungeeCoreSystem.getSystem().getMongoDatabase(eu.mcone.networkmanager.core.api.database.Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", p.getUniqueId()), combine(set("ip", cp.getIpAdress()), set("state", "1"), set("timestamp", System.currentTimeMillis() / 1000)));
-            //BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `userinfo` SET `name` = '" + p.getName() + "', `ip` = '" + cp.getIpAdress() + "' , state = '1', `timestamp` = '" + System.currentTimeMillis() / 1000 + "' WHERE `uuid`='" + p.getUniqueId().toString() + "';");
+            BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", p.getUniqueId().toString()), combine(set("ip", cp.getIpAdress()), set("state", 1), set("timestamp", System.currentTimeMillis() / 1000)));
         }
 
         if (p.hasPermission("system.bungee.report")) {
-            BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `id`, `title` FROM `website_ticket` WHERE `cat`='Spielerreport' AND `state`='pending';", rs -> {
+            BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT `id`, `title` FROM `website_ticket` WHERE `cat`='Spielerreport' AND `state`='pending';", rs -> {
                 try {
                     int desc = 0;
                     while (rs.next()) {

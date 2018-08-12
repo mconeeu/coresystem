@@ -9,7 +9,7 @@ package eu.mcone.coresystem.bungee.command;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.report.Report;
 import eu.mcone.coresystem.bungee.report.ReportReason;
-import eu.mcone.coresystem.core.mysql.Database;
+import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -36,7 +36,7 @@ public class ReportCMD extends Command {
 
             if (args.length == 1) {
                 if ((args[0].equalsIgnoreCase("list") && (p.hasPermission("system.bungee.report") || (p.hasPermission("system.bungee.*"))))) {
-                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT `id`, `title` FROM `website_ticket` WHERE `cat`='Spielerreport' AND `state`='pending';", rs_reportlist -> {
+                    BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT `id`, `title` FROM `website_ticket` WHERE `cat`='Spielerreport' AND `state`='pending';", rs_reportlist -> {
                         try {
                             int desc = 0;
                             while (rs_reportlist.next()) {
@@ -64,7 +64,7 @@ public class ReportCMD extends Command {
                 if ((args[0].equalsIgnoreCase("accept") && (p.hasPermission("system.bungee.report") || (p.hasPermission("system.bungee.*"))))) {
                     String id = args[1];
 
-                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT * FROM `website_ticket` WHERE `id`=" + id + " AND `cat`='Spielerreport' AND `state`='pending'", rs -> {
+                    BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT * FROM `website_ticket` WHERE `id`=" + id + " AND `cat`='Spielerreport' AND `state`='pending'", rs -> {
                         try {
                             if (rs.next()) {
                                 ProxiedPlayer reportedPlayer = ProxyServer.getInstance().getPlayer(UUID.fromString(rs.getString("target_uuid")));
@@ -74,8 +74,8 @@ public class ReportCMD extends Command {
                                     p.connect(reportedPlayer.getServer().getInfo());
 
                                     //Syntax: report Daten werden Geupdatet.
-                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `website_ticket` SET `state`='inwork', `team_member`='" + p.getUniqueId() + "' WHERE `id`=" + id + " AND `cat`='Spielerreport'");
-                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `website_ticket_msg` (`id`, `ticket_id`, `uuid`, `timestamp`, `msg`) VALUES (NULL, " + id + ", '" + p.getUniqueId() + "', '" + millis + "', '" + p.getName() + " hat den Status des Tickets auf \"inwork\" geändert.')");
+                                    BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).update("UPDATE `website_ticket` SET `state`='inwork', `team_member`='" + p.getUniqueId() + "' WHERE `id`=" + id + " AND `cat`='Spielerreport'");
+                                    BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).update("INSERT INTO `website_ticket_msg` (`id`, `ticket_id`, `uuid`, `timestamp`, `msg`) VALUES (NULL, " + id + ", '" + p.getUniqueId() + "', '" + millis + "', '" + p.getName() + " hat den Status des Tickets auf \"inwork\" geändert.')");
 
                                     if (reporter != null) {
                                         BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "" +
@@ -120,12 +120,12 @@ public class ReportCMD extends Command {
                 } else if (args[0].equalsIgnoreCase("close") || p.hasPermission("system.bungee.report")) {
                     String id = args[1];
 
-                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT * FROM `website_ticket` WHERE `id`=" + id + " AND `cat`='Spielerreport'", rs -> {
+                    BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT * FROM `website_ticket` WHERE `id`=" + id + " AND `cat`='Spielerreport'", rs -> {
                         try {
                             if (rs.next()) {
                                 if (p.getUniqueId().equals(UUID.fromString(rs.getString("team_member"))) || p.hasPermission("group.admin")) {
-                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE `website_ticket` SET `state`='closed' WHERE `id`=" + id);
-                                    BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("INSERT INTO `website_ticket_msg` (`id`, `ticket_id`, `uuid`, `timestamp`, `msg`) VALUES (NULL, " + id + ", '" + p.getUniqueId() + "', '" + millis + "', '" + p.getName() + " hat den Status des Tickets auf \"closed\" geändert.')");
+                                    BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).update("UPDATE `website_ticket` SET `state`='closed' WHERE `id`=" + id);
+                                    BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).update("INSERT INTO `website_ticket_msg` (`id`, `ticket_id`, `uuid`, `timestamp`, `msg`) VALUES (NULL, " + id + ", '" + p.getUniqueId() + "', '" + millis + "', '" + p.getName() + " hat den Status des Tickets auf \"closed\" geändert.')");
                                     BungeeCoreSystem.getInstance().getMessager().send(p, " §2Der Report wurde geschlossen!");
                                 } else {
                                     BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du kannst dieses Ticket nicht schließen, da du es nicht angenommen hast. Benutze §c/ticket accept <id> §4um Tickets anzunehmen!");

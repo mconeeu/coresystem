@@ -25,6 +25,7 @@ public class PlayerLogin implements Listener {
     public void on(PlayerLoginEvent e) {
         Player p = e.getPlayer();
         setPermissions(p);
+
         try {
             new BukkitCorePlayer(BukkitCoreSystem.getInstance(), e.getAddress(), p.getName());
             p.setDisplayName(p.getName());

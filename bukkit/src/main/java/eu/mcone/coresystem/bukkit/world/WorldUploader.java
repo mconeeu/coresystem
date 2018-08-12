@@ -6,11 +6,10 @@
 
 package eu.mcone.coresystem.bukkit.world;
 
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.util.Zip;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.core.mysql.Database;
+import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.World;
 
@@ -22,14 +21,14 @@ import java.sql.*;
 class WorldUploader {
 
     private CoreWorld world;
-    private Database database;
+    private MySQLDatabase database;
     private String table = "mc1cloud.cloudwrapper_worlds";
 
     WorldUploader(CoreWorld world) {
         if (world.bukkit() != null) this.world = world;
     }
 
-    WorldUploader(CoreWorld world, Database database, String table) {
+    WorldUploader(CoreWorld world, MySQLDatabase database, String table) {
         this.world = world;
         this.database = database;
         this.table = table;

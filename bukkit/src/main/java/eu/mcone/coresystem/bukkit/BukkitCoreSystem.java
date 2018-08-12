@@ -36,12 +36,13 @@ import eu.mcone.coresystem.bukkit.util.TablistInfo;
 import eu.mcone.coresystem.bukkit.util.Title;
 import eu.mcone.coresystem.bukkit.world.WorldManager;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.mysql.MySQL;
+import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
 import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CooldownSystem;
+import eu.mcone.networkmanager.core.api.database.Database;
 import eu.mcone.networkmanager.core.api.database.MongoDBManager;
 import eu.mcone.networkmanager.core.database.MongoConnection;
 import lombok.Getter;
@@ -63,12 +64,12 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private MySQL mysql1;
     private MySQL mysql2;
     private MySQL mysql3;
+
+    private MongoConnection mongoConnection;
     private MongoDBManager mongoDatabase1;
     private MongoDBManager mongoDatabase2;
     private MongoDBManager mongoDatabase3;
 
-    @Getter
-    private MongoConnection mongoConnection;
     @Getter
     private TranslationManager translationManager;
     @Getter
@@ -122,16 +123,16 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         );
 
         sendConsoleMessage("§aInitializing MariaDB Connections...");
-        mysql1 = new MySQL(Database.SYSTEM);
-        mysql2 = new MySQL(Database.STATS);
-        mysql3 = new MySQL(Database.DATA);
+        mysql1 = new MySQL(MySQLDatabase.SYSTEM);
+        mysql2 = new MySQL(MySQLDatabase.STATS);
+        mysql3 = new MySQL(MySQLDatabase.DATA);
 
         mongoConnection = new MongoConnection("db.mcone.eu", "admin", "T6KIq8gjmmF1k7futx0cJiJinQXgfguYXruds1dFx1LF5IsVPQjuDTnlI1zltpD9", "admin", 27017);
         mongoConnection.connect();
 
-        mongoDatabase1 = mongoConnection.getDatabase(eu.mcone.networkmanager.core.api.database.Database.SYSTEM);
-        mongoDatabase1 = mongoConnection.getDatabase(eu.mcone.networkmanager.core.api.database.Database.STATS);
-        mongoDatabase1 = mongoConnection.getDatabase(eu.mcone.networkmanager.core.api.database.Database.DATA);
+        mongoDatabase1 = mongoConnection.getDatabase(Database.SYSTEM);
+        mongoDatabase2 = mongoConnection.getDatabase(Database.STATS);
+        mongoDatabase3 = mongoConnection.getDatabase(Database.DATA);
 
         pluginManager = new PluginManager();
         coinsUtil = new CoinsUtil(this);
@@ -208,6 +209,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             }
         }
 
+        mongoConnection.disconnect();
+
         mysql1.close();
         mysql2.close();
         mysql3.close();
@@ -253,7 +256,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     private void createTables() {
         mysql1.update(
-                "CREATE TABLE IF NOT EXISTS `bukkitsystem_textures`" +
+                "CREATE TABLE IF NOT EXISTS `bungeesystem_textures`" +
                         "(" +
                         "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
                         "`name` VARCHAR(100) NOT NULL UNIQUE KEY REFERENCES bukkitsystem_npcs(`texture`) ON DELETE SET NULL ON UPDATE SET NULL, " +
@@ -275,7 +278,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         );
     }
 
-    public MySQL getMySQL(Database database) {
+    public MySQL getMySQL(MySQLDatabase database) {
         switch (database) {
             case SYSTEM:
                 return mysql1;
@@ -289,7 +292,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public MongoDBManager getMongoDatabase(eu.mcone.networkmanager.core.api.database.Database database) {
+    public MongoDBManager getMongoDB(eu.mcone.networkmanager.core.api.database.Database database) {
         switch (database) {
             case SYSTEM:
                 return mongoDatabase1;
@@ -308,7 +311,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public MongoDBManager getMongoDatabase() {
+    public MongoDBManager getMongoDB() {
         return mongoDatabase3;
     }
 

@@ -18,14 +18,19 @@ import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.coresystem.core.mysql.Database;
+import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
+import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import lombok.Setter;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.net.InetAddress;
+
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.set;
 
 public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
 
@@ -55,7 +60,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
     public void addCoins(int amount) {
         this.coins += amount;
         Bukkit.getScheduler().runTaskAsynchronously((BukkitCoreSystem) instance, () -> {
-            ((BukkitCoreSystem) instance).getMySQL(Database.SYSTEM).update("UPDATE userinfo SET coins="+coins+" WHERE uuid='"+uuid+"'");
+            ((BukkitCoreSystem) instance).getMySQL(MySQLDatabase.SYSTEM).update("UPDATE userinfo SET coins="+coins+" WHERE uuid='"+uuid+"'");
             Bukkit.getServer().getPluginManager().callEvent(new CoinsChangeEvent(this));
         });
     }
@@ -64,7 +69,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
     public void removeCoins(int amount) {
         this.coins -= amount;
         Bukkit.getScheduler().runTaskAsynchronously((BukkitCoreSystem) instance, () -> {
-            ((BukkitCoreSystem) instance).getMySQL(Database.SYSTEM).update("UPDATE userinfo SET coins="+coins+" WHERE uuid='"+uuid+"'");
+            ((BukkitCoreSystem) instance).getMySQL(MySQLDatabase.SYSTEM).update("UPDATE userinfo SET coins="+coins+" WHERE uuid='"+uuid+"'");
             Bukkit.getPluginManager().callEvent(new CoinsChangeEvent(this));
         });
     }
@@ -107,9 +112,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
         Bukkit.getPluginManager().callEvent(new PlayerSettingsChangeEvent(this, settings));
         CoreSystem.getInstance().getChannelHandler().createSetRequest(bukkit(), "PLAYER_SETTINGS", CoreSystem.getInstance().getGson().toJson(settings, PlayerSettings.class));
 
-        BukkitCoreSystem.getSystem().getMySQL(Database.SYSTEM).update(
-                "UPDATE userinfo SET player_settings='"+((CoreModuleCoreSystem) instance).getGson().toJson(settings, PlayerSettings.class)+"' WHERE uuid ='"+uuid+"'"
-        );
+        BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid), set("player_settings", Document.parse(((CoreModuleCoreSystem) instance).getGson().toJson(settings, PlayerSettings.class))));
     }
 
     @Override

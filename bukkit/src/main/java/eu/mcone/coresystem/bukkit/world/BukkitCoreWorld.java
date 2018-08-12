@@ -15,7 +15,7 @@ import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.core.annotation.DontObfuscate;
-import eu.mcone.coresystem.core.mysql.Database;
+import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -134,7 +134,7 @@ public class BukkitCoreWorld implements CoreWorld {
 
     @Override
     public boolean betaUpload() {
-        return new WorldUploader(this, Database.DATA, "bukkitsystem_beta_worlds").upload();
+        return new WorldUploader(this, MySQLDatabase.DATA, "bukkitsystem_beta_worlds").upload();
     }
 
     @Override

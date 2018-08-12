@@ -18,13 +18,6 @@ public interface CoreActionBar {
     CoreActionBar message(String message);
 
     /**
-     * set stay time
-     * @param stay time int in seconds
-     * @return this
-     */
-    CoreActionBar stay(int stay);
-
-    /**
      * reset all values
      * @return this
      */

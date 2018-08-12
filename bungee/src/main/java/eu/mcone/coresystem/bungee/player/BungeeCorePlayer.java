@@ -15,16 +15,21 @@ import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.coresystem.core.mysql.Database;
+import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
+import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import org.bson.Document;
 
 import java.net.InetAddress;
 import java.sql.SQLException;
+
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.set;
 
 public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer {
 
@@ -39,7 +44,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer {
     public BungeeCorePlayer(CoreSystem instance, InetAddress address, String name) throws PlayerNotResolvedException {
         super(instance, address, name);
 
-        ((BungeeCoreSystem) instance).getMySQL(Database.SYSTEM).select("SELECT `end` FROM `bungeesystem_bansystem_mute` WHERE `uuid`='"+getUuid()+"'", rs -> {
+        ((BungeeCoreSystem) instance).getMySQL(MySQLDatabase.SYSTEM).select("SELECT `end` FROM `bungeesystem_bansystem_mute` WHERE `uuid`='"+getUuid()+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.muted = true;
@@ -69,7 +74,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer {
         if (muted && muteTime < millis) {
             muted = false;
             ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () ->
-                    ((BungeeCoreSystem) instance).getMySQL(Database.SYSTEM).update("DELETE FROM `bungeesystem_bansystem_mute` WHERE end<"+millis));
+                    ((BungeeCoreSystem) instance).getMySQL(MySQLDatabase.SYSTEM).update("DELETE FROM `bungeesystem_bansystem_mute` WHERE end<"+millis));
         }
 
         return muted;
@@ -80,9 +85,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer {
         ProxyServer.getInstance().getPluginManager().callEvent(new PlayerSettingsChangeEvent(this, settings));
         CoreSystem.getInstance().getChannelHandler().createInfoRequest(bungee(), "PLAYER_SETTINGS", CoreSystem.getInstance().getGson().toJson(settings, PlayerSettings.class));
 
-        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update(
-                "UPDATE userinfo SET player_settings='"+((CoreModuleCoreSystem) instance).getGson().toJson(settings, PlayerSettings.class)+"' WHERE uuid ='"+uuid+"'"
-        );
+        BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid), set("player_settings", Document.parse(((CoreModuleCoreSystem) instance).getGson().toJson(settings, PlayerSettings.class))));
     }
 
     @Override

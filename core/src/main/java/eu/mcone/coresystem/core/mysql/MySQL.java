@@ -21,7 +21,7 @@ public class MySQL implements eu.mcone.coresystem.api.core.mysql.MySQL {
 
     private HikariDataSource ds;
 
-    public MySQL(Database database) {
+    public MySQL(MySQLDatabase database) {
         ds = new HikariDataSource();
         ds.setMaximumPoolSize(database.getPoolsize());
         ds.setDriverClassName("org.mariadb.jdbc.Driver");
