@@ -117,13 +117,12 @@ public class WorldCMD extends CorePlayerCommand {
                 } else {
                     CoreWorld w = BukkitCoreSystem.getInstance().getWorldManager().getWorld(args[1]);
 
-                    if ((
-                            args[0].equalsIgnoreCase("tp")
-                                    || args[0].equalsIgnoreCase("info")
-                                    || args[0].equalsIgnoreCase("upload")
-                                    || args[0].equalsIgnoreCase("betaupload")
-                                    || args[0].equalsIgnoreCase("unload")
-                                    || args[0].equalsIgnoreCase("delete")
+                    if ((args[0].equalsIgnoreCase("tp")
+                            || args[0].equalsIgnoreCase("info")
+                            || args[0].equalsIgnoreCase("upload")
+                            || args[0].equalsIgnoreCase("betaupload")
+                            || args[0].equalsIgnoreCase("unload")
+                            || args[0].equalsIgnoreCase("delete")
                     ) && w != null) {
                         if (args[0].equalsIgnoreCase("tp")) {
                             p.teleport(w.bukkit().getSpawnLocation());

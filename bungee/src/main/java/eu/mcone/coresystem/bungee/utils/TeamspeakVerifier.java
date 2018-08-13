@@ -39,7 +39,6 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
 
 public class TeamspeakVerifier {
@@ -216,7 +215,7 @@ public class TeamspeakVerifier {
                 }
 
                 ((GlobalCorePlayer) p).setTeamspeakUid(null);
-                BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", p.getUuid()), combine(set("teamspeak_uid", "")));
+                BungeeCoreSystem.getSystem().getMongoDB().getCollection("userinfo").updateOne(eq("uuid", p.getUuid()), set("teamspeak_uid", ""));
                 //BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE userinfo SET teamspeak_uid=NULL WHERE uuid='" + p.getUuid() + "'");
             });
         } else {
@@ -226,7 +225,7 @@ public class TeamspeakVerifier {
 
     private void link(CorePlayer p, String ts3Uid) {
         ((GlobalCorePlayer) p).setTeamspeakUid(ts3Uid);
-        BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", p.getUuid()), combine(set("teamspeak_uid", ts3Uid)));
+        BungeeCoreSystem.getSystem().getMongoDB().getCollection("userinfo").updateOne(eq("uuid", p.getUuid()), set("teamspeak_uid", ts3Uid));
         //BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE userinfo SET teamspeak_uid='" + ts3Uid + "' WHERE uuid='" + p.getUuid() + "'");
 
         updateLink(p, clientInfo -> {

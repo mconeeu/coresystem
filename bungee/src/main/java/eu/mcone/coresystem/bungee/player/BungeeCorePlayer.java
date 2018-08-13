@@ -15,7 +15,7 @@ import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.coresystem.core.mysql.MySQLDatabase;
+import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
@@ -44,7 +44,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer {
     public BungeeCorePlayer(CoreSystem instance, InetAddress address, String name) throws PlayerNotResolvedException {
         super(instance, address, name);
 
-        ((BungeeCoreSystem) instance).getMySQL(MySQLDatabase.SYSTEM).select("SELECT `end` FROM `bungeesystem_bansystem_mute` WHERE `uuid`='"+getUuid()+"'", rs -> {
+        ((BungeeCoreSystem) instance).getMySQL(Database.SYSTEM).select("SELECT `end` FROM `bungeesystem_bansystem_mute` WHERE `uuid`='"+getUuid()+"'", rs -> {
             try {
                 if (rs.next()) {
                     this.muted = true;
@@ -74,7 +74,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer {
         if (muted && muteTime < millis) {
             muted = false;
             ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () ->
-                    ((BungeeCoreSystem) instance).getMySQL(MySQLDatabase.SYSTEM).update("DELETE FROM `bungeesystem_bansystem_mute` WHERE end<"+millis));
+                    ((BungeeCoreSystem) instance).getMySQL(Database.SYSTEM).update("DELETE FROM `bungeesystem_bansystem_mute` WHERE end<"+millis));
         }
 
         return muted;

@@ -29,7 +29,7 @@ public class ProfileInventory extends CoreInventory {
 
             try {
                 if (rs.next()) {
-                    double onlinetime = Math.floor((cp.getOnlinetime() / 60) * 100) / 100;
+                    double onlinetime = Math.floor(((double)cp.getOnlinetime() / 60) * 100) / 100;
                     int coins = rs.getInt("coins");
                     String status = cp.getState().getName();
 

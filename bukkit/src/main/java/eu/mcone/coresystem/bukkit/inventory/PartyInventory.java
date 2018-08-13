@@ -34,8 +34,9 @@ class PartyInventory extends CoreInventory {
                     String[] data = m.split(":");
 
                     List<String> lores = new ArrayList<>();
-                    if (data.length>2 && data[2].equals("leader")) lores.add("§e\u2600 Leader");
-                    if (isPartyLeader && !data[0].equalsIgnoreCase(p.getName())) lores.addAll(Arrays.asList("", "§8» §f§nRechtsklick§8 | §7§oAktionen"));
+                    if (data.length > 2 && data[2].equals("leader")) lores.add("§e\u2600 Leader");
+                    if (isPartyLeader && !data[0].equalsIgnoreCase(p.getName()))
+                        lores.addAll(Arrays.asList("", "§8» §f§nRechtsklick§8 | §7§oAktionen"));
 
                     setItem(i, ItemBuilder.createSkullItem(data[0], 1).displayName("§f§l" + data[0]).lore((String[]) lores.toArray()).create(), e -> {
                         new PartyMemberInventory(p, data[0]);
@@ -52,17 +53,17 @@ class PartyInventory extends CoreInventory {
                 if (isPartyLeader)
                     setItem(InventorySlot.ROW_6_SLOT_5, new ItemBuilder(Material.BARRIER, 1, 0).displayName("§cParty löschen").create(), e -> {
                         p.closeInventory();
-                        BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD" ,"party delete");
+                        BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "party delete");
                     });
 
                 setItem(InventorySlot.ROW_6_SLOT_9, new ItemBuilder(Material.SLIME_BALL, 1, 0).displayName("§4Party verlassen").create(), e -> {
                     p.closeInventory();
-                    BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD" ,"party leave");
+                    BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "party leave");
                 });
             } else {
                 setItem(InventorySlot.ROW_3_SLOT_5, new ItemBuilder(Material.CAKE, 1, 0).displayName("§5Party erstellen").create(), e -> {
                     p.closeInventory();
-                    BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD" ,"party create");
+                    BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "party create");
                 });
 
                 setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
@@ -78,7 +79,7 @@ class PartyInventory extends CoreInventory {
     private static boolean isPartyLeader(Player p, String[] members) {
         for (String m : members) {
             String data[] = m.split(":");
-            if (data[0].equals(p.getName()) && data.length>2 && data[2].equals("leader")) return true;
+            if (data[0].equals(p.getName()) && data.length > 2 && data[2].equals("leader")) return true;
         }
         return false;
     }

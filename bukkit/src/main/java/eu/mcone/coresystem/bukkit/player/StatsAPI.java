@@ -6,16 +6,21 @@
 
 package eu.mcone.coresystem.bukkit.player;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.StatsChangeEvent;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.mysql.MySQL;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import lombok.Getter;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 
-import java.sql.SQLException;
 import java.util.UUID;
+
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.inc;
+import static com.mongodb.client.model.Updates.set;
 
 public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI {
 
@@ -43,17 +48,11 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 * @param uuid >> Player UniqueID
 	 */
     public int getKills(UUID uuid) {
-        return mySQL.select("SELECT `kill` FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
-            int i = 0;
-            try {
-                if (rs.next()) {
-                    i = rs.getInt("kill");
-                }
-            }catch (SQLException e){
-                e.printStackTrace();
-            }
-            return i;
-        }, int.class);
+		Document killDocument = CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).find(eq("uuid", uuid.toString())).first();
+		if (killDocument != null) {
+			return killDocument.getInteger("kill");
+		}
+		return 0;
     }
 
 	/**
@@ -61,18 +60,11 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 * @param uuid >> Player UniqueID
 	 */
     public int getWins(UUID uuid) {
-	    return mySQL.select("SELECT `win` FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
-            int i = 0;
-            try {
-                if (rs.next()) {
-                    i = rs.getInt("win");
-                }
-            }
-            catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return i;
-        }, int.class);
+		Document winDocument = CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).find(eq("uuid", uuid.toString())).first();
+		if (winDocument != null) {
+			return winDocument.getInteger("win");
+		}
+		return 0;
     }
 
 	/**
@@ -80,17 +72,11 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 * @param uuid >> Player UniqueID
 	 */
     public int getLoses(UUID uuid) {
-        return mySQL.select("SELECT `lose` FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
-            int i = 0;
-            try {
-                if (rs.next()) {
-                    i = rs.getInt("lose");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return i;
-        }, int.class);
+		Document loseDocument = CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).find(eq("uuid", uuid.toString())).first();
+		if (loseDocument != null) {
+			return loseDocument.getInteger("lose");
+		}
+		return 0;
     }
 
 	/**
@@ -98,17 +84,11 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 * @param uuid >> Player UniqueID
 	 */
     public int getDeaths(UUID uuid) {
-        return mySQL.select("SELECT `death` FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
-            int i = 0;
-            try {
-			    if (rs.next()) {
-                    i = rs.getInt("death");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return i;
-        }, int.class);
+		Document deathDocument = CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).find(eq("uuid", uuid.toString())).first();
+		if (deathDocument != null) {
+			return deathDocument.getInteger("death");
+		}
+		return 0;
     }
 
 	/**
@@ -116,17 +96,11 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 * @param uuid >> Player UniqueID
 	 */
 	public int getGoals(UUID uuid) {
-		return mySQL.select("SELECT `goal` FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
-			int i = 0;
-			try {
-				if (rs.next()) {
-					i = rs.getInt("goal");
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			return i;
-		}, int.class);
+		Document goalDocument = CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).find(eq("uuid", uuid.toString())).first();
+		if (goalDocument != null) {
+			return goalDocument.getInteger("goal");
+		}
+		return 0;
 	}
 
 
@@ -138,7 +112,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 */
 	public void setKills(UUID uuid, int kill) {
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
-			mySQL.update("INSERT INTO " + this.gamemode.toString() + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', " + kill + ", 0, 0, 0, 0) ON DUPLICATE KEY UPDATE `kill`='" + kill + "'");
+			CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).updateOne(eq("uuid", uuid.toString()), set("kill", kill));
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), this));
 		});
 	}
@@ -150,7 +124,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 */
 	public void setDeaths(UUID uuid, int death) {
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
-			mySQL.update("INSERT INTO " + this.gamemode.toString() + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, " + death + ", 0, 0, 0) ON DUPLICATE KEY UPDATE `death`='" + death + "'");
+			CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).updateOne(eq("uuid", uuid.toString()), set("death", death));
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), this));
 		});
 	}
@@ -162,7 +136,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 */
 	public void setWins(UUID uuid, int win) {
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
-			mySQL.update("INSERT INTO " + this.gamemode.toString() + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, 0, " + win + ", 0, 0) ON DUPLICATE KEY UPDATE `win`='" + win + "'");
+			CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).updateOne(eq("uuid", uuid.toString()), set("win", win));
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), this));
 		});
 	}
@@ -174,7 +148,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 */
 	public void setLoses(UUID uuid, int lose) {
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
-			mySQL.update("INSERT INTO " + this.gamemode.toString() + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, 0, 0, " + lose + ", 0) ON DUPLICATE KEY UPDATE `lose`='" + lose + "'");
+			CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).updateOne(eq("uuid", uuid.toString()), set("lose", lose));
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), this));
 		});
 	}
@@ -186,8 +160,8 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
      */
     public void setGoals(UUID uuid, int goal) {
         Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
-			mySQL.update("INSERT INTO " + this.gamemode.toString() + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, 0, 0, 0, " + goal + ") ON DUPLICATE KEY UPDATE `goal`='" + goal + "'");
-            Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), this));
+			CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).updateOne(eq("uuid", uuid.toString()), set("goal", goal));
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), this));
         });
     }
 
@@ -200,7 +174,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 */
 	public void addKills(UUID uuid, int kill) {
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
-			mySQL.update("INSERT INTO " + this.gamemode.toString() + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', '" + kill + "', 0, 0, 0, 0) ON DUPLICATE KEY UPDATE `kill`=`kill`+" + kill);
+			CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).updateOne(eq("uuid", uuid.toString()), inc("kill", kill));
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), this));
 		});
 	}
@@ -212,7 +186,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 */
 	public void addDeaths(UUID uuid, int death) {
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
-			mySQL.update("INSERT INTO " + this.gamemode.toString() + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, " + death + ", 0, 0, 0) ON DUPLICATE KEY UPDATE `death`=`death`+" + death);
+			CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).updateOne(eq("uuid", uuid.toString()), inc("death", death));
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), this));
 		});
 	}
@@ -236,7 +210,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 */
 	public void addLoses(UUID uuid, int lose) {
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
-			mySQL.update("INSERT INTO " + this.gamemode.toString() + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, 0, 0, " + lose + ", 0) ON DUPLICATE KEY UPDATE `lose`=`lose`+" + lose);
+			CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).updateOne(eq("uuid", uuid.toString()), inc("lose", lose));
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), this));
 		});
 	}
@@ -262,7 +236,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 */
 	public void removeKills(UUID uuid, int kill) {
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
-			mySQL.update("INSERT INTO " + this.gamemode.toString() + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', " + kill + ", 0, 0, 0, 0) ON DUPLICATE KEY UPDATE `kill`=`kill`-" + kill);
+			CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).updateOne(eq("uuid", uuid.toString()), inc("kill", -kill));
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), this));
 		});
 	}
@@ -274,7 +248,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 */
 	public void removeDeaths(UUID uuid, int death) {
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
-			mySQL.update("INSERT INTO " + this.gamemode.toString() + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, " + death + ", 0, 0, 0) ON DUPLICATE KEY UPDATE `death`=`death`-" + death);
+			CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).updateOne(eq("uuid", uuid.toString()), inc("death", -death));
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), this));
 		});
 	}
@@ -286,7 +260,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 */
 	public void removeWins(UUID uuid, int win) {
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
-			mySQL.update("INSERT INTO " + this.gamemode.toString() + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, 0, " + win + ", 0, 0) ON DUPLICATE KEY UPDATE `win`=`win`-" + win);
+			CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).updateOne(eq("uuid", uuid.toString()), inc("win", -win));
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), this));
 		});
 	}
@@ -298,7 +272,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 */
 	public void removeLoses(UUID uuid, int lose) {
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
-			mySQL.update("INSERT INTO " + this.gamemode.toString() + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, 0, 0, " + lose + ", 0) ON DUPLICATE KEY UPDATE `lose`=`lose`-" + lose);
+			CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).updateOne(eq("uuid", uuid.toString()), inc("lose", -lose));
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), this));
 		});
 	}
@@ -310,7 +284,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 */
 	public void removeGoals(UUID uuid, int goal) {
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
-			mySQL.update("INSERT INTO " + this.gamemode.toString() + " (`uuid`, `kill`, `death`, `win`, `lose`, `goal`) VALUES ('" + uuid + "', 0, 0, 0, 0, " + goal + ") ON DUPLICATE KEY UPDATE `goal`=`goal`-" + goal);
+			CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).updateOne(eq("uuid", uuid.toString()), inc("goal", -goal));
 			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), this));
 		});
 	}
@@ -320,24 +294,16 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 * @param uuid >> Player UniqueID
 	 */
 	public int getUserRanking(final UUID uuid){
-		return mySQL.select("SELECT uuid FROM " + this.gamemode.toString() + " ORDER BY `kill` DESC", rs -> {
-            boolean done = false;
-            int n = 0;
-
-		    try {
-                while ((rs.next()) && (!done))
-                {
-                    n++;
-                    if (rs.getString("uuid").equalsIgnoreCase(uuid.toString())) {
-                        done = true;
-                    }
-                }
-                return n;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return 0;
-        }, int.class);
+		boolean done = false;
+		int n = 0;
+		for (Document document : CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).find()) {
+			n++;
+			if (document.getString("uuid").equalsIgnoreCase(uuid.toString())) {
+				done = true;
+				return n;
+			}
+		}
+		return 0;
 	}
 
 	/**
@@ -345,18 +311,13 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 	 * @param uuid >> Player UniqueID
 	 */
 	public double getKD(UUID uuid) {
-		return mySQL.select("SELECT * FROM " + this.gamemode.toString() + " WHERE `uuid`='" + uuid + "'", rs -> {
-			int kills = 0;
-			int deaths = 0;
+		double kills;
+		double deaths;
 
-			try {
-				if (rs.next()) {
-					kills = rs.getInt("kill");
-					deaths = rs.getInt("death");
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+		Document document = CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).find(eq("uuid", uuid.toString())).first();
+		if (document != null) {
+			kills = document.getInteger("kill");
+			deaths = document.getInteger("death");
 
 			if(kills == 0 && deaths == 0) {
 				return 0.00D;
@@ -367,20 +328,17 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.StatsAPI 
 			} else {
 				return kills / deaths;
 			}
-		}, double.class);
+		}
+		return 0.0;
 	}
 
 	public int[] getData(final UUID uuid) {
-		return mySQL.select("SELECT * FROM " + this.gamemode.toString() + " WHERE uuid='" + uuid + "'", rs -> {
-			try {
-				if (rs.next()) {
-					return new int[]{getUserRanking(uuid), rs.getInt("kill"), rs.getInt("death")};
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			return new int[]{0,0,0};
-		}, int[].class);
+		Document document = CoreSystem.getInstance().getMongoDB().getCollection(this.gamemode.toString()).find(eq("uuid", uuid.toString())).first();
+
+		if (document != null) {
+			return new int[]{getUserRanking(uuid), document.getInteger("kill"), document.getInteger("death")};
+		}
+		return null;
 	}
 
 	/**

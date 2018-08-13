@@ -10,19 +10,19 @@ import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.api.core.translation.TranslationField;
-import eu.mcone.coresystem.core.mysql.MySQL;
+import eu.mcone.networkmanager.core.api.database.MongoDBManager;
+import org.bson.Document;
 
-import java.sql.SQLException;
 import java.util.*;
 
 public class TranslationManager implements eu.mcone.coresystem.api.core.translation.TranslationManager {
 
-    private MySQL mysql;
+    private MongoDBManager mongoDBManager;
     private Map<String, TranslationField> translations;
     private List<String> categories;
 
-    public TranslationManager(MySQL mysql, GlobalCorePlugin coreSystem, String... categories) {
-        this.mysql = mysql;
+    public TranslationManager(MongoDBManager mongoDBManager, GlobalCorePlugin coreSystem, String... categories) {
+        this.mongoDBManager = mongoDBManager;
         this.translations = new HashMap<>();
         this.categories = new ArrayList<>();
 
@@ -35,7 +35,27 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
     @Override
     public void reload() {
         translations.clear();
+        for (Document document : mongoDBManager.getCollection("translations").find()) {
+            if (document.getString("category") != null) {
+                for (String cat : categories) {
+                    if (document.getString("category").equalsIgnoreCase(cat)) {
+                        final Map<Language, String> values = new HashMap<>();
+                        for (Language language : Language.values()) {
+                            values.put(language, document.getString(language.getId()));
+                        }
+                        translations.put(document.getString("key").replaceAll("&", "§"), new TranslationField(values));
+                    }
+                }
+            } else {
+                final Map<Language, String> values = new HashMap<>();
+                for (Language language : Language.values()) {
+                    values.put(language, document.getString(language.getId()));
+                }
+                translations.put(document.getString("key").replaceAll("&", "§"), new TranslationField(values));
+            }
+        }
 
+        /*
         StringBuilder qry = new StringBuilder("SELECT * FROM translations WHERE category IS NULL");
         for (String cat : categories) {
             qry.append(" OR category='").append(cat).append("'");
@@ -55,6 +75,7 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
                 e.printStackTrace();
             }
         });
+        */
     }
 
     @Override

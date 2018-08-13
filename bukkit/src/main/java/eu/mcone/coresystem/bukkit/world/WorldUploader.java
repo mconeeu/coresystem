@@ -10,13 +10,18 @@ import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.util.Zip;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.mysql.MySQLDatabase;
+import eu.mcone.networkmanager.core.api.database.Database;
 import org.apache.commons.io.IOUtils;
+import org.bson.Document;
 import org.bukkit.World;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.*;
+
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.combine;
+import static com.mongodb.client.model.Updates.set;
 
 class WorldUploader {
 
@@ -48,36 +53,30 @@ class WorldUploader {
         new Zip(worldFile, zipFile);
 
         try {
-            Connection con = this.database != null ? BukkitCoreSystem.getSystem().getMySQL(this.database).getConnection() : DriverManager.getConnection("jdbc:mariadb://db.mcone.eu:3306/mc1cloud", "core-system", "RugQsbRUDABCG6zHrjLva4L7cLryL8tEScDDW3g2GGVg3M9zA9fEVkg2yU9r9KHG");
-            PreparedStatement ps = con.prepareStatement("SELECT build FROM "+this.table+" WHERE `name`='" + world.getName() + "'");
-            ResultSet rs = ps.executeQuery();
-
+            FileInputStream fis = new FileInputStream(zipFile);
+            Document document = BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("worlds").find(eq("name", world.getName())).first();
             int build = 0;
-            PreparedStatement send;
-            if (rs.next()) {
-                build = rs.getInt("build");
+            if (document != null) {
+                build = document.getInteger("build");
 
-                send = con.prepareStatement("UPDATE "+this.table+" SET build=?, `name`=?, bytes=? WHERE `name`='" + world.getName() + "'");
+                BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("worlds")
+                        .updateOne(eq("name", world.getName()), combine(
+                                set("build", ++build),
+                                set("name", world.getName()),
+                                set("bytes", IOUtils.toByteArray(fis))));
             } else {
-                send = con.prepareStatement("INSERT INTO "+this.table+" (build, `name`, bytes) VALUES (?, ?, ?)");
+                BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("worlds")
+                        .insertOne(new Document("build", ++build)
+                                .append("name",  world.getName())
+                                .append("bytes", IOUtils.toByteArray(fis)));
             }
 
-            FileInputStream fis = new FileInputStream(zipFile);
-
-            send.setInt(1, ++build);
-            send.setString(2, world.getName());
-            send.setBytes(3, IOUtils.toByteArray(fis));
-            send.executeUpdate();
-
             fis.close();
-            send.close();
-            ps.close();
-            con.close();
 
             zipFile.delete();
             w.setAutoSave(true);
             return true;
-        } catch (SQLException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return false;
         }

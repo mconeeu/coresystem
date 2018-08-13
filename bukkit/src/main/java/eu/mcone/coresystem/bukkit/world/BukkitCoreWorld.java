@@ -8,12 +8,12 @@ package eu.mcone.coresystem.bukkit.world;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
+import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
+import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
-import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.core.annotation.DontObfuscate;
 import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import lombok.AllArgsConstructor;

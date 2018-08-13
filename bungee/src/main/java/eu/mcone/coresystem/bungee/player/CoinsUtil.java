@@ -16,6 +16,9 @@ import net.md_5.bungee.api.ProxyServer;
 import java.sql.SQLException;
 import java.util.UUID;
 
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.*;
+
 public class CoinsUtil implements eu.mcone.coresystem.api.core.player.CoinsUtil {
 
     private BungeeCoreSystem instance;
@@ -24,35 +27,17 @@ public class CoinsUtil implements eu.mcone.coresystem.api.core.player.CoinsUtil 
         this.instance = instance;
     }
 
-    public int getCoins(UUID uuid){
-        return instance.getMySQL(MySQLDatabase.SYSTEM).select("SELECT coins FROM userinfo WHERE uuid='" + uuid.toString() + "'", rs -> {
-            try {
-                if (rs.next()) {
-                    return rs.getInt("coins");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return 0;
-        }, int.class);
+    public int getCoins(UUID uuid) {
+        return (int) instance.getMongoDatabase(eu.mcone.networkmanager.core.api.database.Database.SYSTEM).getObject("uuid", uuid.toString(), "coins", "userinfo").get(0);
     }
 
     public int getCoins(String name) {
-        return instance.getMySQL(MySQLDatabase.SYSTEM).select("SELECT coins FROM userinfo WHERE name='" + name + "'", rs -> {
-            try {
-                if (rs.next()) {
-                    return rs.getInt("coins");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return 0;
-        }, int.class);
+        return (int) instance.getMongoDatabase(eu.mcone.networkmanager.core.api.database.Database.SYSTEM).getObject("name", name, "coins", "userinfo").get(0);
     }
 
-	public void setCoins(final UUID uuid, final int coins){
+    public void setCoins(final UUID uuid, final int coins) {
         instance.runAsync(() -> {
-            instance.getMySQL(MySQLDatabase.SYSTEM).update("UPDATE userinfo SET coins=" + coins + " WHERE uuid='" + uuid.toString() + "'");
+            instance.getMongoDatabase(eu.mcone.networkmanager.core.api.database.Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), combine(set("coins", coins)));
 
             CorePlayer cp = instance.getCorePlayer(uuid);
             if (cp != null) {
@@ -60,29 +45,29 @@ public class CoinsUtil implements eu.mcone.coresystem.api.core.player.CoinsUtil 
                 ProxyServer.getInstance().getPluginManager().callEvent(new CoinsChangeEvent(cp));
             }
         });
-	}
+    }
 
-	public void addCoins(final UUID uuid, final int coins){
+    public void addCoins(final UUID uuid, final int coins) {
         instance.runAsync(() -> {
-            instance.getMySQL(MySQLDatabase.SYSTEM).update("UPDATE userinfo SET coins=coins+" + coins + " WHERE uuid='" + uuid.toString() + "'");
+            instance.getMongoDatabase(eu.mcone.networkmanager.core.api.database.Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), inc("coins", coins));
 
             CorePlayer cp = instance.getCorePlayer(uuid);
             if (cp != null) {
-                ((GlobalCorePlayer) cp).updateCoinsAmount(cp.getCoins()+coins);
+                ((GlobalCorePlayer) cp).updateCoinsAmount(cp.getCoins() + coins);
                 ProxyServer.getInstance().getPluginManager().callEvent(new CoinsChangeEvent(cp));
             }
         });
-	}
+    }
 
-	public void removeCoins(final UUID uuid, final int coins){
+    public void removeCoins(final UUID uuid, final int coins) {
         instance.runAsync(() -> {
-            instance.getMySQL(MySQLDatabase.SYSTEM).update("UPDATE userinfo SET coins=coins-" + coins + " WHERE uuid='" + uuid.toString() + "'");
+            instance.getMongoDatabase(eu.mcone.networkmanager.core.api.database.Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), inc("coins", -coins));
 
             CorePlayer cp = instance.getCorePlayer(uuid);
             if (cp != null) {
-                ((GlobalCorePlayer) cp).updateCoinsAmount(cp.getCoins()-coins);
+                ((GlobalCorePlayer) cp).updateCoinsAmount(cp.getCoins() - coins);
                 ProxyServer.getInstance().getPluginManager().callEvent(new CoinsChangeEvent(cp));
             }
         });
-	}
+    }
 }

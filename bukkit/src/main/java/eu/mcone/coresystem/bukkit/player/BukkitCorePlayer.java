@@ -18,7 +18,6 @@ import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
@@ -60,7 +59,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
     public void addCoins(int amount) {
         this.coins += amount;
         Bukkit.getScheduler().runTaskAsynchronously((BukkitCoreSystem) instance, () -> {
-            ((BukkitCoreSystem) instance).getMySQL(MySQLDatabase.SYSTEM).update("UPDATE userinfo SET coins="+coins+" WHERE uuid='"+uuid+"'");
+            ((BukkitCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), set("coins", coins));
             Bukkit.getServer().getPluginManager().callEvent(new CoinsChangeEvent(this));
         });
     }
@@ -69,7 +68,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
     public void removeCoins(int amount) {
         this.coins -= amount;
         Bukkit.getScheduler().runTaskAsynchronously((BukkitCoreSystem) instance, () -> {
-            ((BukkitCoreSystem) instance).getMySQL(MySQLDatabase.SYSTEM).update("UPDATE userinfo SET coins="+coins+" WHERE uuid='"+uuid+"'");
+            ((BukkitCoreSystem) instance).getMongoDB(eu.mcone.networkmanager.core.api.database.Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), set("coins", coins));
             Bukkit.getPluginManager().callEvent(new CoinsChangeEvent(this));
         });
     }
@@ -111,7 +110,6 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
     public void updateSettings() {
         Bukkit.getPluginManager().callEvent(new PlayerSettingsChangeEvent(this, settings));
         CoreSystem.getInstance().getChannelHandler().createSetRequest(bukkit(), "PLAYER_SETTINGS", CoreSystem.getInstance().getGson().toJson(settings, PlayerSettings.class));
-
         BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid), set("player_settings", Document.parse(((CoreModuleCoreSystem) instance).getGson().toJson(settings, PlayerSettings.class))));
     }
 
