@@ -10,6 +10,7 @@ import eu.mcone.coresystem.api.bukkit.event.PermissionChangeEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -45,7 +46,7 @@ public class PermissionChange implements Listener {
             }
         } else if (e.getKind() == PermissionChangeEvent.Kind.GROUP_CHANGE) {
             if (p != null) {
-                p.setGroups(e.getGroups());
+                ((GlobalCorePlayer) p).setGroupSet(e.getGroups());
                 p.reloadPermissions();
 
                 StringBuilder sb = new StringBuilder();

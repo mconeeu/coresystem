@@ -130,7 +130,6 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
 
     @Override
     public Set<Group> getGroups(List<Integer> groups) {
-        System.out.println(groups);
         Set<Group> result = new HashSet<>();
 
         for (Integer id : groups) {
@@ -146,18 +145,6 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
         for (Group group : groups) array.add(group.getId());
 
         return gson.toJson(array);
-    }
-
-    @Override
-    public Set<Group> getLiveGroups(UUID uuid) {
-        return (Set<Group>) mySQL.select("SELECT groups FROM userinfo WHERE uuid='"+uuid+"'", rs -> {
-            /*try {
-                if (rs.next()) return getGroups(rs.getString("gruppe"));
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }*/
-            return null;
-        }, Set.class);
     }
 
     private void addPermission(Group group, String permission) {

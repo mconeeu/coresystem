@@ -6,65 +6,63 @@
 
 package eu.mcone.coresystem.bukkit.player;
 
+import com.mongodb.client.MongoCollection;
 import eu.mcone.coresystem.api.bukkit.event.CoinsChangeEvent;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.core.mysql.MySQLDatabase;
-import org.bukkit.Bukkit;
+import eu.mcone.networkmanager.core.api.database.Database;
+import org.bson.Document;
 
-import java.sql.SQLException;
 import java.util.UUID;
+
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.inc;
+import static com.mongodb.client.model.Updates.set;
 
 public class CoinsUtil implements eu.mcone.coresystem.api.core.player.CoinsUtil {
 
-    private BukkitCoreSystem instance;
+    private final BukkitCoreSystem instance;
+    private final MongoCollection<Document> collection;
 
     public CoinsUtil(BukkitCoreSystem instance) {
         this.instance = instance;
+        this.collection = instance.getMongoDB(Database.SYSTEM).getCollection("userinfo");
     }
 
     public int getCoins(UUID uuid){
-        return instance.getMySQL(MySQLDatabase.SYSTEM).select("SELECT coins FROM userinfo WHERE uuid='" + uuid.toString() + "'", rs -> {
-            try {
-                if (rs.next()) {
-                    return rs.getInt("coins");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        Document user;
+        if ((user = collection.find(eq("uuid", uuid.toString())).first()) != null) {
+            return user.getInteger("coins");
+        } else {
             return 0;
-        }, int.class);
+        }
     }
 
     public int getCoins(String name){
-        return instance.getMySQL(MySQLDatabase.SYSTEM).select("SELECT coins FROM userinfo WHERE name='" + name + "'", rs -> {
-            try {
-                if (rs.next()) {
-                    return rs.getInt("coins");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        Document user;
+        if ((user = collection.find(eq("name", name)).first()) != null) {
+            return user.getInteger("coins");
+        } else {
             return 0;
-        }, int.class);
+        }
     }
 
 	public void setCoins(final UUID uuid, final int coins){
-        Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
-            instance.getMySQL(MySQLDatabase.SYSTEM).update("UPDATE userinfo SET coins=" + coins + " WHERE uuid='" + uuid.toString() + "'");
+        instance.runAsync(() -> {
+            collection.updateOne(eq("uuid", uuid.toString()), set("coins", coins));
             instance.getServer().getPluginManager().callEvent(new CoinsChangeEvent(instance.getCorePlayer(uuid)));
         });
 	}
 
 	public void addCoins(final UUID uuid, final int coins){
-        Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
-            instance.getMySQL(MySQLDatabase.SYSTEM).update("UPDATE userinfo SET coins=coins+" + coins + " WHERE uuid='" + uuid.toString() + "'");
+        instance.runAsync(() -> {
+            collection.updateOne(eq("uuid", uuid.toString()), inc("coins", coins));
             instance.getServer().getPluginManager().callEvent(new CoinsChangeEvent(instance.getCorePlayer(uuid)));
         });
 	}
 
 	public void removeCoins(final UUID uuid, final int coins){
-        Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
-            instance.getMySQL(MySQLDatabase.SYSTEM).update("UPDATE userinfo SET coins=coins-" + coins + " WHERE uuid='" + uuid.toString() + "'");
+        instance.runAsync(() -> {
+            collection.updateOne(eq("uuid", uuid.toString()), inc("coins", -coins));
             instance.getServer().getPluginManager().callEvent(new CoinsChangeEvent(instance.getCorePlayer(uuid)));
         });
 	}

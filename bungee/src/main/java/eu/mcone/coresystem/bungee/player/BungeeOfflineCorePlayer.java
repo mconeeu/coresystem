@@ -11,11 +11,12 @@ import eu.mcone.coresystem.api.bungee.player.FriendData;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import eu.mcone.coresystem.core.player.GlobalOfflineCorePlayer;
+import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
+import org.bson.Document;
 
-import java.sql.SQLException;
+import static com.mongodb.client.model.Filters.eq;
 
 public class BungeeOfflineCorePlayer extends GlobalOfflineCorePlayer implements OfflineCorePlayer {
 
@@ -24,7 +25,7 @@ public class BungeeOfflineCorePlayer extends GlobalOfflineCorePlayer implements 
     @Getter
     private boolean banned, muted;
     @Getter
-    private int banPoints, mutePoints;
+    private int banPoints = 0, mutePoints = 0;
     @Getter
     private long banTime, muteTime;
 
@@ -38,7 +39,7 @@ public class BungeeOfflineCorePlayer extends GlobalOfflineCorePlayer implements 
     }
 
     public OfflineCorePlayer loadPermissions() {
-        this.permissions = BungeeCoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), groups);
+        this.permissions = BungeeCoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), groupSet);
         return this;
     }
 
@@ -47,45 +48,27 @@ public class BungeeOfflineCorePlayer extends GlobalOfflineCorePlayer implements 
     }
 
     public OfflineCorePlayer loadBanData() {
-        BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT `end` FROM `bungeesystem_bansystem_mute` WHERE `uuid`='"+getUuid()+"'", rs -> {
-            try {
-                if (rs.next()) {
-                    this.muted = true;
-                    this.muteTime = rs.getLong("end");
-                } else {
-                    this.muted = false;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+        Document muteEntry = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").find(eq("uuid", uuid.toString())).first();
+        if (muteEntry != null) {
+            this.muted = true;
+            this.muteTime = muteEntry.getLong("end");
+        } else {
+            this.muted = false;
+        }
 
-        BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT `end` FROM `bungeesystem_bansystem_ban` WHERE `uuid`='"+getUuid()+"'", rs -> {
-            try {
-                if (rs.next()) {
-                    this.banned = true;
-                    this.banTime = rs.getLong("end");
-                } else {
-                    this.banned = false;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+        Document banEntry = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_ban").find(eq("uuid", uuid.toString())).first();
+        if (banEntry != null) {
+            this.banned = true;
+            this.banTime = banEntry.getLong("end");
+        } else {
+            this.banned = false;
+        }
 
-        BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT `banpoints`, `mutepoints` FROM `bungeesystem_bansystem_points` WHERE `uuid`='"+getUuid()+"'", rs -> {
-            try {
-                if (rs.next()) {
-                    this.banPoints = rs.getInt("banpoints");
-                    this.mutePoints = rs.getInt("mutepoints");
-                } else {
-                    this.banPoints = 0;
-                    this.mutePoints = 0;
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+        Document pointsEntry = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_points").find(eq("uuid", uuid.toString())).first();
+        if (pointsEntry != null) {
+            this.banPoints = pointsEntry.getInteger("banpoints");
+            this.mutePoints = pointsEntry.getInteger("mutepoints");
+        }
 
         return this;
     }

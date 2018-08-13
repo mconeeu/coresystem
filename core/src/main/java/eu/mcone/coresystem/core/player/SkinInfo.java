@@ -7,28 +7,29 @@
 package eu.mcone.coresystem.core.player;
 
 import eu.mcone.coresystem.api.core.exception.CoreException;
-import eu.mcone.coresystem.api.core.mysql.MySQL;
+import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 import lombok.Getter;
+import org.bson.Document;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class SkinInfo implements eu.mcone.coresystem.api.core.player.SkinInfo {
 
     private static Map<String, String[]> cachedSkins = new HashMap<>();
-
-    private MySQL mySQL;
+    private MongoDatabase database;
     @Getter
     private String name, value, signature;
 
-    public SkinInfo(MySQL mySQL, String name) {
-        this.mySQL = mySQL;
+    public SkinInfo(MongoDatabase database, String name) {
+        this.database = database;
         this.name = name;
     }
 
-    SkinInfo(MySQL mySQL, String name, String value, String signature) {
-        this.mySQL = mySQL;
+    SkinInfo(MongoDatabase database, String name, String value, String signature) {
+        this.database = database;
         this.name = name;
         this.value = value;
         this.signature = signature;
@@ -40,18 +41,14 @@ public class SkinInfo implements eu.mcone.coresystem.api.core.player.SkinInfo {
             value = cachedSkins.get(name)[0];
             signature = cachedSkins.get(name)[1];
         } else {
-            mySQL.select("SELECT * FROM bungeesystem_textures WHERE name='" + name + "'", rs -> {
-                try {
-                    if (rs.next()) {
-                        value = rs.getString("texture_value");
-                        signature = rs.getString("texture_signature");
+            Document entry = database.getCollection("bungeesystem_textures").find(eq("name", name)).first();
+            if (entry != null) {
+                value = entry.getString("texture_value");
+                signature = entry.getString("texture_signature");
 
-                        cachedSkins.put(name, new String[]{value, signature});
-                    }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            });
+                cachedSkins.put(name, new String[]{value, signature});
+            }
+
             if (value == null || signature == null)
                 throw new CoreException("Skin " + name + " does not exist in the database!");
         }

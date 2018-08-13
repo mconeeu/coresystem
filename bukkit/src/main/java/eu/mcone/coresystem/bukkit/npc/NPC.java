@@ -13,7 +13,7 @@ import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.core.mysql.MySQLDatabase;
+import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_8_R3.*;
@@ -52,7 +52,7 @@ public class NPC implements eu.mcone.coresystem.api.bukkit.npc.NPC {
             this.world = world;
             this.uuid = UUID.randomUUID();
             this.loadedPlayers = new ArrayList<>();
-            this.skin = new eu.mcone.coresystem.core.player.SkinInfo(BukkitCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM), data.getSkinName()).downloadSkinData();
+            this.skin = new eu.mcone.coresystem.core.player.SkinInfo(BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM), data.getSkinName()).downloadSkinData();
 
             createProfile();
         } catch (CoreException e) {

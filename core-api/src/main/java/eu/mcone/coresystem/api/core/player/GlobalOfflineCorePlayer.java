@@ -19,6 +19,14 @@ public interface GlobalOfflineCorePlayer {
 
     Set<Group> getGroups();
 
+    Set<Group> updateGroupsFromDatabase();
+
+    void setGroups(Set<Group> groups);
+
+    void addGroup(Group group);
+
+    void removeGroup(Group group);
+
     long getOnlinetime();
 
     PlayerSettings getSettings();

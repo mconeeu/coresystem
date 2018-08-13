@@ -65,7 +65,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer {
     @Override
     public boolean isMuted() {
         long millis = System.currentTimeMillis() / 1000;
-        if (muted && muteTime < millis) {
+        if (muted && muteTime <= millis) {
             muted = false;
             ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () ->
                     BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").deleteMany(lte("end", millis))

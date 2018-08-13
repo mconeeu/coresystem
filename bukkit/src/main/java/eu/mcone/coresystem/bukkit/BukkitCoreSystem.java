@@ -139,7 +139,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         pluginManager = new PluginManager();
         coinsUtil = new CoinsUtil(this);
         channelHandler = new ChannelHandler();
-        playerUtils = new PlayerUtils(mysql1);
+        playerUtils = new PlayerUtils(mongoDatabase1);
         gson = new GsonBuilder().setPrettyPrinting().create();
         simpleGson = new Gson();
 

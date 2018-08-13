@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Filters.lte;
 import static com.mongodb.client.model.Updates.*;
 
 public class BanManager {
@@ -134,14 +133,40 @@ public class BanManager {
         BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").deleteOne(eq("uuid", uuid.toString()));
     }
 
+    public static Document getBanEntry(UUID uuid) {
+        Document result;
+        if ((result = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_ban").find(eq("uuid", uuid.toString())).first()) != null) {
+            if (result.getLong("end") <= System.currentTimeMillis()) {
+                BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_ban").deleteOne(eq(result.get("_id")));
+                return null;
+            } else {
+                return result;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    public static Document getMuteEntry(UUID uuid) {
+        Document result;
+        if ((result = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").find(eq("uuid", uuid.toString())).first()) != null) {
+            if (result.getLong("end") <= System.currentTimeMillis()) {
+                BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").deleteOne(eq(result.get("_id")));
+                return null;
+            } else {
+                return result;
+            }
+        } else {
+            return null;
+        }
+    }
+
     public static boolean isBanned(UUID uuid) {
-        BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_ban").deleteMany(lte("end", System.currentTimeMillis() / 1000));
-        return BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_ban").find(eq("uuid", uuid.toString())).first() != null;
+        return getBanEntry(uuid) != null;
     }
 
     public static boolean isMuted(UUID uuid) {
-        BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").deleteMany(lte("end", System.currentTimeMillis() / 1000));
-        return BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").find(eq("uuid", uuid.toString())).first() != null;
+        return getMuteEntry(uuid) != null;
     }
 
     private static boolean hasPoints(UUID uuid) {

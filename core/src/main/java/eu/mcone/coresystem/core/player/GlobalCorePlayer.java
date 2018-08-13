@@ -17,6 +17,7 @@ import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import net.labymod.serverapi.LabyModConnection;
 import org.bson.Document;
@@ -45,8 +46,8 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
     @Getter
     @Setter
     private boolean nicked = false;
-    @Getter
-    private Set<Group> groups;
+    @Getter @Setter
+    private Set<Group> groupSet;
     @Getter
     @Setter
     private Set<String> permissions;
@@ -67,7 +68,6 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
 
         final MongoCollection<Document> collection = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo");
         Document nameEntry = collection.find(eq("name", name)).first();
-        System.out.println(name);
 
         if (nameEntry != null) {
             setDatabaseValues(nameEntry);
@@ -80,7 +80,7 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
                 collection.updateOne(eq("uuid", this.uuid.toString()), combine(set("name", name)));
                 setDatabaseValues(uuidEntry);
             } else {
-                this.groups = new HashSet<>(Collections.singletonList(Group.SPIELER));
+                this.groupSet = new HashSet<>(Collections.singletonList(Group.SPIELER));
                 this.onlinetime = 0;
                 this.coins = 20;
                 this.settings = new PlayerSettings();
@@ -107,7 +107,7 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
 
     private void setDatabaseValues(Document userinfoDocument) {
         this.uuid = UUID.fromString(userinfoDocument.getString("uuid"));
-        this.groups = instance.getPermissionManager().getGroups(userinfoDocument.get("groups", new ArrayList<>()));
+        this.groupSet = instance.getPermissionManager().getGroups(userinfoDocument.get("groups", new ArrayList<>()));
         this.onlinetime = userinfoDocument.getLong("online_time");
         this.coins = userinfoDocument.getInteger("coins");
         this.teamspeakUid = userinfoDocument.getString("teamspeak_uid");
@@ -128,7 +128,7 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
 
     @Override
     public void reloadPermissions() {
-        permissions = instance.getPermissionManager().getPermissions(uuid.toString(), groups);
+        permissions = instance.getPermissionManager().getPermissions(uuid.toString(), groupSet);
     }
 
     @Override
@@ -144,27 +144,50 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
     @Override
     public Group getMainGroup() {
         HashMap<Integer, Group> groups = new HashMap<>();
-        this.groups.forEach(g -> groups.put(g.getId(), g));
+        this.groupSet.forEach(g -> groups.put(g.getId(), g));
 
         return Collections.min(groups.entrySet(), HashMap.Entry.comparingByValue()).getValue();
     }
 
     @Override
-    public void setGroups(Set<Group> groups) {
-        this.groups = groups;
+    public Set<Group> getGroups() {
+        return groupSet;
+    }
+
+    @Override
+    public Set<Group> updateGroupsFromDatabase() {
+        @NonNull Document entry = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
+        groupSet = instance.getPermissionManager().getGroups(entry.get("groups", new ArrayList<>()));
         reloadPermissions();
+
+        return groupSet;
+    }
+
+    @Override
+    public void setGroups(Set<Group> groupList) {
+        this.groupSet = new HashSet<>(groupList);
+        reloadPermissions();
+        updateDatabaseGroupsAsync(groupSet);
     }
 
     @Override
     public void addGroup(Group group) {
-        this.groups.add(group);
+        this.groupSet.add(group);
         reloadPermissions();
+        updateDatabaseGroupsAsync(groupSet);
     }
 
     @Override
     public void removeGroup(Group group) {
-        this.groups.remove(group);
+        this.groupSet.remove(group);
         reloadPermissions();
+        updateDatabaseGroupsAsync(groupSet);
+    }
+
+    private void updateDatabaseGroupsAsync(Set<Group> groupSet) {
+        instance.runAsync(() ->
+                ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), set("groups", ((CoreModuleCoreSystem) instance).getSimpleGson().toJson(groupSet)))
+        );
     }
 
     @Override

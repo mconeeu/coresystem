@@ -12,6 +12,7 @@ import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.TeamspeakVerifier;
+import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -50,7 +51,7 @@ public class PermissionChange implements Listener {
             final CorePlayer p = e.getPlayer();
 
             if (p != null) {
-                p.setGroups(e.getGroups());
+                ((GlobalCorePlayer) p).setGroupSet(e.getGroups());
                 p.reloadPermissions();
 
                 TeamspeakVerifier tsv = BungeeCoreSystem.getSystem().getTeamspeakVerifier();

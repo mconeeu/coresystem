@@ -9,68 +9,60 @@ package eu.mcone.coresystem.core.player;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import eu.mcone.coresystem.api.core.mysql.MySQL;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
+import eu.mcone.networkmanager.core.api.database.MongoDatabase;
+import org.bson.Document;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.UUID;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUtils {
 
     private HashMap<String, UUID> uuidCache = new HashMap<>();
-    private final MySQL mySQL;
+    private final MongoDatabase database;
 
-    public PlayerUtils(MySQL mySQL) {
-        this.mySQL = mySQL;
+    public PlayerUtils(MongoDatabase database) {
+        this.database = database;
     }
 
     @Override
     public SkinInfo constructSkinInfo(String name, String value, String signature) {
-        return new eu.mcone.coresystem.core.player.SkinInfo(mySQL, name, value, signature);
+        return new eu.mcone.coresystem.core.player.SkinInfo(database, name, value, signature);
     }
 
     @Override
     public SkinInfo constructSkinInfo(String databaseName) {
-        return new eu.mcone.coresystem.core.player.SkinInfo(mySQL, databaseName);
+        return new eu.mcone.coresystem.core.player.SkinInfo(database, databaseName);
     }
 
     @Override
     public UUID fetchUuid(final String name) {
         if (uuidCache.containsKey(name)) return uuidCache.get(name);
 
-        UUID dbUuid = mySQL.select("SELECT uuid FROM userinfo WHERE name='" + name + "'", rs -> {
-            try {
-                if (rs.next()) {
-                    return UUID.fromString(rs.getString("uuid"));
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }, UUID.class);
-        if (dbUuid != null) return dbUuid;
-
-        return fetchUuidFromMojangAPI(name);
+        Document dbEntry = database.getCollection("userinfo").find(eq("name", name)).first();
+        if (dbEntry != null) {
+            return UUID.fromString(dbEntry.getString("uuid"));
+        } else {
+            return fetchUuidFromMojangAPI(name);
+        }
     }
 
     @Override
     public String fetchName(final UUID uuid) {
-        return mySQL.select("SELECT name FROM userinfo WHERE uuid='" + uuid.toString() + "'", rs -> {
-            try {
-                if (rs.next()) {
-                    return rs.getString("uuid");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        Document dbEntry = database.getCollection("userinfo").find(eq("uuid", uuid)).first();
+
+        if (dbEntry != null) {
+            return dbEntry.getString("name");
+        } else {
             return null;
-        }, String.class);
+        }
     }
 
     @Override

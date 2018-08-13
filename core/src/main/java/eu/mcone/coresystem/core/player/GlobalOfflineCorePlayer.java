@@ -15,14 +15,17 @@ import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import org.bson.Document;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.set;
 
 public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api.core.player.GlobalOfflineCorePlayer {
 
@@ -37,7 +40,7 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     @Getter
     private PlayerState state;
     @Getter
-    protected Set<Group> groups;
+    protected Set<Group> groupSet;
     @Getter
     private long onlinetime;
     @Getter @Setter
@@ -52,7 +55,7 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         Document entry = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("name", name)).first();
         if (entry != null) {
             this.uuid = UUID.fromString(entry.getString("uuid"));
-            this.groups = instance.getPermissionManager().getGroups(entry.get("groups", new ArrayList<>()));
+            this.groupSet = instance.getPermissionManager().getGroups(entry.get("groups", new ArrayList<>()));
             this.coins = entry.getInteger("coins");
             this.state = PlayerState.getPlayerStateById(entry.getInteger("state"));
             this.onlinetime = entry.getLong("online_time");
@@ -60,6 +63,41 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         }
 
         if (this.uuid == null) throw new PlayerNotResolvedException("Database does not contain player "+name+"!");
+    }
+
+    @Override
+    public Set<Group> getGroups() {
+        return groupSet;
+    }
+
+    @Override
+    public Set<Group> updateGroupsFromDatabase() {
+        @NonNull Document entry = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
+        return groupSet = instance.getPermissionManager().getGroups(entry.get("groups", new ArrayList<>()));
+    }
+
+    @Override
+    public void setGroups(Set<Group> groupList) {
+        this.groupSet = new HashSet<>(groupList);
+        updateDatabaseGroupsAsync(groupSet);
+    }
+
+    @Override
+    public void addGroup(Group group) {
+        this.groupSet.add(group);
+        updateDatabaseGroupsAsync(groupSet);
+    }
+
+    @Override
+    public void removeGroup(Group group) {
+        this.groupSet.remove(group);
+        updateDatabaseGroupsAsync(groupSet);
+    }
+
+    private void updateDatabaseGroupsAsync(Set<Group> groupSet) {
+        instance.runAsync(() ->
+                ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), set("groups", ((CoreModuleCoreSystem) instance).getSimpleGson().toJson(groupSet)))
+        );
     }
 
     @Override

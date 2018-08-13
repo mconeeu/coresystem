@@ -14,7 +14,6 @@ import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
-import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.bungee.command.*;
 import eu.mcone.coresystem.bungee.friend.FriendSystem;
@@ -121,12 +120,12 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         mongoDB = mongoConnection.getDatabase(Database.SYSTEM);
 
         sendConsoleMessage("§aInitializing MariaDB Connections...");
-        createTables(database = new MySQL(MySQLDatabase.SYSTEM));
+        database = new MySQL(MySQLDatabase.SYSTEM);
 
         cooldownSystem = new CooldownSystem();
         channelHandler = new ChannelHandler();
         preferences = new PreferencesManager(database);
-        playerUtils = new PlayerUtils(database);
+        playerUtils = new PlayerUtils(mongoDB);
         coinsUtil = new CoinsUtil(this);
 
         cloudsystemAvailable = checkIfCloudSystemAvailable();
@@ -242,155 +241,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         getProxy().getPluginManager().registerListener(this, new PluginMessage());
     }
 
-    private void createTables(MySQL mysql) {
-        mysql.update("CREATE TABLE IF NOT EXISTS `userinfo` " +
-                "( " +
-                "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                "`uuid` varchar(100) NOT NULL UNIQUE KEY, " +
-                "`name` varchar(20) NOT NULL, " +
-                "`groups` varchar(20), " +
-                "`coins` int(100) NOT NULL, " +
-                "`about` varchar(500), " +
-                "`state` int(10) NOT NULL, " +
-                "`email` varchar(100), " +
-                "`ip` varchar(100), " +
-                "`timestamp` varchar(100), " +
-                "`password` varchar(100), " +
-                "`onlinetime` int(10) NOT NULL DEFAULT '0', " +
-                "`teamspeak_uid` varchar(100), " +
-                "`player_settings` varchar(1000) NOT NULL DEFAULT '" + gson.toJson(new PlayerSettings(), PlayerSettings.class) + "'" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
-        mysql.update("CREATE TABLE IF NOT EXISTS `permissions` " +
-                "(" +
-                "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                "`name` varchar(100) NOT NULL, " +
-                "`key` varchar(100) NOT NULL, " +
-                "`value` varchar(1000), " +
-                "`server` varchar(100)" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
-        mysql.update("CREATE TABLE IF NOT EXISTS `translations` " +
-                "(" +
-                "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                "`key` varchar(100) NOT NULL UNIQUE KEY, " +
-                "`category` varchar(20), " +
-                "`DE` varchar(2000), " +
-                "`EN` varchar(2000), " +
-                "`FR` varchar(2000)" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
-        mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_preferences` " +
-                "(" +
-                "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                "`key` varchar(100) NOT NULL UNIQUE KEY, " +
-                "`value` varchar(100)" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
-        mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_betakey` " +
-                "(" +
-                "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                "`uuid` varchar(100) NOT NULL UNIQUE KEY, " +
-                "`timestamp` int(50)" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
-        mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_friends` " +
-                "(" +
-                "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                "`uuid` varchar(100), " +
-                "`target` varchar(100) NOT NULL, " +
-                "`key` varchar(100) NOT NULL, " +
-                "`timestamp` int(100)" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
-        mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_premium` " +
-                "(" +
-                "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                "`uuid` varchar(255) NOT NULL, " +
-                "`group` varchar(355) NOT NULL, " +
-                "`old_group` varchar(355) NOT NULL, " +
-                "`kosten` varchar(155) NOT NULL, " +
-                "`gekauft` int(50) NOT NULL, " +
-                "`timestamp` int(50) NOT NULL " +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
-        mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_bansystem_ban` " +
-                "(" +
-                "`id` int(11) AUTO_INCREMENT PRIMARY KEY, " +
-                "`uuid` varchar(50) UNIQUE KEY NOT NULL, " +
-                "`template` varchar(50) NOT NULL, " +
-                "`reason` varchar(500) NOT NULL, " +
-                "`end` int(50) NOT NULL, " +
-                "`timestamp` int(50) NOT NULL, " +
-                "`team_member` varchar(50)" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
-        mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_bansystem_mute` " +
-                "(" +
-                "`id` int(11) AUTO_INCREMENT PRIMARY KEY, " +
-                "`uuid` varchar(50) UNIQUE KEY NOT NULL, " +
-                "`template` varchar(10) NOT NULL, " +
-                "`reason` varchar(500) NOT NULL, " +
-                "`end` int(50) NOT NULL, " +
-                "`timestamp` int(50) NOT NULL, " +
-                "`team_member` varchar(50)" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
-        mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_bansystem_points` " +
-                "(" +
-                "`id` int(11) AUTO_INCREMENT PRIMARY KEY, " +
-                "`uuid` varchar(50) UNIQUE KEY NOT NULL, " +
-                "`banpoints` int(5) NOT NULL, " +
-                "`mutepoints` int(5) NOT NULL" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
-        mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_bansystem_banhistory` " +
-                "(" +
-                "`id` int(11) AUTO_INCREMENT PRIMARY KEY, " +
-                "`uuid` varchar(100) NOT NULL, " +
-                "`template` varchar(10) NOT NULL, " +
-                "`reason` varchar(500) NOT NULL, " +
-                "`end` int(50) NOT NULL, " +
-                "`timestamp` int(50) NOT NULL, " +
-                "`team_member` varchar(50)" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
-        mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_bansystem_mutehistory` " +
-                "(" +
-                "`id` int(11) AUTO_INCREMENT PRIMARY KEY, " +
-                "`uuid` varchar(100) NOT NULL, " +
-                "`template` varchar(10) NOT NULL, " +
-                "`reason` varchar(500) NOT NULL, " +
-                "`end` int(50) NOT NULL, " +
-                "`timestamp` int(50) NOT NULL, " +
-                "`team_member` varchar(50)" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
-        mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_nicks` " +
-                "( " +
-                "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                "`name` varchar(16) NOT NULL UNIQUE KEY, " +
-                "`texture` varchar(500) NOT NULL " +
-                ") " +
-                "ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
-        mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_chatlog` " +
-                "(" +
-                "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                "`uuid` varchar(100), " +
-                "`nachricht` varchar(100), " +
-                "`timestamp` int(100)" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
-        mysql.update("CREATE TABLE IF NOT EXISTS `bungeesystem_teamspeak_icons` " +
-                "(" +
-                "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                "`uuid` varchar(100) NOT NULL UNIQUE KEY, " +
-                "`icon_id` varchar(100) NOT NULL, " +
-                "`bytes` longblob NOT NULL" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-    }
-
     private void loadSchedulers() {
         getProxy().getScheduler().schedule(this, new PremiumCheck(), 0, 5, TimeUnit.SECONDS);
         getProxy().getScheduler().schedule(this, new Broadcast(), 0, 15, TimeUnit.MINUTES);
@@ -408,7 +258,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public MongoDatabase getMongoDB(eu.mcone.networkmanager.core.api.database.Database database) {
+    public MongoDatabase getMongoDB(Database database) {
         switch (database) {
             case SYSTEM:
                 return this.mongoDB;

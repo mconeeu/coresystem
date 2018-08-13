@@ -8,11 +8,12 @@ package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.CoreException;
+import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
 import eu.mcone.coresystem.bungee.player.BungeeOfflineCorePlayer;
-import eu.mcone.coresystem.core.mysql.MySQLDatabase;
+import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -23,13 +24,16 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
+import org.bson.Document;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.mongodb.client.model.Filters.eq;
+
 public class PremiumCMD extends Command implements TabExecutor {
+
     public PremiumCMD() {
         super("premium", null);
     }
@@ -55,131 +59,118 @@ public class PremiumCMD extends Command implements TabExecutor {
             if (p.hasPermission("system.bungee.premium")) {
                 if (args.length == 2) {
                     String target = args[1];
+
                     try {
                         OfflineCorePlayer t = new BungeeOfflineCorePlayer(BungeeCoreSystem.getSystem(), target).loadPermissions();
 
-                        if (t != null) {
-                            if (args[0].equalsIgnoreCase("check")) {
-                                BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT * FROM `bungeesystem_premium` WHERE `uuid` = '" + t.getUuid().toString() + "'", rs -> {
-                                    try {
-                                        if (rs.next()) {
-                                            String rang = rs.getString("group");
-                                            long timestamp = Long.parseLong(rs.getString("timestamp"));
+                        if (args[0].equalsIgnoreCase("check")) {
+                            Document entry = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_premium").find(eq("uuid", t.getUuid().toString())).first();
 
-                                            BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "");
-                                            BungeeCoreSystem.getInstance().getMessager().send(p, "§7Der Spieler §f" + target);
-                                            BungeeCoreSystem.getInstance().getMessager().send(p, "§7hat den Rang §6" + rang);
-                                            BungeeCoreSystem.getInstance().getMessager().send(p, "§7noch " + BanManager.getEndeString(timestamp));
-                                        } else {
-                                            BungeeCoreSystem.getInstance().getMessager().send(p, "§7Der Spieler §f" + target + " §7hat keinen auslaufenden Rang.");
-                                        }
-                                    } catch (SQLException e1) {
-                                        e1.printStackTrace();
-                                    }
-                                });
-                            } else if (args[0].equalsIgnoreCase("remove")) {
+                            if (entry != null) {
+                                String rang = entry.getString("group");
+                                long timestamp = entry.getLong("timestamp");
+
+                                BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "");
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§7Der Spieler §f" + target);
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§7hat den Rang §6" + rang);
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§7noch " + BanManager.getEndeString(timestamp));
+                            } else {
+                                BungeeCoreSystem.getInstance().getMessager().send(p, "§7Der Spieler §f" + target + " §7hat keinen auslaufenden Rang.");
+                            }
+                        } else if (args[0].equalsIgnoreCase("remove")) {
+                            try {
                                 if (t.hasPermission("mcone.premium")) {
-                                    BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT * FROM bungeesystem_premium WHERE uuid='" + target + "'", rs -> {
-                                        try {
-                                            if (rs.next()) {
-                                                String uuid = rs.getString("uuid");
-                                                String group = rs.getString("group");
-                                                String old_group = rs.getString("old_group");
+                                    Document removeEntry = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_premium").find(eq("uuid", t.getUuid().toString())).first();
 
-                                                BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).update("UPDATE userinfo SET gruppe='" + old_group + "' WHERE uuid='" + uuid + "'");
+                                    if (removeEntry != null) {
+                                        Group group = Group.getGroupById(removeEntry.getInteger("group"));
+                                        t.removeGroup(group);
 
-                                                BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT gruppe FROM `userinfo` WHERE uuid='" + uuid + "'", rs_info -> {
-                                                    try {
-                                                        if (rs_info.next()) {
-                                                            String value = rs_info.getString("gruppe");
-
-                                                            if (value.equalsIgnoreCase("Spieler")) {
-                                                                BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).update("DELETE FROM bungeesystem_premium WHERE uuid = '" + uuid + "';");
-                                                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group + "§2 erfolgreich entzogen!");
-                                                            } else {
-                                                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§7[§cMySQL ERROR§7] §4DER SPIELER KONNTE NICHT GELÖSCHT WERDEN OBWOHL SEIN PREMIUM RANG ABGLAUFEN IST!");
-                                                            }
-                                                        }
-                                                    } catch (SQLException e) {
-                                                        e.printStackTrace();
-                                                    }
-                                                });
-                                            } else {
-                                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Dieser Spieler hat keinen auslaufenden Rang!");
-                                            }
-                                        } catch (SQLException e) {
-                                            e.printStackTrace();
+                                        if (!t.updateGroupsFromDatabase().contains(group)) {
+                                            BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_premium").deleteOne(eq("uuid", t.getUuid().toString()));
+                                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group + "§2 erfolgreich entzogen!");
+                                        } else {
+                                            throw new CoreException("Premium Rank of player " + t.getName() + " could not be removed. Error in code!");
                                         }
-                                    });
+                                    } else {
+                                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Dieser Spieler hat keinen auslaufenden Rang!");
+                                    }
                                 } else {
                                     BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Dieser Spieler hat keinen Premium Rang!");
                                 }
+                            } catch (CoreException e) {
+                                e.printStackTrace();
                             }
-                        } else {
-                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§c" + target + "§4 war noch nie auf MC ONE!");
                         }
+
                         return;
-                    } catch (CoreException e) {
-                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler "+target+" war noch nie auf MC ONE!");
+                    } catch (PlayerNotResolvedException e) {
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler " + target + " war noch nie auf MC ONE!");
                     }
                 } else if (args.length == 3) {
                     String target = args[1];
                     Group group = Group.getGroupbyName(args[2]);
+
                     try {
                         OfflineCorePlayer t = new BungeeOfflineCorePlayer(BungeeCoreSystem.getSystem(), target).loadPermissions();
 
                         if (group != null) {
-                            if (t != null) {
-                                if (args[0].equalsIgnoreCase("add")) {
-                                    if (!t.hasPermission("mcone.premium")) {
-                                        BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).update("INSERT INTO `bungeesystem_premium` (`uuid`, `group`, `old_group`, `kosten`, `gekauft`, `timestamp`) VALUES ('" + t.getUuid().toString() + "', '" + group.getName() + "', '" + BungeeCoreSystem.getInstance().getPermissionManager().getJson(t.getGroups()) + "', 'free', '" + unixtime + "', " + ((60 * 60 * 24 * 30) + unixtime) + ")");
-                                        BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).update("UPDAtE userinfo SET gruppe='" + group.getName() + "' WHERE uuid='" + target + "'");
-                                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für 1 Monat zugeschrieben!");
-                                    } else {
-                                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
-                                    }
+                            if (args[0].equalsIgnoreCase("add")) {
+                                if (!t.hasPermission("mcone.premium")) {
+                                    BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_premium").insertOne(
+                                            new Document("uuid", t.getUuid().toString())
+                                                    .append("group", group.getId())
+                                                    .append("buyed", unixtime)
+                                                    .append("timestamp", ((60 * 60 * 24 * 30) + unixtime))
+                                    );
+                                    t.addGroup(group);
+
+                                    BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für 1 Monat zugeschrieben!");
+                                } else {
+                                    BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
                                 }
-                            } else {
-                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§c" + target + "§4 war noch nie auf MC ONE!");
                             }
                         } else {
                             BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Dieser Rang existiert nicht!");
                         }
                         return;
                     } catch (CoreException e) {
-                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler "+target+" war noch nie auf MC ONE!");
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler " + target + " war noch nie auf MC ONE!");
                     }
                 } else if (args.length == 4) {
                     String target = args[1];
                     Group group = Group.getGroupbyName(args[2]);
                     int months = Integer.valueOf(args[3]);
+
                     try {
                         OfflineCorePlayer t = new BungeeOfflineCorePlayer(BungeeCoreSystem.getSystem(), target).loadPermissions();
 
                         if (group != null) {
-                            if (t != null) {
-                                if (args[0].equalsIgnoreCase("add")) {
-                                    if (!t.hasPermission("mcone.premium")) {
-                                        BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).update("INSERT INTO `bungeesystem_premium` (`uuid`, `group`, `old_group`, `kosten`, `gekauft`, `timestamp`) VALUES ('" + t.getUuid().toString() + "', '" + group.getName() + "', '" + BungeeCoreSystem.getInstance().getPermissionManager().getJson(t.getGroups()) + "', 'free', '" + unixtime + "', " + ((60 * 60 * 24 * 30 * months) + unixtime) + ")");
-                                        BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).update("UPDAtE userinfo SET gruppe='" + group.getName() + "' WHERE uuid='" + target + "'");
-                                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für " + months + " Monat(e) zugeschrieben!");
-                                    } else {
-                                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
-                                    }
+                            if (args[0].equalsIgnoreCase("add")) {
+                                if (!t.hasPermission("mcone.premium")) {
+                                    BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_premium").insertOne(
+                                            new Document("uuid", t.getUuid().toString())
+                                                    .append("group", group.getId())
+                                                    .append("buyed", unixtime)
+                                                    .append("timestamp", ((60 * 60 * 24 * 30 * months) + unixtime))
+                                    );
+                                    t.addGroup(group);
+
+                                    BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für " + months + " Monat(e) zugeschrieben!");
+                                } else {
+                                    BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
                                 }
-                            } else {
-                                BungeeCoreSystem.getInstance().getMessager().send(sender, "§c" + target + "§4 war noch nie auf MC ONE!");
                             }
                         } else {
                             BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Dieser Rang existiert nicht!");
                         }
                         return;
                     } catch (CoreException e) {
-                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler "+target+" war noch nie auf MC ONE!");
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler " + target + " war noch nie auf MC ONE!");
                     }
                 }
 
-                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/premium add <eu.mcone.coresystem.api.core.player> <group> [<Anzahl der Monate>] §4oder §c/premium <check | remove> <eu.mcone.coresystem.api.core.player>");
+                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/premium add <player> <group> [<Anzahl der Monate>] §4oder §c/premium <check | remove> <eu.mcone.coresystem.api.core.player>");
             } else {
                 BungeeCoreSystem.getInstance().getMessager().send(p, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.noperm"));
             }
@@ -198,7 +189,8 @@ public class PremiumCMD extends Command implements TabExecutor {
             }
         } else if (args.length == 3) {
             if (args[0].equalsIgnoreCase("add")) {
-                for (Group g : BungeeCoreSystem.getInstance().getPermissionManager().getGroups()) result.add(g.getName());
+                for (Group g : BungeeCoreSystem.getInstance().getPermissionManager().getGroups())
+                    result.add(g.getName());
             }
         }
 

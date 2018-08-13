@@ -8,7 +8,6 @@ package eu.mcone.coresystem.api.core.player;
 
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 public interface PermissionManager {
 
@@ -66,12 +65,5 @@ public interface PermissionManager {
      * @return json String
      */
     String getJson(Set<Group> groups);
-
-    /**
-     * get live groups from database for specific player
-     * @param uuid player uuid
-     * @return group set
-     */
-    Set<Group> getLiveGroups(UUID uuid);
     
 }

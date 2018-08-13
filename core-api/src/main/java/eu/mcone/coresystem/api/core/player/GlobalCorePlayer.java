@@ -108,9 +108,9 @@ public interface GlobalCorePlayer {
 
     /**
      * set the players groups
-     * @param groups group set
+     * @param groupList group set
      */
-    void setGroups(Set<Group> groups);
+    void setGroups(Set<Group> groupList);
 
     /**
      * add a player group

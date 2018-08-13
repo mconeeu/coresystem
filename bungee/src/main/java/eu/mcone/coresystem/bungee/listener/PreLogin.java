@@ -12,15 +12,16 @@ import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
 import eu.mcone.coresystem.bungee.player.BungeeCorePlayer;
-import eu.mcone.coresystem.core.mysql.MySQLDatabase;
+import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import org.bson.Document;
 
-import java.sql.SQLException;
+import static com.mongodb.client.model.Filters.eq;
 
 public class PreLogin implements Listener {
 
@@ -42,52 +43,38 @@ public class PreLogin implements Listener {
 		try {
 			BungeeCorePlayer p = new BungeeCorePlayer(BungeeCoreSystem.getInstance(), e.getConnection().getAddress().getAddress(), e.getConnection().getName());
 
-            BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).update("DELETE FROM `bungeesystem_bansystem_ban` WHERE end<="+System.currentTimeMillis() / 1000);
-			BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT * FROM `bungeesystem_bansystem_ban` WHERE `uuid` = '" + p.getUuid().toString() + "'", rs -> {
-				try {
-					if (rs.next()) {
-						String team_member = rs.getString("team_member");
-						String grund = rs.getString("reason");
-						String template = rs.getString("template");
-						long banTime = rs.getLong("end");
+			Document entry = BanManager.getBanEntry(p.getUuid());
+			if (entry != null) {
+				String team_member = entry.getString("team_member");
+				String grund = entry.getString("reason");
+				String template = entry.getString("template");
+				long banTime = entry.getLong("end");
 
-						e.setCancelled(true);
-						e.setCancelReason(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
-								+ "\n§7§oDu wurdest vom Netzwerk gebannt"
-								+ "\n§r"
-								+ "\n§7Gebannt von §8» §e" + team_member
-								+ "\n§7Grund §8» §c" + template + " §7/§c " + grund
-								+ "\n§7Gebannt für §8» " + BanManager.getEndeString(banTime)
-								+ "\n§r"
-								+ "\n§2Du hast die Möglichkeit auf einer der folgenden Plattformen einen Entbannungsantrag zu stellen:"
-								+ "\n§7TS-Server §8» §fts.mcone.eu"
-								+ "\n§7Homepage §8» §fwww.mcone.eu/unban")));
-						p.unregister();
-					}
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-				}
-			});
+				e.setCancelled(true);
+				e.setCancelReason(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
+						+ "\n§7§oDu wurdest vom Netzwerk gebannt"
+						+ "\n§r"
+						+ "\n§7Gebannt von §8» §e" + team_member
+						+ "\n§7Grund §8» §c" + template + " §7/§c " + grund
+						+ "\n§7Gebannt für §8» " + BanManager.getEndeString(banTime)
+						+ "\n§r"
+						+ "\n§2Du hast die Möglichkeit auf einer der folgenden Plattformen einen Entbannungsantrag zu stellen:"
+						+ "\n§7TS-Server §8» §fts.mcone.eu"
+						+ "\n§7Homepage §8» §fwww.mcone.eu/unban")));
+				p.unregister();
+			}
 
 			if (BungeeCoreSystem.getSystem().getPreferences().getBoolean(Preference.BETA_KEY_SYSTEM)) {
-				BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT `timestamp` FROM `bungeesystem_betakey` WHERE `uuid`='" + p.getUuid().toString() + "'", rs -> {
-					try {
-						if (!p.hasPermission("group.team")) {
-							if (!rs.next()) {
-								e.setCancelled(true);
-								e.setCancelReason(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
-										+ "\n§7§oIst ab jetzt in der Beta-Testphase!"
-										+ "\n§r"
-										+ "\n§2Wir würden uns freuen, wenn du unser Netzwerk während der Beta testest!"
-										+ "\n§7Besuche dazu einfach §f§lmcone.eu/beta §7um dich mit einem Klick freizuschalten!"))
-								);
-								p.unregister();
-							}
-						}
-					} catch (SQLException e1) {
-						e1.printStackTrace();
-					}
-				});
+				if (!p.hasPermission("group.team") && BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_betakey").find(eq("uuid", p.getUuid().toString())).first() == null) {
+					e.setCancelled(true);
+					e.setCancelReason(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
+							+ "\n§7§oIst ab jetzt in der Beta-Testphase!"
+							+ "\n§r"
+							+ "\n§2Wir würden uns freuen, wenn du unser Netzwerk während der Beta testest!"
+							+ "\n§7Besuche dazu einfach §f§lmcone.eu/beta §7um dich mit einem Klick freizuschalten!"))
+					);
+					p.unregister();
+				}
 			}
 
 			if (BungeeCoreSystem.getSystem().getPreferences().getBoolean(Preference.MAINTENANCE)) {

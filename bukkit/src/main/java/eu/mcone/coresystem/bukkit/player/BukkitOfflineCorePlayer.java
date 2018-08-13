@@ -20,7 +20,7 @@ public class BukkitOfflineCorePlayer extends GlobalOfflineCorePlayer implements 
 
     @Override
     public OfflineCorePlayer loadPermissions() {
-        this.permissions = BukkitCoreSystem.getSystem().getPermissionManager().getPermissions(uuid.toString(), groups);
+        this.permissions = BukkitCoreSystem.getSystem().getPermissionManager().getPermissions(uuid.toString(), groupSet);
         return this;
     }
 
