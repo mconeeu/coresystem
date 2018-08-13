@@ -10,7 +10,7 @@ import com.google.gson.Gson;
 import eu.mcone.coresystem.core.mysql.MySQL;
 import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import eu.mcone.networkmanager.core.api.database.Database;
-import eu.mcone.networkmanager.core.api.database.MongoDBManager;
+import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 
 public interface CoreModuleCoreSystem {
 
@@ -27,7 +27,7 @@ public interface CoreModuleCoreSystem {
 
     MySQL getMySQL(MySQLDatabase database);
 
-    MongoDBManager getMongoDB(Database database);
+    MongoDatabase getMongoDB(Database database);
 
     Gson getGson();
 

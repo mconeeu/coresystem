@@ -15,7 +15,6 @@ import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.coresystem.core.mysql.Database;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
@@ -26,9 +25,9 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.bson.Document;
 
 import java.net.InetAddress;
-import java.sql.SQLException;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.lte;
 import static com.mongodb.client.model.Updates.set;
 
 public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer {
@@ -44,16 +43,11 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer {
     public BungeeCorePlayer(CoreSystem instance, InetAddress address, String name) throws PlayerNotResolvedException {
         super(instance, address, name);
 
-        ((BungeeCoreSystem) instance).getMySQL(Database.SYSTEM).select("SELECT `end` FROM `bungeesystem_bansystem_mute` WHERE `uuid`='"+getUuid()+"'", rs -> {
-            try {
-                if (rs.next()) {
-                    this.muted = true;
-                    this.muteTime = rs.getLong("end");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+        Document entry = ((BungeeCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").find(eq("uuid", uuid.toString())).first();
+        if (entry != null) {
+            this.muted = true;
+            this.muteTime = entry.getLong("end");
+        }
 
         ((BungeeCoreSystem) instance).getCorePlayers().put(uuid, this);
         reloadPermissions();
@@ -74,7 +68,8 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer {
         if (muted && muteTime < millis) {
             muted = false;
             ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () ->
-                    ((BungeeCoreSystem) instance).getMySQL(Database.SYSTEM).update("DELETE FROM `bungeesystem_bansystem_mute` WHERE end<"+millis));
+                    BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").deleteMany(lte("end", millis))
+            );
         }
 
         return muted;

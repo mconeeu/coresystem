@@ -36,7 +36,7 @@ import eu.mcone.coresystem.core.player.PlayerUtils;
 import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CooldownSystem;
 import eu.mcone.networkmanager.core.api.database.Database;
-import eu.mcone.networkmanager.core.api.database.MongoDBManager;
+import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 import eu.mcone.networkmanager.core.database.MongoConnection;
 import lombok.Getter;
 import net.labymod.serverapi.bungee.LabyModAPI;
@@ -60,7 +60,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     private MongoConnection mongoConnection;
     @Getter
-    private MongoDBManager mongoDB;
+    private MongoDatabase mongoDB;
 
     @Getter
     private TranslationManager translationManager;
@@ -408,7 +408,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public MongoDBManager getMongoDB(eu.mcone.networkmanager.core.api.database.Database database) {
+    public MongoDatabase getMongoDB(eu.mcone.networkmanager.core.api.database.Database database) {
         switch (database) {
             case SYSTEM:
                 return this.mongoDB;

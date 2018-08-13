@@ -13,7 +13,7 @@ import eu.mcone.coresystem.api.core.player.PermissionManager;
 import eu.mcone.coresystem.api.core.player.PlayerUtils;
 import eu.mcone.coresystem.api.core.translation.TranslationManager;
 import eu.mcone.coresystem.api.core.util.CooldownSystem;
-import eu.mcone.networkmanager.core.api.database.MongoDBManager;
+import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 
 import java.util.UUID;
 
@@ -29,7 +29,7 @@ public interface GlobalCoreSystem {
      * returns the mc1data MongoDB database
      * @return mc1data MongoDB database
      */
-    MongoDBManager getMongoDB();
+    MongoDatabase getMongoDB();
 
     /**
      * returns the CoinsUtil

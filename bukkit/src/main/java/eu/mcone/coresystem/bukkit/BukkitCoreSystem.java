@@ -43,7 +43,7 @@ import eu.mcone.coresystem.core.player.PlayerUtils;
 import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CooldownSystem;
 import eu.mcone.networkmanager.core.api.database.Database;
-import eu.mcone.networkmanager.core.api.database.MongoDBManager;
+import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 import eu.mcone.networkmanager.core.database.MongoConnection;
 import lombok.Getter;
 import net.labymod.serverapi.bukkit.LabyModAPI;
@@ -66,9 +66,9 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private MySQL mysql3;
 
     private MongoConnection mongoConnection;
-    private MongoDBManager mongoDatabase1;
-    private MongoDBManager mongoDatabase2;
-    private MongoDBManager mongoDatabase3;
+    private MongoDatabase mongoDatabase1;
+    private MongoDatabase mongoDatabase2;
+    private MongoDatabase mongoDatabase3;
 
     @Getter
     private TranslationManager translationManager;
@@ -292,7 +292,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public MongoDBManager getMongoDB(eu.mcone.networkmanager.core.api.database.Database database) {
+    public MongoDatabase getMongoDB(eu.mcone.networkmanager.core.api.database.Database database) {
         switch (database) {
             case SYSTEM:
                 return mongoDatabase1;
@@ -311,7 +311,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public MongoDBManager getMongoDB() {
+    public MongoDatabase getMongoDB() {
         return mongoDatabase3;
     }
 

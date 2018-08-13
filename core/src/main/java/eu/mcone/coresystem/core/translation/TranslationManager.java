@@ -10,18 +10,18 @@ import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.api.core.translation.TranslationField;
-import eu.mcone.networkmanager.core.api.database.MongoDBManager;
+import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 import org.bson.Document;
 
 import java.util.*;
 
 public class TranslationManager implements eu.mcone.coresystem.api.core.translation.TranslationManager {
 
-    private MongoDBManager mongoDBManager;
+    private MongoDatabase mongoDBManager;
     private Map<String, TranslationField> translations;
     private List<String> categories;
 
-    public TranslationManager(MongoDBManager mongoDBManager, GlobalCorePlugin coreSystem, String... categories) {
+    public TranslationManager(MongoDatabase mongoDBManager, GlobalCorePlugin coreSystem, String... categories) {
         this.mongoDBManager = mongoDBManager;
         this.translations = new HashMap<>();
         this.categories = new ArrayList<>();
