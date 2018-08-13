@@ -10,10 +10,12 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.CoinsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.event.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.Stats;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
+import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
@@ -27,6 +29,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
@@ -39,10 +43,12 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
     private String nickname;
     @Getter
     private CoreScoreboard scoreboard;
+    private Map<Gamemode, StatsAPI> stats;
 
     public BukkitCorePlayer(CoreSystem instance, InetAddress address, String name) throws PlayerNotResolvedException {
         super(instance, address, name);
         this.status = PlayerState.ONLINE;
+        this.stats = new HashMap<>();
 
         ((BukkitCoreSystem) instance).getCorePlayers().put(uuid, this);
         reloadPermissions();
@@ -94,6 +100,17 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
                 bukkit().getLocation().getYaw(),
                 bukkit().getLocation().getPitch()
         );
+    }
+
+    @Override
+    public Stats getStats(Gamemode gamemode) {
+        if (stats.containsKey(gamemode)) {
+            return stats.get(gamemode);
+        } else {
+            StatsAPI api = new StatsAPI((BukkitCoreSystem) instance, this, gamemode);
+            stats.put(gamemode, api);
+            return api;
+        }
     }
 
     @Override

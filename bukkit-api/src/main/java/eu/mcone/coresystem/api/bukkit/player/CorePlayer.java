@@ -9,6 +9,7 @@ package eu.mcone.coresystem.api.bukkit.player;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
+import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import org.bukkit.entity.Player;
 
@@ -43,6 +44,13 @@ public interface CorePlayer extends GlobalCorePlayer {
      * @return CoreLocation
      */
     CoreLocation getLocation();
+
+    /**
+     * returns the players stats info object for the specific gamemode
+     * @param gamemode wished Gamemode
+     * @return StatsAPI object
+     */
+    Stats getStats(Gamemode gamemode);
 
     /**
      * returns if the player afk

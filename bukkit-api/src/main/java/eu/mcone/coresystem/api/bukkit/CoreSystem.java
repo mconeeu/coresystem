@@ -14,7 +14,10 @@ import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
-import eu.mcone.coresystem.api.bukkit.player.*;
+import eu.mcone.coresystem.api.bukkit.player.AfkManager;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.NickManager;
+import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
 import eu.mcone.coresystem.api.bukkit.util.CorePluginManager;
 import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
@@ -24,7 +27,6 @@ import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.WorldManager;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
-import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import lombok.Getter;
 import net.labymod.serverapi.bukkit.LabyModAPI;
 import org.bukkit.ChatColor;
@@ -173,13 +175,6 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @param world CoreWorld
      */
     public abstract void enableSpawnCommand(CoreWorld world);
-
-    /**
-     * returns the StatsAPI for a specific Gamemode
-     * @param gamemode gamemode
-     * @return StatsAPI
-     */
-    public abstract StatsAPI getStatsAPI(Gamemode gamemode);
 
     /**
      * creates a new player title

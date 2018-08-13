@@ -6,11 +6,12 @@
 
 package eu.mcone.coresystem.bukkit.inventory;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
@@ -21,17 +22,18 @@ public class StatsInventory extends CoreInventory {
 
     public StatsInventory(Player p) {
         super("§8» §f§lStatistiken", p, InventorySlot.ROW_3, Option.FILL_EMPTY_SLOTS);
+        CorePlayer cp = CoreSystem.getInstance().getCorePlayer(p);
 
         setItem(InventorySlot.ROW_2_SLOT_3, new ItemBuilder(Material.FEATHER, 1, 0).displayName(Gamemode.SKYPVP.getLabel()).create(), e -> {
-            new StatsCategoryInventory(p, BukkitCoreSystem.getInstance().getStatsAPI(Gamemode.SKYPVP));
+            new StatsCategoryInventory(p, cp.getStats(Gamemode.SKYPVP));
             p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
         });
         setItem(InventorySlot.ROW_2_SLOT_5, new ItemBuilder(Material.STICK, 1, 0).enchantment(Enchantment.KNOCKBACK, 1).displayName(Gamemode.KNOCKIT.getLabel()).itemFlags(ItemFlag.HIDE_ENCHANTS).create(), e -> {
-            new StatsCategoryInventory(p, BukkitCoreSystem.getInstance().getStatsAPI(Gamemode.KNOCKIT));
+            new StatsCategoryInventory(p, cp.getStats(Gamemode.KNOCKIT));
             p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
         });
         setItem(InventorySlot.ROW_2_SLOT_7, new ItemBuilder(Material.BED, 1, 0).displayName(Gamemode.BEDWARS.getLabel()).create(), e -> {
-            new StatsCategoryInventory(p, BukkitCoreSystem.getInstance().getStatsAPI(Gamemode.BEDWARS));
+            new StatsCategoryInventory(p, cp.getStats(Gamemode.BEDWARS));
             p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
         });
 

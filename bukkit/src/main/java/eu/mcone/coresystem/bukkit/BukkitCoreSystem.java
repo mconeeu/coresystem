@@ -22,14 +22,16 @@ import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
-import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.bukkit.channel.*;
 import eu.mcone.coresystem.bukkit.command.*;
 import eu.mcone.coresystem.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.bukkit.listener.*;
 import eu.mcone.coresystem.bukkit.npc.NpcManager;
-import eu.mcone.coresystem.bukkit.player.*;
+import eu.mcone.coresystem.bukkit.player.BukkitOfflineCorePlayer;
+import eu.mcone.coresystem.bukkit.player.CoinsUtil;
+import eu.mcone.coresystem.bukkit.player.CoreAfkManager;
+import eu.mcone.coresystem.bukkit.player.NickManager;
 import eu.mcone.coresystem.bukkit.util.ActionBar;
 import eu.mcone.coresystem.bukkit.util.PluginManager;
 import eu.mcone.coresystem.bukkit.util.TablistInfo;
@@ -254,30 +256,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         getServer().getPluginManager().registerEvents(new SignChange(), this);
     }
 
-    private void createTables() {
-        mysql1.update(
-                "CREATE TABLE IF NOT EXISTS `bungeesystem_textures`" +
-                        "(" +
-                        "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                        "`name` VARCHAR(100) NOT NULL UNIQUE KEY REFERENCES bukkitsystem_npcs(`texture`) ON DELETE SET NULL ON UPDATE SET NULL, " +
-                        "`texture_value` VARCHAR(500) NOT NULL, " +
-                        "`texture_signature` VARCHAR(1000) NOT NULL" +
-                        ") " +
-                        "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
-        );
-
-        mysql3.update(
-                "CREATE TABLE IF NOT EXISTS `bukkitsystem_beta_worlds`" +
-                        "(" +
-                        "`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                        "`build` int NOT NULL, " +
-                        "`name` varchar(50) NOT NULL UNIQUE KEY, " +
-                        "`bytes` longblob NOT NULL" +
-                        ") " +
-                        "ENGINE=InnoDB DEFAULT CHARSET=utf8;"
-        );
-    }
-
     public MySQL getMySQL(MySQLDatabase database) {
         switch (database) {
             case SYSTEM:
@@ -363,11 +341,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Override
     public CooldownSystem getCooldownSystem() {
         return pluginManager.getCooldownSystem();
-    }
-
-    @Override
-    public StatsAPI getStatsAPI(Gamemode gamemode) {
-        return new StatsAPI(this, gamemode);
     }
 
     @Override
