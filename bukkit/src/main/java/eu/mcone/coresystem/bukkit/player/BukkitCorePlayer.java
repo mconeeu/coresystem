@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Filters.in;
 import static com.mongodb.client.model.Updates.set;
 
 public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
@@ -129,7 +128,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
     public void updateSettings() {
         Bukkit.getPluginManager().callEvent(new PlayerSettingsChangeEvent(this, settings));
         CoreSystem.getInstance().getChannelHandler().createSetRequest(bukkit(), "PLAYER_SETTINGS", CoreSystem.getInstance().getGson().toJson(settings, PlayerSettings.class));
-        BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid), set("player_settings", Document.parse(((CoreModuleCoreSystem) instance).getGson().toJson(settings, PlayerSettings.class))));
+        BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), set("player_settings", Document.parse(((CoreModuleCoreSystem) instance).getGson().toJson(settings, PlayerSettings.class))));
     }
 
     @Override

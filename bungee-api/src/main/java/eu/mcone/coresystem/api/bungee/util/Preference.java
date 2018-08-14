@@ -6,6 +6,16 @@
 
 package eu.mcone.coresystem.api.bungee.util;
 
+import lombok.Getter;
+
 public enum Preference {
-    MAINTENANCE, BETA_KEY_SYSTEM
+    MAINTENANCE(false),
+    BETA_KEY_SYSTEM(false);
+
+    @Getter
+    private Object defaultValue;
+
+    Preference(Object defaultValue) {
+        this.defaultValue = defaultValue;
+    }
 }

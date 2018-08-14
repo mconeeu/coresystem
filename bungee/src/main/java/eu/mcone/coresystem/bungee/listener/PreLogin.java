@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
-import eu.mcone.coresystem.api.bungee.util.Preference;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
@@ -64,7 +63,7 @@ public class PreLogin implements Listener {
 				p.unregister();
 			}
 
-			if (BungeeCoreSystem.getSystem().getPreferences().getBoolean(Preference.BETA_KEY_SYSTEM)) {
+			if (BungeeCoreSystem.getSystem().getPreferences().get("betaKeySystem", boolean.class)) {
 				if (!p.hasPermission("group.team") && BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_betakey").find(eq("uuid", p.getUuid().toString())).first() == null) {
 					e.setCancelled(true);
 					e.setCancelReason(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
@@ -77,7 +76,7 @@ public class PreLogin implements Listener {
 				}
 			}
 
-			if (BungeeCoreSystem.getSystem().getPreferences().getBoolean(Preference.MAINTENANCE)) {
+			if (BungeeCoreSystem.getSystem().getPreferences().get("maintenance", boolean.class)) {
 				if (p.hasPermission("system.bungee.wartung.join")) {
 					e.setCancelled(false);
 				} else {

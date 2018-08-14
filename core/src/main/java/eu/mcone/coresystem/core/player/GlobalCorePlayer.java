@@ -65,7 +65,6 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
         this.instance = instance;
         this.name = name;
         this.ipAdress = address.toString().split("/")[1];
-        this.uuid = instance.getPlayerUtils().fetchUuidFromMojangAPI(name);
 
         final MongoCollection<Document> collection = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo");
         Document nameEntry = collection.find(eq("name", name)).first();
@@ -73,7 +72,8 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
         if (nameEntry != null) {
             setDatabaseValues(nameEntry);
         } else {
-            Document uuidEntry = collection.find(eq("uuid", this.uuid)).first();
+            this.uuid = instance.getPlayerUtils().fetchUuidFromMojangAPI(name);
+            Document uuidEntry = collection.find(eq("uuid", this.uuid.toString())).first();
 
             if (uuidEntry != null) {
                 ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 changed his name from §f" + uuidEntry.getString("name") + "§2. Applying to database...");

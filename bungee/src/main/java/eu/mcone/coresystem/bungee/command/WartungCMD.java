@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.api.bungee.util.Preference;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
@@ -21,7 +20,7 @@ public class WartungCMD extends Command {
         if (args.length == 0) {
             BungeeCoreSystem.getInstance().getMessager().send(sender, "§8§m------------------------------------------");
 
-            if (BungeeCoreSystem.getSystem().getPreferences().getBoolean(Preference.MAINTENANCE)) {
+            if (BungeeCoreSystem.getSystem().getPreferences().get("maintenance", boolean.class)) {
                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Der Wartungsmodus ist aktiviert");
             } else {
                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Wartungsmodus ist deaktiviert");
@@ -34,16 +33,16 @@ public class WartungCMD extends Command {
             return;
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("on")) {
-                if (!BungeeCoreSystem.getSystem().getPreferences().getBoolean(Preference.MAINTENANCE)) {
-                    BungeeCoreSystem.getSystem().getPreferences().setPreference(Preference.MAINTENANCE, "true");
+                if (!BungeeCoreSystem.getSystem().getPreferences().get("maintenance", boolean.class)) {
+                    BungeeCoreSystem.getSystem().getPreferences().setPreference("maintenance", true);
                     BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Wartungsmodus aktiviert!");
                 }else{
                     BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Wartungsmodus ist bereits aktiviert!");
                 }
                 return;
             } else if (args[0].equalsIgnoreCase("off")) {
-                if (BungeeCoreSystem.getSystem().getPreferences().getBoolean(Preference.MAINTENANCE)) {
-                    BungeeCoreSystem.getSystem().getPreferences().setPreference(Preference.MAINTENANCE, "false");
+                if (BungeeCoreSystem.getSystem().getPreferences().get("maintenance", boolean.class)) {
+                    BungeeCoreSystem.getSystem().getPreferences().setPreference("maintenance", false);
                     BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Wartungsmodus deaktiviert!");
                 }else{
                     BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Wartungsmodus ist nicht aktiviert!");

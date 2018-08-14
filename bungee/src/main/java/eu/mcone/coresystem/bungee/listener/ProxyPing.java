@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
-import eu.mcone.coresystem.api.bungee.util.Preference;
 import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.ServerPing;
@@ -58,7 +57,7 @@ public class ProxyPing implements Listener {
             ping.setVersion(version);
 
             return;
-        } else if (BungeeCoreSystem.getSystem().getPreferences().getBoolean(Preference.MAINTENANCE)) {
+        } else if (BungeeCoreSystem.getSystem().getPreferences().get("maintenance", boolean.class)) {
             version.setName("§c§oWartungsarbeiten");
             version.setProtocol(2);
             players.getOnline();

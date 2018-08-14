@@ -56,7 +56,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
 
     @Override
     public String fetchName(final UUID uuid) {
-        Document dbEntry = database.getCollection("userinfo").find(eq("uuid", uuid)).first();
+        Document dbEntry = database.getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
 
         if (dbEntry != null) {
             return dbEntry.getString("name");

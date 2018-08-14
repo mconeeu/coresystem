@@ -10,7 +10,6 @@ import com.mongodb.client.MongoCollection;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.util.Zip;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import eu.mcone.networkmanager.core.api.database.Database;
 import org.apache.commons.io.IOUtils;
 import org.bson.Document;
@@ -21,23 +20,23 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Projections.include;
 import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
 
 class WorldUploader {
 
-    private CoreWorld world;
-    private MySQLDatabase database;
-    private String table = "mc1cloud.cloudwrapper_worlds";
+    private final CoreWorld world;
+    private final MongoCollection<Document> collection;
 
     WorldUploader(CoreWorld world) {
-        if (world.bukkit() != null) this.world = world;
+        this.world = world;
+        this.collection = BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("cloudwrapper_worlds");
     }
 
-    WorldUploader(CoreWorld world, MySQLDatabase database, String table) {
+    WorldUploader(CoreWorld world, MongoCollection<Document> collection) {
         this.world = world;
-        this.database = database;
-        this.table = table;
+        this.collection = collection;
     }
 
     boolean upload() {
@@ -55,21 +54,18 @@ class WorldUploader {
 
         try {
             FileInputStream fis = new FileInputStream(zipFile);
-            MongoCollection<Document> cloudCollection = BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("cloudwrapper_worlds");
-            Document document = cloudCollection.find(eq("name", world.getName())).first();
+            Document document = collection.find(eq("name", world.getName())).projection(include("build")).first();
 
             int build = 0;
             if (document != null) {
                 build = document.getInteger("build");
 
-                BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("cloudwrapper_worlds")
-                        .updateOne(eq("name", world.getName()), combine(
+                collection.updateOne(eq("name", world.getName()), combine(
                                 set("build", ++build),
                                 set("name", world.getName()),
                                 set("bytes", IOUtils.toByteArray(fis))));
             } else {
-                BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("cloudwrapper_worlds")
-                        .insertOne(new Document("build", ++build)
+                collection.insertOne(new Document("build", ++build)
                                 .append("name", world.getName())
                                 .append("bytes", IOUtils.toByteArray(fis)));
             }

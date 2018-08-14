@@ -25,7 +25,7 @@ import eu.mcone.coresystem.bungee.runnable.Broadcast;
 import eu.mcone.coresystem.bungee.runnable.OnlineTime;
 import eu.mcone.coresystem.bungee.runnable.PremiumCheck;
 import eu.mcone.coresystem.bungee.utils.ChannelHandler;
-import eu.mcone.coresystem.bungee.utils.PreferencesManager;
+import eu.mcone.coresystem.core.util.PreferencesManager;
 import eu.mcone.coresystem.bungee.utils.TeamspeakVerifier;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.mysql.MySQL;
@@ -124,7 +124,10 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         cooldownSystem = new CooldownSystem();
         channelHandler = new ChannelHandler();
-        preferences = new PreferencesManager();
+        preferences = new PreferencesManager(mongoDB, new HashMap<String, Object>(){{
+            put("maintenance", false);
+            put("betaKeySystem", false);
+        }});
         playerUtils = new PlayerUtils(mongoDB);
         coinsUtil = new CoinsUtil(this);
 
