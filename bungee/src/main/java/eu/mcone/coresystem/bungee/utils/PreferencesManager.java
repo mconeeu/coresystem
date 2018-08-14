@@ -16,13 +16,13 @@ import org.bson.Document;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.mongodb.client.model.Filters.eq;
+
 public class PreferencesManager implements Preferences {
 
-    private MySQL mySQL;
     private Map<Preference, String> preferences;
 
-    public PreferencesManager(MySQL mySQL) {
-        this.mySQL = mySQL;
+    public PreferencesManager() {
         this.preferences = new HashMap<>();
 
         reload();
@@ -35,25 +35,10 @@ public class PreferencesManager implements Preferences {
         for (Document preferencesDocument : BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getDocumentsInCollection("bungeesystem_preferences")) {
             preferences.put(Preference.valueOf(preferencesDocument.getString("key")), preferencesDocument.getString("value"));
         }
-
-        /*
-        mySQL.select("SELECT `key`, `value` FROM `bungeesystem_preferences`", rs -> {
-            try {
-                while (rs.next()) {
-                    preferences.put(Preference.valueOf(rs.getString("key")), rs.getString("value"));
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
-        */
     }
 
     @Override
     public void setPreference(Preference preference, String value) {
-        if (BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).containsValue("value", value)) {
-            System.out.println("preference Problem");
-        }
 
         BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_preferences").insertOne(new Document("key", preference.toString()).append("value", value));
         //mySQL.update("INSERT INTO `bungeesystem_preferences` (`key`, `value`) VALUES ('" + preference.toString() + "', '" + value + "') ON DUPLICATE KEY UPDATE `value`='" + value + "'");
@@ -77,55 +62,28 @@ public class PreferencesManager implements Preferences {
 
     @Override
     public String getLiveString(Preference preference) {
-        return (String) BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getObject("key", preference, "value", "bungeesystem_preferences").get(0);
-
-        /*
-        return mySQL.select("SELECT `value` FROM `bungeesystem_preferences` WHERE `key`='" + preference + "'", rs -> {
-            try {
-                if (rs.next()) {
-                    return rs.getString("value");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }, String.class);
-        */
+        Document document = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_preferences").find(eq("key", preference.toString())).first();
+        if (document != null) {
+            return document.getString("value");
+        }
+        return null;
     }
 
     @Override
     public int getLiveInt(Preference preference) {
-        return (int) BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getObject("key", preference, "value", "bungeesystem_preferences").get(0);
-
-        /*
-        return mySQL.select("SELECT `value` FROM `bungeesystem_preferences` WHERE `key`='" + preference + "'", rs -> {
-            try {
-                if (rs.next()) {
-                    return Integer.valueOf(rs.getString("value"));
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }, int.class);
-        */
+        Document document = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_preferences").find(eq("key", preference.toString())).first();
+        if (document != null) {
+            return document.getInteger("value");
+        }
+        return 0;
     }
 
     @Override
     public boolean getLiveBoolean(Preference preference) {
-        return (boolean) BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getObject("key", preference, "value", "bungeesystem_preferences").get(0);
-
-        /*
-        return mySQL.select("SELECT `value` FROM `bungeesystem_preferences` WHERE `key`='" + preference + "'", rs -> {
-            try {
-                if (rs.next()) {
-                    return Boolean.valueOf(rs.getString("value"));
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }, boolean.class);
-        */
+        Document document = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_preferences").find(eq("key", preference.toString())).first();
+        if (document != null) {
+            return document.getBoolean("value");
+        }
+        return false;
     }
 }

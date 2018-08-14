@@ -15,20 +15,19 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class PlayerJoin implements Listener{
-	
-	@EventHandler
-	public void on(PlayerJoinEvent e){
-		Player bp = e.getPlayer();
-		CorePlayer p = BukkitCoreSystem.getInstance().getCorePlayer(bp);
+public class PlayerJoin implements Listener {
 
-		e.setJoinMessage(null);
+    @EventHandler
+    public void on(PlayerJoinEvent e) {
+        Player bp = e.getPlayer();
+        CorePlayer p = BukkitCoreSystem.getInstance().getCorePlayer(bp);
+
+        e.setJoinMessage(null);
         p.setScoreboard(new MainScoreboard());
-		((NickManager) BukkitCoreSystem.getInstance().getNickManager()).setNicks(bp);
+        ((NickManager) BukkitCoreSystem.getInstance().getNickManager()).setNicks(bp);
 
-		for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
-			cp.getScoreboard().reload();
-		}
-	}
-
+        for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
+            cp.getScoreboard().reload();
+        }
+    }
 }

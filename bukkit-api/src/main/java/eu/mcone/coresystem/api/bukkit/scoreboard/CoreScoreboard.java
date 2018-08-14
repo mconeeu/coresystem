@@ -48,12 +48,11 @@ public abstract class CoreScoreboard {
      */
     public void reload() {
         for (CorePlayer p : CoreSystem.getInstance().getOnlineCorePlayers()) {
-            Team team = scoreboard.registerNewTeam(p.getMainGroup().getScore()+new Random(6).nextString());
+            Team team = scoreboard.registerNewTeam(p.getMainGroup().getScore() + new Random(6).nextString());
             team = modifyTeam(this.player, p, team);
             team.addEntry(p.isNicked() ? p.getNickname() : p.getName());
         }
         player.bukkit().setScoreboard(scoreboard);
-
         for (CoreObjective o : objectives.values()) o.reload();
     }
 

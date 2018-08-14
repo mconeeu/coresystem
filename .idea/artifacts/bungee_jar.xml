@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="jar" build-on-make="true" name="bungee:jar">
-    <output-path>$PROJECT_DIR$/../../../Minecraft/localhost - server/BungeeCord/plugins</output-path>
+    <output-path>$PROJECT_DIR$/../../../servers/BungeeCord/plugins</output-path>
     <root id="archive" name="bungee.jar">
       <element id="module-output" name="bungee" />
       <element id="module-output" name="core" />

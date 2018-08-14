@@ -65,6 +65,7 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
         this.instance = instance;
         this.name = name;
         this.ipAdress = address.toString().split("/")[1];
+        this.uuid = instance.getPlayerUtils().fetchUuidFromMojangAPI(name);
 
         final MongoCollection<Document> collection = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo");
         Document nameEntry = collection.find(eq("name", name)).first();
@@ -72,7 +73,6 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
         if (nameEntry != null) {
             setDatabaseValues(nameEntry);
         } else {
-            this.uuid = instance.getPlayerUtils().fetchUuidFromMojangAPI(name);
             Document uuidEntry = collection.find(eq("uuid", this.uuid)).first();
 
             if (uuidEntry != null) {
@@ -89,7 +89,7 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
                 this.isNew = true;
 
                 ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 is new! Registering in Database...");
-                collection.insertOne(new Document("uuid", instance.getPlayerUtils().fetchUuidFromMojangAPI(name).toString())
+                collection.insertOne(new Document("uuid", uuid.toString())
                         .append("name", name)
                         .append("groups", new ArrayList<>(Collections.singletonList(11)))
                         .append("coins", coins)

@@ -124,7 +124,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         cooldownSystem = new CooldownSystem();
         channelHandler = new ChannelHandler();
-        preferences = new PreferencesManager(database);
+        preferences = new PreferencesManager();
         playerUtils = new PlayerUtils(mongoDB);
         coinsUtil = new CoinsUtil(this);
 

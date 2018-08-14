@@ -33,13 +33,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.in;
 import static com.mongodb.client.model.Updates.set;
 
 public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
 
     @Getter
     private PlayerState status;
-    @Getter @Setter
+    @Getter
+    @Setter
     private String nickname;
     @Getter
     private CoreScoreboard scoreboard;
@@ -53,7 +55,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
         ((BukkitCoreSystem) instance).getCorePlayers().put(uuid, this);
         reloadPermissions();
 
-        BukkitCoreSystem.getInstance().sendConsoleMessage("Loaded Player "+name+"!");
+        BukkitCoreSystem.getInstance().sendConsoleMessage("Loaded Player " + name + "!");
     }
 
     @Override
@@ -141,7 +143,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
         BukkitCoreSystem.getSystem().getAfkManager().unregisterPlayer(uuid);
         BukkitCoreSystem.getSystem().getCorePlayers().remove(uuid);
 
-        BukkitCoreSystem.getInstance().sendConsoleMessage("Unloaded Player "+name);
+        BukkitCoreSystem.getInstance().sendConsoleMessage("Unloaded Player " + name);
     }
 
 }

@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.world;
 
+import com.mongodb.client.MongoCollection;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.util.Zip;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
@@ -54,20 +55,22 @@ class WorldUploader {
 
         try {
             FileInputStream fis = new FileInputStream(zipFile);
-            Document document = BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("worlds").find(eq("name", world.getName())).first();
+            MongoCollection<Document> cloudCollection = BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("cloudwrapper_worlds");
+            Document document = cloudCollection.find(eq("name", world.getName())).first();
+
             int build = 0;
             if (document != null) {
                 build = document.getInteger("build");
 
-                BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("worlds")
+                BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("cloudwrapper_worlds")
                         .updateOne(eq("name", world.getName()), combine(
                                 set("build", ++build),
                                 set("name", world.getName()),
                                 set("bytes", IOUtils.toByteArray(fis))));
             } else {
-                BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("worlds")
+                BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("cloudwrapper_worlds")
                         .insertOne(new Document("build", ++build)
-                                .append("name",  world.getName())
+                                .append("name", world.getName())
                                 .append("bytes", IOUtils.toByteArray(fis)));
             }
 

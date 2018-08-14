@@ -7,6 +7,7 @@
 package eu.mcone.coresystem.core.mysql;
 
 import com.google.gson.internal.Primitives;
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import eu.mcone.coresystem.api.core.mysql.Callback;
 import eu.mcone.coresystem.api.core.mysql.CallbackResult;

@@ -71,6 +71,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private MongoDatabase mongoDatabase1;
     private MongoDatabase mongoDatabase2;
     private MongoDatabase mongoDatabase3;
+    private MongoDatabase mongoDatabase4;
 
     @Getter
     private TranslationManager translationManager;
@@ -135,6 +136,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         mongoDatabase1 = mongoConnection.getDatabase(Database.SYSTEM);
         mongoDatabase2 = mongoConnection.getDatabase(Database.STATS);
         mongoDatabase3 = mongoConnection.getDatabase(Database.DATA);
+        mongoDatabase4 = mongoConnection.getDatabase(Database.CLOUD);
 
         pluginManager = new PluginManager();
         coinsUtil = new CoinsUtil(this);
@@ -278,6 +280,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 return mongoDatabase2;
             case DATA:
                 return mongoDatabase3;
+            case CLOUD:
+                return mongoDatabase4;
             default:
                 return null;
         }
