@@ -33,7 +33,7 @@ public class WorldCMD extends CorePlayerCommand {
     private boolean enableUploadCmd;
 
     public WorldCMD() {
-        super("world", "system.bukkit.world");
+        super("world", "system.bukkit.world", "w");
     }
 
     @Override

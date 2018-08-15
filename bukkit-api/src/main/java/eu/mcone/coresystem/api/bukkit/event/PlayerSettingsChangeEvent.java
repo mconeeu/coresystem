@@ -12,12 +12,13 @@ import lombok.Getter;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+@Getter
 public final class PlayerSettingsChangeEvent extends Event {
 
-    private static final HandlerList handlers = new HandlerList();
     @Getter
+    private static final HandlerList handlerList = new HandlerList();
+
     private final CorePlayer player;
-    @Getter
     private final PlayerSettings settings;
 
     public PlayerSettingsChangeEvent(CorePlayer player, PlayerSettings settings) {
@@ -26,11 +27,7 @@ public final class PlayerSettingsChangeEvent extends Event {
     }
 
     public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
+        return handlerList;
     }
 
 }

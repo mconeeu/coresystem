@@ -9,7 +9,6 @@ package eu.mcone.coresystem.bukkit.command;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
-import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
@@ -37,12 +36,11 @@ public class NpcCMD extends CorePlayerCommand {
 
         if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("list"))) {
             if (CoreSystem.getInstance().getNpcManager().getNPCs().size() > 0) {
-                ComponentBuilder componentBuilder = new ComponentBuilder(BukkitCoreSystem.getInstance().getTranslationManager().get("system.prefix.server"))
-                        .append("Folgende NPCs existieren auf diesem Server: ").color(ChatColor.GRAY);
+                CoreSystem.getInstance().getMessager().send(p, "§7Folgende NPCs existieren auf diesem Server: ");
 
                 for (CoreWorld w : BukkitCoreSystem.getInstance().getWorldManager().getWorlds()) {
                     if (w.getNPCs().size() > 0) {
-                        componentBuilder.append("\n§f[" + w.getName() + "]\n");
+                        ComponentBuilder componentBuilder = new ComponentBuilder("\n§f[" + w.getName() + "]\n");
 
                         for (eu.mcone.coresystem.api.bukkit.npc.NPC npc : w.getNPCs()) {
                             componentBuilder
@@ -53,10 +51,10 @@ public class NpcCMD extends CorePlayerCommand {
                                     .append(", ")
                                     .color(ChatColor.GRAY);
                         }
+
+                        p.spigot().sendMessage(componentBuilder.create());
                     }
                 }
-
-                p.spigot().sendMessage(componentBuilder.create());
             } else {
                 BukkitCoreSystem.getInstance().getMessager().send(p, "§7Auf dem Server existieren keine NPCs!");
             }
@@ -70,7 +68,7 @@ public class NpcCMD extends CorePlayerCommand {
                     if (i < args.length - 1) line.append(" ");
                 }
 
-                api.addNPC(new NpcData(args[1], line.toString().replaceAll("&", "§"), args[2], cp.getLocation()), cp.getWorld());
+                api.addNPC(args[1], line.toString().replaceAll("&", "§"), args[2], p.getLocation());
                 BukkitCoreSystem.getInstance().getMessager().send(p, "§2NPC §f" + args[1] + "§2 erfolgreich hinzugefügt!");
                 return true;
             } else if (args[0].equalsIgnoreCase("update")) {
@@ -107,7 +105,7 @@ public class NpcCMD extends CorePlayerCommand {
                         NPC npc = CoreSystem.getInstance().getNpcManager().getNPC(w, args[2]);
 
                         if (npc != null) {
-                            p.teleport(npc.getData().getLocation().bukkit());
+                            p.teleport(npc.getLocation());
                             BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest zum NPC §a" + npc.getData().getName() + "§2 teleportiert!");
                         } else {
                             BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene NPC existiert nicht in der Welt §c" + w.getName() + "§4!");
@@ -155,7 +153,7 @@ public class NpcCMD extends CorePlayerCommand {
                 NPC npc = CoreSystem.getInstance().getNpcManager().getNPC(cp.getWorld(), args[1]);
 
                 if (npc != null) {
-                    p.teleport(npc.getData().getLocation().bukkit());
+                    p.teleport(npc.getLocation());
                     BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest zum NPC §a" + npc.getData().getName() + "§2 teleportiert!");
                 } else {
                     BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene NPC existiert nicht!");

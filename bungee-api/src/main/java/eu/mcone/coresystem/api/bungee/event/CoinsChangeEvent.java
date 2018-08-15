@@ -7,16 +7,14 @@
 package eu.mcone.coresystem.api.bungee.event;
 
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.md_5.bungee.api.plugin.Event;
 
+@AllArgsConstructor
+@Getter
 public final class CoinsChangeEvent extends Event {
 
-    @Getter
     private final CorePlayer player;
-
-    public CoinsChangeEvent(CorePlayer p) {
-        this.player = p;
-    }
 
 }

@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.bukkit;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
@@ -20,12 +20,14 @@ import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
 import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
 import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
+import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.bukkit.channel.*;
 import eu.mcone.coresystem.bukkit.command.*;
 import eu.mcone.coresystem.bukkit.hologram.HologramManager;
+import eu.mcone.coresystem.bukkit.labymod.LabyModAPI;
 import eu.mcone.coresystem.bukkit.listener.*;
 import eu.mcone.coresystem.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.bukkit.player.BukkitOfflineCorePlayer;
@@ -48,9 +50,9 @@ import eu.mcone.networkmanager.core.api.database.Database;
 import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 import eu.mcone.networkmanager.core.database.MongoConnection;
 import lombok.Getter;
-import net.labymod.serverapi.bukkit.LabyModAPI;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -100,7 +102,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private Gson gson;
     @Getter
-    private Gson simpleGson;
+    private JsonParser jsonParser;
 
     @Getter
     private Map<UUID, CorePlayer> corePlayers;
@@ -142,8 +144,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         coinsUtil = new CoinsUtil(this);
         channelHandler = new ChannelHandler();
         playerUtils = new PlayerUtils(mongoDatabase1);
-        gson = new GsonBuilder().setPrettyPrinting().create();
-        simpleGson = new Gson();
+        gson = new Gson();
+        jsonParser = new JsonParser();
 
         cloudsystemAvailable = checkIfCloudSystemAvailable();
         sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
@@ -152,7 +154,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         translationManager = new TranslationManager(mongoDatabase1, this);
 
         sendConsoleMessage("§aInitializing LabyModAPI...");
-        labyModAPI = new LabyModAPI(this);
+        labyModAPI = new LabyModAPI();
 
         sendConsoleMessage("§aStarting WorldManager...");
         worldManager = new WorldManager(this);
@@ -167,7 +169,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         afkManager = new CoreAfkManager();
 
         sendConsoleMessage("§aLoading Permissions & Groups...");
-        permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), mysql1, simpleGson);
+        permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), mysql1, gson);
 
         sendConsoleMessage("§aStarting NickManager...");
         nickManager = new NickManager(this);
@@ -328,13 +330,19 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public NPC constructNpc(NpcData npcData) {
-        return new eu.mcone.coresystem.bukkit.npc.NPC(worldManager.getWorld(npcData.getLocation().getWorldName()), npcData);
+    public NPC constructNpc(String name, String displayname, String skinName, Location location) {
+        return new eu.mcone.coresystem.bukkit.npc.NPC(
+                worldManager.getWorld(location.getWorld()),
+                new NpcData(name, displayname, skinName, new CoreLocation(location))
+        );
     }
 
     @Override
-    public Hologram constructHologram(HologramData hologramData) {
-        return new eu.mcone.coresystem.bukkit.hologram.Hologram(worldManager.getWorld(hologramData.getLocation().getWorldName()), hologramData);
+    public Hologram constructHologram(String name, String[] text, Location location) {
+        return new eu.mcone.coresystem.bukkit.hologram.Hologram(
+                worldManager.getWorld(location.getWorld()),
+                new HologramData(name, text, new CoreLocation(location))
+        );
     }
 
     @Override

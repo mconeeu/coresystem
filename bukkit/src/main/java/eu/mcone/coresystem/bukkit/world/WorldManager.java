@@ -132,18 +132,23 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                 World world = new WorldCreator(name).environment(environment).createWorld();
                 File config = new File(name, CONFIG_NAME);
 
-                if (config.exists()) {
-                    try (JsonReader reader = new JsonReader(new FileReader(config))) {
-                        BukkitCoreWorld w = CoreSystem.getInstance().getGson().fromJson(reader, BukkitCoreWorld.class);
-                        w.setupWorld();
-                        coreWorlds.add(w);
+                if (world != null) {
+                    if (config.exists()) {
+                        try (JsonReader reader = new JsonReader(new FileReader(config))) {
+                            BukkitCoreWorld w = CoreSystem.getInstance().getGson().fromJson(reader, BukkitCoreWorld.class);
+                            w.setupWorld();
+                            coreWorlds.add(w);
+                        }
+                    } else {
+                        coreWorlds.add(constructNewCoreWorld(world));
                     }
-                } else {
-                    coreWorlds.add(constructNewCoreWorld(world));
-                }
 
-                BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + world.getName());
-                return true;
+                    BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + world.getName());
+                    return true;
+                } else {
+                    BukkitCoreSystem.getInstance().sendConsoleMessage("§4Could not import world"+name+"! WorldCreator returned null!");
+                    return false;
+                }
             } catch (Exception e) {
                 e.printStackTrace();
                 return false;

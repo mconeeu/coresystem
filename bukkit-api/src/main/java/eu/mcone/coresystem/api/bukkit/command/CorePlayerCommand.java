@@ -16,12 +16,8 @@ public abstract class CorePlayerCommand extends CoreCommand {
         super(name);
     }
 
-    public CorePlayerCommand(String name, String permission) {
-        super(name, permission);
-    }
-
-    public CorePlayerCommand(String name, String permission, String description, String usage, String... aliases) {
-        super(name, permission, description, usage, aliases);
+    public CorePlayerCommand(String name, String permission, String... aliases) {
+        super(name, permission, aliases);
     }
 
     @Override

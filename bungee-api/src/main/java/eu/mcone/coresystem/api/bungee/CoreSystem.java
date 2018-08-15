@@ -7,6 +7,7 @@
 package eu.mcone.coresystem.api.bungee;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.FriendSystem;
 import eu.mcone.coresystem.api.bungee.player.NickManager;
@@ -14,8 +15,8 @@ import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bungee.util.ChannelHandler;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
+import eu.mcone.coresystem.api.core.labymod.LabyModAPI;
 import lombok.Getter;
-import net.labymod.serverapi.bungee.LabyModAPI;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -47,7 +48,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     public abstract Gson getGson();
 
-    public abstract Gson getSimpleGson();
+    public abstract JsonParser getJsonParser();
 
     public abstract ChannelHandler getChannelHandler();
 

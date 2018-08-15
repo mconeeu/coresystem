@@ -6,6 +6,8 @@
 
 package eu.mcone.coresystem.bukkit.world;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
@@ -37,6 +39,8 @@ import java.util.Map;
 @DontObfuscate
 public class BukkitCoreWorld implements CoreWorld {
 
+    private final static Gson PRETTY_GSON = new GsonBuilder().setPrettyPrinting().create();
+
     private String name, alias, generator, generatorSettings;
     private WorldType worldType = WorldType.NORMAL;
     private World.Environment environment = World.Environment.NORMAL;
@@ -59,7 +63,7 @@ public class BukkitCoreWorld implements CoreWorld {
 
         if (loc != null) {
             BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wirst teleportiert...");
-            p.teleport(loc.bukkit());
+            p.teleport(loc.bukkit(this));
         } else {
             BukkitCoreSystem.getInstance().getMessager().send(p, "§4Dieser Ort existiert nicht.");
         }
@@ -68,7 +72,7 @@ public class BukkitCoreWorld implements CoreWorld {
     @Override
     public void teleportSilently(Player p, String locationName) {
         CoreLocation loc = getLocation(locationName);
-        if (getLocation(locationName) != null) p.teleport(loc.bukkit());
+        if (getLocation(locationName) != null) p.teleport(loc.bukkit(this));
     }
 
     @Override
@@ -84,7 +88,7 @@ public class BukkitCoreWorld implements CoreWorld {
 
     @Override
     public BukkitCoreWorld setLocation(String name, Location loc) {
-        locations.put(name, new CoreLocation(loc.getWorld().getName(), loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch()));
+        locations.put(name, new CoreLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch()));
         return this;
     }
 
@@ -198,7 +202,7 @@ public class BukkitCoreWorld implements CoreWorld {
                 throw new FileNotFoundException("Config File could not be created!");
             }
 
-            FileUtils.writeStringToFile(config, CoreSystem.getInstance().getGson().toJson(this, getClass()));
+            FileUtils.writeStringToFile(config, PRETTY_GSON.toJson(this, getClass()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -238,6 +242,11 @@ public class BukkitCoreWorld implements CoreWorld {
                 entity.remove();
             }
         }
+    }
+
+    @Override
+    public Location getLocation(CoreLocation location) {
+        return new Location(bukkit(), location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
     }
 
     @Override

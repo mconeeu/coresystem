@@ -91,8 +91,13 @@ public class Hologram implements eu.mcone.coresystem.api.bukkit.hologram.Hologra
         }
     }
 
+    @Override
+    public Location getLocation() {
+        return data.getLocation().bukkit(world);
+    }
+
     private void create() {
-        Location loc = data.getLocation().bukkit();
+        Location loc = data.getLocation().bukkit(world);
         int count = 0;
 
         String[] text;

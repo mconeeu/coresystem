@@ -7,13 +7,28 @@
 package eu.mcone.coresystem.api.bukkit.hologram;
 
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public interface Hologram {
 
+    /**
+     * returns the Holograms config data
+     * @return HologramData config
+     */
     HologramData getData();
 
+    /**
+     * returns the Holograms CoreWorld
+     * @return CoreWorld object
+     */
     CoreWorld getWorld();
+
+    /**
+     * returns the Holograms location
+     * @return Bukkit Location object
+     */
+    Location getLocation();
 
     /**
      * shows the hologram a player for a specific time

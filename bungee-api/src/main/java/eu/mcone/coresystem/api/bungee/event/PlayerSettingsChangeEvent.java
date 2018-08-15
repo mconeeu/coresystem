@@ -8,19 +8,15 @@ package eu.mcone.coresystem.api.bungee.event;
 
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.md_5.bungee.api.plugin.Event;
 
+@AllArgsConstructor
+@Getter
 public final class PlayerSettingsChangeEvent extends Event {
 
-    @Getter
     private final CorePlayer player;
-    @Getter
     private final PlayerSettings settings;
-
-    public PlayerSettingsChangeEvent(CorePlayer player, PlayerSettings settings) {
-        this.player = player;
-        this.settings = settings;
-    }
 
 }

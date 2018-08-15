@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
@@ -21,18 +22,17 @@ import java.util.Map;
 public class LocationCMD extends CorePlayerCommand {
 
     public LocationCMD() {
-        super("location", "system.bukkit.world.location");
+        super("location", "system.bukkit.world.location", "l");
     }
 
     @Override
     public boolean onPlayerCommand(Player p, String[] args) {
         if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("list"))) {
-            ComponentBuilder componentBuilder =
-                    new ComponentBuilder(BukkitCoreSystem.getInstance().getTranslationManager().get("system.prefix.server")).append("Folgende Locations existieren auf diesem Server: ").color(ChatColor.GRAY);
+            CoreSystem.getInstance().getMessager().send(p, "§7Folgende Locations existieren auf diesem Server: ");
 
             for (CoreWorld w : BukkitCoreSystem.getInstance().getWorldManager().getWorlds()) {
                 if (w.getLocations().size() > 0) {
-                    componentBuilder.append("\n§f[" + w.getName() + "]\n");
+                    ComponentBuilder componentBuilder = new ComponentBuilder("\n§f[" + w.getName() + "]\n");
 
                     for (Map.Entry<String, CoreLocation> loc : w.getLocations().entrySet()) {
                         componentBuilder
@@ -43,10 +43,11 @@ public class LocationCMD extends CorePlayerCommand {
                                 .append(", ")
                                 .color(ChatColor.GRAY);
                     }
+
+                    p.spigot().sendMessage(componentBuilder.create());
                 }
             }
 
-            p.spigot().sendMessage(componentBuilder.create());
             return true;
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("set")) {
@@ -95,10 +96,11 @@ public class LocationCMD extends CorePlayerCommand {
 
                 return true;
             } else if (args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("teleport")) {
-                CoreLocation loc = BukkitCoreSystem.getInstance().getCorePlayer(p).getWorld().getLocation(args[1]);
+                CoreWorld w = BukkitCoreSystem.getInstance().getCorePlayer(p).getWorld();
+                CoreLocation loc = w.getLocation(args[1]);
 
                 if (loc != null) {
-                    p.teleport(loc.bukkit());
+                    p.teleport(w.getLocation(loc));
                     BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest erfolgreich zu der Location §a" + args[1] + "§2 teleportiert!");
                 } else {
                     BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die Location §c" + args[1] + "§4 existiert nicht in dieser Welt! Benutze §c/location tp <world-name> <location-name>§4 zum teleportieren zu einer Location von einer anderen Welt!");
@@ -129,7 +131,7 @@ public class LocationCMD extends CorePlayerCommand {
                     CoreLocation loc = w.getLocation(args[2]);
 
                     if (loc != null) {
-                        p.teleport(loc.bukkit());
+                        p.teleport(w.getLocation(loc));
                         BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest erfolgreich zu der Location §a" + args[1] + "§2 teleportiert!");
                     } else {
                         BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die Location §c" + args[2] + "§4 existiert nicht in der Welt " + args[1] + "!");

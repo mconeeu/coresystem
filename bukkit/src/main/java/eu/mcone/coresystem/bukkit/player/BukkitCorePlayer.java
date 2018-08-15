@@ -91,10 +91,10 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
         return BukkitCoreSystem.getInstance().getWorldManager().getWorld(bukkit().getWorld());
     }
 
+    @Deprecated
     @Override
     public CoreLocation getLocation() {
         return new CoreLocation(
-                getWorld().getName(),
                 bukkit().getLocation().getX(),
                 bukkit().getLocation().getY(),
                 bukkit().getLocation().getZ(),

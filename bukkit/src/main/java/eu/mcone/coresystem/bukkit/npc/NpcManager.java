@@ -16,7 +16,6 @@ import eu.mcone.coresystem.bukkit.command.NpcCMD;
 import eu.mcone.coresystem.bukkit.world.BukkitCoreWorld;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -37,10 +36,10 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
         Bukkit.getScheduler().runTaskTimerAsynchronously(instance, () -> {
             for (NPC npc : npcs) {
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    if (npc.getData().getLocation().bukkit().getWorld().equals(p.getWorld())) {
-                        if (npc.getData().getLocation().bukkit().distance(p.getLocation()) > 60 && npc.getLoadedPlayers().contains(p.getUniqueId())) {
+                    if (npc.getWorld().bukkit().equals(p.getWorld())) {
+                        if (npc.getData().getLocation().bukkit(npc.getWorld()).distance(p.getLocation()) > 60 && npc.getLoadedPlayers().contains(p.getUniqueId())) {
                             npc.unset(p);
-                        } else if (npc.getData().getLocation().bukkit().distance(p.getLocation()) < 60 && !npc.getLoadedPlayers().contains(p.getUniqueId())) {
+                        } else if (npc.getData().getLocation().bukkit(npc.getWorld()).distance(p.getLocation()) < 60 && !npc.getLoadedPlayers().contains(p.getUniqueId())) {
                             npc.set(p);
                         }
                     } else if (npc.getLoadedPlayers().contains(p.getUniqueId())) {
@@ -83,12 +82,10 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
     }
 
     @Override
-    public void addLocalNPC(NpcData data, World world) {
-        addLocalNPC(data, CoreSystem.getInstance().getWorldManager().getWorld(world));
-    }
+    public void addLocalNPC(String name, String displayname, String skinName, Location location) {
+        NpcData data = new NpcData(name, displayname, skinName, new CoreLocation(location));
+        BukkitCoreWorld world = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(location.getWorld());
 
-    @Override
-    public void addLocalNPC(NpcData data, CoreWorld world) {
         NPC npc = new NPC(world, data);
         npc.setLocal(true);
 
@@ -97,20 +94,17 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
     }
 
     @Override
-    public void addNPC(NpcData data, World world) {
-        addNPC(data, CoreSystem.getInstance().getWorldManager().getWorld(world));
-    }
+    public void addNPC(String name, String displayname, String skinName, Location location) {
+        NpcData data = new NpcData(name, displayname, skinName, new CoreLocation(location));
+        BukkitCoreWorld world = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(location.getWorld());
 
-    @Override
-    public void addNPC(NpcData data, CoreWorld world) {
         NPC npc = new NPC(world, data);
 
         this.npcs.add(npc);
         this.updateNPCs();
 
-        BukkitCoreWorld w = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(data.getLocation().getWorldName());
-        w.getNpcData().add(data);
-        w.save();
+        world.getNpcData().add(data);
+        world.save();
     }
 
     public void removeNPC(CoreWorld w, String name) {

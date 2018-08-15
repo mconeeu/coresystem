@@ -8,7 +8,7 @@ package eu.mcone.coresystem.api.bukkit.event;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
 import lombok.Getter;
@@ -18,14 +18,14 @@ import org.bukkit.event.HandlerList;
 import java.util.HashSet;
 import java.util.Set;
 
+@Getter
 public final class PermissionChangeEvent extends Event {
 
-    private static final HandlerList handlers = new HandlerList();
     @Getter
+    private static final HandlerList handlerList = new HandlerList();
+
     private Kind kind;
-    @Getter
     private final CorePlayer player;
-    @Getter
     private Set<Group> groups;
 
     public enum Kind {
@@ -42,7 +42,7 @@ public final class PermissionChangeEvent extends Event {
 
             if (!kind.equals(Kind.USER_PERMISSION)) {
                 groups = new HashSet<>();
-                JsonArray array = new JsonParser().parse(data[1]).getAsJsonArray();
+                JsonArray array = CoreSystem.getInstance().getJsonParser().parse(data[1]).getAsJsonArray();
 
                 for (JsonElement e : array) {
                     groups.add(Group.getGroupById(e.getAsInt()));
@@ -52,10 +52,7 @@ public final class PermissionChangeEvent extends Event {
     }
 
     public HandlerList getHandlers() {
-        return handlers;
+        return handlerList;
     }
 
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
 }

@@ -16,7 +16,7 @@ import lombok.Setter;
 public final class HologramData {
 
     private String name;
-    private CoreLocation location;
     private String[] text;
+    private CoreLocation location;
 
 }

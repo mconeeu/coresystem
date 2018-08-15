@@ -19,6 +19,7 @@ import lombok.Setter;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -71,7 +72,7 @@ public class NPC implements eu.mcone.coresystem.api.bukkit.npc.NPC {
 
         entity.playerConnection = new PlayerConnection(MinecraftServer.getServer(), new NetworkManager(EnumProtocolDirection.SERVERBOUND), entity);
         entity.setPositionRotation(data.getLocation().getX(), data.getLocation().getY(), data.getLocation().getZ(), (byte) data.getLocation().getYaw(), (byte) data.getLocation().getPitch());
-        ((CraftWorld) data.getLocation().bukkit().getWorld()).getHandle().addEntity(entity);
+        ((CraftWorld) this.world.bukkit()).getHandle().addEntity(entity);
     }
 
     public void set(Player p) {
@@ -125,8 +126,13 @@ public class NPC implements eu.mcone.coresystem.api.bukkit.npc.NPC {
         }
     }
 
+    @Override
+    public Location getLocation() {
+        return data.getLocation().bukkit(world);
+    }
+
     public void destroy() {
-        ((CraftWorld) data.getLocation().bukkit().getWorld()).getHandle().removeEntity(entity);
+        ((CraftWorld) world.bukkit()).getHandle().removeEntity(entity);
     }
 
 }

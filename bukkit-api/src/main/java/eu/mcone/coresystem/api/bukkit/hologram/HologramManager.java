@@ -7,6 +7,7 @@
 package eu.mcone.coresystem.api.bukkit.hologram;
 
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
+import org.bukkit.Location;
 
 import java.util.List;
 
@@ -19,10 +20,11 @@ public interface HologramManager {
 
     /**
      * adds a new hologram
-     * @param data HologramData
-     * @param world world in which the hologram should be shown
+     * @param name config name
+     * @param location location
+     * @param text content of hologram
      */
-    Hologram addHologram(HologramData data, CoreWorld world);
+    Hologram addHologram(String name, Location location, String... text);
 
     /**
      * deletes an hologram

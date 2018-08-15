@@ -96,7 +96,7 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
 
     private void updateDatabaseGroupsAsync(Set<Group> groupSet) {
         instance.runAsync(() ->
-                ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), set("groups", ((CoreModuleCoreSystem) instance).getSimpleGson().toJson(groupSet)))
+                ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), set("groups", ((CoreModuleCoreSystem) instance).getGson().toJson(groupSet)))
         );
     }
 

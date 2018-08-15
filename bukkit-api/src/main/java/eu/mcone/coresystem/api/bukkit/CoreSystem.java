@@ -7,12 +7,11 @@
 package eu.mcone.coresystem.api.bukkit;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
-import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
-import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.api.bukkit.player.AfkManager;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
@@ -27,9 +26,10 @@ import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.WorldManager;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
+import eu.mcone.coresystem.api.core.labymod.LabyModAPI;
 import lombok.Getter;
-import net.labymod.serverapi.bukkit.LabyModAPI;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -107,10 +107,10 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     public abstract Gson getGson();
 
     /**
-     * returns the CoreSystems instance of Gson without pretty-printing.
-     * @return gson instance (pretty printing disabled)
+     * returns the CoreSystems instance of JsonParser. Use this for better performance
+     * @return JsonParser instance
      */
-    public abstract Gson getSimpleGson();
+    public abstract JsonParser getJsonParser();
 
     /**
      * returns if the mc one Cloudsystem is available
@@ -155,18 +155,23 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     /**
      * constructs a new NPC without automatically setting it for all players
      * you have to manually set them through the NPCs methods
-     * @param npcData data
+     * @param name config name
+     * @param displayname npcs displayname
+     * @param skinName skinName from bungeesystem_textures database
+     * @param location location
      * @return NPC instance
      */
-    public abstract NPC constructNpc(NpcData npcData);
+    public abstract NPC constructNpc(String name, String displayname, String skinName, Location location);
 
     /**
      * constructs a new Hologram without automatically setting it for all players
      * you have to manually set them through the Holograms methods
-     * @param hologramData data
+     * @param name config name
+     * @param text holograms text
+     * @param location location
      * @return Hologram instance
      */
-    public abstract Hologram constructHologram(HologramData hologramData);
+    public abstract Hologram constructHologram(String name, String[] text, Location location);
 
     /**
      * enables an global /server spawn command

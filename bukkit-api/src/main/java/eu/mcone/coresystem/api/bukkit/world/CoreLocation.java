@@ -10,20 +10,18 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 
 @AllArgsConstructor
 @Getter @Setter
 public final class CoreLocation {
 
-    private String worldName;
     private double x, y, z;
     private float yaw, pitch;
 
     public CoreLocation(Location loc) {
         this(
-                loc.getWorld().getName(),
                 loc.getX(),
                 loc.getY(),
                 loc.getZ(),
@@ -50,16 +48,26 @@ public final class CoreLocation {
     }
 
     /**
-     * get Bukkit Location object
+     * get Bukkit Location object for the given world-location combination
+     * @param world CoreWorld object
      * @return Bukkit Location
      */
-    public Location bukkit() {
-        return new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
+    public Location bukkit(CoreWorld world) {
+        return new Location(world.bukkit(), x, y, z, yaw, pitch);
+    }
+
+    /**
+     * get Bukkit Location object for the given world-location combination
+     * @param world Bukkit world object
+     * @return Bukkit Location
+     */
+    public Location bukkit(World world) {
+        return new Location(world, x, y, z, yaw, pitch);
     }
 
     @Override
     public String toString() {
-        return "world="+worldName+", x="+x+", y="+y+", z="+z+", yaw="+yaw+", pitch="+pitch;
+        return "x="+x+", y="+y+", z="+z+", yaw="+yaw+", pitch="+pitch;
     }
 
 }

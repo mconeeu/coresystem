@@ -1,5 +1,5 @@
 name: MCONE-BukkitCoreSystem
-version: 10.1.0-SNAPHOT
+version: 10.1.1-SNAPHOT
 authors: [Domink Lippl, Rufus Maiwald]
 softdepend: [MCONE-CloudPlugin]
 main: eu.mcone.coresystem.bukkit.BukkitCoreSystem
@@ -38,8 +38,6 @@ permissions:
             description: Allows to bypass build restrictions
           system.bukkit.cooldown:
             description: Allows to bypass the CooldownSystem
-          system.bukkit.world:
-            description: Allows to manage the servers worlds
           system.bukkit.setspawn:
             description: Allows to manage the spawn points
           system.bukkit.speed:

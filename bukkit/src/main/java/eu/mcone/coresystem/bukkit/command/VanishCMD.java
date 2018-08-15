@@ -20,7 +20,7 @@ public class VanishCMD extends CorePlayerCommand {
     private static ArrayList<UUID> vanish = new ArrayList<>();
 
     public VanishCMD() {
-        super("vanish", "system.bukkit.vanish");
+        super("vanish", "system.bukkit.vanish", "v");
     }
 
     @Override

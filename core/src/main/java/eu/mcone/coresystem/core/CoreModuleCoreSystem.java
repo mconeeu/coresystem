@@ -7,6 +7,7 @@
 package eu.mcone.coresystem.core;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import eu.mcone.coresystem.core.mysql.MySQL;
 import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import eu.mcone.networkmanager.core.api.database.Database;
@@ -31,6 +32,6 @@ public interface CoreModuleCoreSystem {
 
     Gson getGson();
 
-    Gson getSimpleGson();
+    JsonParser getJsonParser();
 
 }

@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 public class GamemodeCMD extends CorePlayerCommand {
 
     public GamemodeCMD() {
-        super("gamemode", "system.bukkit.gamemode");
+        super("gamemode", "system.bukkit.gamemode", "gm");
     }
 
     @Override

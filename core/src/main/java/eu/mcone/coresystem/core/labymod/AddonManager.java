@@ -1,0 +1,55 @@
+/*
+ * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * You are not allowed to decompile the code
+ *
+ */
+
+package eu.mcone.coresystem.core.labymod;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import eu.mcone.coresystem.api.core.labymod.Addon;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+public class AddonManager {
+
+    /**
+     * Parses the addons from the INFO plugin message
+     *
+     * @param jsonObject the json object of the message
+     * @return a list containing the message's addons
+     */
+    public static List<Addon> getAddons(JsonObject jsonObject) {
+        if (!jsonObject.has("addons") || !jsonObject.get("addons").isJsonArray())
+            return new ArrayList<>();
+
+        List<Addon> addons = new ArrayList<>();
+
+        for (JsonElement arrayElement : jsonObject.get("addons").getAsJsonArray()) {
+            if (!arrayElement.isJsonObject())
+                continue;
+
+            JsonObject arrayObject = arrayElement.getAsJsonObject();
+
+            if (!arrayObject.has("uuid") || !arrayObject.get("uuid").isJsonPrimitive() || !arrayObject.get("uuid").getAsJsonPrimitive().isString()
+                    || !arrayObject.has("name") || !arrayObject.get("name").isJsonPrimitive() || !arrayObject.get("name").getAsJsonPrimitive().isString())
+                continue;
+
+            UUID uuid;
+
+            try {
+                uuid = UUID.fromString(arrayObject.get("uuid").getAsString());
+            } catch (IllegalArgumentException ex) {
+                continue;
+            }
+
+            addons.add(new Addon(uuid, arrayObject.get("name").getAsString()));
+        }
+
+        return addons;
+    }
+
+}

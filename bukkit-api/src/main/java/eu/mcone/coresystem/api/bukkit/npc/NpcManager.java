@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.api.bukkit.npc;
 
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import org.bukkit.World;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -21,31 +21,21 @@ public interface NpcManager {
 
     /**
      * creates new local NPC that dont gets saved in the database
-     * @param data NpcData
-     * @param world world
+     * @param name config name
+     * @param displayname npc display name
+     * @param skinName skin name from bungeesystem_textures database
+     * @param location location of the npc
      */
-    void addLocalNPC(NpcData data, World world);
-
-    /**
-     * creates new local NPC that dont gets saved in the database
-     * @param data NpcData
-     * @param world world
-     */
-    void addLocalNPC(NpcData data, CoreWorld world);
+    void addLocalNPC(String name, String displayname, String skinName, Location location);
 
     /**
      * create new NPC
-     * @param data NpcData
-     * @param world world
+     * @param name config name
+     * @param displayname npc display name
+     * @param skinName skin name from bungeesystem_textures database
+     * @param location location of the npc
      */
-    void addNPC(NpcData data, World world);
-
-    /**
-     * create new NPC
-     * @param data NpcData
-     * @param world world
-     */
-    void addNPC(NpcData data, CoreWorld world);
+    void addNPC(String name, String displayname, String skinName, Location location);
 
     /**
      * updates the NpcData of an existing NPC

@@ -9,6 +9,7 @@ package eu.mcone.coresystem.api.bukkit.npc;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -33,6 +34,12 @@ public interface NPC {
      * @return world
      */
     CoreWorld getWorld();
+
+    /**
+     * returns the Location of the NPC
+     * @return Bukkit Location object
+     */
+    Location getLocation();
 
     /**
      * returns the EntityPlayer object of this NPC

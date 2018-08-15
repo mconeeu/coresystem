@@ -12,12 +12,13 @@ import lombok.Getter;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+@Getter
 public final class StatsChangeEvent extends Event {
 
-    private static final HandlerList handlers = new HandlerList();
     @Getter
+    private static final HandlerList handlerList = new HandlerList();
+
     private final Stats stats;
-    @Getter
     private final CorePlayer player;
 
     public StatsChangeEvent(CorePlayer player, Stats stats) {
@@ -25,12 +26,9 @@ public final class StatsChangeEvent extends Event {
         this.stats = stats;
     }
 
+    @Override
     public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
+        return handlerList;
     }
 
 }

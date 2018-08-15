@@ -24,19 +24,13 @@ public abstract class CoreCommand extends Command {
     private final String permission;
 
     public CoreCommand(String name) {
-        this(name, null, "", "");
+        this(name, null);
     }
 
-    public CoreCommand(String name, String permission) {
-        this(name, permission, "", "");
-    }
-
-    public CoreCommand(String name, String permission, String description, String usage, String... aliases) {
+    public CoreCommand(String name, String permission, String... aliases) {
         super(name);
 
         this.permission = permission;
-        setDescription(description);
-        setUsage(usage);
         setAliases(Arrays.asList(aliases));
         setPermissionMessage(NO_PERM_MESSAGE);
     }

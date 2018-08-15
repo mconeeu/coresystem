@@ -36,12 +36,11 @@ public class HoloCMD extends CorePlayerCommand {
 
         if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("list"))) {
             if (api.getHolograms().size() > 0) {
-                ComponentBuilder componentBuilder = new ComponentBuilder(BukkitCoreSystem.getInstance().getTranslationManager().get("system.prefix.server"))
-                        .append("Folgende Hologramme existieren auf diesem Server: ").color(ChatColor.GRAY);
+                CoreSystem.getInstance().getMessager().send(p, "§7Folgende Hologramme existieren auf diesem Server: ");
 
                 for (CoreWorld w : BukkitCoreSystem.getInstance().getWorldManager().getWorlds()) {
                     if (w.getHolograms().size() > 0) {
-                        componentBuilder.append("\n§f[" + w.getName() + "]\n");
+                        ComponentBuilder componentBuilder = new ComponentBuilder("\n§f[" + w.getName() + "]\n");
 
                         for (eu.mcone.coresystem.api.bukkit.hologram.Hologram holo : w.getHolograms()) {
                             componentBuilder
@@ -52,13 +51,14 @@ public class HoloCMD extends CorePlayerCommand {
                                     .append(", ")
                                     .color(ChatColor.GRAY);
                         }
+
+                        p.spigot().sendMessage(componentBuilder.create());
                     }
                 }
-
-                p.spigot().sendMessage(componentBuilder.create());
             } else {
                 BukkitCoreSystem.getInstance().getMessager().send(p, "§7Auf dem Server existieren keine Hologramme!");
             }
+
             return true;
         } else if (args.length >= 3) {
             if (args[0].equalsIgnoreCase("add")) {
@@ -90,7 +90,7 @@ public class HoloCMD extends CorePlayerCommand {
                         eu.mcone.coresystem.api.bukkit.hologram.Hologram holo = CoreSystem.getInstance().getHologramManager().getHologram(w, args[2]);
 
                         if (holo != null) {
-                            p.teleport(holo.getData().getLocation().bukkit());
+                            p.teleport(holo.getLocation());
                             BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest zum Hologramm §a" + holo.getData().getName() + "§2 teleportiert!");
                         } else {
                             BukkitCoreSystem.getInstance().getMessager().send(p, "§4Das angegebene Hologramm existiert nicht in der Welt §c" + w.getName() + "§4!");
@@ -138,7 +138,7 @@ public class HoloCMD extends CorePlayerCommand {
                 Hologram holo = CoreSystem.getInstance().getHologramManager().getHologram(cp.getWorld(), args[1]);
 
                 if (holo != null) {
-                    p.teleport(holo.getData().getLocation().bukkit());
+                    p.teleport(holo.getLocation());
                     BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest zum Hologramm §a" + holo.getData().getName() + "§2 teleportiert!");
                 } else {
                     BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene Hologramm existiert nicht!");

@@ -9,6 +9,7 @@ package eu.mcone.coresystem.bungee.ban;
 import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.bungee.player.BungeeCorePlayer;
 import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -109,6 +110,10 @@ public class BanManager {
             );
 
             if (p != null) {
+                BungeeCorePlayer cp = ((BungeeCorePlayer) CoreSystem.getInstance().getCorePlayer(p));
+                cp.setMuteTime(muteTime);
+                cp.setMuted(true);
+
                 BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "\n§8§m----------------§r§8 [§7§l!§8] §fSystem §8§m----------------"
                         + "\n§f§lMC ONE §3Minecraftnetzwerk"
                         + "\n§7§oDu wurdest gemuted"
@@ -131,12 +136,18 @@ public class BanManager {
 
     public static void unmute(UUID uuid) {
         BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").deleteOne(eq("uuid", uuid.toString()));
+
+        BungeeCorePlayer p = (BungeeCorePlayer) CoreSystem.getInstance().getCorePlayer(uuid);
+        if (p != null) {
+            p.setMuted(false);
+            p.setMuteTime(0);
+        }
     }
 
     public static Document getBanEntry(UUID uuid) {
         Document result;
         if ((result = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_ban").find(eq("uuid", uuid.toString())).first()) != null) {
-            if (result.getLong("end") <= System.currentTimeMillis()) {
+            if (result.getLong("end") <= (System.currentTimeMillis() / 1000)) {
                 BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_ban").deleteOne(eq(result.get("_id")));
                 return null;
             } else {
@@ -150,7 +161,7 @@ public class BanManager {
     public static Document getMuteEntry(UUID uuid) {
         Document result;
         if ((result = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").find(eq("uuid", uuid.toString())).first()) != null) {
-            if (result.getLong("end") <= System.currentTimeMillis()) {
+            if (result.getLong("end") <= (System.currentTimeMillis() / 1000)) {
                 BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").deleteOne(eq(result.get("_id")));
                 return null;
             } else {
@@ -270,7 +281,7 @@ public class BanManager {
                 days++;
             }
 
-            return "§e" + days + " §7Tag(e), §e" + hours + " §7Stunde(n) und §e" + minutes + " §7Minute(n)";
+            return "§e" + days + " §7Tag(e), §e" + hours + " §7Stunde(n) und §e" + ++minutes + " §7Minute(n)";
         }
     }
 }

@@ -32,10 +32,11 @@ import static com.mongodb.client.model.Updates.set;
 
 public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer {
 
-    @Getter
+    @Getter @Setter
     private long muteTime;
     @Getter
     private FriendData friendData;
+    @Setter
     private boolean muted = false;
     @Getter @Setter
     private SkinInfo nickedSkin;

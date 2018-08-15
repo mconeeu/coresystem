@@ -12,26 +12,21 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: eu.mcone.cloud:core:1.1.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:slf4j-simple:1.7.9" level="project" />
     <orderEntry type="module" module-name="core" />
     <orderEntry type="module" module-name="core-api" />
-    <orderEntry type="library" name="Maven: net.labymod.serverapi:common:1.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-all:4.1.3.Final" level="project" />
     <orderEntry type="library" name="Maven: eu.mcone.networkmanager:core-api:0.0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver:3.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.mongodb:bson:3.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver-core:3.8.0" level="project" />
     <orderEntry type="library" name="Maven: eu.mcone.networkmanager:core:0.0.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.jline:jline:3.9.0" level="project" />
     <orderEntry type="library" name="Maven: org.fusesource.jansi:jansi:1.17.1" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-jdk14:1.8.0-beta2" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.8.0-beta2" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-jdk14:1.7.25" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
     <orderEntry type="library" name="Maven: com.zaxxer:HikariCP:2.3.2" level="project" />
     <orderEntry type="library" name="Maven: org.javassist:javassist:3.19.0-GA" level="project" />
     <orderEntry type="library" name="Maven: org.mariadb.jdbc:mariadb-java-client:2.2.6" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.2" level="project" />
     <orderEntry type="module" module-name="bukkit-api" />
-    <orderEntry type="library" name="Maven: net.labymod.serverapi:bukkit:1.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: eu.mcone.cloud:plugin-api-bukkit:1.1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: eu.mcone.cloud:plugin-api:1.1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: eu.mcone.cloud:cloud-api:1.1.0-SNAPSHOT" level="project" />

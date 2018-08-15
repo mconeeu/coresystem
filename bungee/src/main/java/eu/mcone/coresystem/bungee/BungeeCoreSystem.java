@@ -7,7 +7,7 @@
 package eu.mcone.coresystem.bungee;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParser;
 import eu.mcone.coresystem.api.bungee.CorePlugin;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
@@ -25,7 +25,7 @@ import eu.mcone.coresystem.bungee.runnable.Broadcast;
 import eu.mcone.coresystem.bungee.runnable.OnlineTime;
 import eu.mcone.coresystem.bungee.runnable.PremiumCheck;
 import eu.mcone.coresystem.bungee.utils.ChannelHandler;
-import eu.mcone.coresystem.core.util.PreferencesManager;
+import eu.mcone.coresystem.bungee.utils.LabyModAPI;
 import eu.mcone.coresystem.bungee.utils.TeamspeakVerifier;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.mysql.MySQL;
@@ -34,11 +34,11 @@ import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
 import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CooldownSystem;
+import eu.mcone.coresystem.core.util.PreferencesManager;
 import eu.mcone.networkmanager.core.api.database.Database;
 import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 import eu.mcone.networkmanager.core.database.MongoConnection;
 import lombok.Getter;
-import net.labymod.serverapi.bungee.LabyModAPI;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -47,6 +47,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem {
 
@@ -86,7 +89,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private Gson gson;
     @Getter
-    private Gson simpleGson;
+    private JsonParser jsonParser;
 
     @Getter
     private MySQL database;
@@ -100,6 +103,11 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         corePlayers = new HashMap<>();
         plugins = new HashMap<>();
 
+        Logger root = Logger.getLogger("");
+        root.setLevel(Level.CONFIG);
+
+        for (Handler handler : root.getHandlers()) handler.setLevel(Level.ALL);
+
         getProxy().getConsole().sendMessage(new TextComponent(TextComponent.fromLegacyText("\n" +
                 "      __  _____________  _   ________                                                          \n" +
                 "     /  |/  / ____/ __ \\/ | / / ____/                                                          \n" +
@@ -112,8 +120,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "  /_____/\\__,_/_/ /_/\\__, /\\___/\\___/\\____/\\____/_/   \\___/____/\\__, /____/\\__/\\___/_/ /_/ /_/ \n" +
                 "                    /____/                                     /____/\n")));
 
-        gson = new GsonBuilder().setPrettyPrinting().create();
-        simpleGson = new Gson();
+        gson = new Gson();
+        jsonParser = new JsonParser();
 
         mongoConnection = new MongoConnection("db.mcone.eu", "admin", "T6KIq8gjmmF1k7futx0cJiJinQXgfguYXruds1dFx1LF5IsVPQjuDTnlI1zltpD9", "admin", 27017);
         mongoConnection.connect();
@@ -138,17 +146,17 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         translationManager = new TranslationManager(mongoDB, this);
 
         sendConsoleMessage("§aLoading Permissions & Groups...");
-        permissionManager = new PermissionManager("Proxy", database, simpleGson);
+        permissionManager = new PermissionManager("Proxy", database, gson);
 
         sendConsoleMessage("§aLoading FriendSystem...");
         friendSystem = new FriendSystem(database);
 
         sendConsoleMessage("§aInitializing LabyModAPI...");
-        labyModAPI = new LabyModAPI(this);
+        labyModAPI = new LabyModAPI();
 
         if (!Boolean.valueOf(System.getProperty("DisableTsQuery"))) {
             sendConsoleMessage("§aLoading TeamSpeakQuery...");
-            //teamspeakVerifier = new TeamspeakVerifier();
+            teamspeakVerifier = new TeamspeakVerifier();
         } else {
             sendConsoleMessage("§cTeamSpeakQuery disabled by JVM Argument");
         }

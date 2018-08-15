@@ -17,7 +17,7 @@ public class BuildCMD extends CorePlayerCommand {
     private BuildSystem buildSystem;
 
     public BuildCMD(BuildSystem buildSystem) {
-        super("build", "system.bukkit.build");
+        super("build", "system.bukkit.build", "b");
         this.buildSystem = buildSystem;
     }
 

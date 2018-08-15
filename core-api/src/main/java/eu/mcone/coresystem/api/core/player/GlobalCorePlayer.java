@@ -6,7 +6,7 @@
 
 package eu.mcone.coresystem.api.core.player;
 
-import net.labymod.serverapi.LabyModConnection;
+import eu.mcone.coresystem.api.core.labymod.LabyModConnection;
 
 import java.util.Set;
 import java.util.UUID;

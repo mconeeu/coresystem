@@ -16,11 +16,7 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: eu.mcone.cloud:core:1.1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.mariadb.jdbc:mariadb-java-client:2.2.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.zaxxer:HikariCP:2.7.4" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:slf4j-simple:1.7.9" level="project" />
     <orderEntry type="module" module-name="core-api" />
-    <orderEntry type="library" name="Maven: net.labymod.serverapi:common:1.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: io.netty:netty-all:4.1.3.Final" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.2.4" level="project" />
     <orderEntry type="library" name="Maven: eu.mcone.networkmanager:core-api:0.0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver:3.8.0" level="project" />
     <orderEntry type="library" name="Maven: org.mongodb:bson:3.8.0" level="project" />
@@ -30,6 +26,7 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: eu.mcone.cloud:cloud-api:1.1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.md-5:bungeecord-api:1.12-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.md-5:bungeecord-chat:1.12-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.code.gson:gson:2.8.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.md-5:bungeecord-config:1.12-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.yaml:snakeyaml:1.19" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.md-5:bungeecord-event:1.12-SNAPSHOT" level="project" />
@@ -41,7 +38,6 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-resolver:4.1.25.Final" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.sf.trove4j:trove4j:3.0.3" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.guava:guava:20.0" level="project" />
-    <orderEntry type="library" name="Maven: net.labymod.serverapi:bungeecord:1.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.16.6" level="project" />
   </component>
 </module>

@@ -13,14 +13,15 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+@Getter
 public final class UnnickEvent extends Event implements Cancellable {
 
-    private static final HandlerList handlers = new HandlerList();
     @Getter
+    private static final HandlerList handlerList = new HandlerList();
+
     private final CorePlayer player;
-    @Getter
     private final boolean skinBypassed;
-    @Getter @Setter
+    @Setter
     private boolean cancelled;
 
     public UnnickEvent(CorePlayer p, boolean skinBypassed) {
@@ -28,12 +29,9 @@ public final class UnnickEvent extends Event implements Cancellable {
         this.skinBypassed = skinBypassed;
     }
 
+    @Override
     public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
+        return handlerList;
     }
 
 }

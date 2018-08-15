@@ -8,6 +8,7 @@ package eu.mcone.coresystem.core.mysql;
 
 import lombok.Getter;
 
+@Deprecated
 public enum MySQLDatabase {
 
     MONGO_SYSTEM("db.mcone.eu", 27017, "admin", "admin", "T6KIq8gjmmF1k7futx0cJiJinQXgfguYXruds1dFx1LF5IsVPQjuDTnlI1zltpD9", 0),

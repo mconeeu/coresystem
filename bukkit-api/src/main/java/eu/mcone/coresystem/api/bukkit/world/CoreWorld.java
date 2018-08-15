@@ -260,16 +260,28 @@ public interface CoreWorld {
     boolean delete();
 
     /**
-     * upload the world to the cloudsystem database
+     * upload the world to the mc1cloud database
+     * @return if upload was successful
      */
     boolean upload();
 
+    /**
+     * uploads the world to the mc1data beta database
+     * @return if upload was successful
+     */
     boolean betaUpload();
 
     /**
      * save latest changes to bukkit
      */
     void save();
+
+    /**
+     * returns the Bukkit Location object for the given world-location combination
+     * @param location CoreLocation object
+     * @return new Bukkit Location
+     */
+    Location getLocation(CoreLocation location);
 
     /**
      * get json String of actual CoreWorld object

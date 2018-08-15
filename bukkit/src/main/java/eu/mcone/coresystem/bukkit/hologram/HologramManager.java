@@ -78,21 +78,19 @@ public class HologramManager implements Listener, eu.mcone.coresystem.api.bukkit
         unsetHolograms(p);
         setHolograms(p);
     }
-    
-    public void addHologram(String name, Location loc, String line1) {
-        addHologram(new HologramData(name, new CoreLocation(loc), new String[]{line1}), CoreSystem.getInstance().getWorldManager().getWorld(loc.getWorld()));
-    }
 
     @Override
-    public Hologram addHologram(HologramData data, CoreWorld world) {
-        BukkitCoreWorld w = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(data.getLocation().getWorldName());
-        w.getHologramData().add(data);
-        w.save();
+    public Hologram addHologram(String name, Location location, String... text) {
+        HologramData data = new HologramData(name, text, new CoreLocation(location));
+        BukkitCoreWorld world = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(location.getWorld());
 
         Hologram hologram = new Hologram(world, data);
 
         this.holograms.add(hologram);
         this.updateHolograms();
+
+        world.getHologramData().add(data);
+        world.save();
 
         return hologram;
     }
@@ -109,7 +107,7 @@ public class HologramManager implements Listener, eu.mcone.coresystem.api.bukkit
 
     @Override
     public void removeHologram(eu.mcone.coresystem.api.bukkit.hologram.Hologram hologram) {
-        BukkitCoreWorld w = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(hologram.getData().getLocation().getWorldName());
+        BukkitCoreWorld w = (BukkitCoreWorld) hologram.getWorld();
         w.getHologramData().remove(hologram.getData());
         w.save();
 
@@ -136,7 +134,7 @@ public class HologramManager implements Listener, eu.mcone.coresystem.api.bukkit
 
     public void setHolograms(Player p) {
         for (Hologram hologram : holograms) {
-            if (hologram.getData().getLocation().bukkit().getWorld().equals(p.getWorld())) {
+            if (hologram.getWorld().bukkit().equals(p.getWorld())) {
                 hologram.showPlayer(p);
             }
         }

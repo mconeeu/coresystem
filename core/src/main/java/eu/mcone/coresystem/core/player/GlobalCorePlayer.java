@@ -10,6 +10,7 @@ import com.mongodb.client.MongoCollection;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.exception.RuntimeCoreException;
+import eu.mcone.coresystem.api.core.labymod.LabyModConnection;
 import eu.mcone.coresystem.api.core.player.GlobalOfflineCorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
@@ -19,7 +20,6 @@ import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import net.labymod.serverapi.LabyModConnection;
 import org.bson.Document;
 
 import java.net.InetAddress;
@@ -95,7 +95,7 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
                         .append("coins", coins)
                         .append("ip", ipAdress)
                         .append("timestamp", System.currentTimeMillis() / 1000)
-                        .append("player_settings", Document.parse(((CoreModuleCoreSystem) instance).getSimpleGson().toJson(new PlayerSettings(), PlayerSettings.class)))
+                        .append("player_settings", Document.parse(((CoreModuleCoreSystem) instance).getGson().toJson(new PlayerSettings(), PlayerSettings.class)))
                         .append("state", PlayerState.ONLINE.getId())
                         .append("online_time", onlinetime)
                 );
@@ -186,7 +186,7 @@ public abstract class GlobalCorePlayer implements eu.mcone.coresystem.api.core.p
 
     private void updateDatabaseGroupsAsync(Set<Group> groupSet) {
         instance.runAsync(() ->
-                ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), set("groups", ((CoreModuleCoreSystem) instance).getSimpleGson().toJson(groupSet)))
+                ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), set("groups", ((CoreModuleCoreSystem) instance).getGson().toJson(groupSet)))
         );
     }
 
