@@ -12,7 +12,7 @@ import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.core.player.GlobalCorePlayer;
+import eu.mcone.coresystem.core.player.GlobalOfflineCorePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -48,7 +48,7 @@ public class InfoPluginChannelListener implements PluginMessageListener {
                     break;
                 }
                 case "COINS": {
-                    ((GlobalCorePlayer) cp).updateCoinsAmount(Integer.valueOf(in.readUTF()));
+                    ((GlobalOfflineCorePlayer) cp).setCoinsAmount(Integer.valueOf(in.readUTF()));
                     Bukkit.getPluginManager().callEvent(new CoinsChangeEvent(cp));
                     break;
                 }

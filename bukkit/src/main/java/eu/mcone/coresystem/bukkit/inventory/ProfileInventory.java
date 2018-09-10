@@ -8,20 +8,27 @@ package eu.mcone.coresystem.bukkit.inventory;
 
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
+import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import lombok.Setter;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 public class ProfileInventory extends CoreInventory {
 
+    @Setter
+    private static int size;
+    @Setter
+    private static ProfileInventoryModifier modifier;
+
     public ProfileInventory(Player p) {
-        super("§8» §3§l" + p.getName() + "'s Profil", p, InventorySlot.ROW_4, Option.FILL_EMPTY_SLOTS);
+        super("§8» §3§l" + p.getName() + "'s Profil", p, (size > 0) ? size : InventorySlot.ROW_4, Option.FILL_EMPTY_SLOTS);
 
         CorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(p);
-        double onlinetime = Math.floor(((double) cp.getOnlinetime() / 60) * 100) / 100;
+        double onlinetime = Math.floor(((double) cp.getOnlinetime() / 60 / 60) * 100) / 100;
         String status = cp.getState().getName();
 
         setItem(InventorySlot.ROW_1_SLOT_5, ItemBuilder.createSkullItem(p.getName(), 1).displayName("§f§l" + p.getName()).lore(
@@ -52,6 +59,8 @@ public class ProfileInventory extends CoreInventory {
             new PlayerSettingsInventory(p);
             p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
         });
+
+        if (modifier != null) modifier.onCreate(this, p);
 
         openInventory();
     }

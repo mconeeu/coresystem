@@ -7,9 +7,9 @@
 package eu.mcone.coresystem.bukkit.player;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.event.CoinsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.event.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.Stats;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
@@ -17,7 +17,6 @@ import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
-import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
@@ -31,53 +30,30 @@ import org.bukkit.entity.Player;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 
-public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer {
+public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, OfflineCorePlayer {
 
-    @Getter
-    private PlayerState status;
-    @Getter
-    @Setter
+    @Getter @Setter
     private String nickname;
     @Getter
     private CoreScoreboard scoreboard;
     private Map<Gamemode, StatsAPI> stats;
 
-    public BukkitCorePlayer(CoreSystem instance, InetAddress address, String name) throws PlayerNotResolvedException {
-        super(instance, address, name);
-        this.status = PlayerState.ONLINE;
+    public BukkitCorePlayer(CoreSystem instance, InetAddress address, UUID uuid) throws PlayerNotResolvedException {
+        super(instance, address, uuid);
         this.stats = new HashMap<>();
 
         ((BukkitCoreSystem) instance).getCorePlayers().put(uuid, this);
-        reloadPermissions();
-
         BukkitCoreSystem.getInstance().sendConsoleMessage("Loaded Player " + name + "!");
     }
 
     @Override
     public Player bukkit() {
         return Bukkit.getPlayer(uuid);
-    }
-
-    @Override
-    public void addCoins(int amount) {
-        this.coins += amount;
-        Bukkit.getScheduler().runTaskAsynchronously((BukkitCoreSystem) instance, () -> {
-            ((BukkitCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), set("coins", coins));
-            Bukkit.getServer().getPluginManager().callEvent(new CoinsChangeEvent(this));
-        });
-    }
-
-    @Override
-    public void removeCoins(int amount) {
-        this.coins -= amount;
-        Bukkit.getScheduler().runTaskAsynchronously((BukkitCoreSystem) instance, () -> {
-            ((BukkitCoreSystem) instance).getMongoDB(eu.mcone.networkmanager.core.api.database.Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), set("coins", coins));
-            Bukkit.getPluginManager().callEvent(new CoinsChangeEvent(this));
-        });
     }
 
     @Override

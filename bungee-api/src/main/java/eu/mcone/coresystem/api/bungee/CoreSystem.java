@@ -70,6 +70,15 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     public abstract OfflineCorePlayer getOfflineCorePlayer(String name) throws PlayerNotResolvedException;
 
     /**
+     * creates an CorePlayer object for an offline or online player
+     * this object has limited abilities as it should be uses for a potentially offline player
+     * @param uuid Player uuid
+     * @return OfflineCorePlayer object
+     * @throws PlayerNotResolvedException thrown if the wished player is not in the database
+     */
+    public abstract OfflineCorePlayer getOfflineCorePlayer(UUID uuid) throws PlayerNotResolvedException;
+
+    /**
      * returns an registered CorePlugin
      * @param name plugin name
      * @return CorePlugin

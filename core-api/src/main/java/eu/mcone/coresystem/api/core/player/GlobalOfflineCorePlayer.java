@@ -11,26 +11,52 @@ import java.util.UUID;
 
 public interface GlobalOfflineCorePlayer {
 
-    UUID getUuid();
-
+    /**
+     * get players name
+     * @return name
+     */
     String getName();
 
-    PlayerState getState();
+    /**
+     * get players uuid
+     * @return uuid
+     */
+    UUID getUuid();
 
+    /**
+     * get players permissions
+     * @return permission set
+     */
+    Set<String> getPermissions();
+
+    /**
+     * check if player has a specific permissions
+     * @param permission permission
+     * @return boolean has permission
+     */
+    boolean hasPermission(String permission);
+
+    /**
+     * reload permissions from PermissionManager
+     */
+    void reloadPermissions();
+
+    /**
+     * get players group
+     * @return group
+     */
     Set<Group> getGroups();
 
-    Set<Group> updateGroupsFromDatabase();
-
-    void setGroups(Set<Group> groups);
-
-    void addGroup(Group group);
-
-    void removeGroup(Group group);
-
+    /**
+     * get payers onlinetime in seconds
+     * @return onlinetime long in seconds
+     */
     long getOnlinetime();
 
-    PlayerSettings getSettings();
-
+    /**
+     * returns the amount of coins that the player has
+     * @return players coins amount
+     */
     int getCoins();
 
     /**
@@ -51,5 +77,57 @@ public interface GlobalOfflineCorePlayer {
      * @param amount amount
      */
     void removeCoins(int amount);
+
+
+    Set<Group> updateGroupsFromDatabase();
+
+    /**
+     * returns the players main group
+     * @return main group
+     */
+    Group getMainGroup();
+
+    /**
+     * set the players groups
+     * @param groupList group set
+     */
+    void setGroups(Set<Group> groupList);
+
+    /**
+     * add a player group
+     * @param group groups
+     */
+    void addGroup(Group group);
+
+    /**
+     * remove a player group
+     * @param group group
+     */
+    void removeGroup(Group group);
+
+    /**
+     * returns the mcone player settings
+     * @return player settings
+     */
+    PlayerSettings getSettings();
+
+    /**
+     * returns the current PlayerState
+     * @return state
+     */
+    PlayerState getState();
+
+    /**
+     * returns the TeamSpeak UID from the players linked TeamSpeak identity
+     * if no TS identity is linked null will be returned
+     * @return TeamSpeak UID
+     */
+    String getTeamspeakUid();
+
+    /**
+     * returns whether the player has a linked TS ID
+     * @return player has linked TS ID in database
+     */
+    boolean isTeamspeakIdLinked();
 
 }

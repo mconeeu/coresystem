@@ -32,6 +32,13 @@ public interface PlayerUtils {
     String fetchName(UUID uuid);
 
     /**
+     * fetch uuid from name with mojang api
+     * @param uuid uuid
+     * @return name
+     */
+    String fetchNameFromMojangAPI(UUID uuid);
+
+    /**
      * cunstruct new SkinInfo
      * @param name data name
      * @param value mojang-value

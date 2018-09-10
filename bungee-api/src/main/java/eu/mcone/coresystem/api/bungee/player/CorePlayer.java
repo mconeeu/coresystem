@@ -10,17 +10,11 @@ import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public interface CorePlayer extends GlobalCorePlayer {
-
-    long getMuteTime();
-
-    FriendData getFriendData();
+public interface CorePlayer extends GlobalCorePlayer, OfflineCorePlayer {
 
     SkinInfo getNickedSkin();
 
     ProxiedPlayer bungee();
-
-    boolean isMuted();
 
     boolean isNew();
 

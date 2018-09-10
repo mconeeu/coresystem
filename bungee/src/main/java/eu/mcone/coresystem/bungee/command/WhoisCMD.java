@@ -11,7 +11,6 @@ import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
-import eu.mcone.coresystem.bungee.player.BungeeOfflineCorePlayer;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -26,7 +25,7 @@ public class WhoisCMD extends Command {
     public void execute(CommandSender sender, String[] args) {
         if (args.length == 1) {
             try {
-                OfflineCorePlayer p = new BungeeOfflineCorePlayer(BungeeCoreSystem.getSystem(), args[0]).loadPermissions().loadBanData();
+                OfflineCorePlayer p = BungeeCoreSystem.getInstance().getOfflineCorePlayer(args[0]);
                 ProxiedPlayer pp = ProxyServer.getInstance().getPlayer(args[0]);
                 StringBuilder message = new StringBuilder();
 
@@ -74,7 +73,7 @@ public class WhoisCMD extends Command {
 
                 BungeeCoreSystem.getInstance().getMessager().send(sender, message.append(permInfo).append(general).append(banInfo).append(muteInfo).toString());
             } catch (CoreException e) {
-                BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spieler " + args[0] + " war noch nie auf MC ONE!");
+                BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
             }
             return;
         }

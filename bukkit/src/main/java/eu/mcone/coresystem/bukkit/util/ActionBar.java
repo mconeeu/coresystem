@@ -15,11 +15,6 @@ import org.bukkit.entity.Player;
 public class ActionBar implements CoreActionBar {
 
     private String message;
-    private int stay;
-
-    public ActionBar() {
-        this.stay = -1;
-    }
 
     public ActionBar message(String message) {
         this.message = message;
@@ -28,13 +23,12 @@ public class ActionBar implements CoreActionBar {
 
     public ActionBar reset() {
         this.message = null;
-        this.stay = -1;
 
         return this;
     }
 
     public ActionBar send(Player p) {
-        if (message != null && stay > 0) {
+        if (message != null) {
             PacketPlayOutChat packet = new PacketPlayOutChat(
                     IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + message + "\"}"), (byte) 2
             );

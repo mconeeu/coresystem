@@ -10,17 +10,6 @@ import eu.mcone.coresystem.api.core.player.GlobalOfflineCorePlayer;
 
 public interface OfflineCorePlayer extends GlobalOfflineCorePlayer {
 
-    /**
-     * loads all permissions
-     * @return this
-     */
-    OfflineCorePlayer loadPermissions();
 
-    /**
-     * checks if player would have the specified permission
-     * @param permission permission name
-     * @return this
-     */
-    boolean hasPermission(String permission);
 
 }

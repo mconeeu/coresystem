@@ -27,7 +27,7 @@ public class PlayerLogin implements Listener {
         setPermissions(p);
 
         try {
-            new BukkitCorePlayer(BukkitCoreSystem.getInstance(), e.getAddress(), p.getName());
+            new BukkitCorePlayer(BukkitCoreSystem.getInstance(), e.getAddress(), p.getUniqueId());
             p.setDisplayName(p.getName());
         } catch (PlayerNotResolvedException ex) {
             p.kickPlayer("Ein Fehler ist aufgetreten. UUID could not be fetched from database...");
@@ -36,13 +36,13 @@ public class PlayerLogin implements Listener {
     }
 
     public static void setPermissions(Player p) {
-        Field fieldAccesor;
+        Field f;
 
         try {
-            fieldAccesor = CraftHumanEntity.class.getDeclaredField("perm");
-            fieldAccesor.setAccessible(true);
-            fieldAccesor.set(p, new PermissibleBase(p));
-            fieldAccesor.setAccessible(false);
+            f = CraftHumanEntity.class.getDeclaredField("perm");
+            f.setAccessible(true);
+            f.set(p, new PermissibleBase(p));
+            f.setAccessible(false);
         } catch (IllegalAccessException | NoSuchFieldException e1) {
             e1.printStackTrace();
         }

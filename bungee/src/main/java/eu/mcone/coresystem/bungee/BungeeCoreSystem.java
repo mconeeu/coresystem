@@ -18,6 +18,7 @@ import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.bungee.command.*;
 import eu.mcone.coresystem.bungee.friend.FriendSystem;
 import eu.mcone.coresystem.bungee.listener.*;
+import eu.mcone.coresystem.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.bungee.player.BungeeOfflineCorePlayer;
 import eu.mcone.coresystem.bungee.player.CoinsUtil;
 import eu.mcone.coresystem.bungee.player.NickManager;
@@ -42,10 +43,7 @@ import lombok.Getter;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -95,7 +93,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private MySQL database;
 
     @Getter
-    private Map<UUID, CorePlayer> corePlayers;
+    private Map<UUID, BungeeCorePlayer> corePlayers;
 
     public void onEnable() {
         system = this;
@@ -146,7 +144,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         translationManager = new TranslationManager(mongoDB, this);
 
         sendConsoleMessage("§aLoading Permissions & Groups...");
-        permissionManager = new PermissionManager("Proxy", database, gson);
+        permissionManager = new PermissionManager("Proxy", database);
 
         sendConsoleMessage("§aLoading FriendSystem...");
         friendSystem = new FriendSystem(database);
@@ -304,12 +302,21 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     public Collection<CorePlayer> getOnlineCorePlayers() {
-        return corePlayers.values();
+        return new ArrayList<>(corePlayers.values());
     }
 
     @Override
     public OfflineCorePlayer getOfflineCorePlayer(String name) throws PlayerNotResolvedException {
+        for (BungeeCorePlayer cp : corePlayers.values()) {
+            if (cp.getName().equalsIgnoreCase(name)) return cp;
+        }
         return new BungeeOfflineCorePlayer(this, name);
+    }
+
+    @Override
+    public OfflineCorePlayer getOfflineCorePlayer(UUID uuid) throws PlayerNotResolvedException {
+        BungeeCorePlayer cp = corePlayers.getOrDefault(uuid, null);
+        return cp != null ? cp : new BungeeOfflineCorePlayer(this, uuid);
     }
 
     @Override

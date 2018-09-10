@@ -23,6 +23,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public final class ItemBuilder {
@@ -147,6 +148,16 @@ public final class ItemBuilder {
      */
     public ItemBuilder lore(String... lore) {
         itemMeta.setLore(new ArrayList<>(Arrays.asList(lore)));
+        return this;
+    }
+
+    /**
+     * set lores of the item
+     * @param lores lores (ArrayList)
+     * @return this
+     */
+    public ItemBuilder lore(List<String> lores) {
+        itemMeta.setLore(lores);
         return this;
     }
 

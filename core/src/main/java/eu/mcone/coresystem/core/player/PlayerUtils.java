@@ -25,7 +25,7 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUtils {
 
-    private HashMap<String, UUID> uuidCache = new HashMap<>();
+    private HashMap<String, UUID> cache = new HashMap<>();
     private final MongoDatabase database;
 
     public PlayerUtils(MongoDatabase database) {
@@ -44,7 +44,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
 
     @Override
     public UUID fetchUuid(final String name) {
-        if (uuidCache.containsKey(name)) return uuidCache.get(name);
+        if (cache.containsKey(name)) return cache.get(name);
 
         Document dbEntry = database.getCollection("userinfo").find(eq("name", name)).first();
         if (dbEntry != null) {
@@ -56,12 +56,17 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
 
     @Override
     public String fetchName(final UUID uuid) {
-        Document dbEntry = database.getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
+        for (HashMap.Entry<String, UUID> entry : cache.entrySet()) {
+            if (entry.getValue().equals(uuid)) {
+                return entry.getKey();
+            }
+        }
 
+        Document dbEntry = database.getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
         if (dbEntry != null) {
             return dbEntry.getString("name");
         } else {
-            return null;
+            return fetchNameFromMojangAPI(uuid);
         }
     }
 
@@ -83,16 +88,44 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
             JsonElement element = new JsonParser().parse(result);
             try {
                 JsonObject obj = element.getAsJsonObject();
-
-                String uuid = obj.get("id").toString();
-
-                uuid = uuid.substring(1);
-                uuid = uuid.substring(0, uuid.length() - 1);
+                String uuid = obj.get("id").getAsString();
 
                 UUID uuidResult = UUID.fromString(fromTrimmed(uuid));
-                uuidCache.put(name, uuidResult);
+                cache.put(name, uuidResult);
 
                 return uuidResult;
+            } catch (IllegalStateException e) {
+                return null;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public String fetchNameFromMojangAPI(final UUID uuid) {
+        try {
+            URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + toTrimmed(uuid.toString()));
+            InputStream stream = url.openStream();
+            InputStreamReader inr = new InputStreamReader(stream);
+            BufferedReader reader = new BufferedReader(inr);
+
+            String s;
+            StringBuilder sb = new StringBuilder();
+            while ((s = reader.readLine()) != null) {
+                sb.append(s);
+            }
+            String result = sb.toString();
+
+            JsonElement element = new JsonParser().parse(result);
+            try {
+                JsonObject obj = element.getAsJsonObject();
+                String name = obj.get("name").getAsString();
+
+                cache.put(name, uuid);
+
+                return name;
             } catch (IllegalStateException e) {
                 return null;
             }
@@ -116,6 +149,10 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
         }
 
         return builder.toString();
+    }
+
+    private static String toTrimmed(final String uuid) {
+        return uuid.replace("-", "");
     }
 
 }

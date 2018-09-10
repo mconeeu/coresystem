@@ -41,7 +41,9 @@ public class PostLogin implements Listener {
         if (cp.isNew()) {
             BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "§8[§7§l!§8] §3MC ONE §8» §2Als kleines Willkommensgeschenk bekommst du 20 Coins gutgeschrieben!");
         } else {
-            BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", p.getUniqueId().toString()), combine(set("ip", cp.getIpAdress()), set("state", 1), set("timestamp", System.currentTimeMillis() / 1000)));
+            ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getSystem(), () ->
+                    BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", p.getUniqueId().toString()), combine(set("ip", cp.getIpAdress()), set("state", 1), set("timestamp", System.currentTimeMillis() / 1000)))
+            );
         }
 
         if (p.hasPermission("system.bungee.report")) {

@@ -6,8 +6,6 @@
 
 package eu.mcone.coresystem.core.player;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.core.mysql.MySQL;
 
@@ -18,16 +16,14 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
 
     private final String servername;
     private MySQL mySQL;
-    private Gson gson;
 
     private HashMap<Group, Set<String>> groups;
     private HashMap<Group, Set<Group>> parents;
     private HashMap<String, Set<String>> permissions;
 
-    public PermissionManager(String servername, MySQL mysql, Gson gson) {
+    public PermissionManager(String servername, MySQL mysql) {
         this.servername = servername != null ? servername : "unknownserver";
         this.mySQL = mysql;
-        this.gson = gson;
 
         this.groups = new HashMap<>();
         this.parents = new HashMap<>();
@@ -38,7 +34,7 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
 
     @Override
     public void reload() {
-        mySQL.selectAsync("SELECT * FROM `permissions` WHERE (`server` IS NULL OR `server` LIKE '" + servername.toLowerCase() + "')", rs -> {
+        mySQL.select("SELECT * FROM `permissions` WHERE (`server` IS NULL OR `server` LIKE '" + servername.toLowerCase() + "')", rs -> {
             groups.clear();
             parents.clear();
             permissions.clear();
@@ -48,6 +44,7 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
                     switch (rs.getString("key")) {
                         case "group":
                             groups.put(Group.getGroupById(rs.getInt("name")), groups.getOrDefault(Group.getGroupById(rs.getInt("name")), new HashSet<>()));
+                            break;
                         case "permission":
                             addPermission(Group.getGroupById(rs.getInt("name")), rs.getString("value"));
                             break;
@@ -89,11 +86,11 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
     @Override
     public Set<String> getPermissions(String uuid, Set<Group> groups) {
         if (groups.size() == 0) groups.add(Group.SPIELER);
-        Set<String> permissions = new HashSet<>(this.permissions.getOrDefault(uuid, new HashSet<>()));
+        Set<String> permissions = new HashSet<>(this.permissions.getOrDefault(uuid, Collections.emptySet()));
 
         for (Group g : groups) {
             permissions.add("group." + g.getName());
-            permissions.addAll(this.groups.getOrDefault(g, new HashSet<>()));
+            permissions.addAll(this.groups.getOrDefault(g, Collections.emptySet()));
             for (Group parent : getParents(g)) {
                 permissions.addAll(this.groups.get(parent));
             }
@@ -140,11 +137,14 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
     }
 
     @Override
-    public String getJson(Set<Group> groups) {
-        JsonArray array = new JsonArray();
-        for (Group group : groups) array.add(group.getId());
+    public List<Integer> getGroupIDs(Set<Group> groups) {
+        List<Integer> result = new ArrayList<>();
 
-        return gson.toJson(array);
+        for (Group g : groups) {
+            result.add(g.getId());
+        }
+
+        return result;
     }
 
     private void addPermission(Group group, String permission) {

@@ -8,7 +8,7 @@ package eu.mcone.coresystem.bungee.listener;
 
 import eu.mcone.coresystem.api.bungee.event.LanguageChangeEvent;
 import eu.mcone.coresystem.api.bungee.event.PlayerSettingsChangeEvent;
-import eu.mcone.coresystem.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.core.player.GlobalOfflineCorePlayer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -21,7 +21,7 @@ public class PlayerSettingsChange implements Listener {
             ProxyServer.getInstance().getPluginManager().callEvent(new LanguageChangeEvent(e.getPlayer(), e.getSettings().getLanguage()));
         }
         
-        ((BungeeCorePlayer) e.getPlayer()).setSettings(e.getSettings());
+        ((GlobalOfflineCorePlayer) e.getPlayer()).setSettings(e.getSettings());
     }
 
 }

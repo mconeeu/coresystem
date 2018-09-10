@@ -26,7 +26,7 @@ import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.exception.RuntimeCoreException;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.core.player.GlobalCorePlayer;
+import eu.mcone.coresystem.core.player.GlobalOfflineCorePlayer;
 import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -177,7 +177,7 @@ public class TeamspeakVerifier {
                             .onFailure(Throwable::printStackTrace);
                 }
 
-                ((GlobalCorePlayer) p).setTeamspeakUid(null);
+                ((GlobalOfflineCorePlayer) p).setTeamspeakUid(null);
                 BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", p.getUuid().toString()), unset("teamspeak_uid"));
             });
         } else {
@@ -186,7 +186,7 @@ public class TeamspeakVerifier {
     }
 
     private void link(CorePlayer p, String ts3Uid) {
-        ((GlobalCorePlayer) p).setTeamspeakUid(ts3Uid);
+        ((GlobalOfflineCorePlayer) p).setTeamspeakUid(ts3Uid);
         BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", p.getUuid().toString()), set("teamspeak_uid", ts3Uid));
 
         updateLink(p, clientInfo -> {

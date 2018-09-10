@@ -10,6 +10,7 @@ import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.event.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.FriendData;
+import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
@@ -17,6 +18,7 @@ import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import eu.mcone.networkmanager.core.api.database.Database;
+import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 import lombok.Getter;
 import lombok.Setter;
 import net.md_5.bungee.api.ProxyServer;
@@ -30,31 +32,42 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.lte;
 import static com.mongodb.client.model.Updates.set;
 
-public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer {
+public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer, OfflineCorePlayer {
 
-    @Getter @Setter
-    private long muteTime;
     @Getter
     private FriendData friendData;
+    @Getter @Setter
+    private long banTime, muteTime;
+    @Getter
+    private int banPoints = 0, mutePoints = 0;
     @Setter
-    private boolean muted = false;
+    private boolean banned = false, muted = false;
     @Getter @Setter
     private SkinInfo nickedSkin;
 
     public BungeeCorePlayer(CoreSystem instance, InetAddress address, String name) throws PlayerNotResolvedException {
         super(instance, address, name);
 
-        Document entry = ((BungeeCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").find(eq("uuid", uuid.toString())).first();
-        if (entry != null) {
+        MongoDatabase db = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM);
+        Document muteEntry = db.getCollection("bungeesystem_bansystem_mute").find(eq("uuid", uuid.toString())).first();
+        if (muteEntry != null) {
             this.muted = true;
-            this.muteTime = entry.getLong("end");
+            this.muteTime = muteEntry.getLong("end");
         }
-
-        ((BungeeCoreSystem) instance).getCorePlayers().put(uuid, this);
-        reloadPermissions();
+        Document banEntry = db.getCollection("bungeesystem_bansystem_ban").find(eq("uuid", uuid.toString())).first();
+        if (banEntry != null) {
+            this.banned = true;
+            this.banTime = banEntry.getLong("end");
+        }
+        Document pointsEntry = db.getCollection("bungeesystem_bansystem_points").find(eq("uuid", uuid.toString())).first();
+        if (pointsEntry != null) {
+            this.banPoints = pointsEntry.getInteger("banpoints");
+            this.mutePoints = pointsEntry.getInteger("mutepoints");
+        }
 
         this.friendData = BungeeCoreSystem.getInstance().getFriendSystem().getData(uuid);
 
+        ((BungeeCoreSystem) instance).getCorePlayers().put(uuid, this);
         CoreSystem.getInstance().sendConsoleMessage("Loaded Player "+name+"!");
     }
 
@@ -74,6 +87,19 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer {
         }
 
         return muted;
+    }
+
+    @Override
+    public boolean isBanned() {
+        long millis = System.currentTimeMillis() / 1000;
+        if (banned && banTime <= millis) {
+            banned = false;
+            ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () ->
+                    BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_ban").deleteMany(lte("end", millis))
+            );
+        }
+
+        return banned;
     }
 
     @Override

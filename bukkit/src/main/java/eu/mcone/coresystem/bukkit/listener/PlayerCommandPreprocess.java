@@ -22,8 +22,7 @@ public class PlayerCommandPreprocess implements Listener {
         if (!e.isCancelled()) {
             Player p = e.getPlayer();
 
-            String[] line = e.getMessage().split(" ");
-            String cmd = line[0];
+            String cmd = e.getMessage().split(" ")[0];
 
             HelpTopic topic = Bukkit.getServer().getHelpMap().getHelpTopic(cmd);
             if (topic == null) {

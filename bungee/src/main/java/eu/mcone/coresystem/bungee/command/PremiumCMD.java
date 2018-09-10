@@ -12,7 +12,6 @@ import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
-import eu.mcone.coresystem.bungee.player.BungeeOfflineCorePlayer;
 import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -61,7 +60,7 @@ public class PremiumCMD extends Command implements TabExecutor {
                     String target = args[1];
 
                     try {
-                        OfflineCorePlayer t = new BungeeOfflineCorePlayer(BungeeCoreSystem.getSystem(), target).loadPermissions();
+                        OfflineCorePlayer t = BungeeCoreSystem.getInstance().getOfflineCorePlayer(target);
 
                         if (args[0].equalsIgnoreCase("check")) {
                             Document entry = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_premium").find(eq("uuid", t.getUuid().toString())).first();
@@ -105,14 +104,14 @@ public class PremiumCMD extends Command implements TabExecutor {
 
                         return;
                     } catch (PlayerNotResolvedException e) {
-                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler " + target + " war noch nie auf MC ONE!");
+                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
                     }
                 } else if (args.length == 3) {
                     String target = args[1];
                     Group group = Group.getGroupbyName(args[2]);
 
                     try {
-                        OfflineCorePlayer t = new BungeeOfflineCorePlayer(BungeeCoreSystem.getSystem(), target).loadPermissions();
+                        OfflineCorePlayer t = BungeeCoreSystem.getInstance().getOfflineCorePlayer(target);
 
                         if (group != null) {
                             if (args[0].equalsIgnoreCase("add")) {
@@ -135,7 +134,7 @@ public class PremiumCMD extends Command implements TabExecutor {
                         }
                         return;
                     } catch (CoreException e) {
-                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler " + target + " war noch nie auf MC ONE!");
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Spielername §c" + target + "§4 existiert nicht!");
                     }
                 } else if (args.length == 4) {
                     String target = args[1];
@@ -143,7 +142,7 @@ public class PremiumCMD extends Command implements TabExecutor {
                     int months = Integer.valueOf(args[3]);
 
                     try {
-                        OfflineCorePlayer t = new BungeeOfflineCorePlayer(BungeeCoreSystem.getSystem(), target).loadPermissions();
+                        OfflineCorePlayer t = BungeeCoreSystem.getInstance().getOfflineCorePlayer(target);
 
                         if (group != null) {
                             if (args[0].equalsIgnoreCase("add")) {
@@ -166,7 +165,7 @@ public class PremiumCMD extends Command implements TabExecutor {
                         }
                         return;
                     } catch (CoreException e) {
-                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler " + target + " war noch nie auf MC ONE!");
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der Spielername §c" + target + "§4 existiert nicht!");
                     }
                 }
 

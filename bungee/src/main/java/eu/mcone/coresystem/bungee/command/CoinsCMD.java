@@ -64,7 +64,7 @@ public class CoinsCMD extends Command{
                             o.addCoins(coins);
                             BungeeCoreSystem.getInstance().getMessager().send(p, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins§2 hinzugefügt");
                         } catch (PlayerNotResolvedException e) {
-                            BungeeCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler war noch nie auf MC ONE");
+                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
                         }
                     } else if (args[0].equalsIgnoreCase("remove")) {
                         String name = args[1];
@@ -75,7 +75,7 @@ public class CoinsCMD extends Command{
                             o.removeCoins(coins);
                             BungeeCoreSystem.getInstance().getMessager().send(p, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins §2abgezogen");
                         } catch (PlayerNotResolvedException e) {
-                            BungeeCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler war noch nie auf MC ONE");
+                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
                         }
                     } else if (args[0].equalsIgnoreCase("set")) {
                         String name = args[1];
@@ -86,7 +86,7 @@ public class CoinsCMD extends Command{
                             o.setCoins(coins);
                             BungeeCoreSystem.getInstance().getMessager().send(p, "§f" + name + "§2 hat nun §a" + coins + " Coins§2!");
                         } catch (PlayerNotResolvedException e) {
-                            BungeeCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler war noch nie auf MC ONE");
+                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
                         }
                     } else {
                         BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/coins <add|remove|set> <Spieler> <Anzahl>");

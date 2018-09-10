@@ -88,10 +88,10 @@ public class PreLogin implements Listener {
 		} catch (PlayerNotResolvedException ex) {
         	e.setCancelled(true);
         	e.setCancelReason(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
-					+ "\n§4§oTut uns leid! Es ist ein Fehler aufgetreten."
+					+ "\n§4§oTut uns leid! Die Mojang Server sind nicht erreichbar."
 					+ "\n§r"
-					+ "\n§7Wir konnten deine UUID wegen eines Datenbankfehlers nicht ermitteln!"
-					+ "\n§7Bitte melde diesen Fehler einem Teammitglied."
+					+ "\n§7Wir konnten deine UUID nicht ermitteln..."
+					+ "\n§7Bitte versuche es gleich noch einmal!"
 			)));
 		}
 	}

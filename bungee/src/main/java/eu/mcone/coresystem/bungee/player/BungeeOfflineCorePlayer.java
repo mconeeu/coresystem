@@ -16,6 +16,8 @@ import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import org.bson.Document;
 
+import java.util.UUID;
+
 import static com.mongodb.client.model.Filters.eq;
 
 public class BungeeOfflineCorePlayer extends GlobalOfflineCorePlayer implements OfflineCorePlayer {
@@ -29,25 +31,19 @@ public class BungeeOfflineCorePlayer extends GlobalOfflineCorePlayer implements 
     @Getter
     private long banTime, muteTime;
 
+    public BungeeOfflineCorePlayer(CoreSystem instance, UUID uuid) throws PlayerNotResolvedException {
+        super(instance, uuid, false);
+        loadData();
+    }
+
     public BungeeOfflineCorePlayer(CoreSystem instance, String name) throws PlayerNotResolvedException {
-        super(instance, name);
+        super(instance, name, false);
+        loadData();
     }
 
-    public OfflineCorePlayer loadFriendData() {
+    private void loadData() {
         this.friendData = BungeeCoreSystem.getInstance().getFriendSystem().getData(uuid);
-        return this;
-    }
 
-    public OfflineCorePlayer loadPermissions() {
-        this.permissions = BungeeCoreSystem.getInstance().getPermissionManager().getPermissions(uuid.toString(), groupSet);
-        return this;
-    }
-
-    public boolean hasPermission(String permission) {
-        return instance.getPermissionManager().hasPermission(permissions, permission);
-    }
-
-    public OfflineCorePlayer loadBanData() {
         Document muteEntry = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").find(eq("uuid", uuid.toString())).first();
         if (muteEntry != null) {
             this.muted = true;
@@ -69,8 +65,6 @@ public class BungeeOfflineCorePlayer extends GlobalOfflineCorePlayer implements 
             this.banPoints = pointsEntry.getInteger("banpoints");
             this.mutePoints = pointsEntry.getInteger("mutepoints");
         }
-
-        return this;
     }
 
 }

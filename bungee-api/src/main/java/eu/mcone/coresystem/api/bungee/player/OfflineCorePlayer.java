@@ -10,12 +10,6 @@ import eu.mcone.coresystem.api.core.player.GlobalOfflineCorePlayer;
 
 public interface OfflineCorePlayer extends GlobalOfflineCorePlayer {
 
-    OfflineCorePlayer loadFriendData();
-
-    OfflineCorePlayer loadPermissions();
-
-    OfflineCorePlayer loadBanData();
-
     FriendData getFriendData();
 
     boolean hasPermission(String permission);

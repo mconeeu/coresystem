@@ -15,6 +15,7 @@ import eu.mcone.coresystem.core.util.CooldownSystem;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.SimplePluginManager;
 
 import java.lang.reflect.Field;
@@ -28,8 +29,8 @@ public class PluginManager implements CorePluginManager {
     private CooldownSystem cooldownSystem;
     @Getter
     private List<CorePlugin> corePlugins;
-    private Map<CoreCommand, CorePlugin> commands;
-    private Map<CoreInventory, CorePlugin> inventories;
+    private Map<CorePlugin, List<CoreCommand>> commands;
+    private Map<CorePlugin, Map<Player, CoreInventory>> inventories;
 
     static {
         try {
@@ -65,50 +66,57 @@ public class PluginManager implements CorePluginManager {
     }
 
     @Override
-    public void registerCoreInventory(CoreInventory inventory, CorePlugin plugin) {
-        inventories.put(inventory, plugin);
+    public void registerCoreInventory(CoreInventory inventory, Player player, CorePlugin plugin) {
+        if (inventories.getOrDefault(plugin, null) != null) {
+            inventories.get(plugin).put(player, inventory);
+        } else {
+            inventories.put(plugin, new HashMap<Player, CoreInventory>(){{
+                put(player, inventory);
+            }});
+        }
     }
 
     @Override
-    public CoreInventory getCoreInventory(String name) {
-        for (CoreInventory inv : inventories.keySet()) {
+    public CoreInventory getCoreInventory(CorePlugin plugin, String name) {
+        for (CoreInventory inv : inventories.getOrDefault(plugin, Collections.emptyMap()).values()) {
             if (inv.getName().equals(name)) {
                 return inv;
             }
         }
-
         return null;
     }
 
     @Override
     public Collection<CoreInventory> getCoreInventories() {
-        return inventories.keySet();
+        Set<CoreInventory> inventories = new HashSet<>();
+
+        for (Map<Player, CoreInventory> inventoryMap : this.inventories.values()) {
+            inventories.addAll(inventoryMap.values());
+        }
+
+        return inventories;
     }
 
     @Override
     public Collection<CoreInventory> getCoreInventories(CorePlugin plugin) {
-        List<CoreInventory> result = new ArrayList<>();
-
-        for (HashMap.Entry<CoreInventory, CorePlugin> e : inventories.entrySet()) {
-            if (e.getValue().equals(plugin)) {
-                result.add(e.getKey());
-            }
-        }
-
-        return result;
+        return new ArrayList<>(inventories.getOrDefault(plugin, Collections.emptyMap()).values());
     }
 
     @Override
     public CoreCommand registerCoreCommand(CoreCommand command, CorePlugin plugin) {
-        commands.put(command, plugin);
-        commandMap.register(plugin.getDescription().getName(), command);
+        if (commands.getOrDefault(plugin, null) != null) {
+            commands.get(plugin).add(command);
+        } else {
+            commands.put(plugin, new ArrayList<>(Collections.singletonList(command)));
+        }
 
+        commandMap.register(plugin.getDescription().getName(), command);
         return command;
     }
 
     @Override
-    public CoreCommand getCoreCommand(String name) {
-        for (CoreCommand cmd : commands.keySet()) {
+    public CoreCommand getCoreCommand(CorePlugin plugin, String name) {
+        for (CoreCommand cmd : commands.getOrDefault(plugin, Collections.emptyList())) {
             if (cmd.getName().equals(name)) {
                 return cmd;
             }
@@ -119,20 +127,18 @@ public class PluginManager implements CorePluginManager {
 
     @Override
     public Collection<CoreCommand> getCoreCommands() {
-        return commands.keySet();
+        Set<CoreCommand> commands = new HashSet<>();
+
+        for (List<CoreCommand> commandList : this.commands.values()) {
+            commands.addAll(commandList);
+        }
+
+        return commands;
     }
 
     @Override
     public Collection<CoreCommand> getCoreCommands(CorePlugin plugin) {
-        List<CoreCommand> result = new ArrayList<>();
-
-        for (HashMap.Entry<CoreCommand, CorePlugin> e : commands.entrySet()) {
-            if (e.getValue().equals(plugin)) {
-                result.add(e.getKey());
-            }
-        }
-
-        return result;
+        return new ArrayList<>(commands.getOrDefault(plugin, Collections.emptyList()));
     }
 
 }

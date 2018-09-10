@@ -201,4 +201,9 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
         }
     }
 
+    public void disable() {
+        unsetNPCs();
+        npcs.clear();
+    }
+
 }

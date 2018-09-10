@@ -11,6 +11,7 @@ import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.util.CooldownSystem;
+import org.bukkit.entity.Player;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,15 +34,16 @@ public interface CorePluginManager {
      * @param inventory CoreInventory
      * @param plugin CorePlugin
      */
-    void registerCoreInventory(CoreInventory inventory, CorePlugin plugin);
+    void registerCoreInventory(CoreInventory inventory, Player player, CorePlugin plugin);
 
     /**
      * returns the CoreInventory with a specific name
      * null if no CoreInventory with that name exists
+     * @param plugin CorePlugin
      * @param name displayname
      * @return CoreInventory object
      */
-    CoreInventory getCoreInventory(String name);
+    CoreInventory getCoreInventory(CorePlugin plugin, String name);
 
     /**
      * returns all current saved CoreInventories
@@ -67,10 +69,11 @@ public interface CorePluginManager {
     /**
      * returns the CoreCommand with a specific name
      * null if no CoreCommand with that name exists
+     * @param plugin CorePlugin
      * @param name command name
      * @return CoreCommand object
      */
-    CoreCommand getCoreCommand(String name);
+    CoreCommand getCoreCommand(CorePlugin plugin, String name);
 
     /**
      * returns all current saved CoreCommands

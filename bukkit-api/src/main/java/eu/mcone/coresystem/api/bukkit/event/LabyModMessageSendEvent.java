@@ -14,12 +14,9 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-/**
- * Class created by qlow | Jan
- */
 @AllArgsConstructor
 @Getter
-public class LabyModMessageSendEvent extends Event implements Cancellable {
+public final class LabyModMessageSendEvent extends Event implements Cancellable {
 
     @Getter
     private final static HandlerList handlerList = new HandlerList();

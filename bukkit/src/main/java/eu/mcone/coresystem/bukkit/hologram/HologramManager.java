@@ -152,4 +152,9 @@ public class HologramManager implements Listener, eu.mcone.coresystem.api.bukkit
         }
     }
 
+    public void disable() {
+        unsetHolograms();
+        holograms.clear();
+    }
+
 }

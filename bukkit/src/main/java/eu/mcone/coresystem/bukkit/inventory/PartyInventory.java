@@ -38,7 +38,7 @@ class PartyInventory extends CoreInventory {
                     if (isPartyLeader && !data[0].equalsIgnoreCase(p.getName()))
                         lores.addAll(Arrays.asList("", "§8» §f§nRechtsklick§8 | §7§oAktionen"));
 
-                    setItem(i, ItemBuilder.createSkullItem(data[0], 1).displayName("§f§l" + data[0]).lore((String[]) lores.toArray()).create(), e -> {
+                    setItem(i, ItemBuilder.createSkullItem(data[0], 1).displayName("§f§l" + data[0]).lore(lores).create(), e -> {
                         new PartyMemberInventory(p, data[0]);
                         p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
                     });

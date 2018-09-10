@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 public class PermissionChange implements Listener {
@@ -26,7 +27,8 @@ public class PermissionChange implements Listener {
         if (e.getKind() == PermissionChangeEvent.Kind.GROUP_PERMISSION) {
             Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
                 BukkitCoreSystem.getInstance().getPermissionManager().reload();
-                Set<Group> groups = BukkitCoreSystem.getInstance().getPermissionManager().getChildren((Group) e.getGroups().toArray()[0]);
+
+                Set<Group> groups = BukkitCoreSystem.getInstance().getPermissionManager().getChildren(new ArrayList<>(e.getGroups()).get(0));
                 for (CorePlayer player : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
                     for (Group g : player.getGroups()) {
                         if (groups.contains(g)) {

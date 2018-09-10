@@ -10,7 +10,6 @@ import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.player.BungeeOfflineCorePlayer;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -99,7 +98,7 @@ public class FriendCMD extends Command implements TabExecutor {
                 } else if (!p.getName().equalsIgnoreCase(args[1])) {
                     String target = args[1];
                     try {
-                        OfflineCorePlayer t = new BungeeOfflineCorePlayer(BungeeCoreSystem.getSystem(), target).loadFriendData().loadPermissions();
+                        OfflineCorePlayer t = BungeeCoreSystem.getInstance().getOfflineCorePlayer(target);
 
                         switch (args[0]) {
                             case "add": {
@@ -247,7 +246,7 @@ public class FriendCMD extends Command implements TabExecutor {
                             }
                         }
                     } catch (CoreException e) {
-                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spieler " + target + " war noch nie auf MC ONE!");
+                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
                         return;
                     }
                 } else {

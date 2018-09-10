@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 public class ProfileCMD extends CorePlayerCommand {
 
     public ProfileCMD() {
-        super("profile", "p");
+        super("profile", null, "profil", "p");
     }
 
     @Override

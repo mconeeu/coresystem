@@ -19,55 +19,129 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.bson.Document;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
 
 public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api.core.player.GlobalOfflineCorePlayer {
 
     protected final GlobalCoreSystem instance;
+    protected boolean isNew = false;
 
     @Getter
     protected UUID uuid;
     @Getter
-    private String name;
+    protected String name;
+    @Getter @Setter
+    private String teamspeakUid;
     @Getter
     private int coins;
     @Getter
     private PlayerState state;
-    @Getter
+    @Getter @Setter
     protected Set<Group> groupSet;
     @Getter
-    private long onlinetime;
+    protected long onlinetime;
     @Getter @Setter
     protected Set<String> permissions;
-    @Getter
-    private PlayerSettings settings;
+    @Getter @Setter
+    protected PlayerSettings settings;
 
-    public GlobalOfflineCorePlayer(final GlobalCoreSystem instance, String name) throws PlayerNotResolvedException {
-        this.name = name;
+    public GlobalOfflineCorePlayer(final GlobalCoreSystem instance, UUID uuid, boolean online) throws PlayerNotResolvedException {
         this.instance = instance;
 
-        Document entry = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("name", name)).first();
+        Document entry = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
         if (entry != null) {
-            this.uuid = UUID.fromString(entry.getString("uuid"));
-            this.groupSet = instance.getPermissionManager().getGroups(entry.get("groups", new ArrayList<>()));
-            this.coins = entry.getInteger("coins");
-            this.state = PlayerState.getPlayerStateById(entry.getInteger("state"));
-            this.onlinetime = entry.getLong("online_time");
-            this.settings = ((CoreModuleCoreSystem) instance).getGson().fromJson(entry.get("player_settings", Document.class).toJson(), PlayerSettings.class);
+            setDatabaseValues(entry, online);
+        } else {
+            String name = instance.getPlayerUtils().fetchNameFromMojangAPI(uuid);
+
+            if (name != null) {
+                setDefaultValuesAndRegister(uuid, name, online);
+            } else {
+                throw new PlayerNotResolvedException("Could not fetch Player name for uuid " + uuid + "!");
+            }
         }
 
-        if (this.uuid == null) throw new PlayerNotResolvedException("Database does not contain player "+name+"!");
+        reloadPermissions();
+    }
+
+    public GlobalOfflineCorePlayer(final GlobalCoreSystem instance, String name, boolean online) throws PlayerNotResolvedException {
+        this.instance = instance;
+        UUID uuid = instance.getPlayerUtils().fetchUuidFromMojangAPI(name);
+
+        if (uuid != null) {
+            Document entry = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
+            if (entry != null) {
+                setDatabaseValues(entry, online);
+            } else {
+                setDefaultValuesAndRegister(uuid, name, online);
+            }
+        } else {
+            throw new PlayerNotResolvedException("Could not fetch Player uuid for name " + name + "!");
+        }
+
+        reloadPermissions();
+    }
+
+    private void setDefaultValuesAndRegister(UUID uuid, String name, boolean online) {
+        this.uuid = uuid;
+        this.name = name;
+        this.groupSet = new HashSet<>(Collections.singletonList(Group.SPIELER));
+        this.onlinetime = 0;
+        this.coins = 20;
+        this.settings = new PlayerSettings();
+        this.state = online ? PlayerState.ONLINE : PlayerState.OFFLINE;
+        this.isNew = true;
+
+        ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 is new! Registering in Database...");
+        ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo")
+                .insertOne(new Document("uuid", uuid.toString())
+                        .append("name", name)
+                        .append("groups", new ArrayList<>(Collections.singletonList(11)))
+                        .append("coins", coins)
+                        .append("ip", null)
+                        .append("timestamp", System.currentTimeMillis() / 1000)
+                        .append("player_settings", Document.parse(((CoreModuleCoreSystem) instance).getGson().toJson(new PlayerSettings(), PlayerSettings.class)))
+                        .append("state", online ? PlayerState.ONLINE.getId() : PlayerState.OFFLINE.getId())
+                        .append("online_time", onlinetime)
+                );
+    }
+
+    private void setDatabaseValues(Document entry, boolean online) {
+        this.uuid = UUID.fromString(entry.getString("uuid"));
+        this.name = entry.getString("name");
+        this.groupSet = instance.getPermissionManager().getGroups(entry.get("groups", new ArrayList<>()));
+        this.coins = entry.getInteger("coins");
+        this.teamspeakUid = entry.getString("teamspeak_uid");
+        this.state = online ? PlayerState.ONLINE : PlayerState.getPlayerStateById(entry.getInteger("state"));
+        this.onlinetime = entry.getLong("online_time");
+        this.settings = ((CoreModuleCoreSystem) instance).getGson().fromJson(entry.get("player_settings", Document.class).toJson(), PlayerSettings.class);
     }
 
     @Override
     public Set<Group> getGroups() {
         return groupSet;
+    }
+
+    @Override
+    public Group getMainGroup() {
+        HashMap<Integer, Group> groups = new HashMap<>();
+        this.groupSet.forEach(g -> groups.put(g.getId(), g));
+
+        return Collections.min(groups.entrySet(), HashMap.Entry.comparingByValue()).getValue();
+    }
+
+    @Override
+    public boolean hasPermission(String permission) {
+        return instance.getPermissionManager().hasPermission(permissions, permission);
+    }
+
+    @Override
+    public void reloadPermissions() {
+        this.permissions = instance.getPermissionManager().getPermissions(uuid.toString(), groupSet);
     }
 
     @Override
@@ -96,7 +170,10 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
 
     private void updateDatabaseGroupsAsync(Set<Group> groupSet) {
         instance.runAsync(() ->
-                ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), set("groups", ((CoreModuleCoreSystem) instance).getGson().toJson(groupSet)))
+                ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(
+                        eq("uuid", uuid.toString()),
+                        set("groups", instance.getPermissionManager().getGroupIDs(groupSet))
+                )
         );
     }
 
@@ -118,13 +195,27 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
 
     @Override
     public void removeCoins(int amount) {
-        if (coins-amount < 0) {
+        if (coins - amount < 0) {
             amount = coins;
-            ((CoreModuleCoreSystem) instance).sendConsoleMessage("§7Tried to remove more coins than Player §f"+name+"§7 has! ("+coins+"-"+amount+")");
+            ((CoreModuleCoreSystem) instance).sendConsoleMessage("§7Tried to remove more coins than Player §f" + name + "§7 has! (" + coins + "-" + amount + ")");
         }
 
         this.coins -= amount;
         instance.getCoinsUtil().removeCoins(uuid, amount);
+    }
+
+    @Override
+    public boolean isTeamspeakIdLinked() {
+        return teamspeakUid != null;
+    }
+
+    public void setState(PlayerState state) {
+        this.state = state;
+        ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), combine(set("state", state.getId())));
+    }
+
+    public void setCoinsAmount(int amount) {
+        this.coins = amount;
     }
 
 }

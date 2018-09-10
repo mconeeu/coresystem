@@ -11,6 +11,7 @@ import com.google.gson.JsonParser;
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
+import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.api.bukkit.player.AfkManager;
@@ -209,9 +210,25 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     public abstract OfflineCorePlayer getOfflineCorePlayer(String name) throws PlayerNotResolvedException;
 
     /**
+     * creates an CorePlayer object for an offline or online player
+     * this object has limited abilities as it should be uses for a potentially offline player
+     * @param uuid Player uuid
+     * @return OfflineCorePlayer object
+     * @throws PlayerNotResolvedException thrown if the wished player is not in the database
+     */
+    public abstract OfflineCorePlayer getOfflineCorePlayer(UUID uuid) throws PlayerNotResolvedException;
+
+    /**
      * disables all Player chat formatting
      * @param disabled if chat should be disabled
      */
     public abstract void setPlayerChatDisabled(boolean disabled);
+
+    /**
+     * allows you to add items to the ProfileInventory
+     * @param inventorySize size of the ProfileInventory
+     * @param modifier ProfileInventoryModifier
+     */
+    public abstract void modifyProfileInventory(int inventorySize, ProfileInventoryModifier modifier);
 
 }

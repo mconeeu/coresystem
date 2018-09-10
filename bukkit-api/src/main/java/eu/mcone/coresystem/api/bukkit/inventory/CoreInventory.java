@@ -41,7 +41,7 @@ public abstract class CoreInventory {
         this.player = player;
         this.events = new HashMap<>();
 
-        CoreSystem.getInstance().getPluginManager().registerCoreInventory(this, CoreSystem.getInstance());
+        CoreSystem.getInstance().getPluginManager().registerCoreInventory(this, player, CoreSystem.getInstance());
 
         List<Option> options = new ArrayList<>(Arrays.asList(args));
         if (options.contains(Option.FILL_EMPTY_SLOTS)) {

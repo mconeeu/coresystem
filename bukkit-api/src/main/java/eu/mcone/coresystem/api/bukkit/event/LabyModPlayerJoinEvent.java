@@ -13,12 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-/**
- * Class created by qlow | Jan
- */
 @AllArgsConstructor
 @Getter
-public class LabyModPlayerJoinEvent extends Event {
+public final class LabyModPlayerJoinEvent extends Event {
 
     @Getter
     private final static HandlerList handlerList = new HandlerList();

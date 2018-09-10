@@ -11,6 +11,7 @@ import com.google.gson.JsonParser;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
+import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
@@ -27,13 +28,11 @@ import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.bukkit.channel.*;
 import eu.mcone.coresystem.bukkit.command.*;
 import eu.mcone.coresystem.bukkit.hologram.HologramManager;
+import eu.mcone.coresystem.bukkit.inventory.ProfileInventory;
 import eu.mcone.coresystem.bukkit.labymod.LabyModAPI;
 import eu.mcone.coresystem.bukkit.listener.*;
 import eu.mcone.coresystem.bukkit.npc.NpcManager;
-import eu.mcone.coresystem.bukkit.player.BukkitOfflineCorePlayer;
-import eu.mcone.coresystem.bukkit.player.CoinsUtil;
-import eu.mcone.coresystem.bukkit.player.CoreAfkManager;
-import eu.mcone.coresystem.bukkit.player.NickManager;
+import eu.mcone.coresystem.bukkit.player.*;
 import eu.mcone.coresystem.bukkit.util.ActionBar;
 import eu.mcone.coresystem.bukkit.util.PluginManager;
 import eu.mcone.coresystem.bukkit.util.TablistInfo;
@@ -55,10 +54,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem {
 
@@ -105,7 +101,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private JsonParser jsonParser;
 
     @Getter
-    private Map<UUID, CorePlayer> corePlayers;
+    private Map<UUID, BukkitCorePlayer> corePlayers;
     @Getter
     private boolean cloudsystemAvailable;
 
@@ -169,7 +165,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         afkManager = new CoreAfkManager();
 
         sendConsoleMessage("§aLoading Permissions & Groups...");
-        permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), mysql1, gson);
+        permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), mysql1);
 
         sendConsoleMessage("§aStarting NickManager...");
         nickManager = new NickManager(this);
@@ -192,7 +188,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         for (Player p : Bukkit.getOnlinePlayers()) {
             PlayerLogin.setPermissions(p);
             try {
-                new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(this, p.getAddress().getAddress(), p.getName());
+                new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(this, p.getAddress().getAddress(), p.getUniqueId());
                 channelHandler.createSetRequest(p, "UNNICK");
             } catch (PlayerNotResolvedException e) {
                 e.printStackTrace();
@@ -204,10 +200,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public void onDisable() {
-        afkManager.disable();
-        npcManager.unsetNPCs();
-        hologramManager.unsetHolograms();
-
         for (CorePlayer p : getOnlineCorePlayers()) {
             p.getScoreboard().unregister();
             if (p.isNicked()) {
@@ -216,11 +208,15 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         }
 
         mongoConnection.disconnect();
+        corePlayers.clear();
 
         mysql1.close();
         mysql2.close();
         mysql3.close();
 
+        npcManager.disable();
+        hologramManager.disable();
+        afkManager.disable();
         labyModAPI.disable();
         pluginManager.disable();
 
@@ -321,7 +317,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public Collection<CorePlayer> getOnlineCorePlayers() {
-        return corePlayers.values();
+        return new ArrayList<>(corePlayers.values());
     }
 
     @Override
@@ -347,7 +343,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public void enableSpawnCommand(CoreWorld world) {
-        new SpawnCMD(world);
+        pluginManager.registerCoreCommand(new SpawnCMD(world), this);
     }
 
     @Override
@@ -372,12 +368,27 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public OfflineCorePlayer getOfflineCorePlayer(String name) throws PlayerNotResolvedException {
+        for (BukkitCorePlayer cp : corePlayers.values()) {
+            if (cp.getName().equalsIgnoreCase(name)) return cp;
+        }
         return new BukkitOfflineCorePlayer(this, name);
+    }
+
+    @Override
+    public OfflineCorePlayer getOfflineCorePlayer(UUID uuid) throws PlayerNotResolvedException {
+        BukkitCorePlayer cp = corePlayers.getOrDefault(uuid, null);
+        return cp != null ? cp : new BukkitOfflineCorePlayer(this, uuid);
     }
 
     @Override
     public void setPlayerChatDisabled(boolean disabled) {
         AsyncPlayerChat.disabled = disabled;
+    }
+
+    @Override
+    public void modifyProfileInventory(int inventorySize, ProfileInventoryModifier modifier) {
+        ProfileInventory.setSize(inventorySize);
+        ProfileInventory.setModifier(modifier);
     }
 
     @Override

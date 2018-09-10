@@ -64,6 +64,6 @@ public interface PermissionManager {
      * @param groups group set
      * @return json String
      */
-    String getJson(Set<Group> groups);
+    List<Integer> getGroupIDs(Set<Group> groups);
     
 }
