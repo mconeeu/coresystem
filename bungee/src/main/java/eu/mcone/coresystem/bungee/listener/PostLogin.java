@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
+import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.labymod.LabyPermission;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;

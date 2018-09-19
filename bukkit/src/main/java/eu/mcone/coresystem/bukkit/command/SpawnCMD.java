@@ -6,6 +6,7 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
@@ -19,8 +20,12 @@ public class SpawnCMD extends CorePlayerCommand {
         super("spawn");
         this.world = world;
 
-        if (world.getLocation("spawn") == null) {
-            world.setLocation("spawn", world.bukkit().getSpawnLocation());
+        if (world != null) {
+            if (world.getLocation("spawn") == null) {
+                world.setLocation("spawn", world.bukkit().getSpawnLocation());
+            }
+        } else {
+            CoreSystem.getInstance().sendConsoleMessage("§cThe world name is null, please check all world directories");
         }
     }
 

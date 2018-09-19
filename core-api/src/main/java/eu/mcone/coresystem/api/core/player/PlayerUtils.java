@@ -11,6 +11,21 @@ import java.util.UUID;
 public interface PlayerUtils {
 
     /**
+     * Returns the skin info of a player with the specified UUID, the UUID can also be passed through the fetchUuid method.
+     * @param name
+     * @param category
+     * @return
+     */
+    SkinInfo getSkinInfo(String name, String category);
+
+    /**
+     * Uploads the Skin Info from the Player.
+     * @param uuid Player uuid
+     * @param category Texture Category
+     */
+    void uploadSkinInfo(UUID uuid, String category);
+
+    /**
      * fetch uuid from name, first method is getting from database
      * @param name name
      * @return uuid

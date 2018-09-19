@@ -10,7 +10,9 @@ import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 import lombok.Getter;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
+import javax.print.Doc;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +38,25 @@ public class SkinInfo implements eu.mcone.coresystem.api.core.player.SkinInfo {
     }
 
     @Override
+    public void uploadSkindata() throws CoreException {
+        if ((!cachedSkins.containsKey(name)) && cachedSkins.get(name) == null) {
+            Document skinSelection = database.getCollection("bungeesystem_textures").find(eq("name", name)).first();
+            if (skinSelection == null) {
+                database.getCollection("bungeesystem_textures")
+                        .insertOne(
+                                new Document("name", name)
+                                        .append("texture_value", value)
+                                        .append("texture_signature", signature)
+                        );
+
+                cachedSkins.put(name, new String[]{value, signature});
+            } else {
+                downloadSkinData();
+            }
+        }
+    }
+
+    @Override
     public eu.mcone.coresystem.api.core.player.SkinInfo downloadSkinData() throws CoreException {
         if (cachedSkins.containsKey(name) && cachedSkins.get(name) != null) {
             value = cachedSkins.get(name)[0];
@@ -45,15 +66,12 @@ public class SkinInfo implements eu.mcone.coresystem.api.core.player.SkinInfo {
             if (entry != null) {
                 value = entry.getString("texture_value");
                 signature = entry.getString("texture_signature");
-
                 cachedSkins.put(name, new String[]{value, signature});
             }
 
             if (value == null || signature == null)
                 throw new CoreException("Skin " + name + " does not exist in the database!");
         }
-
         return this;
     }
-
 }

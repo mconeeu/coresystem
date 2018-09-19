@@ -11,7 +11,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: eu.mcone.cloud:core:1.1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: eu.mcone.cloud:cloud-api:1.1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: eu.mcone.networkmanager:core-api:0.1.0-SNAPSHOT" level="project" />
     <orderEntry type="module" module-name="core" />
     <orderEntry type="module" module-name="core-api" />
     <orderEntry type="library" name="Maven: eu.mcone.networkmanager:core-api:0.1.0-SNAPSHOT" level="project" />
@@ -29,7 +30,9 @@
     <orderEntry type="module" module-name="bukkit-api" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: eu.mcone.cloud:plugin-api-bukkit:1.1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: eu.mcone.cloud:plugin-api:1.1.0-SNAPSHOT" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: eu.mcone.cloud:cloud-api:1.1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: eu.mcone.cloud:core:1.1.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.netty:netty-all:4.1.19.Final" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.slf4j:slf4j-simple:1.7.9" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.md-5:bungeecord-config:1.12-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.yaml:snakeyaml:1.19" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.google.guava:guava:20.0" level="project" />

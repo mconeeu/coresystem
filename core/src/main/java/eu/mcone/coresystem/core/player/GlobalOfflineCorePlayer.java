@@ -57,6 +57,7 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
             setDatabaseValues(entry, online);
         } else {
             String name = instance.getPlayerUtils().fetchNameFromMojangAPI(uuid);
+            instance.getPlayerUtils().uploadSkinInfo(uuid, "player");
 
             if (name != null) {
                 setDefaultValuesAndRegister(uuid, name, online);
@@ -119,6 +120,7 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         this.state = online ? PlayerState.ONLINE : PlayerState.getPlayerStateById(entry.getInteger("state"));
         this.onlinetime = entry.getLong("online_time");
         this.settings = ((CoreModuleCoreSystem) instance).getGson().fromJson(entry.get("player_settings", Document.class).toJson(), PlayerSettings.class);
+        instance.getPlayerUtils().uploadSkinInfo(uuid,"player");
     }
 
     @Override

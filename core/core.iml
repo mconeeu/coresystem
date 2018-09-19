@@ -11,6 +11,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: eu.mcone.networkmanager:core-api:0.1.0-SNAPSHOT" level="project" />
     <orderEntry type="module" module-name="core-api" />
     <orderEntry type="library" name="Maven: eu.mcone.networkmanager:core-api:0.1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.mongodb:mongodb-driver:3.8.0" level="project" />

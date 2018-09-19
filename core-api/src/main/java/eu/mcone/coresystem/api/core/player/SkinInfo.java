@@ -18,6 +18,12 @@ public interface SkinInfo {
     SkinInfo downloadSkinData() throws CoreException;
 
     /**
+     * Loads the skin data passed in the class constructor into the mc1 database
+     * @throws CoreException thrown if texture name already exists in the database
+     */
+    void uploadSkindata() throws CoreException;
+
+    /**
      * get the skins texture database name, null if not set
      * @return texture database name
      */
