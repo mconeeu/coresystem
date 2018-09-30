@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bukkit;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
+import com.mojang.authlib.properties.Property;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
@@ -24,7 +25,9 @@ import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
+import eu.mcone.coresystem.api.core.exception.RuntimeCoreException;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
+import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.channel.*;
 import eu.mcone.coresystem.bukkit.command.*;
 import eu.mcone.coresystem.bukkit.hologram.HologramManager;
@@ -33,10 +36,7 @@ import eu.mcone.coresystem.bukkit.labymod.LabyModAPI;
 import eu.mcone.coresystem.bukkit.listener.*;
 import eu.mcone.coresystem.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.bukkit.player.*;
-import eu.mcone.coresystem.bukkit.util.ActionBar;
-import eu.mcone.coresystem.bukkit.util.PluginManager;
-import eu.mcone.coresystem.bukkit.util.TablistInfo;
-import eu.mcone.coresystem.bukkit.util.Title;
+import eu.mcone.coresystem.bukkit.util.*;
 import eu.mcone.coresystem.bukkit.world.WorldManager;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.mysql.MySQL;
@@ -52,6 +52,7 @@ import lombok.Getter;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -96,6 +97,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private CoinsUtil coinsUtil;
     @Getter
+    private DatabaseSkinManager databaseSkinManager;
+    @Getter
     private Gson gson;
     @Getter
     private JsonParser jsonParser;
@@ -139,7 +142,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         pluginManager = new PluginManager();
         coinsUtil = new CoinsUtil(this);
         channelHandler = new ChannelHandler();
-        playerUtils = new PlayerUtils(mongoDatabase1);
+        playerUtils = new PlayerUtils(this);
+        databaseSkinManager = new DatabaseSkinManager(mongoDatabase1);
         gson = new Gson();
         jsonParser = new JsonParser();
 
@@ -187,12 +191,20 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             PlayerLogin.setPermissions(p);
-            try {
-                new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(this, p.getAddress().getAddress(), p.getUniqueId());
-                channelHandler.createSetRequest(p, "UNNICK");
-            } catch (PlayerNotResolvedException e) {
-                e.printStackTrace();
-            }
+            Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
+
+            new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(
+                    this,
+                    p.getAddress().getAddress(),
+                    new SkinInfo(
+                            p.getName(),
+                            textures.getValue(),
+                            textures.getSignature()
+                    ),
+                    p.getUniqueId(),
+                    p.getName()
+            );
+            channelHandler.createSetRequest(p, "UNNICK");
         }
 
         for (CorePlayer p : getOnlineCorePlayers()) p.setScoreboard(new MainScoreboard());
@@ -227,33 +239,39 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     private void registerCommands() {
-        pluginManager.registerCoreCommand(new BukkitCMD(), this);
-        pluginManager.registerCoreCommand(new FeedCMD(), this);
-        pluginManager.registerCoreCommand(new FlyCMD(), this);
-        pluginManager.registerCoreCommand(new GamemodeCMD(), this);
-        pluginManager.registerCoreCommand(new HealCMD(), this);
-        pluginManager.registerCoreCommand(new TpCMD(), this);
-        pluginManager.registerCoreCommand(new TphereCMD(), this);
-        pluginManager.registerCoreCommand(new TpallCMD(), this);
-        pluginManager.registerCoreCommand(new TpposCMD(), this);
-        pluginManager.registerCoreCommand(new StatsCMD(), this);
-        pluginManager.registerCoreCommand(new SpeedCMD(), this);
-        pluginManager.registerCoreCommand(new VanishCMD(), this);
-        pluginManager.registerCoreCommand(new ProfileCMD(), this);
+        registerCommands(
+                new BukkitCMD(),
+                new FeedCMD(),
+                new FlyCMD(),
+                new GamemodeCMD(),
+                new HealCMD(),
+                new TpCMD(),
+                new TphereCMD(),
+                new TpallCMD(),
+                new TpposCMD(),
+                new StatsCMD(),
+                new SpeedCMD(),
+                new VanishCMD(),
+                new ProfileCMD()
+        );
     }
 
     private void registerListener() {
-        getServer().getPluginManager().registerEvents(new LabyModPlayerJoin(), this);
-        getServer().getPluginManager().registerEvents(new LanguageChange(), this);
-        getServer().getPluginManager().registerEvents(new PermissionChange(), this);
-        getServer().getPluginManager().registerEvents(new PlayerJoin(), this);
-        getServer().getPluginManager().registerEvents(new PlayerLogin(), this);
-        getServer().getPluginManager().registerEvents(new PlayerQuit(), this);
-        getServer().getPluginManager().registerEvents(new AsyncPlayerChat(), this);
-        getServer().getPluginManager().registerEvents(new PlayerSettingsChange(), this);
-        getServer().getPluginManager().registerEvents(new InventoryClick(), this);
-        getServer().getPluginManager().registerEvents(new PlayerCommandPreprocess(), this);
-        getServer().getPluginManager().registerEvents(new SignChange(), this);
+        registerEvents(
+                new LabyModPlayerJoin(),
+                new LanguageChange(),
+                new PermissionChange(),
+                new EntityDamageByEntity(),
+                new PlayerInteractEntity(),
+                new PlayerJoin(),
+                new PlayerLogin(),
+                new PlayerQuit(),
+                new AsyncPlayerChat(),
+                new PlayerSettingsChange(),
+                new InventoryClick(),
+                new PlayerCommandPreprocess(),
+                new SignChange()
+        );
     }
 
     public MySQL getMySQL(MySQLDatabase database) {
@@ -326,10 +344,10 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public NPC constructNpc(String name, String displayname, String skinName, Location location) {
+    public NPC constructNpc(String name, String displayname, String skinName, NpcData.SkinKind skinKind, Location location) throws RuntimeCoreException {
         return new eu.mcone.coresystem.bukkit.npc.NPC(
                 worldManager.getWorld(location.getWorld()),
-                new NpcData(name, displayname, skinName, new CoreLocation(location))
+                new NpcData(name, displayname, skinName, skinKind, new CoreLocation(location))
         );
     }
 
@@ -386,9 +404,13 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public void modifyProfileInventory(int inventorySize, ProfileInventoryModifier modifier) {
+    public void modifyProfileInventory(ProfileInventoryModifier modifier) {
+        ProfileInventory.addModifier(modifier);
+    }
+
+    @Override
+    public void setProfileInventorySize(int inventorySize) {
         ProfileInventory.setSize(inventorySize);
-        ProfileInventory.setModifier(modifier);
     }
 
     @Override

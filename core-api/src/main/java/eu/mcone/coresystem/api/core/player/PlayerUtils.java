@@ -11,19 +11,18 @@ import java.util.UUID;
 public interface PlayerUtils {
 
     /**
-     * Returns the skin info of a player with the specified UUID, the UUID can also be passed through the fetchUuid method.
-     * @param name
-     * @param category
-     * @return
+     * Returns the skin info of a player with the specified UUID
+     * @param uuid uuid
+     * @return skin
      */
-    SkinInfo getSkinInfo(String name, String category);
+    SkinInfo getSkinInfo(UUID uuid);
 
     /**
-     * Uploads the Skin Info from the Player.
-     * @param uuid Player uuid
-     * @param category Texture Category
+     * Returns the skin info of a player with the specified name
+     * @param name name
+     * @return skin
      */
-    void uploadSkinInfo(UUID uuid, String category);
+    SkinInfo getSkinInfo(String name);
 
     /**
      * fetch uuid from name, first method is getting from database
@@ -61,12 +60,5 @@ public interface PlayerUtils {
      * @return new SkinInfo object
      */
     SkinInfo constructSkinInfo(String name, String value, String signature);
-
-    /**
-     * construct new SkinInfo with in database stored texture
-     * @param databaseName data texture name
-     * @return new SkinInfo object
-     */
-    SkinInfo constructSkinInfo(String databaseName);
     
 }

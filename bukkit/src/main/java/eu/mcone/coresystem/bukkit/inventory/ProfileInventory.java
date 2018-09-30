@@ -17,12 +17,14 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ProfileInventory extends CoreInventory {
 
     @Setter
     private static int size;
-    @Setter
-    private static ProfileInventoryModifier modifier;
+    private static List<ProfileInventoryModifier> modifiers = new ArrayList<>();
 
     public ProfileInventory(Player p) {
         super("§8» §3§l" + p.getName() + "'s Profil", p, (size > 0) ? size : InventorySlot.ROW_4, Option.FILL_EMPTY_SLOTS);
@@ -60,9 +62,15 @@ public class ProfileInventory extends CoreInventory {
             p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
         });
 
-        if (modifier != null) modifier.onCreate(this, p);
+        for (ProfileInventoryModifier modifier : modifiers) {
+            modifier.onCreate(this, p);
+        }
 
         openInventory();
+    }
+
+    public static void addModifier(ProfileInventoryModifier modifier) {
+        modifiers.add(modifier);
     }
 
 }

@@ -11,7 +11,6 @@ import eu.mcone.coresystem.api.bungee.event.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.FriendData;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
-import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
@@ -27,6 +26,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.bson.Document;
 
 import java.net.InetAddress;
+import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.lte;
@@ -45,8 +45,8 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     @Getter @Setter
     private SkinInfo nickedSkin;
 
-    public BungeeCorePlayer(CoreSystem instance, InetAddress address, String name) throws PlayerNotResolvedException {
-        super(instance, address, name);
+    public BungeeCorePlayer(CoreSystem instance, InetAddress address, UUID uuid, String name) {
+        super(instance, address, uuid, name);
 
         MongoDatabase db = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM);
         Document muteEntry = db.getCollection("bungeesystem_bansystem_mute").find(eq("uuid", uuid.toString())).first();

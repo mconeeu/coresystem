@@ -9,6 +9,7 @@ package eu.mcone.coresystem.bukkit.command;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
+import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
@@ -68,7 +69,12 @@ public class NpcCMD extends CorePlayerCommand {
                     if (i < args.length - 1) line.append(" ");
                 }
 
-                api.addNPC(args[1], line.toString().replaceAll("&", "§"), args[2], p.getLocation());
+                if (args[2].contains("Player~")) {
+                    api.addNPC(args[1], line.toString().replaceAll("&", "§"), args[2].split("Player~")[1], NpcData.SkinKind.PLAYER, p.getLocation());
+                } else {
+                    api.addNPC(args[1], line.toString().replaceAll("&", "§"), args[2], NpcData.SkinKind.DATABASE, p.getLocation());
+                }
+
                 BukkitCoreSystem.getInstance().getMessager().send(p, "§2NPC §f" + args[1] + "§2 erfolgreich hinzugefügt!");
                 return true;
             } else if (args[0].equalsIgnoreCase("update")) {
@@ -80,7 +86,12 @@ public class NpcCMD extends CorePlayerCommand {
 
                 CoreWorld oldWord = CoreSystem.getInstance().getWorldManager().getWorld(args[1]);
                 if (oldWord != null) {
-                    api.updateNPC(oldWord, args[2], p.getLocation(), args[3], line.toString().replaceAll("&", "§"));
+                    if (args[2].contains("Player~")) {
+                        api.updateNPC(oldWord, args[2], p.getLocation(), args[3].split("Player~")[1], NpcData.SkinKind.PLAYER, line.toString().replaceAll("&", "§"));
+                    } else {
+                        api.updateNPC(oldWord, args[2], p.getLocation(), args[3], NpcData.SkinKind.DATABASE, line.toString().replaceAll("&", "§"));
+                    }
+
                     BukkitCoreSystem.getInstance().getMessager().send(p, "§2NPC §f" + args[2] + "§2 erfolgreich upgedated!");
                 } else {
                     BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene Welt existiert nicht!");

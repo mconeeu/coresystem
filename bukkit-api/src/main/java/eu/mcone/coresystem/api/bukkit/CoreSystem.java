@@ -13,19 +13,18 @@ import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
+import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.api.bukkit.player.AfkManager;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.NickManager;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
-import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
-import eu.mcone.coresystem.api.bukkit.util.CorePluginManager;
-import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
-import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
+import eu.mcone.coresystem.api.bukkit.util.*;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.WorldManager;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
+import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.labymod.LabyModAPI;
 import lombok.Getter;
@@ -102,6 +101,12 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     public abstract ChannelHandler getChannelHandler();
 
     /**
+     * returns the BCS DatabaseSkinManager
+     * @return DatabaseSkinManager instance
+     */
+    public abstract DatabaseSkinManager getDatabaseSkinManager();
+
+    /**
      * returns the CoreSystems instance of Gson. Use this for better performance
      * @return gson instance
      */
@@ -159,10 +164,11 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @param name config name
      * @param displayname npcs displayname
      * @param skinName skinName from bungeesystem_textures database
+     * @param skinKind choose PLAYER and pass an username as skinName or choose DATABASE and pass a database name as skinName
      * @param location location
      * @return NPC instance
      */
-    public abstract NPC constructNpc(String name, String displayname, String skinName, Location location);
+    public abstract NPC constructNpc(String name, String displayname, String skinName, NpcData.SkinKind skinKind, Location location) throws CoreException;
 
     /**
      * constructs a new Hologram without automatically setting it for all players
@@ -226,9 +232,14 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     /**
      * allows you to add items to the ProfileInventory
-     * @param inventorySize size of the ProfileInventory
      * @param modifier ProfileInventoryModifier
      */
-    public abstract void modifyProfileInventory(int inventorySize, ProfileInventoryModifier modifier);
+    public abstract void modifyProfileInventory(ProfileInventoryModifier modifier);
+
+    /**
+     * allows you to change the size of the ProfileInventory
+     * @param inventorySize size of the ProfileInventory
+     */
+    public abstract void setProfileInventorySize(int inventorySize);
 
 }

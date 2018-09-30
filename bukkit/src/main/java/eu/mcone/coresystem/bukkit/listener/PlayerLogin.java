@@ -6,11 +6,13 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
-import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
+import com.mojang.authlib.properties.Property;
+import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.player.BukkitCorePlayer;
 import eu.mcone.coresystem.bukkit.player.PermissibleBase;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -26,13 +28,9 @@ public class PlayerLogin implements Listener {
         Player p = e.getPlayer();
         setPermissions(p);
 
-        try {
-            new BukkitCorePlayer(BukkitCoreSystem.getInstance(), e.getAddress(), p.getUniqueId());
-            p.setDisplayName(p.getName());
-        } catch (PlayerNotResolvedException ex) {
-            p.kickPlayer("Ein Fehler ist aufgetreten. UUID could not be fetched from database...");
-            ex.printStackTrace();
-        }
+        Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
+        new BukkitCorePlayer(BukkitCoreSystem.getInstance(), e.getAddress(), new SkinInfo(p.getName(), textures.getValue(), textures.getSignature()), p.getUniqueId(), p.getName());
+        p.setDisplayName(p.getName());
     }
 
     public static void setPermissions(Player p) {

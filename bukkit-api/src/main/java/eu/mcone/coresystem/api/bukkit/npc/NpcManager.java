@@ -24,18 +24,20 @@ public interface NpcManager {
      * @param name config name
      * @param displayname npc display name
      * @param skinName skin name from bungeesystem_textures database
+     * @param skinKind choose PLAYER and pass an username as skinName or choose DATABASE and pass a database name as skinName
      * @param location location of the npc
      */
-    void addLocalNPC(String name, String displayname, String skinName, Location location);
+    void addLocalNPC(String name, String displayname, String skinName, NpcData.SkinKind skinKind, Location location);
 
     /**
      * create new NPC
      * @param name config name
      * @param displayname npc display name
      * @param skinName skin name from bungeesystem_textures database
+     * @param skinKind choose PLAYER and pass an username as skinName or choose DATABASE and pass a database name as skinName
      * @param location location of the npc
      */
-    void addNPC(String name, String displayname, String skinName, Location location);
+    void addNPC(String name, String displayname, String skinName, NpcData.SkinKind skinKind, Location location);
 
     /**
      * updates the NpcData of an existing NPC

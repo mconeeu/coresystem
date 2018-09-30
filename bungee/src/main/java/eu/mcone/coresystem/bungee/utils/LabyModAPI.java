@@ -6,11 +6,9 @@
 
 package eu.mcone.coresystem.bungee.utils;
 
-import com.google.gson.JsonElement;
 import eu.mcone.coresystem.api.bungee.event.LabyModMessageSendEvent;
 import eu.mcone.coresystem.api.core.labymod.LabyPermission;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
-import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.core.labymod.LabyModConnectionHandler;
 import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;

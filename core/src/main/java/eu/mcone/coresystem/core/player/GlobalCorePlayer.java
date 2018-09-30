@@ -27,6 +27,12 @@ public abstract class GlobalCorePlayer extends GlobalOfflineCorePlayer implement
     @Getter @Setter
     private LabyModConnection labyModConnection;
 
+    protected GlobalCorePlayer(final GlobalCoreSystem instance, final InetAddress address, UUID uuid, String name) {
+        super(instance, uuid, name, true);
+        this.ipAdress = address.toString().split("/")[1];
+        this.joined = System.currentTimeMillis() / 1000;
+    }
+
     protected GlobalCorePlayer(final GlobalCoreSystem instance, final InetAddress address, UUID uuid) throws PlayerNotResolvedException {
         super(instance, uuid, true);
         this.ipAdress = address.toString().split("/")[1];

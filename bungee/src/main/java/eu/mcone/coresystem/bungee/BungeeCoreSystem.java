@@ -134,7 +134,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             put("maintenance", false);
             put("betaKeySystem", false);
         }});
-        playerUtils = new PlayerUtils(mongoDB);
+        playerUtils = new PlayerUtils(this);
         coinsUtil = new CoinsUtil(this);
 
         cloudsystemAvailable = checkIfCloudSystemAvailable();
@@ -242,7 +242,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         getProxy().getPluginManager().registerListener(this, new ProxyPing());
         getProxy().getPluginManager().registerListener(this, new PlayerSettingsChange());
         getProxy().getPluginManager().registerListener(this, new ServerConnect());
-        getProxy().getPluginManager().registerListener(this, new PreLogin());
+        getProxy().getPluginManager().registerListener(this, new Login());
         getProxy().getPluginManager().registerListener(this, new PlayerDisconnect());
         getProxy().getPluginManager().registerListener(this, new TabComplete());
         getProxy().getPluginManager().registerListener(this, new ServerKick());

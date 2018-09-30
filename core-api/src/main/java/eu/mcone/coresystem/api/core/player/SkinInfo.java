@@ -6,39 +6,13 @@
 
 package eu.mcone.coresystem.api.core.player;
 
-import eu.mcone.coresystem.api.core.exception.CoreException;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-public interface SkinInfo {
+@AllArgsConstructor
+public class SkinInfo {
 
-    /**
-     * downloads skin data from database by predefined texture name
-     * @return this
-     * @throws CoreException thrown if texture name can not be found in database
-     */
-    SkinInfo downloadSkinData() throws CoreException;
-
-    /**
-     * Loads the skin data passed in the class constructor into the mc1 database
-     * @throws CoreException thrown if texture name already exists in the database
-     */
-    void uploadSkindata() throws CoreException;
-
-    /**
-     * get the skins texture database name, null if not set
-     * @return texture database name
-     */
-    String getName();
-
-    /**
-     * get the skins mojang-value
-     * @return mojang-value
-     */
-    String getValue();
-
-    /**
-     * get the skins mojang-signature
-     * @return mojang signature
-     */
-    String getSignature();
+    @Getter
+    private String name, value, signature;
 
 }

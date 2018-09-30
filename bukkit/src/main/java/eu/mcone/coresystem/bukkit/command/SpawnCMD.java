@@ -25,7 +25,7 @@ public class SpawnCMD extends CorePlayerCommand {
                 world.setLocation("spawn", world.bukkit().getSpawnLocation());
             }
         } else {
-            CoreSystem.getInstance().sendConsoleMessage("§cThe world name is null, please check all world directories");
+            CoreSystem.getInstance().sendConsoleMessage("§cSpawnCMD: The world is null, please check all world directories");
         }
     }
 

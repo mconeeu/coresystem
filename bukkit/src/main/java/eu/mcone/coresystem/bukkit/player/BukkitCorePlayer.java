@@ -14,9 +14,9 @@ import eu.mcone.coresystem.api.bukkit.player.Stats;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
+import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
 
 public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, OfflineCorePlayer {
@@ -42,10 +43,21 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     @Getter
     private CoreScoreboard scoreboard;
     private Map<Gamemode, StatsAPI> stats;
+    @Getter
+    private SkinInfo skin;
 
-    public BukkitCorePlayer(CoreSystem instance, InetAddress address, UUID uuid) throws PlayerNotResolvedException {
-        super(instance, address, uuid);
+    public BukkitCorePlayer(CoreSystem instance, InetAddress address, SkinInfo skinInfo, UUID uuid, String name) {
+        super(instance, address, uuid, name);
         this.stats = new HashMap<>();
+        this.skin = skinInfo;
+
+        instance.runAsync(() -> ((BukkitCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(
+                eq("uuid", uuid.toString()),
+                combine(
+                        set("texture_value", skinInfo.getValue()),
+                        set("texture_signature", skinInfo.getSignature())
+                )
+        ));
 
         ((BukkitCoreSystem) instance).getCorePlayers().put(uuid, this);
         BukkitCoreSystem.getInstance().sendConsoleMessage("Loaded Player " + name + "!");

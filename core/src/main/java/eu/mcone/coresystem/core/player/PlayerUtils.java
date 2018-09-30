@@ -10,7 +10,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
+import eu.mcone.coresystem.core.CoreModuleCoreSystem;
+import eu.mcone.networkmanager.core.api.database.Database;
 import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 import org.bson.Document;
 
@@ -18,35 +21,108 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.combine;
+import static com.mongodb.client.model.Updates.set;
+import static com.mongodb.client.model.Updates.setOnInsert;
 
 public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUtils {
 
-    private HashMap<String, UUID> cache = new HashMap<>();
+    private final HashMap<String, UUID> uuidCache = new HashMap<>();
+    private final HashMap<UUID, SkinInfo> skinCache = new HashMap<>();
+    private final GlobalCoreSystem instance;
     private final MongoDatabase database;
 
-    public PlayerUtils(MongoDatabase database) {
-        this.database = database;
+    public PlayerUtils(CoreModuleCoreSystem instance) {
+        this.instance = (GlobalCoreSystem) instance;
+        this.database = instance.getMongoDB(Database.SYSTEM);
     }
 
     @Override
     public SkinInfo constructSkinInfo(String name, String value, String signature) {
-        return new eu.mcone.coresystem.core.player.SkinInfo(database, name, value, signature);
+        return new SkinInfo(name, value, signature);
+    }
+
+    private SkinInfo fetchSkinFromMojangAPI(UUID uuid) {
+        try {
+            URL skinURL = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString() + "?unsigned=false");
+
+            InputStream skinIS = skinURL.openStream();
+            InputStreamReader skinISR = new InputStreamReader(skinIS);
+            BufferedReader skinBR = new BufferedReader(skinISR);
+
+            String sSkin;
+            StringBuilder sbSkin = new StringBuilder();
+            while ((sSkin = skinBR.readLine()) != null) {
+                sbSkin.append(sSkin);
+            }
+
+            String skinResult = sbSkin.toString();
+            JsonElement jsonElement = new JsonParser().parse(skinResult);
+
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            JsonArray properties = jsonObject.getAsJsonArray("properties");
+            JsonObject objectProperties = properties.get(0).getAsJsonObject();
+
+            String player_name = jsonObject.get("name").toString().replaceAll("\"", "");
+            String value = objectProperties.get("value").toString().replaceAll("\"", "");
+            String signature = objectProperties.get("signature").toString().replaceAll("\"", "");
+
+            skinIS.close();
+            skinISR.close();
+            skinBR.close();
+
+            SkinInfo skin = new SkinInfo(player_name, value, signature);
+            instance.runAsync(() -> database.getCollection("userinfo").updateOne(
+                    eq("uuid", uuid.toString()),
+                    combine(
+                            setOnInsert("uuid", uuid),
+                            setOnInsert("name", player_name),
+                            set("texture_value", value),
+                            set("texture_signature", signature)
+                    )
+            ));
+
+            skinCache.put(uuid, skin);
+            return skin;
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        return null;
     }
 
     @Override
-    public SkinInfo constructSkinInfo(String databaseName) {
-        return new eu.mcone.coresystem.core.player.SkinInfo(database, databaseName);
+    public SkinInfo getSkinInfo(UUID uuid) {
+        if (skinCache.containsKey(uuid)) {
+            return skinCache.get(uuid);
+        } else {
+            Document entry = database.getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
+
+            if (entry != null) {
+                uuidCache.put(entry.getString("name"), uuid);
+                return constructSkinInfo(entry.getString("name"), entry.getString("texture_value"), entry.getString("texture_signature"));
+            } else {
+                return fetchSkinFromMojangAPI(uuid);
+            }
+        }
+    }
+
+    @Override
+    public SkinInfo getSkinInfo(String name) {
+        if (uuidCache.containsKey(name)) {
+            return getSkinInfo(uuidCache.get(name));
+        } else {
+            return getSkinInfo(fetchUuid(name));
+        }
     }
 
     @Override
     public UUID fetchUuid(final String name) {
-        if (cache.containsKey(name)) return cache.get(name);
+        if (uuidCache.containsKey(name)) return uuidCache.get(name);
 
         Document dbEntry = database.getCollection("userinfo").find(eq("name", name)).first();
         if (dbEntry != null) {
@@ -58,7 +134,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
 
     @Override
     public String fetchName(final UUID uuid) {
-        for (HashMap.Entry<String, UUID> entry : cache.entrySet()) {
+        for (HashMap.Entry<String, UUID> entry : uuidCache.entrySet()) {
             if (entry.getValue().equals(uuid)) {
                 return entry.getKey();
             }
@@ -69,109 +145,6 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
             return dbEntry.getString("name");
         } else {
             return fetchNameFromMojangAPI(uuid);
-        }
-    }
-
-    @Override
-    public eu.mcone.coresystem.core.player.SkinInfo getSkinInfo(String name, String category) {
-        try {
-            Document entry = database.getCollection("bungeesystem_textures").find(eq("name", name)).first();
-
-            if (entry == null) {
-               String UUIDString = fetchUuid(name).toString().replaceAll("-", "");
-               UUID playerUUID = UUID.fromString(UUIDString);
-
-                //SKIN
-                URL skinURL = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + playerUUID + "?unsigned=false");
-
-                InputStream skinIS = skinURL.openStream();
-                InputStreamReader skinISR = new InputStreamReader(skinIS);
-                BufferedReader skinBR = new BufferedReader(skinISR);
-
-                String sSkin;
-                StringBuilder sbSkin = new StringBuilder();
-                while ((sSkin = skinBR.readLine()) != null) {
-                    sbSkin.append(sSkin);
-                }
-
-                String skinResult = sbSkin.toString();
-                JsonElement jsonElement = new JsonParser().parse(skinResult);
-
-                JsonObject jsonObject = jsonElement.getAsJsonObject();
-                JsonArray properties = jsonObject.getAsJsonArray("properties");
-                JsonObject objectProperties = properties.get(0).getAsJsonObject();
-
-                String player_name = jsonObject.get("name").toString().replaceAll("\"", "");
-                String value = objectProperties.get("value").toString().replaceAll("\"", "");
-                String signature = objectProperties.get("signature").toString().replaceAll("\"", "");
-
-                skinIS.close();
-                skinISR.close();
-                skinBR.close();
-
-                System.out.println("Return minecraft skinData");
-                return new eu.mcone.coresystem.core.player.SkinInfo(database, player_name, value, signature);
-            } else {
-                if (entry.getString("category").equalsIgnoreCase(category)) {
-                    System.out.println("Return database skinData");
-                    return new eu.mcone.coresystem.core.player.SkinInfo(database, entry.getString("name"), entry.getString("texture_value"), entry.getString("texture_signature"));
-                } else {
-                    System.out.println("Cannot find the skin data with the category '" + category +"'");
-                    return null;
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    public void uploadSkinInfo(UUID uuid, String category) {
-        try {
-            String name = fetchName(uuid);
-
-            Document entry = database.getCollection("bungeesystem_textures").find(eq("name", name)).first();
-            if (entry == null) {
-                //SKIN
-                URL skinURL = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString().replaceAll("-", "") + "?unsigned=false");
-
-                InputStream skinIS = skinURL.openStream();
-                InputStreamReader skinISR = new InputStreamReader(skinIS);
-                BufferedReader skinBR = new BufferedReader(skinISR);
-
-                String sSkin;
-                StringBuilder sbSkin = new StringBuilder();
-                while ((sSkin = skinBR.readLine()) != null) {
-                    sbSkin.append(sSkin);
-                }
-
-                String skinResult = sbSkin.toString();
-                JsonElement jsonElement = new JsonParser().parse(skinResult);
-
-                JsonObject jsonObject = jsonElement.getAsJsonObject();
-                JsonArray properties = jsonObject.getAsJsonArray("properties");
-                JsonObject objectProperties = properties.get(0).getAsJsonObject();
-
-                String player_name = jsonObject.get("name").toString().replaceAll("\"", "");
-                String value = objectProperties.get("value").toString().replaceAll("\"", "");
-                String signature = objectProperties.get("signature").toString().replaceAll("\"", "");
-
-                skinIS.close();
-                skinISR.close();
-                skinBR.close();
-
-                database.getCollection("bungeesystem_textures").insertOne
-                        (
-                                new Document("name", player_name)
-                                .append("category", category)
-                                .append("texture_value", value)
-                                .append("texture_signature", signature)
-                        );
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -196,7 +169,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
                 String uuid = obj.get("id").getAsString();
 
                 UUID uuidResult = UUID.fromString(fromTrimmed(uuid));
-                cache.put(name, uuidResult);
+                uuidCache.put(name, uuidResult);
 
                 return uuidResult;
             } catch (IllegalStateException e) {
@@ -228,7 +201,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
                 JsonObject obj = element.getAsJsonObject();
                 String name = obj.get("name").getAsString();
 
-                cache.put(name, uuid);
+                uuidCache.put(name, uuid);
 
                 return name;
             } catch (IllegalStateException e) {

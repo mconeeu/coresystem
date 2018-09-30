@@ -10,6 +10,7 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
+import eu.mcone.coresystem.api.core.exception.NpcCreateException;
 import eu.mcone.coresystem.api.core.exception.RuntimeCoreException;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.NpcCMD;
@@ -67,10 +68,10 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
         this.npcs.clear();
         for (CoreWorld w : CoreSystem.getInstance().getWorldManager().getWorlds()) {
             for (NpcData data : ((BukkitCoreWorld) w).getNpcData()) {
-                if (data.getSkinName() != null) {
+                try {
                     this.npcs.add(new NPC(w, data));
-                } else {
-                    throw new RuntimeCoreException("NPC " + data.getName() + " besitzt keine Textur!");
+                } catch (NpcCreateException e) {
+                    CoreSystem.getInstance().sendConsoleMessage("§4The texture §c'"+data.getSkinName()+"'§4 of NPC §c" + data.getName() + "§4 does not exist in database!");
                 }
             }
         }
@@ -82,29 +83,37 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
     }
 
     @Override
-    public void addLocalNPC(String name, String displayname, String skinName, Location location) {
-        NpcData data = new NpcData(name, displayname, skinName, new CoreLocation(location));
+    public void addLocalNPC(String name, String displayname, String skinName, NpcData.SkinKind skinKind, Location location) {
+        NpcData data = new NpcData(name, displayname, skinName, skinKind, new CoreLocation(location));
         BukkitCoreWorld world = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(location.getWorld());
 
-        NPC npc = new NPC(world, data);
-        npc.setLocal(true);
+        try {
+            NPC npc = new NPC(world, data);
+            npc.setLocal(true);
 
-        this.npcs.add(npc);
-        this.updateNPCs();
+            this.npcs.add(npc);
+            this.updateNPCs();
+        } catch (NpcCreateException e) {
+            CoreSystem.getInstance().sendConsoleMessage("§4The texture §c'"+data.getSkinName()+"'§4 of NPC §c" + data.getName() + "§4 does not exist in database!");
+        }
     }
 
     @Override
-    public void addNPC(String name, String displayname, String skinName, Location location) {
-        NpcData data = new NpcData(name, displayname, skinName, new CoreLocation(location));
+    public void addNPC(String name, String displayname, String skinName, NpcData.SkinKind skinKind, Location location) {
+        NpcData data = new NpcData(name, displayname, skinName, skinKind, new CoreLocation(location));
         BukkitCoreWorld world = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(location.getWorld());
 
-        NPC npc = new NPC(world, data);
+        try {
+            NPC npc = new NPC(world, data);
 
-        this.npcs.add(npc);
-        this.updateNPCs();
+            this.npcs.add(npc);
+            this.updateNPCs();
 
-        world.getNpcData().add(data);
-        world.save();
+            world.getNpcData().add(data);
+            world.save();
+        } catch (NpcCreateException e) {
+            CoreSystem.getInstance().sendConsoleMessage("§4The texture §c'"+data.getSkinName()+"'§4 of NPC §c" + data.getName() + "§4 does not exist in database!");
+        }
     }
 
     public void removeNPC(CoreWorld w, String name) {
@@ -130,29 +139,33 @@ public class NpcManager implements Listener, eu.mcone.coresystem.api.bukkit.npc.
     public void updateNPC(eu.mcone.coresystem.api.bukkit.npc.NPC oldNpc, NpcData newData) {
         BukkitCoreWorld w = (BukkitCoreWorld) oldNpc.getWorld();
 
-        NPC npc = new NPC(w, newData);
-        npc.setLocal(oldNpc.isLocal());
+        try {
+            NPC npc = new NPC(w, newData);
+            npc.setLocal(oldNpc.isLocal());
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            oldNpc.unset(p);
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                oldNpc.unset(p);
+            }
+
+            if (!oldNpc.isLocal()) {
+                w.getNpcData().remove(oldNpc.getData());
+                w.getNpcData().add(newData);
+                w.save();
+            }
+
+            this.npcs.remove(oldNpc);
+            this.npcs.add(npc);
+            this.updateNPCs();
+        } catch (NpcCreateException e) {
+            CoreSystem.getInstance().sendConsoleMessage("§4The texture §c'"+newData.getSkinName()+"'§4 of NPC §c" + newData.getName() + "§4 does not exist in database!");
         }
-
-        if (!oldNpc.isLocal()) {
-            w.getNpcData().remove(oldNpc.getData());
-            w.getNpcData().add(newData);
-            w.save();
-        }
-
-        this.npcs.remove(oldNpc);
-        this.npcs.add(npc);
-        this.updateNPCs();
     }
 
-    public void updateNPC(CoreWorld w, String name, Location loc, String skinName, String displayname) {
+    public void updateNPC(CoreWorld w, String name, Location loc, String skinName, NpcData.SkinKind skinKind, String displayname) {
         NPC oldNPC = getNPC(w, name);
 
         if (oldNPC != null) {
-            updateNPC(oldNPC, new NpcData(name, displayname, skinName, new CoreLocation(loc)));
+            updateNPC(oldNPC, new NpcData(name, displayname, skinName, skinKind, new CoreLocation(loc)));
         } else {
             throw new RuntimeCoreException("Tried to update NPC "+name+" on w "+w.getName()+", but npcs list in NpcManager does not cointain it!");
         }

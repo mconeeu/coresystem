@@ -6,11 +6,13 @@
 
 package eu.mcone.coresystem.api.bukkit;
 
+import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import lombok.Getter;
 import org.bukkit.ChatColor;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin {
@@ -37,6 +39,18 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin 
 
     public void sendConsoleMessage(String message) {
         getServer().getConsoleSender().sendMessage(consolePrefix+message);
+    }
+
+    public void registerEvents(Listener... listeners) {
+        for (Listener listener : listeners) {
+            getServer().getPluginManager().registerEvents(listener, this);
+        }
+    }
+
+    public void registerCommands(CoreCommand... commands) {
+        for (CoreCommand command : commands) {
+            CoreSystem.getInstance().getPluginManager().registerCoreCommand(command, this);
+        }
     }
 
 }

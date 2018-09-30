@@ -11,6 +11,7 @@ import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
+import eu.mcone.coresystem.api.core.player.SkinInfo;
 import org.bukkit.entity.Player;
 
 public interface CorePlayer extends GlobalCorePlayer {
@@ -51,6 +52,12 @@ public interface CorePlayer extends GlobalCorePlayer {
      * @return StatsAPI object
      */
     Stats getStats(Gamemode gamemode);
+
+    /**
+     * returns the players skin, given in Base64 encoded value and signature
+     * @return SkinInfo object
+     */
+    SkinInfo getSkin();
 
     /**
      * returns if the player afk

@@ -49,6 +49,19 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     @Getter @Setter
     protected PlayerSettings settings;
 
+    public GlobalOfflineCorePlayer(final GlobalCoreSystem instance, UUID uuid, String name, boolean online) {
+        this.instance = instance;
+
+        Document entry = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
+        if (entry != null) {
+            setDatabaseValues(entry, online);
+        } else {
+            setDefaultValuesAndRegister(uuid, name, online);
+        }
+
+        reloadPermissions();
+    }
+
     public GlobalOfflineCorePlayer(final GlobalCoreSystem instance, UUID uuid, boolean online) throws PlayerNotResolvedException {
         this.instance = instance;
 
@@ -57,7 +70,6 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
             setDatabaseValues(entry, online);
         } else {
             String name = instance.getPlayerUtils().fetchNameFromMojangAPI(uuid);
-            instance.getPlayerUtils().uploadSkinInfo(uuid, "player");
 
             if (name != null) {
                 setDefaultValuesAndRegister(uuid, name, online);
@@ -97,18 +109,20 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         this.state = online ? PlayerState.ONLINE : PlayerState.OFFLINE;
         this.isNew = true;
 
-        ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 is new! Registering in Database...");
-        ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo")
-                .insertOne(new Document("uuid", uuid.toString())
-                        .append("name", name)
-                        .append("groups", new ArrayList<>(Collections.singletonList(11)))
-                        .append("coins", coins)
-                        .append("ip", null)
-                        .append("timestamp", System.currentTimeMillis() / 1000)
-                        .append("player_settings", Document.parse(((CoreModuleCoreSystem) instance).getGson().toJson(new PlayerSettings(), PlayerSettings.class)))
-                        .append("state", online ? PlayerState.ONLINE.getId() : PlayerState.OFFLINE.getId())
-                        .append("online_time", onlinetime)
-                );
+        instance.runAsync(() -> {
+            ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 is new! Registering in Database...");
+            ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo")
+                    .insertOne(new Document("uuid", uuid.toString())
+                            .append("name", name)
+                            .append("groups", new ArrayList<>(Collections.singletonList(11)))
+                            .append("coins", coins)
+                            .append("ip", null)
+                            .append("timestamp", System.currentTimeMillis() / 1000)
+                            .append("player_settings", settings)
+                            .append("state", online ? PlayerState.ONLINE.getId() : PlayerState.OFFLINE.getId())
+                            .append("online_time", onlinetime)
+                    );
+        });
     }
 
     private void setDatabaseValues(Document entry, boolean online) {
@@ -120,7 +134,6 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         this.state = online ? PlayerState.ONLINE : PlayerState.getPlayerStateById(entry.getInteger("state"));
         this.onlinetime = entry.getLong("online_time");
         this.settings = ((CoreModuleCoreSystem) instance).getGson().fromJson(entry.get("player_settings", Document.class).toJson(), PlayerSettings.class);
-        instance.getPlayerUtils().uploadSkinInfo(uuid,"player");
     }
 
     @Override

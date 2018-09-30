@@ -16,6 +16,11 @@ import lombok.Setter;
 public final class NpcData {
 
     private String name, displayname, skinName;
+    private SkinKind skinKind = SkinKind.DATABASE;
     private CoreLocation location;
+
+    public enum SkinKind {
+        PLAYER, DATABASE
+    }
 
 }
