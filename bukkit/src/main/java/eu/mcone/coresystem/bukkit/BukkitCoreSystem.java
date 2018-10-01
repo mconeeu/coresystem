@@ -13,6 +13,8 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
+import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
+import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
@@ -34,6 +36,7 @@ import eu.mcone.coresystem.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.bukkit.inventory.ProfileInventory;
 import eu.mcone.coresystem.bukkit.labymod.LabyModAPI;
 import eu.mcone.coresystem.bukkit.listener.*;
+import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
 import eu.mcone.coresystem.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.bukkit.player.*;
 import eu.mcone.coresystem.bukkit.util.*;
@@ -269,6 +272,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new AsyncPlayerChat(),
                 new PlayerSettingsChange(),
                 new InventoryClick(),
+                new InventoryClose(),
                 new PlayerCommandPreprocess(),
                 new SignChange()
         );
@@ -382,6 +386,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Override
     public CoreActionBar createActionBar() {
         return new ActionBar();
+    }
+
+    @Override
+    public CoreAnvilInventory createAnvilInventory(AnvilClickEventHandler handler) {
+        return new AnvilInventory(handler);
     }
 
     @Override

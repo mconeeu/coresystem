@@ -11,6 +11,7 @@ import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.util.CorePluginManager;
 import eu.mcone.coresystem.api.core.exception.CoreException;
+import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
 import eu.mcone.coresystem.core.util.CooldownSystem;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -30,7 +31,8 @@ public class PluginManager implements CorePluginManager {
     @Getter
     private List<CorePlugin> corePlugins;
     private Map<CorePlugin, List<CoreCommand>> commands;
-    private Map<CorePlugin, Map<Player, CoreInventory>> inventories;
+    private Map<Player, CoreInventory> inventories;
+    private List<AnvilInventory> anvilInventories;
 
     static {
         try {
@@ -48,6 +50,7 @@ public class PluginManager implements CorePluginManager {
         this.corePlugins = new ArrayList<>();
         this.commands = new HashMap<>();
         this.inventories = new HashMap<>();
+        this.anvilInventories = new ArrayList<>();
     }
 
     public void disable() {
@@ -61,45 +64,31 @@ public class PluginManager implements CorePluginManager {
         if (!corePlugins.contains(plugin)) {
             corePlugins.add(plugin);
         } else {
-            throw new CoreException("CorePlugin "+plugin.getPluginName()+" already registered in BCS!");
+            throw new CoreException("CorePlugin " + plugin.getPluginName() + " already registered in BCS!");
         }
     }
 
     @Override
-    public void registerCoreInventory(CoreInventory inventory, Player player, CorePlugin plugin) {
-        if (inventories.getOrDefault(plugin, null) != null) {
-            inventories.get(plugin).put(player, inventory);
-        } else {
-            inventories.put(plugin, new HashMap<Player, CoreInventory>(){{
-                put(player, inventory);
-            }});
-        }
+    public void registerCoreInventory(CoreInventory inventory, Player player) {
+        inventories.put(player, inventory);
+    }
+
+    public void registerCoreAnvilInventory(AnvilInventory inventory) {
+        anvilInventories.add(inventory);
     }
 
     @Override
-    public CoreInventory getCoreInventory(CorePlugin plugin, String name) {
-        for (CoreInventory inv : inventories.getOrDefault(plugin, Collections.emptyMap()).values()) {
-            if (inv.getName().equals(name)) {
-                return inv;
-            }
-        }
-        return null;
+    public CoreInventory getCoreInventory(Player player) {
+        return inventories.getOrDefault(player, null);
     }
 
     @Override
     public Collection<CoreInventory> getCoreInventories() {
-        Set<CoreInventory> inventories = new HashSet<>();
-
-        for (Map<Player, CoreInventory> inventoryMap : this.inventories.values()) {
-            inventories.addAll(inventoryMap.values());
-        }
-
-        return inventories;
+        return inventories.values();
     }
 
-    @Override
-    public Collection<CoreInventory> getCoreInventories(CorePlugin plugin) {
-        return new ArrayList<>(inventories.getOrDefault(plugin, Collections.emptyMap()).values());
+    public Collection<AnvilInventory> getCoreAnvilInventories() {
+        return anvilInventories;
     }
 
     @Override

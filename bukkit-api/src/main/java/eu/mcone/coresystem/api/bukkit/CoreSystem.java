@@ -12,6 +12,8 @@ import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
+import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
+import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
@@ -205,6 +207,14 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return new ActionBar
      */
     public abstract CoreActionBar createActionBar();
+
+    /**
+     * creates a new AnvilInventory
+     * it can be set for more than one player using the open(Player) method
+     * @param handler ClickHandler
+     * @return new AnvilInventory
+     */
+    public abstract CoreAnvilInventory createAnvilInventory(AnvilClickEventHandler handler);
 
     /**
      * creates an CorePlayer object for an offline or online player

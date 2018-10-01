@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bukkit.world;
 
 import com.google.gson.stream.JsonReader;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.LocationCMD;
@@ -25,6 +26,7 @@ import java.util.Map;
 public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldManager {
 
     final static String CONFIG_NAME = "core-config.json";
+    final static int LATEST_CONFIG_VERSION = 1;
 
     private WorldCMD worldCMD;
     private List<BukkitCoreWorld> coreWorlds;
@@ -72,6 +74,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                                     wc.createWorld();
                                 }
 
+                                migrateConfig(w);
                                 w.save();
                                 coreWorlds.add(w);
                                 BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + w.getName());
@@ -216,11 +219,27 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                 new int[]{(int) loc.getX(), (int) loc.getY(), (int) loc.getZ()},
                 Collections.emptyMap(),
                 Collections.emptyList(),
-                Collections.emptyList()
+                Collections.emptyList(),
+                1
         );
         w.save();
 
         return w;
+    }
+
+    private static void migrateConfig(BukkitCoreWorld world) {
+        switch (world.getConfigVersion()) {
+            case 0: {
+                CoreSystem.getInstance().sendConsoleMessage("§7Updating Config from level 0 to 1...");
+                for (NpcData data : world.getNpcData()) {
+                    if (data.getSkinKind() == null) {
+                        data.setSkinKind(NpcData.SkinKind.DATABASE);
+                    }
+                }
+            }
+        }
+
+        world.setConfigVersion(LATEST_CONFIG_VERSION);
     }
 
 }

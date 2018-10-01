@@ -52,6 +52,8 @@ public class BukkitCoreWorld implements CoreWorld {
     private List<NpcData> npcData = new ArrayList<>();
     private List<HologramData> hologramData = new ArrayList<>();
 
+    private int configVersion = 0;
+
     @Override
     public World bukkit() {
         return Bukkit.getWorld(name);

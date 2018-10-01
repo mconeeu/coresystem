@@ -32,31 +32,23 @@ public interface CorePluginManager {
     /**
      * registers a new CoreInventory (not necessary, extending the CoreInventory class will do this)
      * @param inventory CoreInventory
-     * @param plugin CorePlugin
+     * @param player Player
      */
-    void registerCoreInventory(CoreInventory inventory, Player player, CorePlugin plugin);
+    void registerCoreInventory(CoreInventory inventory, Player player);
 
     /**
      * returns the CoreInventory with a specific name
      * null if no CoreInventory with that name exists
-     * @param plugin CorePlugin
-     * @param name displayname
+     * @param player Player
      * @return CoreInventory object
      */
-    CoreInventory getCoreInventory(CorePlugin plugin, String name);
+    CoreInventory getCoreInventory(Player player);
 
     /**
      * returns all current saved CoreInventories
      * @return list of all CoreInventories
      */
     Collection<CoreInventory> getCoreInventories();
-
-    /**
-     * returns all current saved CoreInventories registered by a specific plugin
-     * @param plugin CorePlugin
-     * @return list of all plugin CoreInventories
-     */
-    Collection<CoreInventory> getCoreInventories(CorePlugin plugin);
 
     /**
      * registers a new CoreCommand
