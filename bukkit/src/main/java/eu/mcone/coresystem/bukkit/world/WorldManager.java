@@ -220,7 +220,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                 Collections.emptyMap(),
                 Collections.emptyList(),
                 Collections.emptyList(),
-                1
+                LATEST_CONFIG_VERSION
         );
         w.save();
 

@@ -63,11 +63,19 @@
         <url>https://www.mcone.eu</url>
     </organization>
 
+    <repositories>
+        <repository>
+            <id>mcone-systems</id>
+            <name>MC ONE Repo</name>
+            <url>https://repo.mcone.eu/repository/mcone-systems/</url>
+        </repository>
+    </repositories>
+
     <distributionManagement>
         <repository>
             <id>mcone-systems</id>
             <name>MC ONE Repo</name>
-            <url>http://repo.mcone.eu/nexus/content/repositories/system/</url>
+            <url>https://repo.mcone.eu/repository/mcone-systems/</url>
         </repository>
     </distributionManagement>
 

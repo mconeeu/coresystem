@@ -84,13 +84,6 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>mcone-systems</id>
-            <url>http://repo.mcone.eu/nexus/content/repositories/system/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>eu.mcone.coresystem</groupId>
@@ -117,4 +110,5 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
 </project>

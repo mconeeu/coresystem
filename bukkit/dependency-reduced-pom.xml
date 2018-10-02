@@ -35,12 +35,6 @@
       </plugin>
     </plugins>
   </build>
-  <repositories>
-    <repository>
-      <id>mcone-systems</id>
-      <url>http://repo.mcone.eu/nexus/content/repositories/system/</url>
-    </repository>
-  </repositories>
   <dependencies>
     <dependency>
       <groupId>eu.mcone.cloud</groupId>

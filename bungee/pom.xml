@@ -86,10 +86,6 @@
             <id>bungeecord-repo</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
-        <repository>
-            <id>mcone-systems</id>
-            <url>http://repo.mcone.eu/nexus/content/repositories/system/</url>
-        </repository>
     </repositories>
 
     <dependencies>

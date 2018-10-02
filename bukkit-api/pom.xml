@@ -21,13 +21,6 @@
         <finalName>${project.parent.name}-${project.name}-${project.version}</finalName>
     </build>
 
-    <repositories>
-        <repository>
-            <id>mcone-systems</id>
-            <url>http://repo.mcone.eu/nexus/content/repositories/system/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>eu.mcone.coresystem</groupId>
