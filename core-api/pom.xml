@@ -21,6 +21,14 @@
         <finalName>${project.parent.name}-${project.name}-${project.version}</finalName>
     </build>
 
+    <repositories>
+        <repository>
+            <id>mcone-systems</id>
+            <name>MC ONE Repo</name>
+            <url>https://repo.mcone.eu/repository/mcone-systems/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>eu.mcone.networkmanager</groupId>
@@ -29,4 +37,5 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
+
 </project>
