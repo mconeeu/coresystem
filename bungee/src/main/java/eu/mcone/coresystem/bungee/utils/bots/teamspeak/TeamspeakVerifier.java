@@ -4,7 +4,7 @@
  *
  */
 
-package eu.mcone.coresystem.bungee.utils;
+package eu.mcone.coresystem.bungee.utils.bots.teamspeak;
 
 import com.github.theholywaffle.teamspeak3.TS3ApiAsync;
 import com.github.theholywaffle.teamspeak3.TS3Config;
@@ -42,6 +42,7 @@ import java.util.stream.IntStream;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.*;
 
+//TODO: Make TeamspeakVerifier as NetworkHandler module
 public class TeamspeakVerifier {
 
     private final static TS3Config CONFIG = new TS3Config()
@@ -101,7 +102,7 @@ public class TeamspeakVerifier {
                     } else if (registering.containsValue(e.getInvokerUniqueId())) {
                         Set<UUID> toDelete = new HashSet<>();
 
-                        api.sendPrivateMessage(e.getInvokerId(), "[b][color=darkred]Der Spieler [/color][color=red]" + e.getMessage() + "[/color][color=darkred] ist nicht online! Der Vorgang wurde abgebrochen.[/color][/b]");
+                        api.sendPrivateMessage(e.getInvokerId(), "[b][color=darkred]Der Spieler [/color][color=red]" + e.getMessage() + "[/color][color=darkred] ist nicht online! Der Verifizierungsvorgang wurde abgebrochen.[/color][/b]");
                         for (HashMap.Entry<UUID, String> entry : registering.entrySet()) {
                             if (entry.getValue().equals(e.getInvokerUniqueId())) {
                                 BungeeCoreSystem.getInstance().getMessager().send(ProxyServer.getInstance().getPlayer(entry.getKey()), "§4Der Verknüpfungsvorgang wurde abgebrochen, da der TeamSpeak Client einen anderen Minecraftnamen angegeben hat.");
@@ -135,7 +136,7 @@ public class TeamspeakVerifier {
                             }
                         } else if (BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("teamspeak_uid", clientInfo.getUniqueIdentifier())).first() == null) {
                             unsetLinkedGroups(clientInfo);
-                            api.sendPrivateMessage(clientInfo.getId(), "[b][color=white]Dir wurde der Verifizierten-Rang entfernt, da du keinen Minecraft-Account mit deiner TeamSpeak-ID verlinkt hast.[/color][/b]");
+                            api.sendPrivateMessage(clientInfo.getId(), "[b][color=white]Dir wurde der Verifizierten-Rang entfernt, da du keinen OneNetwork-Account mit deiner TeamSpeak-ID verlinkt hast.[/color][/b]");
                         }
                     }).onFailure(Throwable::printStackTrace);
                 }
@@ -322,6 +323,10 @@ public class TeamspeakVerifier {
                     then.run();
                 }).onFailure(Throwable::printStackTrace)
         ).onFailure(Throwable::printStackTrace);
+    }
+
+    public boolean isBotRunning() {
+        return query.isConnected();
     }
 
 }

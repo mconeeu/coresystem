@@ -130,4 +130,17 @@ public interface GlobalOfflineCorePlayer {
      */
     boolean isTeamspeakIdLinked();
 
+    /**
+     * returns the Discord UID from the players linked Discord identity
+     * if no Discord identity is linked null will be returned
+     * @return TeamSpeak UID
+     */
+    String getDiscordUid();
+
+    /**
+     * returns whether the player has a linked Discord ID
+     * @return player has linked TS ID in database
+     */
+    boolean isDiscordIdLinked();
+
 }

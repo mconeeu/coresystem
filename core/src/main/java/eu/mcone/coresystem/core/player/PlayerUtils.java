@@ -151,7 +151,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
     @Override
     public UUID fetchUuidFromMojangAPI(final String name) {
         try {
-            URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + name);
+            URL url = new URL("https://api.mojang.com/users/profile/minecraft/" + name);
             InputStream stream = url.openStream();
             InputStreamReader inr = new InputStreamReader(stream);
             BufferedReader reader = new BufferedReader(inr);

@@ -4,7 +4,7 @@
  *
  */
 
-package eu.mcone.coresystem.bungee.utils;
+package eu.mcone.coresystem.bungee.utils.bots.teamspeak;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

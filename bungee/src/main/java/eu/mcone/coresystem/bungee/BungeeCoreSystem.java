@@ -27,7 +27,8 @@ import eu.mcone.coresystem.bungee.runnable.OnlineTime;
 import eu.mcone.coresystem.bungee.runnable.PremiumCheck;
 import eu.mcone.coresystem.bungee.utils.ChannelHandler;
 import eu.mcone.coresystem.bungee.utils.LabyModAPI;
-import eu.mcone.coresystem.bungee.utils.TeamspeakVerifier;
+import eu.mcone.coresystem.bungee.utils.bots.discord.DiscordControlBot;
+import eu.mcone.coresystem.bungee.utils.bots.teamspeak.TeamspeakVerifier;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.mysql.MySQL;
 import eu.mcone.coresystem.core.mysql.MySQLDatabase;
@@ -43,6 +44,7 @@ import lombok.Getter;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
+import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Handler;
@@ -76,6 +78,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private NickManager nickManager;
     @Getter
     private TeamspeakVerifier teamspeakVerifier = null;
+    @Getter
+    private DiscordControlBot discordControlBot = null;
     @Getter
     private ChannelHandler channelHandler;
     @Getter
@@ -130,7 +134,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         cooldownSystem = new CooldownSystem();
         channelHandler = new ChannelHandler();
-        preferences = new PreferencesManager(mongoDB, new HashMap<String, Object>(){{
+        preferences = new PreferencesManager(mongoDB, new HashMap<String, Object>() {{
             put("maintenance", false);
             put("betaKeySystem", false);
         }});
@@ -159,6 +163,17 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             sendConsoleMessage("§cTeamSpeakQuery disabled by JVM Argument");
         }
 
+        try {
+            if (!Boolean.valueOf(System.getProperty("DisableDiscordQuery"))) {
+                sendConsoleMessage("§aLoading DiscordQuery...");
+                discordControlBot = new DiscordControlBot();
+            } else {
+                sendConsoleMessage("§cDiscordQuery disabled by JVM Argument");
+            }
+        } catch (LoginException e) {
+            e.printStackTrace();
+        }
+
         sendConsoleMessage("§aLoading Nicksystem...");
         nickManager = new NickManager(this);
 
@@ -177,6 +192,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     public void onDisable() {
         if (teamspeakVerifier != null) teamspeakVerifier.close();
+        if (discordControlBot != null) discordControlBot.shutdown();
         for (CorePlayer p : getOnlineCorePlayers()) {
             ((eu.mcone.coresystem.core.player.GlobalCorePlayer) p).setState(PlayerState.OFFLINE);
         }
@@ -216,6 +232,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         getProxy().getPluginManager().registerCommand(this, new PremiumCMD());
         getProxy().getPluginManager().registerCommand(this, new YoutubeCMD());
         getProxy().getPluginManager().registerCommand(this, new TsCMD());
+        getProxy().getPluginManager().registerCommand(this, new DiscordCMD());
         getProxy().getPluginManager().registerCommand(this, new VoteCMD());
         getProxy().getPluginManager().registerCommand(this, new BewerbenCMD());
         getProxy().getPluginManager().registerCommand(this, new TeamCMD());

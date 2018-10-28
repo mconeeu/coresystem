@@ -38,13 +38,13 @@ public class ProxyPing implements Listener {
             )));
 
             version.setProtocol(2);
-            version.setName("§4Alte Minecraft-Version!");
+            version.setName("§4Alte OneNetwork-Version!");
             players.getOnline();
             players.getMax();
 
             ServerPing.PlayerInfo[] sample = new ServerPing.PlayerInfo[] {
                     new ServerPing.PlayerInfo("§3§lMC ONE §7ist seit Dezember 2017 nur noch über", UUID.randomUUID()),
-                    new ServerPing.PlayerInfo("§7die Minecraft Version §f1.12§7 erreichbar, um dir ein", UUID.randomUUID()),
+                    new ServerPing.PlayerInfo("§7die OneNetwork Version §f1.12§7 erreichbar, um dir ein", UUID.randomUUID()),
                     new ServerPing.PlayerInfo("§7bestmögliches Spieleerlebnis bieten zu können.", UUID.randomUUID()),
                     new ServerPing.PlayerInfo("§r", UUID.randomUUID()),
                     new ServerPing.PlayerInfo("§6Für ein reibungsloses Spieleerlebnis empfehlen wir", UUID.randomUUID()),

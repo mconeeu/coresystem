@@ -34,19 +34,23 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     protected UUID uuid;
     @Getter
     protected String name;
-    @Getter @Setter
-    private String teamspeakUid;
+    @Getter
+    @Setter
+    private String teamspeakUid, discordUid;
     @Getter
     private int coins;
     @Getter
     private PlayerState state;
-    @Getter @Setter
+    @Getter
+    @Setter
     protected Set<Group> groupSet;
     @Getter
     protected long onlinetime;
-    @Getter @Setter
+    @Getter
+    @Setter
     protected Set<String> permissions;
-    @Getter @Setter
+    @Getter
+    @Setter
     protected PlayerSettings settings;
 
     public GlobalOfflineCorePlayer(final GlobalCoreSystem instance, UUID uuid, String name, boolean online) {
@@ -131,6 +135,8 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         this.groupSet = instance.getPermissionManager().getGroups(entry.get("groups", new ArrayList<>()));
         this.coins = entry.getInteger("coins");
         this.teamspeakUid = entry.getString("teamspeak_uid");
+        this.discordUid = entry.getString("discord_uid");
+
         this.state = online ? PlayerState.ONLINE : PlayerState.getPlayerStateById(entry.getInteger("state"));
         this.onlinetime = entry.getLong("online_time");
         this.settings = ((CoreModuleCoreSystem) instance).getGson().fromJson(entry.get("player_settings", Document.class).toJson(), PlayerSettings.class);
@@ -222,6 +228,11 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     @Override
     public boolean isTeamspeakIdLinked() {
         return teamspeakUid != null;
+    }
+
+    @Override
+    public boolean isDiscordIdLinked() {
+        return discordUid != null;
     }
 
     public void setState(PlayerState state) {

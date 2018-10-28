@@ -18,13 +18,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin {
 
     @Getter
-    private String pluginName;
-    private String consolePrefix;
+    private String pluginName, gameSectionName, consolePrefix;
     @Getter
     private Messager messager;
 
-    protected CorePlugin(String pluginName, ChatColor pluginColor, String prefixTranslation) {
+    protected CorePlugin(String pluginName, String gameSectionName, ChatColor pluginColor, String prefixTranslation) {
         this.pluginName = pluginName;
+        this.gameSectionName = gameSectionName;
         this.consolePrefix = "§8[" + pluginColor + pluginName + "§8] §7";
         this.messager = new Messager(prefixTranslation);
 

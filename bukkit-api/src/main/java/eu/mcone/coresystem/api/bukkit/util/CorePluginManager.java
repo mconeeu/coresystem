@@ -9,6 +9,7 @@ package eu.mcone.coresystem.api.bukkit.util;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.util.CooldownSystem;
 import org.bukkit.entity.Player;
@@ -51,6 +52,12 @@ public interface CorePluginManager {
     Collection<CoreInventory> getCoreInventories();
 
     /**
+     * register a new GameProfile
+     * @param gameProfile GameProfile
+     */
+    void registerGameProfile(final GameProfile gameProfile);
+
+    /**
      * registers a new CoreCommand
      * @param coreCommand CoreCommand
      * @param plugin CorePlugin
@@ -79,5 +86,7 @@ public interface CorePluginManager {
      * @return Map of all plugin CoreCommands
      */
     Collection<CoreCommand> getCoreCommands(CorePlugin plugin);
+
+    Collection<GameProfile> getGameProfiles();
 
 }

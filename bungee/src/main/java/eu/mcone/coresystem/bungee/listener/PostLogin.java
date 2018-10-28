@@ -9,7 +9,7 @@ package eu.mcone.coresystem.bungee.listener;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.labymod.LabyPermission;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.utils.TeamspeakVerifier;
+import eu.mcone.coresystem.bungee.utils.bots.teamspeak.TeamspeakVerifier;
 import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.ChatColor;

@@ -43,7 +43,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     private static CoreSystem instance;
 
     protected CoreSystem() {
-        super("BukkitCoreSystem", ChatColor.WHITE, "system.prefix.server");
+        super("BukkitCoreSystem","CoreSystem", ChatColor.WHITE, "system.prefix.server");
     }
 
     protected void setInstance(CoreSystem instance) {

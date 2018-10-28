@@ -9,6 +9,7 @@ package eu.mcone.coresystem.bukkit.util;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
 import eu.mcone.coresystem.api.bukkit.util.CorePluginManager;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
@@ -33,6 +34,7 @@ public class PluginManager implements CorePluginManager {
     private Map<CorePlugin, List<CoreCommand>> commands;
     private Map<Player, CoreInventory> inventories;
     private List<AnvilInventory> anvilInventories;
+    private List<GameProfile> gameProfiles;
 
     static {
         try {
@@ -51,12 +53,14 @@ public class PluginManager implements CorePluginManager {
         this.commands = new HashMap<>();
         this.inventories = new HashMap<>();
         this.anvilInventories = new ArrayList<>();
+        this.gameProfiles = new ArrayList<>();
     }
 
     public void disable() {
         corePlugins.clear();
         commands.clear();
         inventories.clear();
+        gameProfiles.clear();
     }
 
     @Override
@@ -77,6 +81,7 @@ public class PluginManager implements CorePluginManager {
         anvilInventories.add(inventory);
     }
 
+
     @Override
     public CoreInventory getCoreInventory(Player player) {
         return inventories.getOrDefault(player, null);
@@ -85,6 +90,11 @@ public class PluginManager implements CorePluginManager {
     @Override
     public Collection<CoreInventory> getCoreInventories() {
         return inventories.values();
+    }
+
+    @Override
+    public void registerGameProfile(final GameProfile gameProfile) {
+        gameProfiles.add(gameProfile);
     }
 
     public Collection<AnvilInventory> getCoreAnvilInventories() {
@@ -128,6 +138,11 @@ public class PluginManager implements CorePluginManager {
     @Override
     public Collection<CoreCommand> getCoreCommands(CorePlugin plugin) {
         return new ArrayList<>(commands.getOrDefault(plugin, Collections.emptyList()));
+    }
+
+    @Override
+    public Collection<GameProfile> getGameProfiles() {
+       return gameProfiles;
     }
 
 }

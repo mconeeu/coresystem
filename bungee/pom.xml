@@ -91,9 +91,22 @@
             <name>MC ONE Repo</name>
             <url>https://repo.mcone.eu/repository/mcone-systems/</url>
         </repository>
+
+        <!--  DISCORD REPOS -->
+        <repository>
+            <id>jitpack.io</id>
+            <name>JitPack</name>
+            <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <id>jcenter</id>
+            <name>JCenter</name>
+            <url>https://jcenter.bintray.com</url>
+        </repository>
     </repositories>
 
     <dependencies>
+        <!-- MCONE Depen's  -->
         <dependency>
             <groupId>eu.mcone.coresystem</groupId>
             <artifactId>core</artifactId>
@@ -112,6 +125,8 @@
             <version>10.1.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+
+        <!-- Bungeecord Depend -->
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-api</artifactId>
@@ -119,10 +134,20 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
+
+        <!-- Teamspeak API Depend -->
         <dependency>
             <groupId>com.github.theholywaffle</groupId>
             <artifactId>teamspeak3-api</artifactId>
             <version>1.2.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- Discord API Depend -->
+        <dependency>
+            <groupId>net.dv8tion</groupId>
+            <artifactId>JDA</artifactId>
+            <version>LATEST</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

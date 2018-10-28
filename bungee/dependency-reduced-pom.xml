@@ -40,6 +40,21 @@
       <id>bungeecord-repo</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </repository>
+    <repository>
+      <id>mcone-systems</id>
+      <name>MC ONE Repo</name>
+      <url>https://repo.mcone.eu/repository/mcone-systems/</url>
+    </repository>
+    <repository>
+      <id>jitpack.io</id>
+      <name>JitPack</name>
+      <url>https://jitpack.io</url>
+    </repository>
+    <repository>
+      <id>jcenter</id>
+      <name>JCenter</name>
+      <url>https://jcenter.bintray.com</url>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
