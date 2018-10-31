@@ -162,40 +162,13 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
 
     @Override
     public void reloadPermissions() {
-        this.permissions = instance.getPermissionManager().getPermissions(uuid.toString(), groupSet);
+        this.permissions = instance.getPermissionManager().getPermissions(uuid, groupSet);
     }
 
     @Override
     public Set<Group> updateGroupsFromDatabase() {
         @NonNull Document entry = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
         return groupSet = instance.getPermissionManager().getGroups(entry.get("groups", new ArrayList<>()));
-    }
-
-    @Override
-    public void setGroups(Set<Group> groupList) {
-        this.groupSet = new HashSet<>(groupList);
-        updateDatabaseGroupsAsync(groupSet);
-    }
-
-    @Override
-    public void addGroup(Group group) {
-        this.groupSet.add(group);
-        updateDatabaseGroupsAsync(groupSet);
-    }
-
-    @Override
-    public void removeGroup(Group group) {
-        this.groupSet.remove(group);
-        updateDatabaseGroupsAsync(groupSet);
-    }
-
-    private void updateDatabaseGroupsAsync(Set<Group> groupSet) {
-        instance.runAsync(() ->
-                ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(
-                        eq("uuid", uuid.toString()),
-                        set("groups", instance.getPermissionManager().getGroupIDs(groupSet))
-                )
-        );
     }
 
     @Override

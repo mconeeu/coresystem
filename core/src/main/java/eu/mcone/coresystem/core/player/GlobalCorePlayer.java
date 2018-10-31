@@ -7,7 +7,6 @@
 package eu.mcone.coresystem.core.player;
 
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
-import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.labymod.LabyModConnection;
 import eu.mcone.coresystem.api.core.player.Group;
 import lombok.Getter;
@@ -29,18 +28,6 @@ public abstract class GlobalCorePlayer extends GlobalOfflineCorePlayer implement
 
     protected GlobalCorePlayer(final GlobalCoreSystem instance, final InetAddress address, UUID uuid, String name) {
         super(instance, uuid, name, true);
-        this.ipAdress = address.toString().split("/")[1];
-        this.joined = System.currentTimeMillis() / 1000;
-    }
-
-    protected GlobalCorePlayer(final GlobalCoreSystem instance, final InetAddress address, UUID uuid) throws PlayerNotResolvedException {
-        super(instance, uuid, true);
-        this.ipAdress = address.toString().split("/")[1];
-        this.joined = System.currentTimeMillis() / 1000;
-    }
-
-    protected GlobalCorePlayer(final GlobalCoreSystem instance, final InetAddress address, String name) throws PlayerNotResolvedException {
-        super(instance, name, true);
         this.ipAdress = address.toString().split("/")[1];
         this.joined = System.currentTimeMillis() / 1000;
     }

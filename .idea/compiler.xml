@@ -19,6 +19,8 @@
         <module name="mcone-coresystem-bungee-api" />
         <module name="mcone-coresystem-core" />
         <module name="mcone-coresystem-core-api" />
+        <module name="npc" />
+        <module name="npc-api" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
@@ -37,6 +39,9 @@
       <module name="mcone-coresystem-bungee-api" target="1.8" />
       <module name="mcone-coresystem-core" target="1.8" />
       <module name="mcone-coresystem-core-api" target="1.8" />
+      <module name="npc" target="1.8" />
+      <module name="npc (1)" target="1.8" />
+      <module name="npc-api" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

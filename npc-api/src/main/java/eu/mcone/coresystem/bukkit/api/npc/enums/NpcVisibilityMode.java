@@ -4,9 +4,10 @@
  *
  */
 
-package eu.mcone.coresystem.api.core.mysql;
+package eu.mcone.coresystem.bukkit.api.npc.enums;
 
-@Deprecated
-public interface Callback<rs> {
-    void run(rs rs);
+public enum NpcVisibilityMode {
+
+    BLACKLIST, WHITELIST
+
 }

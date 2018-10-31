@@ -27,9 +27,4 @@ public interface FriendSystem {
 
     void removeBlock(UUID player, UUID friend);
 
-
-    void addToggled(UUID player);
-
-    void removeToggled(UUID player);
-
 }

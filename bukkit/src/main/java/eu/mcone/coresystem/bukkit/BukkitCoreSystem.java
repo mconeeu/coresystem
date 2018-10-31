@@ -34,16 +34,14 @@ import eu.mcone.coresystem.bukkit.channel.*;
 import eu.mcone.coresystem.bukkit.command.*;
 import eu.mcone.coresystem.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.bukkit.inventory.ProfileInventory;
+import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
 import eu.mcone.coresystem.bukkit.labymod.LabyModAPI;
 import eu.mcone.coresystem.bukkit.listener.*;
-import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
 import eu.mcone.coresystem.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.bukkit.player.*;
 import eu.mcone.coresystem.bukkit.util.*;
 import eu.mcone.coresystem.bukkit.world.WorldManager;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.coresystem.core.mysql.MySQL;
-import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
 import eu.mcone.coresystem.core.translation.TranslationManager;
@@ -65,15 +63,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private static BukkitCoreSystem system;
 
-    private MySQL mysql1;
-    private MySQL mysql2;
-    private MySQL mysql3;
-
     private MongoConnection mongoConnection;
-    private MongoDatabase mongoDatabase1;
-    private MongoDatabase mongoDatabase2;
-    private MongoDatabase mongoDatabase3;
-    private MongoDatabase mongoDatabase4;
+    private MongoDatabase database1;
+    private MongoDatabase database2;
+    private MongoDatabase database3;
+    private MongoDatabase database4;
 
     @Getter
     private TranslationManager translationManager;
@@ -129,24 +123,19 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "                                                         /____/  \n"
         );
 
-        sendConsoleMessage("§aInitializing MariaDB Connections...");
-        mysql1 = new MySQL(MySQLDatabase.SYSTEM);
-        mysql2 = new MySQL(MySQLDatabase.STATS);
-        mysql3 = new MySQL(MySQLDatabase.DATA);
-
         mongoConnection = new MongoConnection("db.mcone.eu", "admin", "T6KIq8gjmmF1k7futx0cJiJinQXgfguYXruds1dFx1LF5IsVPQjuDTnlI1zltpD9", "admin", 27017);
         mongoConnection.connect();
 
-        mongoDatabase1 = mongoConnection.getDatabase(Database.SYSTEM);
-        mongoDatabase2 = mongoConnection.getDatabase(Database.STATS);
-        mongoDatabase3 = mongoConnection.getDatabase(Database.DATA);
-        mongoDatabase4 = mongoConnection.getDatabase(Database.CLOUD);
+        database1 = mongoConnection.getDatabase(Database.SYSTEM);
+        database2 = mongoConnection.getDatabase(Database.STATS);
+        database3 = mongoConnection.getDatabase(Database.DATA);
+        database4 = mongoConnection.getDatabase(Database.CLOUD);
 
         pluginManager = new PluginManager();
         coinsUtil = new CoinsUtil(this);
         channelHandler = new ChannelHandler();
         playerUtils = new PlayerUtils(this);
-        databaseSkinManager = new DatabaseSkinManager(mongoDatabase1);
+        databaseSkinManager = new DatabaseSkinManager(database1);
         gson = new Gson();
         jsonParser = new JsonParser();
 
@@ -154,7 +143,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
 
         sendConsoleMessage("§aLoading Translations...");
-        translationManager = new TranslationManager(mongoDatabase1, this);
+        translationManager = new TranslationManager(database1, this);
 
         sendConsoleMessage("§aInitializing LabyModAPI...");
         labyModAPI = new LabyModAPI();
@@ -172,7 +161,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         afkManager = new CoreAfkManager();
 
         sendConsoleMessage("§aLoading Permissions & Groups...");
-        permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), mysql1);
+        permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), database1);
 
         sendConsoleMessage("§aStarting NickManager...");
         nickManager = new NickManager(this);
@@ -225,10 +214,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         mongoConnection.disconnect();
         corePlayers.clear();
 
-        mysql1.close();
-        mysql2.close();
-        mysql3.close();
-
         npcManager.disable();
         hologramManager.disable();
         afkManager.disable();
@@ -278,43 +263,25 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         );
     }
 
-    public MySQL getMySQL(MySQLDatabase database) {
-        switch (database) {
-            case SYSTEM:
-                return mysql1;
-            case STATS:
-                return mysql2;
-            case DATA:
-                return mysql3;
-            default:
-                return null;
-        }
-    }
-
     @Override
     public MongoDatabase getMongoDB(eu.mcone.networkmanager.core.api.database.Database database) {
         switch (database) {
             case SYSTEM:
-                return mongoDatabase1;
+                return database1;
             case STATS:
-                return mongoDatabase2;
+                return database2;
             case DATA:
-                return mongoDatabase3;
+                return database3;
             case CLOUD:
-                return mongoDatabase4;
+                return database4;
             default:
                 return null;
         }
     }
 
     @Override
-    public eu.mcone.coresystem.api.core.mysql.MySQL getMySQL() {
-        return mysql3;
-    }
-
-    @Override
     public MongoDatabase getMongoDB() {
-        return mongoDatabase3;
+        return database3;
     }
 
     public CorePlayer getCorePlayer(Player p) {

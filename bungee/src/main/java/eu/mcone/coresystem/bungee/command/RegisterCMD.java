@@ -6,16 +6,12 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.api.core.util.Random;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import org.bson.Document;
-
-import java.sql.SQLException;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -37,7 +33,7 @@ public class RegisterCMD extends Command {
                 if (entry.getString("password") != null) {
                     BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du hast dich bereits registriert!");
                 } else {
-                    BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT `id`, `uuid` FROM `website_account_token` WHERE `uuid`= '" + p.getUniqueId().toString() + "' AND `type`='register'", rs -> {
+                    /*BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT `id`, `uuid` FROM `website_account_token` WHERE `uuid`= '" + p.getUniqueId().toString() + "' AND `type`='register'", rs -> {
                         String token = new Random(16).nextString();
 
                         try {
@@ -51,7 +47,7 @@ public class RegisterCMD extends Command {
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
-                    });
+                    });*/
                 }
             }
         } else {

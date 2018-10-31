@@ -80,7 +80,6 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
             instance.runAsync(() -> database.getCollection("userinfo").updateOne(
                     eq("uuid", uuid.toString()),
                     combine(
-                            setOnInsert("uuid", uuid),
                             setOnInsert("name", player_name),
                             set("texture_value", value),
                             set("texture_signature", signature)

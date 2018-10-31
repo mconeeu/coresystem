@@ -10,7 +10,6 @@ import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.labymod.LabyPermission;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.bots.teamspeak.TeamspeakVerifier;
-import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
@@ -22,7 +21,6 @@ import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -46,7 +44,7 @@ public class PostLogin implements Listener {
             );
         }
 
-        if (p.hasPermission("system.bungee.report")) {
+        /*if (p.hasPermission("system.bungee.report")) {
             BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT `id`, `title` FROM `website_ticket` WHERE `cat`='Spielerreport' AND `state`='pending';", rs -> {
                 try {
                     int desc = 0;
@@ -73,7 +71,7 @@ public class PostLogin implements Listener {
                     e1.printStackTrace();
                 }
             });
-        }
+        }*/
 
         Map<UUID, String> requests = cp.getFriendData().getRequests();
         if (requests.size() >= 1) {

@@ -8,6 +8,7 @@ package eu.mcone.coresystem.api.core.player;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public interface PermissionManager {
 
@@ -36,7 +37,7 @@ public interface PermissionManager {
      * @param groups groups
      * @return permission set (including player-permissions)
      */
-    Set<String> getPermissions(String uuid, Set<Group> groups);
+    Set<String> getPermissions(UUID uuid, Set<Group> groups);
 
     /**
      * check if permission set contains specific permission

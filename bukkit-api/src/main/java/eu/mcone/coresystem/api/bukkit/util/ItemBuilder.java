@@ -21,10 +21,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public final class ItemBuilder {
 
@@ -169,6 +166,18 @@ public final class ItemBuilder {
      */
     public ItemBuilder enchantment(Enchantment enchantment, int level) {
         itemMeta.addEnchant(enchantment, level, true);
+        return this;
+    }
+
+    /**
+     * add enchantment
+     * @param enchantments Map of enchantments
+     * @return this
+     */
+    public ItemBuilder enchantments(Map<Enchantment, Integer> enchantments) {
+        for (Map.Entry<Enchantment, Integer> enchantment : enchantments.entrySet()) {
+            itemMeta.addEnchant(enchantment.getKey(), enchantment.getValue(), true);
+        }
         return this;
     }
 

@@ -6,17 +6,15 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.report.Report;
 import eu.mcone.coresystem.bungee.report.ReportReason;
-import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
-import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 public class ReportCMD extends Command {
 
@@ -28,7 +26,7 @@ public class ReportCMD extends Command {
     }
 
     public void execute(CommandSender sender, String[] args) {
-        if (sender instanceof ProxiedPlayer) {
+        /*if (sender instanceof ProxiedPlayer) {
             final ProxiedPlayer p = (ProxiedPlayer) sender;
             if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId()))
                 return;
@@ -183,7 +181,7 @@ public class ReportCMD extends Command {
             }
         } else {
             BungeeCoreSystem.getInstance().getMessager().send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
-        }
+        }*/
     }
 
     private String getReportResons() {

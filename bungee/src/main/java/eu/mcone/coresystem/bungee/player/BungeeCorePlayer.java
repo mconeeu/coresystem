@@ -7,10 +7,12 @@
 package eu.mcone.coresystem.bungee.player;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.event.PermissionChangeEvent;
 import eu.mcone.coresystem.api.bungee.event.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.FriendData;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
+import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
@@ -26,6 +28,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.bson.Document;
 
 import java.net.InetAddress;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -36,13 +40,15 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
 
     @Getter
     private FriendData friendData;
-    @Getter @Setter
+    @Getter
+    @Setter
     private long banTime, muteTime;
     @Getter
     private int banPoints = 0, mutePoints = 0;
     @Setter
     private boolean banned = false, muted = false;
-    @Getter @Setter
+    @Getter
+    @Setter
     private SkinInfo nickedSkin;
 
     public BungeeCorePlayer(CoreSystem instance, InetAddress address, UUID uuid, String name) {
@@ -68,7 +74,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
         this.friendData = BungeeCoreSystem.getInstance().getFriendSystem().getData(uuid);
 
         ((BungeeCoreSystem) instance).getCorePlayers().put(uuid, this);
-        CoreSystem.getInstance().sendConsoleMessage("Loaded Player "+name+"!");
+        CoreSystem.getInstance().sendConsoleMessage("Loaded Player " + name + "!");
     }
 
     @Override
@@ -121,9 +127,38 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     }
 
     @Override
+    public void setGroups(Set<Group> groupList) {
+        this.groupSet = new HashSet<>(groupList);
+        updateDatabaseGroupsAsync(groupSet);
+    }
+
+    @Override
+    public void addGroup(Group group) {
+        this.groupSet.add(group);
+        updateDatabaseGroupsAsync(groupSet);
+    }
+
+    @Override
+    public void removeGroup(Group group) {
+        this.groupSet.remove(group);
+        updateDatabaseGroupsAsync(groupSet);
+    }
+
+    private void updateDatabaseGroupsAsync(Set<Group> groupSet) {
+        instance.runAsync(() -> {
+            System.out.println("fire PermissionChangeEvent");
+            ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.GROUP_CHANGE, this, groupSet));
+            ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(
+                    eq("uuid", uuid.toString()),
+                    set("groups", instance.getPermissionManager().getGroupIDs(groupSet))
+            );
+        });
+    }
+
+    @Override
     public void unregister() {
         BungeeCoreSystem.getSystem().getCorePlayers().remove(uuid);
-        CoreSystem.getInstance().sendConsoleMessage("Unloaded Player "+name+"!");
+        CoreSystem.getInstance().sendConsoleMessage("Unloaded Player " + name + "!");
     }
 
 }

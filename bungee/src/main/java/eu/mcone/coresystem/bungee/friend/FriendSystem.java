@@ -6,43 +6,65 @@
 
 package eu.mcone.coresystem.bungee.friend;
 
+import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
-import eu.mcone.coresystem.api.bungee.player.FriendData;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.core.mysql.MySQL;
+import eu.mcone.coresystem.bungee.player.FriendData;
+import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 import net.md_5.bungee.api.ProxyServer;
+import org.bson.Document;
 
-import java.sql.SQLException;
 import java.util.*;
+
+import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Updates.pull;
+import static com.mongodb.client.model.Updates.push;
 
 public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.FriendSystem {
 
-    private MySQL mysql;
+    private MongoDatabase database;
 
-    public FriendSystem(MySQL mysql) {
-        this.mysql = mysql;
+    public FriendSystem(MongoDatabase database) {
+        this.database = database;
     }
 
     public FriendData getData(UUID uuid) {
-        return this.mysql.select("SELECT f.uuid, f.target, f.key, u.uuid, u.name FROM bungeesystem_friends f, userinfo u WHERE f.target = u.uuid AND f.uuid = '"+uuid.toString()+"';", rs -> {
-            Map<UUID, String> friends = new HashMap<>();
-            Map<UUID, String> requests = new HashMap<>();
-            List<UUID> blocks = new ArrayList<>();
+        Map<UUID, String> names = new HashMap<>();
+        Map<UUID, String> friends = new HashMap<>();
+        Map<UUID, String> requests = new HashMap<>();
+        List<UUID> blocks;
+        List<UUID> toggled;
 
-            try {
-                while (rs.next()) {
-                    switch (rs.getString("f.key")){
-                        case "friend": friends.put(UUID.fromString(rs.getString("f.target")), rs.getString("u.name")); break;
-                        case "request": requests.put(UUID.fromString(rs.getString("f.target")), rs.getString("u.name")); break;
-                        case "block": blocks.add(UUID.fromString(rs.getString("f.target"))); break;
-                    }
+        Document entry = database.getCollection("bungeesystem_friends").find(eq("uuid", uuid.toString())).first();
+
+        if (entry != null) {
+            for (Document player : database.getCollection("userinfo").find(
+                    or(
+                            in("uuid", entry.get("friends", new ArrayList<String>())),
+                            in("uuid", entry.get("requests", new ArrayList<String>()))
+                    )
+            )) {
+                if (player.getString("name") != null) {
+                    names.put(UUID.fromString(player.getString("uuid")), player.getString("name"));
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
 
-            return new eu.mcone.coresystem.bungee.player.FriendData(friends, requests, blocks);
-        }, FriendData.class);
+            for (String friend : entry.get("friends", new ArrayList<String>())) {
+                UUID uuid1;
+                friends.put((uuid1 = UUID.fromString(friend)), names.get(uuid1));
+            }
+            for (String request : entry.get("requests", new ArrayList<String>())) {
+                UUID uuid1;
+                requests.put((uuid1 = UUID.fromString(request)), names.get(uuid1));
+            }
+            blocks = entry.get("block", new ArrayList<>());
+            toggled = entry.get("toggled", new ArrayList<>());
+        } else {
+            blocks = new ArrayList<>();
+            toggled = new ArrayList<>();
+        }
+
+        return new FriendData(friends, requests, blocks, toggled);
     }
 
     public void addFriend(UUID player, UUID friend, String friendName) {
@@ -50,9 +72,11 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
             CorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
             if (p != null) p.getFriendData().getFriends().put(friend, friendName);
 
-            long millis = System.currentTimeMillis() / 1000;
-
-            this.mysql.update("INSERT INTO `bungeesystem_friends` (`uuid`, `target`, `key`, `timestamp`) VALUES ('" + player.toString() + "', '" + friend.toString() + "','friend' , " + millis + ")");
+            database.getCollection("bungeesystem_friends").updateOne(
+                    eq("uuid", player.toString()),
+                    push("friends", friend.toString()),
+                    new UpdateOptions().upsert(true)
+            );
         });
     }
 
@@ -61,7 +85,10 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
             CorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
             if (p != null) p.getFriendData().getFriends().remove(friend);
 
-            this.mysql.update("DELETE FROM `bungeesystem_friends` WHERE `uuid`='" + player.toString() + "' AND `target`='" + friend.toString() + "' AND `key`='friend'");
+            database.getCollection("bungeesystem_friends").updateOne(
+                    eq("uuid", player.toString()),
+                    pull("friends", friend.toString())
+            );
         });
     }
 
@@ -70,9 +97,11 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
             CorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
             if (p != null) p.getFriendData().getRequests().put(friend, friendName);
 
-            long millis = System.currentTimeMillis() / 1000;
-
-            this.mysql.update("INSERT INTO `bungeesystem_friends` (`uuid`, `target`, `key`, `timestamp`) VALUES ('" + player.toString() + "', '" + friend.toString() + "','request' , " + millis + ")");
+            database.getCollection("bungeesystem_friends").updateOne(
+                    eq("uuid", player.toString()),
+                    push("requests", friend.toString()),
+                    new UpdateOptions().upsert(true)
+            );
         });
     }
 
@@ -81,7 +110,10 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
             CorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
             if (p != null) p.getFriendData().getRequests().remove(friend);
 
-            this.mysql.update("DELETE FROM `bungeesystem_friends` WHERE `uuid`='" + player.toString() + "' AND `target`='" + friend.toString() + "' AND `key`='request'");
+            database.getCollection("bungeesystem_friends").updateOne(
+                    eq("uuid", player.toString()),
+                    pull("requests", friend.toString())
+            );
         });
     }
 
@@ -90,9 +122,11 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
             CorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
             if (p != null) p.getFriendData().getBlocks().add(friend);
 
-            long millis = System.currentTimeMillis() / 1000;
-
-            this.mysql.update("INSERT INTO `bungeesystem_friends` (`uuid`, `target`, `key`, `timestamp`) VALUES ('" + player.toString() + "', '" + friend.toString() + "','block' , " + millis + ")");
+            database.getCollection("bungeesystem_friends").updateOne(
+                    eq("uuid", player.toString()),
+                    push("blocks", friend.toString()),
+                    new UpdateOptions().upsert(true)
+            );
         });
     }
 
@@ -101,26 +135,10 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
             CorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
             if (p != null) p.getFriendData().getBlocks().remove(friend);
 
-            this.mysql.update("DELETE FROM `bungeesystem_friends` WHERE `uuid`='" + player.toString() + "' AND `target`='" + friend.toString() + "' AND `key`='block'");
-        });
-    }
-
-    public void addToggled(UUID player) {
-        CorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
-        if (p != null) p.getSettings().setEnableFriendRequests(true);
-
-        long millis = System.currentTimeMillis() / 1000;
-
-        this.mysql.update("INSERT INTO `bungeesystem_friends` (`uuid`, `target`, `key`, `timestamp`) VALUES (NULL, '" + player + "', 'toggled', " + millis + ")");
-    }
-
-    public void removeToggled(UUID player) {
-        ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
-            CorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
-            if (p != null) p.getSettings().setEnableFriendRequests(true);
-
-
-            this.mysql.update("DELETE FROM `bungeesystem_friends` WHERE `target`='" + player.toString() + "' AND `key`='toggled'");
+            database.getCollection("bungeesystem_friends").updateOne(
+                    eq("uuid", player.toString()),
+                    pull("blocks", friend.toString())
+            );
         });
     }
 

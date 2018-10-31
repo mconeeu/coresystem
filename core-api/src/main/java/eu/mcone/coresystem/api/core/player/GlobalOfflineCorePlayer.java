@@ -88,24 +88,6 @@ public interface GlobalOfflineCorePlayer {
     Group getMainGroup();
 
     /**
-     * set the players groups
-     * @param groupList group set
-     */
-    void setGroups(Set<Group> groupList);
-
-    /**
-     * add a player group
-     * @param group groups
-     */
-    void addGroup(Group group);
-
-    /**
-     * remove a player group
-     * @param group group
-     */
-    void removeGroup(Group group);
-
-    /**
      * returns the mcone player settings
      * @return player settings
      */

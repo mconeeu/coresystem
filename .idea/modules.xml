@@ -9,6 +9,8 @@
       <module fileurl="file://$PROJECT_DIR$/core/core.iml" filepath="$PROJECT_DIR$/core/core.iml" />
       <module fileurl="file://$PROJECT_DIR$/core-api/core-api.iml" filepath="$PROJECT_DIR$/core-api/core-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/mcone-coresystem.iml" filepath="$PROJECT_DIR$/mcone-coresystem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/npc/npc.iml" filepath="$PROJECT_DIR$/npc/npc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/npc-api/npc-api.iml" filepath="$PROJECT_DIR$/npc-api/npc-api.iml" />
     </modules>
   </component>
 </project>

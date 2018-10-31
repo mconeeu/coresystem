@@ -21,5 +21,6 @@ public class FriendData implements eu.mcone.coresystem.api.bungee.player.FriendD
     private Map<UUID, String> friends;
     private Map<UUID, String> requests;
     private List<UUID> blocks;
+    private List<UUID> toggled;
 
 }

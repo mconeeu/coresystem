@@ -26,7 +26,6 @@ class FriendsInventory extends CoreInventory {
 
                 String[] data = friend.split(":");
                 setItem(i, ItemBuilder.createSkullItem(data[1], 1).displayName("§f§l" + data[1]).lore(data[2], "", "§8» §f§nRechtsklick§8 | §7§oAktionen").create(), e -> {
-                    System.out.println("opening FriendInventory");
                     new FriendInventory(p, data[1]);
                     p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
                 });

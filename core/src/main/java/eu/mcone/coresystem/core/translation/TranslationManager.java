@@ -54,28 +54,6 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
                 translations.put(document.getString("key").replaceAll("&", "§"), new TranslationField(values));
             }
         }
-
-        /*
-        StringBuilder qry = new StringBuilder("SELECT * FROM translations WHERE category IS NULL");
-        for (String cat : categories) {
-            qry.append(" OR category='").append(cat).append("'");
-        }
-
-        mysql.select(qry.toString(), rs -> {
-            try {
-                while (rs.next()) {
-                    final Map<Language, String> values = new HashMap<>();
-                    for (Language language : Language.values()) {
-                        values.put(language, rs.getString(language.getId()));
-                    }
-
-                    translations.put(rs.getString("key").replaceAll("&", "§"), new TranslationField(values));
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
-        */
     }
 
     @Override
@@ -119,40 +97,6 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
         } else {
             return null;
         }
-    }
-
-    @Override
-    @Deprecated
-    public void insertIfNotExists(final Map<String, TranslationField> translations) {
-        /*StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO translations (`key`");
-        for (Language l : Language.values()) {
-            sb.append(", `").append(l.getId()).append("`");
-        }
-        sb.append(") VALUES ");
-
-        int i = 0;
-        for (HashMap.Entry<String, TranslationField> entry : translations.entrySet()) {
-            if (!this.translations.containsKey(entry.getKey())) {
-                i++;
-                this.translations.put(entry.getKey(), entry.getValue());
-                sb.append("('").append(entry.getKey().toLowerCase()).append("'");
-
-                for (String translation : entry.getValue().getTranslations()) {
-                    if (translation == null) {
-                        sb.append(", NULL");
-                    } else {
-                        sb.append(", '").append(translation).append("'");
-                    }
-                }
-                sb.append(")");
-
-                if (i == translations.size()) break;
-                sb.append(", ");
-            }
-        }
-
-        if (i > 0) mysql.update(sb.toString());*/
     }
 
 }

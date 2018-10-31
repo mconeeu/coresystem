@@ -6,28 +6,40 @@
 
 package eu.mcone.coresystem.bungee.runnable;
 
+import eu.mcone.coresystem.api.bungee.event.PermissionChangeEvent;
+import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
+import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
+import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.bungee.player.BungeeCorePlayer;
 import eu.mcone.networkmanager.core.api.database.Database;
+import net.md_5.bungee.api.ProxyServer;
 import org.bson.Document;
 
 import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.combine;
-import static com.mongodb.client.model.Updates.set;
 
 public class PremiumCheck implements Runnable {
 
     public void run() {
 
-        for (Document premiumDocument : BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getDocumentsInCollection("bungeesystem_premium")) {
+        for (Document premiumEntry : BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_premium").find()) {
             long millis = System.currentTimeMillis() / 1000;
 
-            if (premiumDocument.getLong("timestamp") - millis < 0) {
-                BungeeCoreSystem.getInstance().sendConsoleMessage("§7Dem Spieler §f" + BungeeCoreSystem.getInstance().getPlayerUtils().fetchName(UUID.fromString(premiumDocument.getString("uuid"))) + " §7wird der Rang §f" + premiumDocument.getString("group") + " §7entzogen");
-                BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", premiumDocument.getString("uuid")), combine(set("group", premiumDocument.getString("odl_group"))));
+            if (premiumEntry.getLong("timestamp") - millis < 0) {
+                try {
+                    OfflineCorePlayer p = BungeeCoreSystem.getInstance().getOfflineCorePlayer(UUID.fromString(premiumEntry.getString("uuid")));
+                    BungeeCoreSystem.getInstance().sendConsoleMessage("§7Dem Spieler §f" + BungeeCoreSystem.getInstance().getPlayerUtils().fetchName(UUID.fromString(premiumEntry.getString("uuid"))) + " §7wird der Rang §f" + premiumEntry.getString("group") + " §7entzogen");
 
-                for (Document infoDocument : BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("").find(eq("uuid", premiumDocument.getString("uuid")))) {
+                    p.removeGroup(Group.getGroupById(premiumEntry.getInteger("group")));
+                    if (p instanceof BungeeCorePlayer)
+                        ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.GROUP_CHANGE, (BungeeCorePlayer) p, p.getGroups()));
+                } catch (PlayerNotResolvedException e) {
+                    e.printStackTrace();
+                }
+
+                for (Document infoDocument : BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("").find(eq("uuid", premiumEntry.getString("uuid")))) {
                     if (infoDocument.getString("grupper").equalsIgnoreCase("Spieler")) {
                         BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_premium").deleteOne(eq("uuid", infoDocument.getString("uuid")));
                     } else {
@@ -36,38 +48,5 @@ public class PremiumCheck implements Runnable {
                 }
             }
         }
-
-        /*
-        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).selectAsync("SELECT * FROM bungeesystem_premium", rs -> {
-            long millis = System.currentTimeMillis() / 1000;
-
-            try{
-                while(rs.next()) {
-                    if ((rs.getLong(rs.getString("timestamp")) - millis) < 0) {
-                        BungeeCoreSystem.getInstance().sendConsoleMessage("§7Dem Spieler §f" + BungeeCoreSystem.getInstance().getPlayerUtils().fetchName(UUID.fromString(rs.getString("uuid"))) + " §7wird der Rang §f" + rs.getString("group") + " §7entzogen");
-                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("UPDATE userinfo SET gruppe='" + rs.getString("old_group") + "' WHERE uuid='" + rs.getString("uuid") + "'");
-
-                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).select("SELECT gruppe FROM `userinfo` WHERE uuid='" + rs.getString("uuid") + "'", rs_info -> {
-                            try {
-                                if (rs_info.next()) {
-                                    String value = rs_info.getString("gruppe");
-
-                                    if (value.equalsIgnoreCase("Spieler")) {
-                                        BungeeCoreSystem.getSystem().getMySQL(Database.SYSTEM).update("DELETE FROM bungeesystem_premium WHERE uuid = '" + rs.getString("uuid") + "';");
-                                    } else {
-                                        BungeeCoreSystem.getInstance().sendConsoleMessage("§7[§cMySQL ERROR§7] §4DER SPIELER KONNTE NICHT GELÖSCHT WERDEN OBWOHL SEIN PREMIUM RANG ABGLAUFEN IST!");
-                                    }
-                                }
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                            }
-                        });
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
-        */
     }
 }

@@ -6,25 +6,30 @@
 
 package eu.mcone.coresystem.api.bukkit;
 
+import com.mongodb.client.model.ReplaceOptions;
+import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
+import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
 import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import lombok.Getter;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin {
 
     @Getter
-    private String pluginName, gameSectionName, consolePrefix;
+    private String pluginName, consolePrefix;
     @Getter
     private Messager messager;
 
-    protected CorePlugin(String pluginName, String gameSectionName, ChatColor pluginColor, String prefixTranslation) {
+    protected CorePlugin(String pluginName, ChatColor pluginColor, String prefixTranslation) {
         this.pluginName = pluginName;
-        this.gameSectionName = gameSectionName;
         this.consolePrefix = "§8[" + pluginColor + pluginName + "§8] §7";
         this.messager = new Messager(prefixTranslation);
 
@@ -37,8 +42,41 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin 
         }
     }
 
+    public <T> T loadGameProfile(Player player, Class<T> clazz) {
+        T profile = CoreSystem.getInstance().getMongoDB().getCollection(pluginName + "_profile", clazz).find(eq("uuid", player.getUniqueId().toString())).first();
+        if (profile != null) {
+            return profile;
+        } else {
+            try {
+                profile = clazz.newInstance();
+                return profile;
+            } catch (InstantiationException | IllegalAccessException e) {
+                try {
+                    throw new CoreException("Gameprofile class " + clazz.getName() + " could not be instanciated! Does it has an NoArgsConstructor?", e);
+                } catch (CoreException e1) {
+                    e1.printStackTrace();
+                }
+                return null;
+            }
+        }
+    }
+
+    public void saveGameProfile(GameProfile profile) {
+        if (profile.getUuid() != null) {
+            CoreSystem.getInstance().getMongoDB().getCollection(pluginName + "_profile", GameProfile.class).replaceOne(
+                    eq("uuid", profile.getUuid()),
+                    profile,
+                    ReplaceOptions.createReplaceOptions(
+                            new UpdateOptions().upsert(true)
+                    )
+            );
+        } else {
+            throw new RuntimeException("UUID Field in Gameprofile is null! The Player constructor must be used!");
+        }
+    }
+
     public void sendConsoleMessage(String message) {
-        getServer().getConsoleSender().sendMessage(consolePrefix+message);
+        getServer().getConsoleSender().sendMessage(consolePrefix + message);
     }
 
     public void registerEvents(Listener... listeners) {

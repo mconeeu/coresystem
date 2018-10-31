@@ -7,12 +7,13 @@
 package eu.mcone.coresystem.api.bungee.player;
 
 import eu.mcone.coresystem.api.core.player.GlobalOfflineCorePlayer;
+import eu.mcone.coresystem.api.core.player.Group;
+
+import java.util.Set;
 
 public interface OfflineCorePlayer extends GlobalOfflineCorePlayer {
 
     FriendData getFriendData();
-
-    boolean hasPermission(String permission);
 
     boolean isBanned();
 
@@ -25,5 +26,23 @@ public interface OfflineCorePlayer extends GlobalOfflineCorePlayer {
     long getBanTime();
 
     long getMuteTime();
+
+    /**
+     * set the players groups
+     * @param groupList group set
+     */
+    void setGroups(Set<Group> groupList);
+
+    /**
+     * add a player group
+     * @param group groups
+     */
+    void addGroup(Group group);
+
+    /**
+     * remove a player group
+     * @param group group
+     */
+    void removeGroup(Group group);
 
 }

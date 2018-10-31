@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.api.core;
 
-import eu.mcone.coresystem.api.core.mysql.MySQL;
 import eu.mcone.coresystem.api.core.player.CoinsUtil;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.PermissionManager;
@@ -18,12 +17,6 @@ import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 import java.util.UUID;
 
 public interface GlobalCoreSystem {
-
-    /**
-     * returns the mc1data database
-     * @return mc1data database
-     */
-    MySQL getMySQL();
 
     /**
      * returns the mc1data MongoDB database

@@ -6,24 +6,23 @@
 
 package eu.mcone.coresystem.api.bukkit.player.profile;
 
-public interface GameProfile {
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.bukkit.entity.Player;
 
-    /**
-     * returns the profile Name of the GameProfile
-     * @return ProfileName
-     */
-    String getProfileName();
+import javax.annotation.Nullable;
 
-    /**
-     * returns the game section name of the CorePlugin
-     * @return GameSectionName
-     */
-    String getGameSectionName();
+@NoArgsConstructor
+@Getter @Setter
+public abstract class GameProfile {
 
-    /**
-     * returns the game profile type of the GameProfile
-     * @return GameProfileType
-     */
-    GameProfileType getGameProfileType();
+    private String uuid;
+
+    public GameProfile(@Nullable Player player) {
+        if (player != null) {
+            this.uuid = player.getUniqueId().toString();
+        }
+    }
 
 }

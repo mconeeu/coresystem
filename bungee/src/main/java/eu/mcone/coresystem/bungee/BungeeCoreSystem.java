@@ -30,8 +30,6 @@ import eu.mcone.coresystem.bungee.utils.LabyModAPI;
 import eu.mcone.coresystem.bungee.utils.bots.discord.DiscordControlBot;
 import eu.mcone.coresystem.bungee.utils.bots.teamspeak.TeamspeakVerifier;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.coresystem.core.mysql.MySQL;
-import eu.mcone.coresystem.core.mysql.MySQLDatabase;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
 import eu.mcone.coresystem.core.translation.TranslationManager;
@@ -62,7 +60,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     private MongoConnection mongoConnection;
     @Getter
-    private MongoDatabase mongoDB;
+    private MongoDatabase database;
 
     @Getter
     private TranslationManager translationManager;
@@ -92,9 +90,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private Gson gson;
     @Getter
     private JsonParser jsonParser;
-
-    @Getter
-    private MySQL database;
 
     @Getter
     private Map<UUID, BungeeCorePlayer> corePlayers;
@@ -127,14 +122,11 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         mongoConnection = new MongoConnection("db.mcone.eu", "admin", "T6KIq8gjmmF1k7futx0cJiJinQXgfguYXruds1dFx1LF5IsVPQjuDTnlI1zltpD9", "admin", 27017);
         mongoConnection.connect();
-        mongoDB = mongoConnection.getDatabase(Database.SYSTEM);
-
-        sendConsoleMessage("§aInitializing MariaDB Connections...");
-        database = new MySQL(MySQLDatabase.SYSTEM);
+        database = mongoConnection.getDatabase(Database.SYSTEM);
 
         cooldownSystem = new CooldownSystem();
         channelHandler = new ChannelHandler();
-        preferences = new PreferencesManager(mongoDB, new HashMap<String, Object>() {{
+        preferences = new PreferencesManager(database, new HashMap<String, Object>() {{
             put("maintenance", false);
             put("betaKeySystem", false);
         }});
@@ -145,7 +137,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
 
         sendConsoleMessage("§aLoading Translations...");
-        translationManager = new TranslationManager(mongoDB, this);
+        translationManager = new TranslationManager(database, this);
 
         sendConsoleMessage("§aLoading Permissions & Groups...");
         permissionManager = new PermissionManager("Proxy", database);
@@ -198,46 +190,43 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         }
 
         mongoConnection.disconnect();
-        database.close();
         sendConsoleMessage("§cPlugin disabled!");
     }
 
     private void registerCommand() {
-        getProxy().getPluginManager().registerCommand(this, new PingCMD());
-        getProxy().getPluginManager().registerCommand(this, new TeamChatCMD());
-        getProxy().getPluginManager().registerCommand(this, new PermsCMD());
-        getProxy().getPluginManager().registerCommand(this, new BanCMD());
-        getProxy().getPluginManager().registerCommand(this, new WhoisCMD());
-        getProxy().getPluginManager().registerCommand(this, new RestartCMD());
-        getProxy().getPluginManager().registerCommand(this, new WartungCMD());
-        getProxy().getPluginManager().registerCommand(this, new DatenschutzCMD());
-        getProxy().getPluginManager().registerCommand(this, new CoinsCMD());
+        registerCommands(
+                new PingCMD(),
+                new TeamChatCMD(),
+                new PermsCMD(database),
+                new BanCMD(),
+                new WhoisCMD(),
+                new RestartCMD(),
+                new MaintenanceCMD(),
+                new DataProtectionCMD(),
+                new CoinsCMD(),
 
-        getProxy().getPluginManager().registerCommand(this, new NickCMD());
-        getProxy().getPluginManager().registerCommand(this, new UnnickCMD());
+                new NickCMD(),
+                new UnnickCMD(),
 
-        getProxy().getPluginManager().registerCommand(this, new FriendCMD());
-        getProxy().getPluginManager().registerCommand(this, new PartyCMD());
-        getProxy().getPluginManager().registerCommand(this, new JumpCMD());
-        getProxy().getPluginManager().registerCommand(this, new MsgCMD());
-        getProxy().getPluginManager().registerCommand(this, new ReplyCMD());
-        getProxy().getPluginManager().registerCommand(this, new ReportCMD());
-        getProxy().getPluginManager().registerCommand(this, new HelpCMD());
-        getProxy().getPluginManager().registerCommand(this, new BungeecordCMD());
-        getProxy().getPluginManager().registerCommand(this, new RegisterCMD());
-        getProxy().getPluginManager().registerCommand(this, new ForgotpassCMD());
-        getProxy().getPluginManager().registerCommand(this, new ChatlogCMD());
-        getProxy().getPluginManager().registerCommand(this, new RegelnCMD());
+                new FriendCMD(),
+                new PartyCMD(),
+                new JumpCMD(),
+                new MsgCMD(),
+                new ReplyCMD(),
+                new ReportCMD(),
+                new HelpCMD(),
+                new BungeecordCMD(),
+                new RegisterCMD(),
+                new ForgotpassCMD(),
+                new ChatlogCMD(),
+                new RulesCMD(),
 
-        getProxy().getPluginManager().registerCommand(this, new PremiumCMD());
-        getProxy().getPluginManager().registerCommand(this, new YoutubeCMD());
-        getProxy().getPluginManager().registerCommand(this, new TsCMD());
-        getProxy().getPluginManager().registerCommand(this, new DiscordCMD());
-        getProxy().getPluginManager().registerCommand(this, new VoteCMD());
-        getProxy().getPluginManager().registerCommand(this, new BewerbenCMD());
-        getProxy().getPluginManager().registerCommand(this, new TeamCMD());
-        getProxy().getPluginManager().registerCommand(this, new BugreportCMD());
-        getProxy().getPluginManager().registerCommand(this, new RegelnCMD());
+                new PremiumCMD(),
+                new YoutubeCMD(),
+                new TsCMD(),
+                new DiscordCMD(),
+                new BugreportCMD()
+        );
     }
 
     private void postRegisterCommand() {
@@ -250,21 +239,24 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     private void registerEvents() {
-        getProxy().getPluginManager().registerListener(this, new Chat());
-        getProxy().getPluginManager().registerListener(this, new CoinsChange());
-        getProxy().getPluginManager().registerListener(this, new LabyModPlayerJoin());
-        getProxy().getPluginManager().registerListener(this, new PermissionChange());
-        getProxy().getPluginManager().registerListener(this, new PermissionCheck());
-        getProxy().getPluginManager().registerListener(this, new PostLogin());
-        getProxy().getPluginManager().registerListener(this, new ProxyPing());
-        getProxy().getPluginManager().registerListener(this, new PlayerSettingsChange());
-        getProxy().getPluginManager().registerListener(this, new ServerConnect());
-        getProxy().getPluginManager().registerListener(this, new Login());
-        getProxy().getPluginManager().registerListener(this, new PlayerDisconnect());
-        getProxy().getPluginManager().registerListener(this, new TabComplete());
-        getProxy().getPluginManager().registerListener(this, new ServerKick());
-        getProxy().getPluginManager().registerListener(this, new ServerSwitch());
-        getProxy().getPluginManager().registerListener(this, new PluginMessage());
+        registerEvents(
+                new Chat(),
+                new CoinsChange(),
+                new LabyModPlayerJoin(),
+                new Login(),
+                new PermissionChange(),
+                new PermissionCheck(),
+                new PostLogin(),
+                new PlayerDisconnect(),
+                new PlayerSettingsChange(),
+                new PluginMessage(),
+                new PreLogin(),
+                new ProxyPing(),
+                new ServerConnect(),
+                new ServerSwitch(),
+                new ServerKick(),
+                new TabComplete()
+        );
     }
 
     private void loadSchedulers() {
@@ -273,8 +265,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         getProxy().getScheduler().schedule(this, new OnlineTime(), 0, 1, TimeUnit.MINUTES);
     }
 
-    @Override
-    public MySQL getMySQL(MySQLDatabase database) {
+    public MongoDatabase getMongoDB(Database database) {
         switch (database) {
             case SYSTEM:
                 return this.database;
@@ -284,18 +275,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public MongoDatabase getMongoDB(Database database) {
-        switch (database) {
-            case SYSTEM:
-                return this.mongoDB;
-            default:
-                return null;
-        }
-    }
-
-    @Override
-    public eu.mcone.coresystem.api.core.mysql.MySQL getMySQL() {
-        return null;
+    public MongoDatabase getMongoDB() {
+        return database;
     }
 
     public CorePlayer getCorePlayer(ProxiedPlayer p) {

@@ -256,7 +256,7 @@ public class TeamspeakVerifier {
     }
 
     private void loadIcons() {
-        for (Document iconDocuments : BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getDocumentsInCollection("bungeesystem_teamspeak_icons")) {
+        for (Document iconDocuments : BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_teamspeak_icons").find()) {
             icons.put(UUID.fromString(iconDocuments.getString("uuid")), new TeamspeakIcon(iconDocuments.get("bytes", org.bson.types.Binary.class).getData(), iconDocuments.getLong("icon_id")));
         }
     }
@@ -302,7 +302,6 @@ public class TeamspeakVerifier {
             BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_teamspeak_icons").updateOne(
                     eq("uuid", uuid.toString()),
                     combine(
-                            setOnInsert("uuid", uuid.toString()),
                             set("icon_id", iconId),
                             set("bytes", bytes)
                     ),

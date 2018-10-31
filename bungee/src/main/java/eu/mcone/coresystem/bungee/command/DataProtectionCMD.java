@@ -16,9 +16,9 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
-public class DatenschutzCMD extends Command {
+public class DataProtectionCMD extends Command {
 
-    public DatenschutzCMD() {
+    public DataProtectionCMD() {
         super("datenschutz", null, "datenschutzerklärung", "dataprotection", "agb", "agbs");
     }
 

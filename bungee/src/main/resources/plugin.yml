@@ -1,4 +1,4 @@
 name: MCONE-BungeeCoreSystem
 main: eu.mcone.coresystem.bungee.BungeeCoreSystem
-version: 10.1.1-SNAPSHOT
+version: ${project.version}
 author: Dominik Lippl & Rufus Maiwald

@@ -36,7 +36,7 @@ public class PreferencesManager implements Preferences {
         preferences.clear();
         defaultValues.forEach(preferences::put);
 
-        for (Document preferencesDocument : database.getDocumentsInCollection("bungeesystem_preferences")) {
+        for (Document preferencesDocument : database.getCollection("bungeesystem_preferences").find()) {
             preferences.put(preferencesDocument.getString("key"), preferencesDocument.get("value"));
         }
     }

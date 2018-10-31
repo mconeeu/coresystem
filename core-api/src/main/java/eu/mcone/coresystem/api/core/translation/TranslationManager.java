@@ -9,8 +9,6 @@ package eu.mcone.coresystem.api.core.translation;
 import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 
-import java.util.Map;
-
 public interface TranslationManager {
 
     /**
@@ -54,11 +52,5 @@ public interface TranslationManager {
      * @param categories categories name
      */
     void loadCategories(GlobalCorePlugin plugin, String... categories);
-
-    /**
-     * insert predefined translations as Map
-     * @param translations Map with key and TranslationField
-     */
-    void insertIfNotExists(Map<String, TranslationField> translations);
 
 }

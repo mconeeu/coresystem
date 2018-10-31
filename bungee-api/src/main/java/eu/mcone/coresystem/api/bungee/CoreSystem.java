@@ -29,7 +29,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     private static CoreSystem instance;
 
     protected CoreSystem() {
-        super("BungeeCoreSystem", ChatColor.DARK_AQUA, "system.prefix");
+        super("bungeesystem", ChatColor.DARK_AQUA, "system.prefix");
     }
 
     protected void setInstance(CoreSystem instance) {

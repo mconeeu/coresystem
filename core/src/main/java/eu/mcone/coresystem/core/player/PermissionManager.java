@@ -7,23 +7,23 @@
 package eu.mcone.coresystem.core.player;
 
 import eu.mcone.coresystem.api.core.player.Group;
-import eu.mcone.coresystem.core.mysql.MySQL;
+import eu.mcone.networkmanager.core.api.database.MongoDatabase;
+import org.bson.Document;
 
-import java.sql.SQLException;
 import java.util.*;
 
 public class PermissionManager implements eu.mcone.coresystem.api.core.player.PermissionManager {
 
     private final String servername;
-    private MySQL mySQL;
+    private MongoDatabase database;
 
-    private HashMap<Group, Set<String>> groups;
-    private HashMap<Group, Set<Group>> parents;
-    private HashMap<String, Set<String>> permissions;
+    private Map<Group, Set<String>> groups;
+    private Map<Group, Set<Group>> parents;
+    private HashMap<UUID, Set<String>> permissions;
 
-    public PermissionManager(String servername, MySQL mysql) {
+    public PermissionManager(String servername, MongoDatabase database) {
         this.servername = servername != null ? servername : "unknownserver";
-        this.mySQL = mysql;
+        this.database = database;
 
         this.groups = new HashMap<>();
         this.parents = new HashMap<>();
@@ -34,31 +34,33 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
 
     @Override
     public void reload() {
-        mySQL.select("SELECT * FROM `permissions` WHERE (`server` IS NULL OR `server` LIKE '" + servername.toLowerCase() + "')", rs -> {
-            groups.clear();
-            parents.clear();
-            permissions.clear();
+        for (Document entry : database.getCollection("permission_groups").find()) {
+            Group g = Group.getGroupById(entry.getInteger("id"));
 
-            try {
-                while (rs.next()) {
-                    switch (rs.getString("key")) {
-                        case "group":
-                            groups.put(Group.getGroupById(rs.getInt("name")), groups.getOrDefault(Group.getGroupById(rs.getInt("name")), new HashSet<>()));
-                            break;
-                        case "permission":
-                            addPermission(Group.getGroupById(rs.getInt("name")), rs.getString("value"));
-                            break;
-                        case "parent":
-                            addParent(Group.getGroupById(rs.getInt("name")), Group.getGroupById(rs.getInt("value")));
-                            break;
-                        case "player-permission":
-                            addPermissiontoPlayer(rs.getString("name"), rs.getString("value"));
-                    }
+            Set<String> permissions = new HashSet<>();
+            for (Map.Entry<String, Object> e : entry.get("permissions", new Document()).entrySet()) {
+                if (e.getValue() == null || (e.getValue() instanceof String && ((String) e.getValue()).equalsIgnoreCase(servername))) {
+                    permissions.add(e.getKey().replace('-', '.'));
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
-        });
+            this.groups.put(g, permissions);
+
+            Set<Group> parents = new HashSet<>();
+            for (int id : entry.get("parents", new ArrayList<Integer>())) {
+                parents.add(Group.getGroupById(id));
+            }
+            this.parents.put(g, parents);
+        }
+
+        for (Document entry : database.getCollection("permission_players").find()) {
+            Set<String> permissions = new HashSet<>();
+            for (Map.Entry<String, Object> e : entry.get("permissions", new Document()).entrySet()) {
+                if (e.getValue() == null || (e.getValue() instanceof String && ((String) e.getValue()).equalsIgnoreCase(servername))) {
+                    permissions.add(e.getKey().replace('-', '.'));
+                }
+            }
+            this.permissions.put(UUID.fromString(entry.getString("uuid")), permissions);
+        }
     }
 
     @Override
@@ -84,7 +86,7 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
     }
 
     @Override
-    public Set<String> getPermissions(String uuid, Set<Group> groups) {
+    public Set<String> getPermissions(UUID uuid, Set<Group> groups) {
         if (groups.size() == 0) groups.add(Group.SPIELER);
         Set<String> permissions = new HashSet<>(this.permissions.getOrDefault(uuid, Collections.emptySet()));
 
@@ -145,30 +147,6 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
         }
 
         return result;
-    }
-
-    private void addPermission(Group group, String permission) {
-        if (this.groups.containsKey(group)) {
-            this.groups.get(group).add(permission);
-        } else {
-            this.groups.put(group, new HashSet<>(Collections.singletonList(permission)));
-        }
-    }
-
-    private void addPermissiontoPlayer(String uuid, String permission) {
-        if (permissions.containsKey(uuid)) {
-            permissions.get(uuid).add(permission);
-        } else {
-            permissions.put(uuid, new HashSet<>(Collections.singletonList(permission)));
-        }
-    }
-
-    private void addParent(Group group, Group parent) {
-        if (this.parents.containsKey(group)) {
-            this.parents.get(group).add(parent);
-        } else {
-            this.parents.put(group, new HashSet<>(Collections.singletonList(parent)));
-        }
     }
 
 }

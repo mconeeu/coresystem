@@ -21,7 +21,7 @@ public class Chat implements Listener {
     final private static ArrayList<String> cmds = new ArrayList<>(Arrays.asList("/greload", "/glist", "/alertraw", "/end", "/alert", "/alertraw", "/me", "/send", "/plugins", "/pl", "/demote", "/promote", "/permissionsex:", "/pex", "/pl", "/?", "/bungee", "/me", "/bukkit:plugins", "/bukkit:pl", "/bukkit:?", "/bukkit:help", "/bukkit:me", "/bukkit:mE", "/", "/version", "/tell", "/me", "/minecraft:me"));
     final private static ArrayList<String> forbiddenWords = new ArrayList<>(Arrays.asList("nazi", "Nazi", "Hitler", "HURENSOHN!", "pedo", "köter", "scheiss", "scheiß", "huan", "opfer", "opfa", "ez", "fotze", "l2p", "Anal", "Sex", "fick", "Fick", "Vagina", "Penis", "Arsch", "Kanacke", "ez", "e2", "easy", "eazy", "noob", "n00b", "nab", "nob", "n00b", "n0b", "bastard", "bastard", "Pimmel", "Misset", "Misstgeburt", "Missgeburt", "Popo", "Po", "Penetrant", "porno", "schlampen", "nutten", "transen", "blowjob", "sexy", "kotzen", "kaka", "orin", "scheiße", "kot", "kacken", "fettsack", "affenkind", "Hurensohn", "Du Zigeuner", "Du Tonne", "Du Müllsack", "Du Mülltonne", "Mutterficker", "spasst", "spast", "motherfucker", "Hoe", "Bitch", "Slut", "Bl�dmann", "Pussy", "Pu*sy", "Dick", "Porno", "ddos", "dos", "nippel", "lappen", "lapen", "huso", "l4ppen", "Missthaufen", "nippelsauger", "Plauge", "Knackfuck", "Knackfuss", "cock", "sandler", "sandla", "fuppa"));
 
-    public static Map<ProxiedPlayer, HashMap<Integer, HashMap<Long, String>>> playerhashmap = new HashMap<>();
+    public static Map<ProxiedPlayer, TreeMap<Integer, Map<Long, String>>> playerTreeMap = new HashMap<>();
 
     @EventHandler(priority = 64)
     public void on(ChatEvent e) {
@@ -69,18 +69,18 @@ public class Chat implements Listener {
             }
         }
 
-        if (playerhashmap.containsKey(p)) {
-            HashMap<Long, String> news = new HashMap<>();
+        if (playerTreeMap.containsKey(p)) {
+            Map<Long, String> news = new HashMap<>();
             news.put(millis, e.getMessage());
-            playerhashmap.get(p).put(playerhashmap.get(p).size() + 1, news);
+            playerTreeMap.get(p).put(playerTreeMap.get(p).size() + 1, news);
         } else {
-            HashMap<Long, String> news = new HashMap<>();
+            Map<Long, String> news = new HashMap<>();
             news.put(millis, e.getMessage());
 
-            HashMap<Integer, HashMap<Long, String>> news2 = new HashMap<>();
+            TreeMap<Integer, Map<Long, String>> news2 = new TreeMap<>();
             news2.put(1, news);
 
-            playerhashmap.put(p, news2);
+            playerTreeMap.put(p, news2);
         }
     }
 }

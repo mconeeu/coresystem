@@ -1,8 +1,21 @@
-.gitignore
+# IntelliJ
 .idea/
-bukkit-api/target/
-bukkit/target/
-bungee-api/target/
-bungee/target/
-core-api/target/
-core/target/
+*.iml
+*.ipr
+*.ivs
+
+# Eclipse
+.settings/
+.classpath
+.project
+
+# Netbeans
+nbproject/
+nbactions.xml
+
+# maven
+target/
+dependency-reduced-pom.xml
+
+# OS X
+.DS_Store

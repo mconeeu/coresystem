@@ -10,9 +10,9 @@ import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
 
-public class WartungCMD extends Command {
+public class MaintenanceCMD extends Command {
 
-    public WartungCMD(){
+    public MaintenanceCMD(){
         super("wartung", "system.bungee.wartung");
     }
 
