@@ -36,13 +36,13 @@ public class TsCMD extends Command {
                                 .append(TextComponent.fromLegacyText(
                                         cp.isTeamspeakIdLinked() ?
                                                 "\n§7Du hast diese TeamSpeak ID verlinkt: §f" + cp.getTeamspeakUid() + "\n§7Benutze §3/ts unlink§7 zum entfernen" :
-                                                "\n§7§oDu hast keine TeamSpeak Identität verlinkt!\n§2Benutze §a/ts link <Identität-UID>§2 um deine Identität zu verlinken."
+                                                "\n§7§oDu hast keine TeamSpeak Identität verlinkt!\n§2Benutze §a/ts link§2 um deine Identität zu verlinken."
                                 ))
                                 .append(TextComponent.fromLegacyText("\n\n§7Unseren TeamSpeak erreichst du über die IP §fts.mcone.eu§7."))
                                 .append("§7» §3§l§nKlicke hier um zu joinen")
                                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7§oTeamSpeak-Client Öffnen").create()))
                                 .event(new ClickEvent(Action.OPEN_URL, "http://connect2ts.mcone.eu/"))
-                                .append(TextComponent.fromLegacyText("§8§m----------------§r§8| §3Teamspeak §8§m|----------------"))
+                                .append(TextComponent.fromLegacyText("\n§8§m----------------§r§8| §3Teamspeak §8§m|----------------"))
                                 .create()
                 );
                 return;
@@ -50,16 +50,16 @@ public class TsCMD extends Command {
                 if (cp.isTeamspeakIdLinked()) {
                     TeamspeakVerifier tsv = BungeeCoreSystem.getSystem().getTeamspeakVerifier();
                     if (tsv != null) tsv.unlink(cp);
-                    BungeeCoreSystem.getInstance().getMessager().send(p, "§2Deine Identität wurde erfolgreich von deinem Minecraftaccount entfernt. Benutze §a/ts link <Identität-UID>§2 um wieder eine Identität zu verlinken.");
+                    BungeeCoreSystem.getInstance().getMessager().send(p, "§2Deine Identität wurde erfolgreich von deinem Minecraftaccount entfernt. Benutze §a/ts link§2 um wieder eine Identität zu verlinken.");
                 } else {
-                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du hast gerade keine TeamSpeak-Identität verlinkt! Benutze §c/ts link <Identität-UID>§4 um eine Identität zu verlinken.");
+                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du hast gerade keine TeamSpeak-Identität verlinkt! Benutze §c/ts link§4 um eine Identität zu verlinken.");
                 }
                 return;
-            } else if (args.length == 2 && args[0].equalsIgnoreCase("link")) {
+            } else if (args.length == 1 && args[0].equalsIgnoreCase("link")) {
                 if (!cp.isTeamspeakIdLinked()) {
                     TeamspeakVerifier tsv = BungeeCoreSystem.getSystem().getTeamspeakVerifier();
                     if (tsv != null) {
-                        tsv.addRegistering(p, args[1]);
+                        tsv.sendClientsWithIP(cp);
                     } else {
                         BungeeCoreSystem.getInstance().getMessager().send(p, "§4Die TeamSpeak Verifizierung ist nicht verfügbar! Bitte melde dies einem Teammitglied.");
                     }
@@ -67,6 +67,10 @@ public class TsCMD extends Command {
                     BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du kannst nicht mehr als eine TeamSpeak Identität verlinken!");
                 }
                 return;
+            } else if(args.length == 2 && args[0].equalsIgnoreCase("uidlink")) {
+                String tsId = args[1];
+                TeamspeakVerifier tsv = BungeeCoreSystem.getSystem().getTeamspeakVerifier();
+                tsv.addRegistering(p, tsId);
             }
 
             BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/tc §4oder §c/ts link <Identität-UID> §4oder §c/ts unlink");

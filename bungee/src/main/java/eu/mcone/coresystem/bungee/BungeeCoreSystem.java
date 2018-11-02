@@ -155,15 +155,16 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             sendConsoleMessage("§cTeamSpeakQuery disabled by JVM Argument");
         }
 
-        try {
-            if (!Boolean.valueOf(System.getProperty("DisableDiscordQuery"))) {
-                sendConsoleMessage("§aLoading DiscordQuery...");
+
+        if (!Boolean.valueOf(System.getProperty("DisableDiscordQuery"))) {
+            sendConsoleMessage("§aLoading DiscordQuery...");
+            try {
                 discordControlBot = new DiscordControlBot();
-            } else {
-                sendConsoleMessage("§cDiscordQuery disabled by JVM Argument");
+            } catch (LoginException e) {
+                e.printStackTrace();
             }
-        } catch (LoginException e) {
-            e.printStackTrace();
+        } else {
+            sendConsoleMessage("§cDiscordQuery disabled by JVM Argument");
         }
 
         sendConsoleMessage("§aLoading Nicksystem...");

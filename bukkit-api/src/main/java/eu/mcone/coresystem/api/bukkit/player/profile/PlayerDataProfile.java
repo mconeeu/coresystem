@@ -18,6 +18,13 @@ import org.bukkit.entity.Player;
 @Getter @Setter
 public class PlayerDataProfile extends PlayerInventoryProfile {
 
+    private boolean flying;
+    private String world;
+    private CoreLocation location;
+    int level;
+    float exp;
+    double health;
+
     public PlayerDataProfile(Player p) {
         super(p);
 
@@ -29,15 +36,8 @@ public class PlayerDataProfile extends PlayerInventoryProfile {
         health = p.getHealth();
     }
 
-    private boolean flying;
-    private String world;
-    private CoreLocation location;
-    int level;
-    float exp;
-    double health;
-
     public void setData(Player p) {
-        p.teleport(getLocation());
+        p.teleport(getBukkitLocation());
         p.setFlying(flying);
         p.setLevel(level);
         p.setExp(exp);
@@ -46,7 +46,7 @@ public class PlayerDataProfile extends PlayerInventoryProfile {
         setItemInventory(p);
     }
 
-    public Location getLocation() {
+    public Location getBukkitLocation() {
         return new Location(Bukkit.getWorld(world), location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
     }
 

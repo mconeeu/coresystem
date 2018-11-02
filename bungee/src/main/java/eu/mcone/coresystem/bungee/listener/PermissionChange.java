@@ -14,10 +14,14 @@ import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.bots.teamspeak.TeamspeakVerifier;
 import eu.mcone.coresystem.core.player.GlobalOfflineCorePlayer;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class PermissionChange implements Listener {
@@ -28,14 +32,27 @@ public class PermissionChange implements Listener {
             ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
                 BungeeCoreSystem.getInstance().getPermissionManager().reload();
 
-                Set<Group> groups = BungeeCoreSystem.getInstance().getPermissionManager().getChildren(new ArrayList<>(e.getGroups()).get(0));
+                Group target = e.getGroups().iterator().next();
+
+                Map<ServerInfo, ProxiedPlayer> servers = new HashMap<>();
+                Set<Group> groups = BungeeCoreSystem.getInstance().getPermissionManager().getChildren(target);
+                groups.add(target);
                 for (CorePlayer player : BungeeCoreSystem.getInstance().getOnlineCorePlayers()) {
+                    ProxiedPlayer p = player.bungee();
+                    if (!servers.containsKey(p.getServer().getInfo())) {
+                        servers.put(p.getServer().getInfo(), p);
+                    }
+
                     for (Group g : player.getGroups()) {
                         if (groups.contains(g)) {
                             player.reloadPermissions();
                             break;
                         }
                     }
+                }
+
+                for (ProxiedPlayer p : servers.values()) {
+                    CoreSystem.getInstance().getChannelHandler().createInfoRequest(p, "EVENT", "PermissionChangeEvent", "GROUP_PERMISSION;["+target.getId()+"]");
                 }
             });
         } else if (e.getKind() == PermissionChangeEvent.Kind.USER_PERMISSION) {

@@ -16,12 +16,12 @@ import com.github.theholywaffle.teamspeak3.api.event.TS3EventAdapter;
 import com.github.theholywaffle.teamspeak3.api.event.TS3EventType;
 import com.github.theholywaffle.teamspeak3.api.event.TextMessageEvent;
 import com.github.theholywaffle.teamspeak3.api.reconnect.ReconnectStrategy;
+import com.github.theholywaffle.teamspeak3.api.wrapper.Client;
 import com.github.theholywaffle.teamspeak3.api.wrapper.ClientInfo;
 import com.github.theholywaffle.teamspeak3.api.wrapper.ServerQueryInfo;
 import com.google.common.primitives.Ints;
 import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.cloud.api.plugin.CloudAPI;
-import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.exception.RuntimeCoreException;
 import eu.mcone.coresystem.api.core.player.Group;
@@ -29,6 +29,10 @@ import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.core.player.GlobalOfflineCorePlayer;
 import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.bson.Document;
 
@@ -62,10 +66,14 @@ public class TeamspeakVerifier {
     private ServerQueryInfo serverQueryInfo;
 
     private Map<UUID, String> registering;
+    private Map<UUID, Integer> registeringCodes;
+    private Map<String, UUID> ingameUniqueIds;
     private Map<UUID, TeamspeakIcon> icons;
 
     public TeamspeakVerifier() {
         this.registering = new HashMap<>();
+        this.registeringCodes = new HashMap<>();
+        this.ingameUniqueIds = new HashMap<>();
         this.icons = new HashMap<>();
 
         this.query = new TS3Query(CONFIG);
@@ -82,22 +90,66 @@ public class TeamspeakVerifier {
         registerEventsAndListeners();
     }
 
+    public void sendClientsWithIP(CorePlayer player) {
+        //TODO: Implement code system in addRegistering();
+
+        String ip = player.getIpAdress();
+        List<Client> results = new ArrayList<>();
+
+        api.getClients().onSuccess(x -> {
+            x.forEach(c -> {
+                if (c.getIp().equalsIgnoreCase(ip)) {
+                    results.add(c);
+                }
+            });
+            if (results.size() == 0) {
+                BungeeCoreSystem.getInstance().getMessager().send(player.bungee(), "§4Ein TeamSpeak Account mit deiner IP-Adresse ist nicht online.");
+            } else {
+                BungeeCoreSystem.getInstance().getMessager().send(player.bungee(), "Folgende Identitäten wurden gefunden. Bitte wähle deine aus:");
+                results.forEach(v -> {
+                    TextComponent tp = new TextComponent("§8 » §f" + v.getNickname());
+                    tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Klicke hier um dich mit diesem Account zu verbinden").create()));
+                    tp.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/ts uidlink " + v.getUniqueIdentifier()));
+                    player.bungee().sendMessage(tp);
+                });
+            }
+        });
+    }
+
+    public int randInt(int min, int max) {
+        return new Random().nextInt((max - min) + 1) + min;
+    }
+
     private void registerEventsAndListeners() {
         api.registerEvents(TS3EventType.TEXT_PRIVATE, TS3EventType.SERVER).onFailure(Throwable::printStackTrace);
         api.addTS3Listeners(new TS3EventAdapter() {
             @Override
             public void onTextMessage(TextMessageEvent e) {
+                CorePlayer p = null;
+                if (ingameUniqueIds.containsKey(e.getInvokerUniqueId())) {
+                    p = BungeeCoreSystem.getSystem().getCorePlayer(ingameUniqueIds.remove(e.getInvokerUniqueId()));
+                }
                 if (e.getTargetMode().equals(TextMessageTargetMode.CLIENT) && e.getInvokerId() != serverQueryInfo.getId()) {
-                    CorePlayer p = null;
-
-                    for (CorePlayer player : CoreSystem.getInstance().getOnlineCorePlayers()) {
-                        if (player.getName().equalsIgnoreCase(e.getMessage())) p = player;
-                    }
-
                     if (p != null) {
                         if (registering.getOrDefault(p.getUuid(), "").equals(e.getInvokerUniqueId())) {
+                            String message = e.getMessage();
+
+                            Integer code = null;
+                            try {
+                                code = Integer.parseInt(message);
+                            } catch (NumberFormatException ignored) {
+                            }
+
+                            if(code != null) {
+                                if(registeringCodes.remove(p.getUuid()).equals(code)) {
+                                    registering.remove(p.getUuid());
+                                    link(p, e.getInvokerUniqueId());
+                                    return;
+                                }
+                            }
+                            registeringCodes.remove(p.getUuid());
                             registering.remove(p.getUuid());
-                            link(p, e.getInvokerUniqueId());
+                            api.sendPrivateMessage(e.getInvokerId(), "[b][color=darkred]Der angegebene Code ist inkorrekt. Vorgang abgebrochen.[/color][/b]");
                         }
                     } else if (registering.containsValue(e.getInvokerUniqueId())) {
                         Set<UUID> toDelete = new HashSet<>();
@@ -154,9 +206,12 @@ public class TeamspeakVerifier {
         } else {
             api.getClientByUId(ts3Uid)
                     .onSuccess(clientInfo -> {
-                        BungeeCoreSystem.getInstance().getMessager().send(p, "§2Bitte wechsle zu deinem TeamSpeak Fenster und gib in dem gerade vom §f[Bot] mc1net§2 geöffneten Chat deinen §aMinecraft-Namen§2 ein, um den Vorgang abzuschließen.");
-                        api.sendPrivateMessage(clientInfo.getId(), "[b][color=white]Um die Verknüpfung deines Minecraftaccounts abzuschließen gib bitte hier deinen [/color][color=darkcyan]Minecraftnamen[/color][color=white] ein:[/color][/b]");
+                        int code = randInt(1000, 9999);
+                        registeringCodes.put(p.getUniqueId(), code);
+                        BungeeCoreSystem.getInstance().getMessager().send(p, "§2Bitte wechsle zu deinem TeamSpeak Fenster und gib in dem gerade vom §f[Bot] mc1net§2 geöffneten Chat folgenden Code ein, um den Vorgang abzuschließen: §e" + code);
+                        api.sendPrivateMessage(clientInfo.getId(), "[b]Es wird versucht, sich mit deinem Account zu verbinden. Bitte gebe den in Minecraft erhaltenen Code hier ein:[/b]");
                         registering.put(p.getUniqueId(), ts3Uid);
+                        ingameUniqueIds.put(ts3Uid, p.getUniqueId());
                     })
                     .onFailure(e -> BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der TeamSpeak Account mit der angegeben ID ist nicht auf dem TeamSpeak Server online! (TS-IP: §cmcone.eu§4)"));
         }
@@ -302,6 +357,7 @@ public class TeamspeakVerifier {
             BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_teamspeak_icons").updateOne(
                     eq("uuid", uuid.toString()),
                     combine(
+                            setOnInsert("uuid", uuid.toString()),
                             set("icon_id", iconId),
                             set("bytes", bytes)
                     ),

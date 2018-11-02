@@ -58,6 +58,17 @@
             </roles>
             <timezone>Europe/Berlin</timezone>
         </developer>
+        <developer>
+            <id>felixschmid</id>
+            <name>Felix Schmid</name>
+            <url>https://schmiddinger.eu</url>
+            <organization>MC ONE</organization>
+            <organizationUrl>https://www.mcone.eu</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>Europe/Berlin</timezone>
+        </developer>
     </developers>
 
     <organization>

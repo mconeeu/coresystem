@@ -26,13 +26,18 @@ import java.util.*;
 @Getter @Setter
 public class PlayerInventoryProfile extends GameProfile {
 
+    private List<InventoryItem> items = new ArrayList<>();
+
     public PlayerInventoryProfile(Player p) {
         super(p);
 
         for (int i = 0; i < p.getInventory().getSize(); i++) {
             ItemStack item = p.getInventory().getItem(i);
 
-            if (item != null)
+            if (item != null) {
+                Map<String, Integer> enchantments = new HashMap<>();
+                item.getEnchantments().forEach((e, x) -> enchantments.put(e.getName(), x));
+
                 items.add(new InventoryItem(
                         i,
                         item.getAmount(),
@@ -40,10 +45,11 @@ public class PlayerInventoryProfile extends GameProfile {
                         item.getDurability(),
                         item.getItemMeta().getDisplayName(),
                         item.getItemMeta().getLore(),
-                        item.getEnchantments(),
+                        enchantments,
                         item.getItemMeta().getItemFlags(),
                         item.getItemMeta().spigot().isUnbreakable()
                 ));
+            }
         }
     }
 
@@ -57,34 +63,37 @@ public class PlayerInventoryProfile extends GameProfile {
         private short durablity;
         private String displayname;
         private List<String> lore;
-        private Map<Enchantment, Integer> enchantments;
+        private Map<String, Integer> enchantments;
         private Set<ItemFlag> itemFlags;
         boolean unbreakable;
 
     }
 
-    private List<InventoryItem> items = new ArrayList<>();
-
     public void setItemInventory(Player p) {
         Inventory inv = Bukkit.createInventory(p, InventoryType.PLAYER);
-        for (Map.Entry<Integer, ItemStack> item : getItems().entrySet()) {
+        for (Map.Entry<Integer, ItemStack> item : getItemMap().entrySet()) {
             inv.setItem(item.getKey(), item.getValue());
         }
         p.openInventory(inv);
     }
 
-    public Map<Integer, ItemStack> getItems() {
+    public Map<Integer, ItemStack> getItemMap() {
         Map<Integer, ItemStack> items = new HashMap<>();
-        this.items.forEach(i -> items.put(
-                i.slot,
-                new ItemBuilder(i.material, i.amount, i.durablity)
-                        .displayName(i.displayname)
-                        .lore(i.lore)
-                        .enchantments(i.enchantments)
-                        .itemFlags(i.itemFlags.toArray(new ItemFlag[]{}))
-                        .unbreakable(i.unbreakable)
-                        .create()
-        ));
+        this.items.forEach(i -> {
+            Map<Enchantment, Integer> enchantments = new HashMap<>();
+            i.getEnchantments().forEach((e, x) -> enchantments.put(Enchantment.getByName(e), x));
+
+            items.put(
+                    i.slot,
+                    new ItemBuilder(i.material, i.amount, i.durablity)
+                            .displayName(i.displayname)
+                            .lore(i.lore)
+                            .enchantments(enchantments)
+                            .itemFlags(i.itemFlags.toArray(new ItemFlag[]{}))
+                            .unbreakable(i.unbreakable)
+                            .create()
+            );
+        });
         return items;
     }
 

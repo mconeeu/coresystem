@@ -137,7 +137,7 @@ public class PermsCMD extends Command implements TabExecutor {
 
                     if (args.length == 4) {
                         Document permissionEntry = playerCollection.find(eq("uuid", p.getUuid().toString())).first();
-                        if (permissionEntry != null && permissionEntry.get("permissions", new HashMap<String, String>()).containsKey(permission)) {
+                        if (permissionEntry != null && permissionEntry.get("permissions", new Document()).containsKey(permission)) {
                             playerCollection.updateOne(
                                     eq("uuid", p.getUuid().toString()),
                                     unset("permissions." + permission)
@@ -161,7 +161,7 @@ public class PermsCMD extends Command implements TabExecutor {
                         String server = args[4];
 
                         Document permissionEntry = playerCollection.find(eq("uuid", p.getUuid().toString())).first();
-                        if (permissionEntry != null && permissionEntry.get("permissions", new HashMap<String, String>()).containsKey(permission)) {
+                        if (permissionEntry != null && permissionEntry.get("permissions", new Document()).containsKey(permission)) {
                             playerCollection.updateOne(
                                     eq("uuid", p.getUuid().toString()),
                                     unset("permissions." + permission)
@@ -184,12 +184,6 @@ public class PermsCMD extends Command implements TabExecutor {
                     }
                 } else if (args.length == 4 && args[2].equalsIgnoreCase("check")) {
                     String permission = args[3].replace('.', '-');
-
-                    if (p.hasPermission(permission)) {
-                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Der Spieler " + args[1] + " hat die Permission §a" + permission + "§2!");
-                    } else {
-                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spieler " + args[1] + " hat die Permission §c" + permission + "§4 nicht!");
-                    }
 
                     Document permissionEntry = playerCollection.find(eq("uuid", p.getUuid().toString())).first();
                     Map<String, String> permissions;
@@ -242,7 +236,7 @@ public class PermsCMD extends Command implements TabExecutor {
 
                     if (args.length == 4) {
                         Document permissionEntry = groupCollection.find(eq("id", g.getId())).first();
-                        if (permissionEntry != null && permissionEntry.get("permissions", new HashMap<String, String>()).containsKey(permission)) {
+                        if (permissionEntry != null && permissionEntry.get("permissions", new Document()).containsKey(permission)) {
                             groupCollection.updateOne(
                                     eq("id", g.getId()),
                                     unset("permissions." + permission)
@@ -264,7 +258,7 @@ public class PermsCMD extends Command implements TabExecutor {
                         String server = args[4];
 
                         Document permissionEntry = groupCollection.find(eq("id", g.getId())).first();
-                        if (permissionEntry != null && permissionEntry.get("permissions", new HashMap<String, String>()).containsKey(permission)) {
+                        if (permissionEntry != null && permissionEntry.get("permissions", new Document()).containsKey(permission)) {
                             groupCollection.updateOne(
                                     eq("id", g.getId()),
                                     unset("permissions." + permission)
@@ -284,7 +278,7 @@ public class PermsCMD extends Command implements TabExecutor {
                         return;
                     }
                 } else if (args.length == 4 && args[2].equalsIgnoreCase("check")) {
-                    final String permission = args[3];
+                    final String permission = args[3].replace('.', '-');
 
                     Document permissionEntry = groupCollection.find(eq("id", g.getId())).first();
                     Map<String, String> permissions;

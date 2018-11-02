@@ -28,11 +28,14 @@ public class PermissionChange implements Listener {
             Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
                 BukkitCoreSystem.getInstance().getPermissionManager().reload();
 
-                Set<Group> groups = BukkitCoreSystem.getInstance().getPermissionManager().getChildren(new ArrayList<>(e.getGroups()).get(0));
+                Group target = e.getGroups().iterator().next();
+                Set<Group> groups = BukkitCoreSystem.getInstance().getPermissionManager().getChildren(target);
+                groups.add(target);
                 for (CorePlayer player : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
                     for (Group g : player.getGroups()) {
                         if (groups.contains(g)) {
                             player.reloadPermissions();
+                            BukkitCoreSystem.getInstance().getMessager().send(player.bukkit(), "§7§oDeine Permissions wurden upgedated!");
                             break;
                         }
                     }

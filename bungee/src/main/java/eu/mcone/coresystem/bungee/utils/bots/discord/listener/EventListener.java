@@ -140,14 +140,7 @@ public class EventListener extends net.dv8tion.jda.core.hooks.ListenerAdapter {
     // CLIENT INFORMATION
     @Override
     public void onReady(ReadyEvent e) {
-        JDA jda = e.getJDA();
         discordControlBot = BungeeCoreSystem.getSystem().getDiscordControlBot();
-
-        for (Guild guild : jda.getGuilds()) {
-            TextChannel textChannel = guild.getTextChannelsByName("spam", true).get(0);
-            textChannel.sendMessage("*Der MCONE Control bot ist nun wieder* **online**").queue();
-        }
-
         BungeeCoreSystem.getSystem().sendConsoleMessage("§aDiscord bot started...");
     }
 
@@ -158,13 +151,6 @@ public class EventListener extends net.dv8tion.jda.core.hooks.ListenerAdapter {
 
     @Override
     public void onDisconnect(DisconnectEvent e) {
-        JDA jda = e.getJDA();
-
-        for (Guild guild : jda.getGuilds()) {
-            TextChannel textChannel = guild.getTextChannelsByName("spam", true).get(0);
-            textChannel.sendMessage("*Der MCONE Control bot ist nun* **offline**").queue();
-        }
-
         BungeeCoreSystem.getSystem().sendConsoleMessage("§cDisconnecting from discord server...");
     }
 
