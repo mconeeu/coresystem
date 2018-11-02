@@ -14,17 +14,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class InventoryClose implements Listener {
 
     @EventHandler
     public void on(InventoryCloseEvent e) {
-        if (e.getPlayer() instanceof Player) {
-            for (AnvilInventory inv : BukkitCoreSystem.getSystem().getPluginManager().getCoreAnvilInventories()) {
-                Inventory inventory = inv.getPlayersInventory((Player) e.getPlayer());
+        for (AnvilInventory inv : BukkitCoreSystem.getSystem().getPluginManager().getCoreAnvilInventories()) {
+            Inventory inventory = inv.getPlayersInventory((Player) e.getPlayer());
 
-                if (inventory != null && e.getInventory().equals(inventory)) {
-                    inventory.clear();
-                }
+            if (inventory != null && e.getInventory().equals(inventory)) {
+                inventory.clear();
             }
         }
     }

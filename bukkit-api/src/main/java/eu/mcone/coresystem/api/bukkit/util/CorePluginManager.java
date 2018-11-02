@@ -10,6 +10,7 @@ import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
+import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.util.CooldownSystem;
 import org.bukkit.entity.Player;
@@ -88,5 +89,9 @@ public interface CorePluginManager {
     Collection<CoreCommand> getCoreCommands(CorePlugin plugin);
 
     Collection<GameProfile> getGameProfiles();
+
+    void setGameProfileWorld(CoreWorld world);
+
+    String getGameProfileWorld();
 
 }

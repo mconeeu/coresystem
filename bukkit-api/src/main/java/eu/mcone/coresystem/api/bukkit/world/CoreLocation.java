@@ -9,11 +9,13 @@ package eu.mcone.coresystem.api.bukkit.world;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter @Setter
 public final class CoreLocation {
 

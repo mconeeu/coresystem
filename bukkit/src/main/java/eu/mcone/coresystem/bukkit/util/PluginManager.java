@@ -11,6 +11,7 @@ import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
 import eu.mcone.coresystem.api.bukkit.util.CorePluginManager;
+import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
 import eu.mcone.coresystem.core.util.CooldownSystem;
@@ -35,6 +36,8 @@ public class PluginManager implements CorePluginManager {
     private Map<Player, CoreInventory> inventories;
     private List<AnvilInventory> anvilInventories;
     private List<GameProfile> gameProfiles;
+    @Getter
+    private String gameProfileWorld;
 
     static {
         try {
@@ -54,6 +57,7 @@ public class PluginManager implements CorePluginManager {
         this.inventories = new HashMap<>();
         this.anvilInventories = new ArrayList<>();
         this.gameProfiles = new ArrayList<>();
+        this.gameProfileWorld = Bukkit.getWorlds().get(0).getName();
     }
 
     public void disable() {
@@ -145,4 +149,8 @@ public class PluginManager implements CorePluginManager {
        return gameProfiles;
     }
 
+    @Override
+    public void setGameProfileWorld(CoreWorld world) {
+        gameProfileWorld = world.getName();
+    }
 }

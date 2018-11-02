@@ -6,7 +6,9 @@
 
 package eu.mcone.coresystem.api.bukkit.player.profile;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
+import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,43 +55,26 @@ public class PlayerInventoryProfile extends GameProfile {
         }
     }
 
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Getter @Setter
-    public class InventoryItem {
-
-        private int slot, amount;
-        private Material material;
-        private short durablity;
-        private String displayname;
-        private List<String> lore;
-        private Map<String, Integer> enchantments;
-        private Set<ItemFlag> itemFlags;
-        boolean unbreakable;
-
-    }
-
-    public void setItemInventory(Player p) {
-        Inventory inv = Bukkit.createInventory(p, InventoryType.PLAYER);
-        for (Map.Entry<Integer, ItemStack> item : getItemMap().entrySet()) {
+    public void doSetItemInventory(Player p) {
+        Inventory inv = p.getInventory();
+        for (Map.Entry<Integer, ItemStack> item : calculateItems().entrySet()) {
             inv.setItem(item.getKey(), item.getValue());
         }
-        p.openInventory(inv);
     }
 
-    public Map<Integer, ItemStack> getItemMap() {
+    public Map<Integer, ItemStack> calculateItems() {
         Map<Integer, ItemStack> items = new HashMap<>();
         this.items.forEach(i -> {
             Map<Enchantment, Integer> enchantments = new HashMap<>();
             i.getEnchantments().forEach((e, x) -> enchantments.put(Enchantment.getByName(e), x));
 
             items.put(
-                    i.slot,
-                    new ItemBuilder(i.material, i.amount, i.durablity)
-                            .displayName(i.displayname)
-                            .lore(i.lore)
+                    i.getSlot(),
+                    new ItemBuilder(i.getMaterial(), i.getAmount(), i.getDurablity())
+                            .displayName(i.getDisplayname())
+                            .lore(i.getLore())
                             .enchantments(enchantments)
-                            .itemFlags(i.itemFlags.toArray(new ItemFlag[]{}))
+                            .itemFlags(i.getItemFlags().toArray(new ItemFlag[]{}))
                             .unbreakable(i.unbreakable)
                             .create()
             );
