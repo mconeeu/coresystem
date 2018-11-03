@@ -15,7 +15,7 @@ deploy:
   - master
   stage: deploy
 
-javadoc:
+pages:
   script:
   - mvn javadoc:aggregate -pl :mcone-coresystem,:core-api,:bungee-api,:bukkit-api,:npc-api
   - mkdir .public
