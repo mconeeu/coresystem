@@ -31,9 +31,16 @@ public class TeamChatCMD extends Command {
                 for (String arg : args) {
                     message.append(arg).append(" ");
                 }
-                for (ProxiedPlayer all : ProxyServer.getInstance().getPlayers()) {
-                    if (all.hasPermission("system.bungee.teamchat") || all.hasPermission("System.bungee.*")) {
-                        BungeeCoreSystem.getInstance().getMessager().sendSimple(all, BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.teamchat").replaceAll("%Playername%", BungeeCoreSystem.getInstance().getCorePlayer(p).getMainGroup().getPrefix() + p.getDisplayName()) + message.toString());
+                for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+                    if (player.hasPermission("system.bungee.teamchat")) {
+                        BungeeCoreSystem.getInstance().getMessager().sendSimple(
+                                player,
+                                BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.teamchat")
+                                        .replaceAll(
+                                                "%Playername%",
+                                                BungeeCoreSystem.getInstance().getCorePlayer(player).getMainGroup().getPrefix() + player.getDisplayName()
+                                        ) + message.toString()
+                        );
                     }
                 }
             }
