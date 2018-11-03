@@ -14,3 +14,22 @@ deploy:
   only:
   - master
   stage: deploy
+
+javadoc:
+  script:
+  - mvn javadoc:aggregate -pl :mcone-coresystem,:core-api,:bungee-api,:bukkit-api,:npc-api
+  only:
+  - master
+  stage: deploy
+
+pages:
+  script:
+  - mkdir .public
+  - cp -r $CI_PROJECT_DIR/target/site/apidocs/* .public
+  - mv .public public
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
+  stage: deploy
