@@ -6,7 +6,6 @@
 
 package eu.mcone.coresystem.api.core;
 
-import eu.mcone.coresystem.api.core.player.CoinsUtil;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.PermissionManager;
 import eu.mcone.coresystem.api.core.player.PlayerUtils;
@@ -23,12 +22,6 @@ public interface GlobalCoreSystem {
      * @return mc1data MongoDB database
      */
     MongoDatabase getMongoDB();
-
-    /**
-     * returns the CoinsUtil
-     * @return CoinsUtil instance
-     */
-    CoinsUtil getCoinsUtil();
 
     /**
      * returns the BCS TranslationManager

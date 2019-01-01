@@ -7,6 +7,7 @@
 package eu.mcone.coresystem.bukkit.player;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.event.MoneyChangeEvent;
 import eu.mcone.coresystem.api.bukkit.event.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
@@ -15,11 +16,13 @@ import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
+import eu.mcone.coresystem.api.core.player.Currency;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
+import eu.mcone.coresystem.core.util.MoneyUtil;
 import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,6 +40,13 @@ import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
 
 public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, OfflineCorePlayer {
+
+    private static final MoneyUtil moneyUtil = new MoneyUtil(BukkitCoreSystem.getInstance(), BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM)) {
+        @Override
+        protected void fireEvent(eu.mcone.coresystem.api.core.player.GlobalCorePlayer player, Currency currency) {
+
+        }
+    };
 
     @Getter @Setter
     private String nickname;

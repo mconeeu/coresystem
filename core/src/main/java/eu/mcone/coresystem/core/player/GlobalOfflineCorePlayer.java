@@ -38,7 +38,7 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     @Setter
     private String teamspeakUid, discordUid;
     @Getter
-    private int coins;
+    private int coins, emeralds;
     @Getter
     private PlayerState state;
     @Getter
@@ -109,6 +109,7 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         this.groupSet = new HashSet<>(Collections.singletonList(Group.SPIELER));
         this.onlinetime = 0;
         this.coins = 20;
+        this.emeralds = 0;
         this.settings = new PlayerSettings();
         this.state = online ? PlayerState.ONLINE : PlayerState.OFFLINE;
         this.isNew = true;
@@ -134,9 +135,9 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         this.name = entry.getString("name");
         this.groupSet = instance.getPermissionManager().getGroups(entry.get("groups", new ArrayList<>()));
         this.coins = entry.getInteger("coins");
+        this.emeralds = entry.getInteger("emeralds");
         this.teamspeakUid = entry.getString("teamspeak_uid");
         this.discordUid = entry.getString("discord_uid");
-
         this.state = online ? PlayerState.ONLINE : PlayerState.getPlayerStateById(entry.getInteger("state"));
         this.onlinetime = entry.getLong("online_time");
         this.settings = ((CoreModuleCoreSystem) instance).getGson().fromJson(entry.get("player_settings", Document.class).toJson(), PlayerSettings.class);
@@ -177,14 +178,14 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
             throw new RuntimeCoreException("Cannot set negative coin amount!");
         } else {
             this.coins = coins;
-            instance.getCoinsUtil().setCoins(uuid, coins);
+            ((CoreModuleCoreSystem) instance).getMoneyUtil().setCoins(uuid, coins);
         }
     }
 
     @Override
     public void addCoins(int amount) {
         this.coins += amount;
-        instance.getCoinsUtil().addCoins(uuid, amount);
+        ((CoreModuleCoreSystem) instance).getMoneyUtil().addCoins(uuid, amount);
     }
 
     @Override
@@ -195,7 +196,34 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         }
 
         this.coins -= amount;
-        instance.getCoinsUtil().removeCoins(uuid, amount);
+        ((CoreModuleCoreSystem) instance).getMoneyUtil().removeCoins(uuid, amount);
+    }
+
+    @Override
+    public void setEmeralds(int coins) {
+        if (coins < 0) {
+            throw new RuntimeCoreException("Cannot set negative coin amount!");
+        } else {
+            this.coins = coins;
+            ((CoreModuleCoreSystem) instance).getMoneyUtil().setEmeralds(uuid, coins);
+        }
+    }
+
+    @Override
+    public void addEmeralds(int amount) {
+        this.coins += amount;
+        ((CoreModuleCoreSystem) instance).getMoneyUtil().addEmeralds(uuid, amount);
+    }
+
+    @Override
+    public void removeEmeralds(int amount) {
+        if (coins - amount < 0) {
+            amount = coins;
+            ((CoreModuleCoreSystem) instance).sendConsoleMessage("§7Tried to remove more emeralds than Player §f" + name + "§7 has! (" + coins + "-" + amount + ")");
+        }
+
+        this.coins -= amount;
+        ((CoreModuleCoreSystem) instance).getMoneyUtil().removeEmeralds(uuid, amount);
     }
 
     @Override

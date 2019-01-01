@@ -78,7 +78,35 @@ public interface GlobalOfflineCorePlayer {
      */
     void removeCoins(int amount);
 
+    /**
+     * returns the amount of emeralds that the player has
+     * @return players coins amount
+     */
+    int getEmeralds();
 
+    /**
+     * sets the given emerald amount
+     * @param coins amount
+     */
+    void setEmeralds(int coins);
+
+    /**
+     * adds the given amount to the players emeralds
+     * @param amount amount
+     */
+    void addEmeralds(int amount);
+
+    /**
+     * removes the given amount from the players emeralds
+     * if wished amount subtracted from his current is smaller than 0 it will be set to 0
+     * @param amount amount
+     */
+    void removeEmeralds(int amount);
+
+    /**
+     * refresh all players groups from database
+     * @return actual groups of the player
+     */
     Set<Group> updateGroupsFromDatabase();
 
     /**

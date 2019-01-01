@@ -9,8 +9,8 @@ package eu.mcone.coresystem.bungee.command;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
-import eu.mcone.coresystem.api.core.player.CoinsUtil;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.core.util.MoneyUtil;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -24,7 +24,7 @@ public class CoinsCMD extends Command{
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (sender instanceof ProxiedPlayer) {
-            CoinsUtil coinsAPI = BungeeCoreSystem.getInstance().getCoinsUtil();
+            MoneyUtil coinsAPI = BungeeCoreSystem.getSystem().getMoneyUtil();
 
             ProxiedPlayer p = (ProxiedPlayer) sender;
             if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;

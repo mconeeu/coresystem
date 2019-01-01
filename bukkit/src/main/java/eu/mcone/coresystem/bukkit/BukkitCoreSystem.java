@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.properties.Property;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.event.MoneyChangeEvent;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
@@ -28,6 +29,7 @@ import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.exception.RuntimeCoreException;
+import eu.mcone.coresystem.api.core.player.Currency;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.channel.*;
@@ -46,6 +48,7 @@ import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
 import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CooldownSystem;
+import eu.mcone.coresystem.core.util.MoneyUtil;
 import eu.mcone.networkmanager.core.api.database.Database;
 import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 import eu.mcone.networkmanager.core.database.MongoConnection;
@@ -55,7 +58,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 
 import java.util.*;
 
@@ -93,7 +95,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private PlayerUtils playerUtils;
     @Getter
-    private CoinsUtil coinsUtil;
+    private MoneyUtil moneyUtil;
     @Getter
     private DatabaseSkinManager databaseSkinManager;
     @Getter
@@ -133,7 +135,12 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         database4 = mongoConnection.getDatabase(Database.CLOUD);
 
         pluginManager = new PluginManager();
-        coinsUtil = new CoinsUtil(this);
+        moneyUtil = new MoneyUtil(this, database1) {
+            @Override
+            protected void fireEvent(GlobalCorePlayer player, Currency currency) {
+                Bukkit.getServer().getPluginManager().callEvent(new MoneyChangeEvent((CorePlayer) player, currency));
+            }
+        };
         channelHandler = new ChannelHandler();
         playerUtils = new PlayerUtils(this);
         databaseSkinManager = new DatabaseSkinManager(database1);

@@ -10,9 +10,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import eu.mcone.coresystem.api.bungee.CorePlugin;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.event.MoneyChangeEvent;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
+import eu.mcone.coresystem.api.core.player.Currency;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.bungee.command.*;
@@ -20,7 +22,6 @@ import eu.mcone.coresystem.bungee.friend.FriendSystem;
 import eu.mcone.coresystem.bungee.listener.*;
 import eu.mcone.coresystem.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.bungee.player.BungeeOfflineCorePlayer;
-import eu.mcone.coresystem.bungee.player.CoinsUtil;
 import eu.mcone.coresystem.bungee.player.NickManager;
 import eu.mcone.coresystem.bungee.runnable.Broadcast;
 import eu.mcone.coresystem.bungee.runnable.OnlineTime;
@@ -34,6 +35,7 @@ import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
 import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CooldownSystem;
+import eu.mcone.coresystem.core.util.MoneyUtil;
 import eu.mcone.coresystem.core.util.PreferencesManager;
 import eu.mcone.networkmanager.core.api.database.Database;
 import eu.mcone.networkmanager.core.api.database.MongoDatabase;
@@ -83,7 +85,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private PlayerUtils playerUtils;
     @Getter
-    private CoinsUtil coinsUtil;
+    private MoneyUtil moneyUtil;
     @Getter
     private LabyModAPI labyModAPI;
     @Getter
@@ -131,7 +133,12 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             put("betaKeySystem", false);
         }});
         playerUtils = new PlayerUtils(this);
-        coinsUtil = new CoinsUtil(this);
+        moneyUtil = new MoneyUtil(this, database) {
+            @Override
+            protected void fireEvent(GlobalCorePlayer player, Currency currency) {
+                getProxy().getPluginManager().callEvent(new MoneyChangeEvent((CorePlayer) player, currency));
+            }
+        };
 
         cloudsystemAvailable = checkIfCloudSystemAvailable();
         sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
@@ -242,7 +249,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private void registerEvents() {
         registerEvents(
                 new Chat(),
-                new CoinsChange(),
+                new MoneyChange(),
                 new LabyModPlayerJoin(),
                 new Login(),
                 new PermissionChange(),

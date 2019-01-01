@@ -9,6 +9,7 @@ package eu.mcone.coresystem.bukkit.channel;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.*;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.core.player.Currency;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
@@ -39,17 +40,17 @@ public class InfoPluginChannelListener implements PluginMessageListener {
                     String data = in.readUTF();
 
                     if (cp != null) {
-                        if (event.equals("CoinsChangeEvent")) {
-                            Bukkit.getPluginManager().callEvent(new CoinsChangeEvent(cp));
+                        if (event.equals("MoneyChangeEvent")) {
+                            Bukkit.getPluginManager().callEvent(new MoneyChangeEvent(cp, Currency.valueOf(data.split(";")[0])));
                         } else if (event.equals("PermissionChangeEvent")) {
                             Bukkit.getPluginManager().callEvent(new PermissionChangeEvent(cp, data.split(";")));
                         }
                     }
                     break;
                 }
-                case "COINS": {
+                case "MONEY": {
                     ((GlobalOfflineCorePlayer) cp).setCoinsAmount(Integer.valueOf(in.readUTF()));
-                    Bukkit.getPluginManager().callEvent(new CoinsChangeEvent(cp));
+                    Bukkit.getPluginManager().callEvent(new MoneyChangeEvent(cp, Currency.valueOf(in.readUTF())));
                     break;
                 }
                 case "NICK": {

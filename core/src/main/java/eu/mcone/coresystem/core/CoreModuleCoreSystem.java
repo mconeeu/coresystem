@@ -8,6 +8,7 @@ package eu.mcone.coresystem.core;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
+import eu.mcone.coresystem.core.util.MoneyUtil;
 import eu.mcone.networkmanager.core.api.database.Database;
 import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 
@@ -29,5 +30,7 @@ public interface CoreModuleCoreSystem {
     Gson getGson();
 
     JsonParser getJsonParser();
+
+    MoneyUtil getMoneyUtil();
 
 }
