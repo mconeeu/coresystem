@@ -100,14 +100,9 @@
 
         <!--  DISCORD REPOS -->
         <repository>
-            <id>jitpack.io</id>
-            <name>JitPack</name>
-            <url>https://jitpack.io</url>
-        </repository>
-        <repository>
             <id>jcenter</id>
-            <name>JCenter</name>
-            <url>https://jcenter.bintray.com</url>
+            <name>jcenter-bintray</name>
+            <url>http://jcenter.bintray.com</url>
         </repository>
     </repositories>
 
@@ -180,7 +175,7 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>LATEST</version>
+            <version>3.8.3_460</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

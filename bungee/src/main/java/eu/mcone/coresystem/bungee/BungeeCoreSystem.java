@@ -240,7 +240,10 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private void postRegisterCommand() {
         getProxy().getScheduler().schedule(
                 getInstance(),
-                () -> getProxy().getPluginManager().registerCommand(this, new ServerCMD()),
+                () -> registerCommands(
+                        new ServerCMD(),
+                        new SendCMD()
+                ),
                 1,
                 TimeUnit.SECONDS
         );

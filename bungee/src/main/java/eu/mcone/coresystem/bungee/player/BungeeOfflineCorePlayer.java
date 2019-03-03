@@ -36,11 +36,6 @@ public class BungeeOfflineCorePlayer extends GlobalOfflineCorePlayer implements 
     @Getter
     private long banTime, muteTime;
 
-    public BungeeOfflineCorePlayer(CoreSystem instance, UUID uuid, String name) {
-        super(instance, uuid, name, false);
-        loadData();
-    }
-
     public BungeeOfflineCorePlayer(CoreSystem instance, UUID uuid) throws PlayerNotResolvedException {
         super(instance, uuid, false);
         loadData();

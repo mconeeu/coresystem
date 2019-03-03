@@ -53,7 +53,7 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     @Setter
     protected PlayerSettings settings;
 
-    public GlobalOfflineCorePlayer(final GlobalCoreSystem instance, UUID uuid, String name, boolean online) {
+    GlobalOfflineCorePlayer(final GlobalCoreSystem instance, UUID uuid, String name, boolean online) {
         this.instance = instance;
 
         Document entry = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("uuid", uuid.toString())).first();

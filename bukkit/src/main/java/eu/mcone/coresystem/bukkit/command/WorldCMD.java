@@ -118,6 +118,7 @@ public class WorldCMD extends CorePlayerCommand {
                         }
 
                         try {
+                            BukkitCoreSystem.getInstance().getMessager().send(p, "§7Erstelle Welt...");
                             if (BukkitCoreSystem.getInstance().getWorldManager().createWorld(args[1], settings)) {
                                 BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Welt §a" + args[1] + "§2 wurde erfolgreich erstellt!");
                             } else {
