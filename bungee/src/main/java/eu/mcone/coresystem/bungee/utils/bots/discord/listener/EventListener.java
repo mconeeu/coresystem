@@ -12,19 +12,19 @@ import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.bots.discord.DiscordControlBot;
 import eu.mcone.coresystem.bungee.utils.bots.discord.command.utils.DiscordCommand;
 import eu.mcone.coresystem.bungee.utils.bots.discord.command.utils.Role;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.events.*;
-import net.dv8tion.jda.core.events.guild.voice.GuildVoiceJoinEvent;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.*;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.md_5.bungee.api.ProxyServer;
 
 import java.util.Map;
 import java.util.UUID;
 
-public class EventListener extends net.dv8tion.jda.core.hooks.ListenerAdapter {
+public class EventListener extends ListenerAdapter {
 
     private DiscordControlBot discordControlBot = null;
 
@@ -156,7 +156,7 @@ public class EventListener extends net.dv8tion.jda.core.hooks.ListenerAdapter {
 
     @Override
     public void onShutdown(ShutdownEvent e) {
-        BungeeCoreSystem.getSystem().sendConsoleMessage("§cShutting discord bot down, ShutdownTime: " + e.getShutdownTime());
+        BungeeCoreSystem.getSystem().sendConsoleMessage("§cShutting discord bot down, ShutdownTime: " + e.getTimeShutdown());
     }
 
     @Override

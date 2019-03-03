@@ -13,11 +13,11 @@ import eu.mcone.coresystem.bungee.utils.bots.discord.command.utils.DiscordComman
 import eu.mcone.coresystem.bungee.utils.bots.discord.listener.EventListener;
 import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.*;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.bson.Document;
 
@@ -46,11 +46,11 @@ public class DiscordControlBot {
         //DISCORD BOT BUILDER
         JDABuilder builder = new JDABuilder(AccountType.BOT);
         builder.setToken(DiscordToken.API.getApiToken());
-        builder.addEventListener(new EventListener());
+        builder.addEventListeners(new EventListener());
         builder.setAutoReconnect(true);
 
         builder.setStatus(OnlineStatus.ONLINE);
-        builder.setGame(Game.playing("MCONE ControlBot (ALPHA build)"));
+        builder.setActivity(Activity.playing("on MCONE.EU"));
 
         verifierInstance = builder.build();
 

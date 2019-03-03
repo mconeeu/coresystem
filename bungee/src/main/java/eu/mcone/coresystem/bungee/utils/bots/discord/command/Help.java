@@ -8,9 +8,9 @@ package eu.mcone.coresystem.bungee.utils.bots.discord.command;
 
 import eu.mcone.coresystem.bungee.utils.bots.discord.command.utils.DiscordCommand;
 import eu.mcone.coresystem.bungee.utils.bots.discord.command.utils.Role;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
 
 public class Help extends DiscordCommand {
 
