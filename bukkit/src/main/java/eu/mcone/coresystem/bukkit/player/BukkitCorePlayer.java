@@ -41,13 +41,6 @@ import static com.mongodb.client.model.Updates.set;
 
 public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, OfflineCorePlayer {
 
-    private static final MoneyUtil moneyUtil = new MoneyUtil(BukkitCoreSystem.getInstance(), BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM)) {
-        @Override
-        protected void fireEvent(eu.mcone.coresystem.api.core.player.GlobalCorePlayer player, Currency currency) {
-
-        }
-    };
-
     @Getter @Setter
     private String nickname;
     @Getter

@@ -86,6 +86,8 @@ public class BukkitCoreWorld implements CoreWorld {
     public void setSpawnLocation(Location loc) {
         this.spawnLocation = new int[]{(int) loc.getX(), (int) loc.getY(), (int) loc.getZ()};
         bukkit().setSpawnLocation(spawnLocation[0], spawnLocation[1], spawnLocation[2]);
+
+        save();
     }
 
     @Override
@@ -178,6 +180,7 @@ public class BukkitCoreWorld implements CoreWorld {
         }
 
         Bukkit.unloadWorld(bukkit(), save);
+        BukkitCoreSystem.getSystem().getWorldManager().coreWorlds.remove(this);
     }
 
     @Override

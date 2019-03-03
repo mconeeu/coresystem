@@ -33,7 +33,6 @@ public class BukkitCMD extends CoreCommand {
         } else if (args[0].equals("reload")) {
             if (sender instanceof Player) {
                 Player p = (Player)sender;
-                if (!BukkitCoreSystem.getInstance().getCooldownSystem().addAndCheck(BukkitCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return false;
 
                 if (!p.hasPermission("system.bukkit.reload")) {
                     BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");

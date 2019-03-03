@@ -245,6 +245,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new TphereCMD(),
                 new TpallCMD(),
                 new TpposCMD(),
+                new SetWorldSpawnCMD(),
                 new StatsCMD(),
                 new SpeedCMD(),
                 new VanishCMD(),

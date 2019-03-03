@@ -29,7 +29,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     final static int LATEST_CONFIG_VERSION = 1;
 
     private WorldCMD worldCMD;
-    private List<BukkitCoreWorld> coreWorlds;
+    List<BukkitCoreWorld> coreWorlds;
 
     public WorldManager(BukkitCoreSystem instance) {
         this.coreWorlds = new ArrayList<>();
@@ -195,6 +195,8 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
         }
         if (settings.containsKey("keepSpawnInMemory"))
             world.setKeepSpawnInMemory(Boolean.valueOf(settings.get("keepSpawnInMemory")));
+
+        coreWorlds.add(constructNewCoreWorld(world));
 
         return true;
     }

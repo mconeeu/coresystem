@@ -98,6 +98,43 @@ public class WorldCMD extends CorePlayerCommand {
                 }
             }
         } else {
+            if (args[0].equalsIgnoreCase("create")) {
+                if (p.hasPermission("system.bukkit.world.create")) {
+                    World w = Bukkit.getWorld(args[1]);
+
+                    if (w == null) {
+                        Map<String, String> settings = new HashMap<>();
+                        settings.put("name", args[1]);
+
+                        for (int i = 2; i < args.length; i++) {
+                            String[] setting = args[i].split("=");
+
+                            if (setting.length < 2) {
+                                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/world create <name> [<key>=<value>]...");
+                                return true;
+                            } else {
+                                settings.put(setting[0], setting[1]);
+                            }
+                        }
+
+                        try {
+                            if (BukkitCoreSystem.getInstance().getWorldManager().createWorld(args[1], settings)) {
+                                BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Welt §a" + args[1] + "§2 wurde erfolgreich erstellt!");
+                            } else {
+                                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die Welt " + args[1] + " konnte nicht erstellt werden, da wahrscheinlich ein falsches Key-Value Konstrukt verwendet wurde!");
+                            }
+                        } catch (IllegalArgumentException e) {
+                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die Welt §c" + args[1] + "§4 wurde erstellt, allerdings konnte mindestens eine Einstellung nicht übernommen werden: \n§7§o" + e.getMessage());
+                        }
+                    } else {
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Eine Welt mit dem Namen §c" + args[1] + "§4 ist bereits geladen!");
+                    }
+                } else {
+                    BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
+                }
+                return true;
+            }
+
             if (args.length == 2) {
                 if (args[0].equalsIgnoreCase("purge")) {
                     if (p.hasPermission("system.bukkit.world.purge")) {
@@ -310,41 +347,6 @@ public class WorldCMD extends CorePlayerCommand {
                     }
                     return true;
                 }
-            }
-
-            if (args[0].equalsIgnoreCase("create")) {
-                if (p.hasPermission("system.bukkit.world.create")) {
-                    World w = Bukkit.getWorld(args[1]);
-
-                    if (w == null) {
-                        Map<String, String> settings = new HashMap<>();
-                        for (int i = 1; i < args.length; i++) {
-                            String[] setting = args[i].split("=");
-
-                            if (setting.length < 2) {
-                                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/world create <name> [<key>=<value>]...");
-                                return true;
-                            } else {
-                                settings.put(setting[0], setting[1]);
-                            }
-                        }
-
-                        try {
-                            if (BukkitCoreSystem.getInstance().getWorldManager().createWorld(args[1], settings)) {
-                                BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Welt §a" + args[1] + "§2 wurde erfolgreich erstellt!");
-                            } else {
-                                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die Welt " + args[1] + " konnte nicht erstellt werden, da wahrscheinlich ein falsches Key-Value Konstrukt verwendet wurde!");
-                            }
-                        } catch (IllegalArgumentException e) {
-                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die Welt §c" + args[1] + "§4 wurde erstellt, allerdings konnte mindestens eine Einstellung nicht übernommen werden: \n§7§o" + e.getMessage());
-                        }
-                    } else {
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Eine Welt mit dem Namen §c" + args[1] + "§4 ist bereits geladen!");
-                    }
-                } else {
-                    BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
-                }
-                return true;
             }
         }
 
