@@ -130,10 +130,12 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
         bukkit().sendMessage(message);
     }
 
-    @Override
+    public void unregisterAttachment() {
+        if (permissionAttachment != null) bukkit().removeAttachment(permissionAttachment);
+    }
+
     public void unregister() {
         scoreboard.unregister();
-        if (permissionAttachment != null) bukkit().removeAttachment(permissionAttachment);
         BukkitCoreSystem.getSystem().getAfkManager().unregisterPlayer(uuid);
         BukkitCoreSystem.getSystem().getCorePlayers().remove(uuid);
 

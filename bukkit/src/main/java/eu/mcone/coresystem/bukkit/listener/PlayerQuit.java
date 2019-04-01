@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bukkit.listener;
 
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.bukkit.player.BukkitCorePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,7 +22,10 @@ public class PlayerQuit implements Listener{
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onMonitor(PlayerQuitEvent e){
-		Bukkit.getScheduler().runTask(BukkitCoreSystem.getInstance(), BukkitCoreSystem.getInstance().getCorePlayer(e.getPlayer())::unregister);
+		BukkitCorePlayer p = (BukkitCorePlayer) BukkitCoreSystem.getSystem().getCorePlayer(e.getPlayer());
+		p.unregisterAttachment();
+
+		Bukkit.getScheduler().runTask(BukkitCoreSystem.getInstance(), p::unregister);
 	}
 
 }

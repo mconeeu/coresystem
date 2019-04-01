@@ -212,6 +212,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     public void onDisable() {
         for (CorePlayer p : getOnlineCorePlayers()) {
             p.getScoreboard().unregister();
+            ((BukkitCorePlayer) p).unregisterAttachment();
+
             if (p.isNicked()) {
                 nickManager.unnick(p.bukkit(), false);
             }

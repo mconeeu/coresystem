@@ -153,7 +153,6 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
         });
     }
 
-    @Override
     public void unregister() {
         BungeeCoreSystem.getSystem().getCorePlayers().remove(uuid);
         CoreSystem.getInstance().sendConsoleMessage("Unloaded Player " + name + "!");

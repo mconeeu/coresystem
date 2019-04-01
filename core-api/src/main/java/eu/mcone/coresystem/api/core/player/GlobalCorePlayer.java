@@ -51,10 +51,5 @@ public interface GlobalCorePlayer extends GlobalOfflineCorePlayer {
      * @param message message
      */
     void sendMessage(String message);
-
-    /**
-     * unregisters a player from internal storage
-     */
-    void unregister();
     
 }
