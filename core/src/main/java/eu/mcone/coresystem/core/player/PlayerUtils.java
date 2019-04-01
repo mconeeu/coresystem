@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
- *
  */
 
 package eu.mcone.coresystem.core.player;
@@ -10,11 +9,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.networkmanager.core.api.database.Database;
-import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 import org.bson.Document;
 
 import java.io.BufferedReader;
@@ -26,9 +25,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.combine;
-import static com.mongodb.client.model.Updates.set;
-import static com.mongodb.client.model.Updates.setOnInsert;
+import static com.mongodb.client.model.Updates.*;
 
 public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUtils {
 

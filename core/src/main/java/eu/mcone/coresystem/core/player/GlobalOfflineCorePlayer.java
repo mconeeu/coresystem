@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
- *
  */
 
 package eu.mcone.coresystem.core.player;
@@ -121,6 +120,7 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
                             .append("name", name)
                             .append("groups", new ArrayList<>(Collections.singletonList(11)))
                             .append("coins", coins)
+                            .append("emeralds", emeralds)
                             .append("ip", null)
                             .append("timestamp", System.currentTimeMillis() / 1000)
                             .append("player_settings", settings)

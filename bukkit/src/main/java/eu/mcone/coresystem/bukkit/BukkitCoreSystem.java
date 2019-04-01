@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
- *
  */
 
 package eu.mcone.coresystem.bukkit;
@@ -9,6 +8,7 @@ package eu.mcone.coresystem.bukkit;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.properties.Property;
+import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.MoneyChangeEvent;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
@@ -50,7 +50,6 @@ import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CooldownSystem;
 import eu.mcone.coresystem.core.util.MoneyUtil;
 import eu.mcone.networkmanager.core.api.database.Database;
-import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 import eu.mcone.networkmanager.core.database.MongoConnection;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
@@ -201,8 +200,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                             textures.getValue(),
                             textures.getSignature()
                     ),
-                    p.getUniqueId(),
-                    p.getName()
+                    p
             );
             channelHandler.createSetRequest(p, "UNNICK");
         }
@@ -241,6 +239,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new FlyCMD(),
                 new GamemodeCMD(),
                 new HealCMD(),
+                new InvCMD(),
+                new EcCMD(),
                 new TpCMD(),
                 new TphereCMD(),
                 new TpallCMD(),

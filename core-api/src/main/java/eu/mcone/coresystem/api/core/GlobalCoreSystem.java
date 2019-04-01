@@ -1,17 +1,16 @@
 /*
- * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
- *
  */
 
 package eu.mcone.coresystem.api.core;
 
+import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.PermissionManager;
 import eu.mcone.coresystem.api.core.player.PlayerUtils;
 import eu.mcone.coresystem.api.core.translation.TranslationManager;
 import eu.mcone.coresystem.api.core.util.CooldownSystem;
-import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 
 import java.util.UUID;
 

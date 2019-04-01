@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
- *
  */
 
 package eu.mcone.coresystem.api.bukkit.inventory;
@@ -19,6 +18,8 @@ import java.util.*;
 
 public abstract class CoreInventory {
 
+    public static final ItemStack EMPTY_SLOT_ITEM = new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 7).displayName("§8//§oMCONE§8//").create();
+
     @Getter
     private String name;
     @Getter
@@ -27,6 +28,8 @@ public abstract class CoreInventory {
     private Player player;
     @Getter
     private Map<ItemStack, CoreItemEvent> events;
+    @Getter
+    private Option[] options;
 
     /**
      * creates new CoreInventory
@@ -40,13 +43,14 @@ public abstract class CoreInventory {
         this.inventory = Bukkit.createInventory(null, size, name);
         this.player = player;
         this.events = new HashMap<>();
+        this.options = args;
 
         CoreSystem.getInstance().getPluginManager().registerCoreInventory(this, player);
 
         List<Option> options = new ArrayList<>(Arrays.asList(args));
         if (options.contains(Option.FILL_EMPTY_SLOTS)) {
             for (int i = 0; i < size; i++) {
-                inventory.setItem(i, new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 7).displayName("§8//§oMCONE§8//").create());
+                inventory.setItem(i, EMPTY_SLOT_ITEM);
             }
         }
     }
@@ -79,7 +83,7 @@ public abstract class CoreInventory {
     }
 
     public enum Option {
-        FILL_EMPTY_SLOTS
+        FILL_EMPTY_SLOTS, ENABLE_CLICK_EVENT
     }
 
 }

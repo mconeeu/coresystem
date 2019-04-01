@@ -1,13 +1,11 @@
 /*
- * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
- *
  */
 
 package eu.mcone.coresystem.bukkit.player;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.event.MoneyChangeEvent;
 import eu.mcone.coresystem.api.bukkit.event.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
@@ -16,24 +14,22 @@ import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
-import eu.mcone.coresystem.api.core.player.Currency;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
-import eu.mcone.coresystem.core.util.MoneyUtil;
 import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachment;
 
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.combine;
@@ -48,11 +44,18 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     private Map<Gamemode, StatsAPI> stats;
     @Getter
     private SkinInfo skin;
+    @Getter
+    private final PermissionAttachment permissionAttachment;
 
-    public BukkitCorePlayer(CoreSystem instance, InetAddress address, SkinInfo skinInfo, UUID uuid, String name) {
-        super(instance, address, uuid, name);
+    public BukkitCorePlayer(CoreSystem instance, InetAddress address, SkinInfo skinInfo, Player p) {
+        super(instance, address, p.getUniqueId(), p.getName());
         this.stats = new HashMap<>();
         this.skin = skinInfo;
+
+        permissionAttachment = p.addAttachment(BukkitCoreSystem.getSystem());
+        for (String permission : permissions) {
+            permissionAttachment.setPermission(permission.startsWith("-") ? permission.substring(1) : permission, !permission.startsWith("-"));
+        }
 
         instance.runAsync(() -> ((BukkitCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(
                 eq("uuid", uuid.toString()),
@@ -130,6 +133,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     @Override
     public void unregister() {
         scoreboard.unregister();
+        if (permissionAttachment != null) bukkit().removeAttachment(permissionAttachment);
         BukkitCoreSystem.getSystem().getAfkManager().unregisterPlayer(uuid);
         BukkitCoreSystem.getSystem().getCorePlayers().remove(uuid);
 

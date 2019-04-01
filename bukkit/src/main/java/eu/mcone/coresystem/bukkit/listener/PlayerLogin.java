@@ -1,7 +1,6 @@
 /*
- * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
- *
  */
 
 package eu.mcone.coresystem.bukkit.listener;
@@ -29,7 +28,7 @@ public class PlayerLogin implements Listener {
         setPermissions(p);
 
         Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
-        new BukkitCorePlayer(BukkitCoreSystem.getInstance(), e.getAddress(), new SkinInfo(p.getName(), textures.getValue(), textures.getSignature()), p.getUniqueId(), p.getName());
+        new BukkitCorePlayer(BukkitCoreSystem.getInstance(), e.getAddress(), new SkinInfo(p.getName(), textures.getValue(), textures.getSignature()), p);
         p.setDisplayName(p.getName());
     }
 

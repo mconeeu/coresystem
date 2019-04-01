@@ -1,14 +1,13 @@
 /*
- * Copyright (c) 2017 - 2018 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
- *
  */
 
 package eu.mcone.coresystem.core.util;
 
 import com.google.gson.internal.Primitives;
+import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.core.util.Preferences;
-import eu.mcone.networkmanager.core.api.database.MongoDatabase;
 import org.bson.Document;
 
 import java.util.HashMap;

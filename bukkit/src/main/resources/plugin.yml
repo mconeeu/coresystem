@@ -12,24 +12,40 @@ permissions:
         description: Bypass all MCONE-BukkitCoreSystem Permissions
         children:
           system.bukkit.feed:
-            description: Feed the eu.mcone.coresystem.api.core.player
+            description: Feed the player
           system.bukkit.gamemode:
-            description: Set the eu.mcone.coresystem.api.core.player to a specific gamemode
+            description: Set the player to a specific gamemode
           system.bukkit.heal:
-            description: Heal the eu.mcone.coresystem.api.core.player
+            description: Heal the player
           system.bukkit.fly:
-            description: Allows the eu.mcone.coresystem.api.core.player to fly
+            description: Allows the player to fly
+          system.bukkit.invsee:
+            description: Basic Permission for /invsee
+            children: 
+              system.bukkit.invsee.other:
+                description: Allows the player to see inventories from all players
+              system.bukkit.invsee.modify.other:
+                description: Allows the player to modify inventories from all players
+          system.bukkit.ecsee:
+            description: Basic Permission for /ecsee
+            children:
+              system.bukkit.ecsee.self:
+                description: Allows the player to open his own enderchest
+              system.bukkit.ecsee.other:
+                description: Allows the player to open enderchests from all players
+              system.bukkit.ecsee.modify.other:
+                description: Allows the player to modify enderchests from all players
           system.bukkit.tp:
-            description: Teleports the eu.mcone.coresystem.api.core.player to another eu.mcone.coresystem.api.core.player or a specific location
+            description: Teleports the player to another player or a specific location
             children:
               system.bukkit.tp.others:
-                desciption: Allows the eu.mcone.coresystem.api.core.player to teleport other players
+                desciption: Allows the player to teleport other players
               system.bukkit.tp.all:
-                description: Allows the eu.mcone.coresystem.api.core.player to teleport all online players to a eu.mcone.coresystem.api.core.player
+                description: Allows the player to teleport all online players to a player
               system.bukkit.tp.pos:
-                description: Allows the eu.mcone.coresystem.api.core.player to teleport to a specific postition
+                description: Allows the player to teleport to a specific postition
           system.bukkit.vanish:
-            description: Vanishes the eu.mcone.coresystem.api.core.player for all other players
+            description: Vanishes the player for all other players
           system.bukkit.reload:
             description: Reload the CoreSystem
           system.bukkit.sign:
