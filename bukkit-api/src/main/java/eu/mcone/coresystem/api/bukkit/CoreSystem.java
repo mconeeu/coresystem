@@ -8,6 +8,7 @@ package eu.mcone.coresystem.api.bukkit;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
+import eu.mcone.coresystem.api.bukkit.config.ConfigParser;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
@@ -32,7 +33,6 @@ import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -119,6 +119,12 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return JsonParser instance
      */
     public abstract JsonParser getJsonParser();
+
+    /**
+     * returns the CoreSystems instance of ConfigParser. Use this for better performance
+     * @return ConfigParser instance
+     */
+    public abstract ConfigParser getConfigParser();
 
     /**
      * returns if the mc one Cloudsystem is available

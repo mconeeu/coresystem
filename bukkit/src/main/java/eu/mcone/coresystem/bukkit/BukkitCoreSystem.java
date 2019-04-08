@@ -34,6 +34,7 @@ import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.channel.*;
 import eu.mcone.coresystem.bukkit.command.*;
+import eu.mcone.coresystem.api.bukkit.config.ConfigParser;
 import eu.mcone.coresystem.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.bukkit.inventory.ProfileInventory;
 import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
@@ -101,6 +102,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private Gson gson;
     @Getter
     private JsonParser jsonParser;
+    @Getter
+    private ConfigParser configParser;
 
     @Getter
     private Map<UUID, BukkitCorePlayer> corePlayers;
@@ -145,6 +148,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         databaseSkinManager = new DatabaseSkinManager(database1);
         gson = new Gson();
         jsonParser = new JsonParser();
+        configParser = new ConfigParser();
 
         cloudsystemAvailable = checkIfCloudSystemAvailable();
         sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);

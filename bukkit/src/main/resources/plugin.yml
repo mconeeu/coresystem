@@ -49,7 +49,7 @@ permissions:
           system.bukkit.reload:
             description: Reload the CoreSystem
           system.bukkit.sign:
-            dexcription: Allows to create colored signs
+            description: Allows to create colored signs
           system.bukkit.build:
             description: Allows to bypass build restrictions
           system.bukkit.cooldown:
