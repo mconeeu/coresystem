@@ -7,7 +7,7 @@ package eu.mcone.coresystem.bungee.command;
 
 import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.listener.Chat;
+import eu.mcone.coresystem.bungee.listener.ChatListener;
 import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -40,7 +40,7 @@ public class ChatlogCMD extends Command {
                 if (t != null) {
                     if (t != p) {
                         if (!t.hasPermission("group.team")) {
-                            Set<Map.Entry<Integer, Map<Long, String>>> playerhashmap = Chat.playerTreeMap.get(t).descendingMap().entrySet();
+                            Set<Map.Entry<Integer, Map<Long, String>>> playerhashmap = ChatListener.playerTreeMap.get(t).descendingMap().entrySet();
 
                             if (playerhashmap.size() >= 1) {
                                 BungeeCoreSystem.getInstance().getMessager().send(p, "§2Dein Chatlog wird unter §fhttps://www.mcone.eu/chatlog.php?uuid=" + p.getUniqueId() + "&time=" + millis + "§2 erstellt!");

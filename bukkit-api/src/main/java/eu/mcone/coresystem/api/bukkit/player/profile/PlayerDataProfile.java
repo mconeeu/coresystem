@@ -6,8 +6,7 @@
 package eu.mcone.coresystem.api.bukkit.player.profile;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
-import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
+import eu.mcone.coresystem.api.bukkit.npc.CoreLocation;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,7 +24,7 @@ public class PlayerDataProfile extends PlayerInventoryProfile {
 
     private boolean flying;
     private String world = gameProfileWorld.getName();
-    private CoreLocation location = CoreSystem.getInstance().getWorldManager().getWorld(gameProfileWorld).getLocation("spawn");
+    private CoreLocation location = new CoreLocation(CoreSystem.getInstance().getWorldManager().getWorld(gameProfileWorld).getLocation("spawn"));
     int level, foodLevel = 20;
     float exp;
     double health = 20D;

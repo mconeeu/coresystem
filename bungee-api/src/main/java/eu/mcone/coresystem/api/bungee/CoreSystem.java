@@ -5,8 +5,6 @@
 
 package eu.mcone.coresystem.api.bungee;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.FriendSystem;
 import eu.mcone.coresystem.api.bungee.player.NickManager;
@@ -44,10 +42,6 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     public abstract NickManager getNickManager();
 
     public abstract LabyModAPI getLabyModAPI();
-
-    public abstract Gson getGson();
-
-    public abstract JsonParser getJsonParser();
 
     public abstract ChannelHandler getChannelHandler();
 

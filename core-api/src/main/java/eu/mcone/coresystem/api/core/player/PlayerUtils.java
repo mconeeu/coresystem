@@ -5,6 +5,8 @@
 
 package eu.mcone.coresystem.api.core.player;
 
+import eu.mcone.coresystem.api.core.exception.SkinNotFoundException;
+
 import java.util.UUID;
 
 public interface PlayerUtils {
@@ -22,6 +24,13 @@ public interface PlayerUtils {
      * @return skin
      */
     SkinInfo getSkinInfo(String name);
+
+    /**
+     * construct new SkinInfo with in database stored texture
+     * @param databaseName data texture name
+     * @return new SkinInfo object
+     */
+    SkinInfo getSkinFromSkinDatabase(String databaseName) throws SkinNotFoundException;
 
     /**
      * fetch uuid from name, first method is getting from database

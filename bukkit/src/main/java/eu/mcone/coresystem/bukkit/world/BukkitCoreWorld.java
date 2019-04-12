@@ -12,9 +12,10 @@ import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
-import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
+import eu.mcone.coresystem.api.bukkit.npc.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.bukkit.json.LocationTypeAdapter;
 import eu.mcone.coresystem.core.annotation.DontObfuscate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,7 +39,7 @@ import java.util.Map;
 @DontObfuscate
 public class BukkitCoreWorld implements CoreWorld {
 
-    private final static Gson PRETTY_GSON = new GsonBuilder().setPrettyPrinting().create();
+    private final static Gson PRETTY_GSON = new GsonBuilder().registerTypeAdapter(Location.class, new LocationTypeAdapter()).setPrettyPrinting().create();
 
     private String name, alias, generator, generatorSettings;
     private WorldType worldType = WorldType.NORMAL;
@@ -60,11 +61,11 @@ public class BukkitCoreWorld implements CoreWorld {
 
     @Override
     public void teleport(Player p, String locationName) {
-        CoreLocation loc = getLocation(locationName);
+        Location loc = getLocation(locationName);
 
         if (loc != null) {
             BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wirst teleportiert...");
-            p.teleport(loc.bukkit(this));
+            p.teleport(loc);
         } else {
             BukkitCoreSystem.getInstance().getMessager().send(p, "§4Dieser Ort existiert nicht.");
         }
@@ -72,13 +73,13 @@ public class BukkitCoreWorld implements CoreWorld {
 
     @Override
     public void teleportSilently(Player p, String locationName) {
-        CoreLocation loc = getLocation(locationName);
-        if (getLocation(locationName) != null) p.teleport(loc.bukkit(this));
+        Location loc = getLocation(locationName);
+        if (getLocation(locationName) != null) p.teleport(loc);
     }
 
     @Override
-    public CoreLocation getLocation(String name) {
-        return locations.getOrDefault(name, null);
+    public Location getLocation(String name) {
+        return locations.getOrDefault(name, null).bukkit();
     }
 
     @Override
@@ -91,7 +92,7 @@ public class BukkitCoreWorld implements CoreWorld {
 
     @Override
     public BukkitCoreWorld setLocation(String name, Location loc) {
-        locations.put(name, new CoreLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch()));
+        locations.put(name, new CoreLocation(loc));
         return this;
     }
 
@@ -105,8 +106,8 @@ public class BukkitCoreWorld implements CoreWorld {
     public List<NPC> getNPCs() {
         List<NPC> result = new ArrayList<>();
 
-        for (NPC npc : CoreSystem.getInstance().getNpcManager().getNPCs()) {
-            if (npc.getWorld().equals(this)) result.add(npc);
+        for (NPC npc : CoreSystem.getInstance().getNpcManager().getNpcs()) {
+            if (npc.getData().getLocation().bukkit().getWorld().getName().equals(name)) result.add(npc);
         }
 
         return result;
@@ -122,7 +123,7 @@ public class BukkitCoreWorld implements CoreWorld {
         List<Hologram> result = new ArrayList<>();
 
         for (Hologram hologram : CoreSystem.getInstance().getHologramManager().getHolograms()) {
-            if (hologram.getWorld().equals(this)) result.add(hologram);
+            if (hologram.getData().getLocation().bukkit().getWorld().getName().equals(name)) result.add(hologram);
         }
 
         return result;
@@ -246,11 +247,6 @@ public class BukkitCoreWorld implements CoreWorld {
                 entity.remove();
             }
         }
-    }
-
-    @Override
-    public Location getLocation(CoreLocation location) {
-        return new Location(bukkit(), location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
     }
 
     @Override

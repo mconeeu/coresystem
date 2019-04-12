@@ -104,6 +104,7 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
         }
     }
 
+    @SuppressWarnings("deprecation")
     private void setNick(Player p, String name, eu.mcone.coresystem.api.core.player.SkinInfo skin) {
         if (skin == null) return;
         EntityPlayer ep = ((CraftPlayer) p).getHandle();

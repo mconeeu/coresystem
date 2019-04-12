@@ -11,7 +11,6 @@ import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.Stats;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
-import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
@@ -24,6 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 
@@ -45,12 +45,16 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     @Getter
     private SkinInfo skin;
     @Getter
+    private boolean vanished;
+    private PacketListener packetListener;
+    @Getter
     private final PermissionAttachment permissionAttachment;
 
     public BukkitCorePlayer(CoreSystem instance, InetAddress address, SkinInfo skinInfo, Player p) {
         super(instance, address, p.getUniqueId(), p.getName());
         this.stats = new HashMap<>();
         this.skin = skinInfo;
+        this.vanished = false;
 
         permissionAttachment = p.addAttachment(BukkitCoreSystem.getSystem());
         for (String permission : permissions) {
@@ -83,18 +87,6 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     @Override
     public CoreWorld getWorld() {
         return BukkitCoreSystem.getInstance().getWorldManager().getWorld(bukkit().getWorld());
-    }
-
-    @Deprecated
-    @Override
-    public CoreLocation getLocation() {
-        return new CoreLocation(
-                bukkit().getLocation().getX(),
-                bukkit().getLocation().getY(),
-                bukkit().getLocation().getZ(),
-                bukkit().getLocation().getYaw(),
-                bukkit().getLocation().getPitch()
-        );
     }
 
     @Override
@@ -130,6 +122,38 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
         bukkit().sendMessage(message);
     }
 
+    @Override
+    public boolean setVanished(boolean vanish) {
+        if (vanished != vanish) {
+            vanished = vanish;
+            Player p = bukkit();
+
+            if (vanish) {
+                for (Player t : Bukkit.getOnlinePlayers()) {
+                    t.hidePlayer(p);
+                }
+
+                p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
+                BukkitCoreSystem.getInstance().getMessager().send(bukkit(), "§2Du bist nun im §aVanish Modus§2!");
+            } else {
+                for (Player t : Bukkit.getOnlinePlayers()) {
+                    t.showPlayer(p);
+                }
+
+                p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
+                BukkitCoreSystem.getInstance().getMessager().send(bukkit(), "§7Du bist nicht mehr im §fVanish Modus§7!");
+            }
+
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void registerPacketListener(Player p) {
+        this.packetListener = new PacketListener(p);
+    }
+
     public void unregisterAttachment() {
         if (permissionAttachment != null) bukkit().removeAttachment(permissionAttachment);
     }
@@ -138,6 +162,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
         scoreboard.unregister();
         BukkitCoreSystem.getSystem().getAfkManager().unregisterPlayer(uuid);
         BukkitCoreSystem.getSystem().getCorePlayers().remove(uuid);
+        packetListener.remove();
 
         BukkitCoreSystem.getInstance().sendConsoleMessage("Unloaded Player " + name);
     }

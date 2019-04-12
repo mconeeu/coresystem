@@ -5,14 +5,18 @@
 
 package eu.mcone.coresystem.bukkit.world;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.npc.NpcData;
+import eu.mcone.coresystem.api.bukkit.npc.data.PlayerNpcData;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
+import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.LocationCMD;
 import eu.mcone.coresystem.bukkit.command.WorldCMD;
 import org.bukkit.*;
+import org.bukkit.entity.EntityType;
 
 import java.io.File;
 import java.io.FileReader;
@@ -25,7 +29,9 @@ import java.util.Map;
 public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldManager {
 
     final static String CONFIG_NAME = "core-config.json";
-    final static int LATEST_CONFIG_VERSION = 1;
+
+    private final static String CONFIG_VERSION_KEY = "configVersion";
+    private final static int LATEST_CONFIG_VERSION = 2;
 
     private WorldCMD worldCMD;
     List<BukkitCoreWorld> coreWorlds;
@@ -54,8 +60,17 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
 
                     if (config.exists()) {
                         try (JsonReader reader = new JsonReader(new FileReader(config))) {
-                            BukkitCoreWorld w = CoreSystem.getInstance().getGson().fromJson(reader, BukkitCoreWorld.class);
+                            JsonElement json = BukkitCoreSystem.getSystem().getJsonParser().parse(reader);
                             reader.close();
+
+                            if (!json.getAsJsonObject().has(CONFIG_VERSION_KEY)) {
+                                json.getAsJsonObject().addProperty(CONFIG_VERSION_KEY, 0);
+                            }
+                            if (json.getAsJsonObject().get(CONFIG_VERSION_KEY).getAsInt() < LATEST_CONFIG_VERSION) {
+                                json = migrateConfig(json);
+                            }
+
+                            BukkitCoreWorld w = CoreSystem.getInstance().getGson().fromJson(json, BukkitCoreWorld.class);
 
                             if (w.isLoadOnStartup()) {
                                 if (world == null) {
@@ -73,7 +88,6 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                                     wc.createWorld();
                                 }
 
-                                migrateConfig(w);
                                 w.save();
                                 coreWorlds.add(w);
                                 BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + w.getName());
@@ -228,19 +242,60 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
         return w;
     }
 
-    private static void migrateConfig(BukkitCoreWorld world) {
-        switch (world.getConfigVersion()) {
+    private static JsonElement migrateConfig(JsonElement json) {
+        switch (json.getAsJsonObject().get(CONFIG_VERSION_KEY).getAsInt()) {
             case 0: {
-                CoreSystem.getInstance().sendConsoleMessage("§7Updating Config from level 0 to 1...");
-                for (NpcData data : world.getNpcData()) {
-                    if (data.getSkinKind() == null) {
-                        data.setSkinKind(NpcData.SkinKind.DATABASE);
+                CoreSystem.getInstance().sendConsoleMessage("§7Updating Config from version 0 to 1...");
+                for (JsonElement e : json.getAsJsonObject().get("npcData").getAsJsonArray()) {
+                    if (!e.getAsJsonObject().has("skinKind") || e.getAsJsonObject().get("skinKind") == null) {
+                        e.getAsJsonObject().addProperty("skinKind", SkinInfo.SkinType.DATABASE.toString());
                     }
+                }
+            }
+            case 1: {
+                CoreSystem.getInstance().sendConsoleMessage("§7Updating Config from version 1 to 2...");
+
+                //Updating npcData
+                for (JsonElement e : json.getAsJsonObject().get("npcData").getAsJsonArray()) {
+                    JsonObject o = e.getAsJsonObject();
+
+                    PlayerNpcData data = new PlayerNpcData();
+                    data.setSkinName(o.get("skinName").getAsString());
+                    data.setSkinType(SkinInfo.SkinType.valueOf(o.get("skinKind").getAsString()));
+
+                    o.addProperty("type", EntityType.PLAYER.toString());
+                    o.remove("skinName");
+                    o.remove("skinKind");
+                    o.add("entityData", CoreSystem.getInstance().getGson().toJsonTree(data));
+                }
+
+                //Updating all locations
+                String worldName = json.getAsJsonObject().get("name").getAsString();
+                for (Map.Entry<String, JsonElement> e : json.getAsJsonObject().get("locations").getAsJsonObject().entrySet()) {
+                    json.getAsJsonObject().get("locations").getAsJsonObject().add(e.getKey(), insertWorldVar(e.getValue().getAsJsonObject(), worldName));
+                }
+                for (JsonElement e : json.getAsJsonObject().get("npcData").getAsJsonArray()) {
+                    e.getAsJsonObject().add("location", insertWorldVar(e.getAsJsonObject().get("location").getAsJsonObject(), worldName));
+                }
+                for (JsonElement e : json.getAsJsonObject().get("hologramData").getAsJsonArray()) {
+                    e.getAsJsonObject().add("location", insertWorldVar(e.getAsJsonObject().get("location").getAsJsonObject(), worldName));
                 }
             }
         }
 
-        world.setConfigVersion(LATEST_CONFIG_VERSION);
+        json.getAsJsonObject().addProperty(CONFIG_VERSION_KEY, LATEST_CONFIG_VERSION);
+        return json;
+    }
+
+    private static JsonObject insertWorldVar(JsonObject o, String worldName) {
+        JsonObject result = new JsonObject();
+        result.addProperty("world", worldName);
+
+        for (Map.Entry<String, JsonElement> e : o.entrySet()) {
+            result.add(e.getKey(), e.getValue());
+        }
+
+        return result;
     }
 
 }

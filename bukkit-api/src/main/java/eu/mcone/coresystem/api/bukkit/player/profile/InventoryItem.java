@@ -11,7 +11,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,5 +32,21 @@ public class InventoryItem {
     private Map<String, Integer> enchantments;
     private Set<ItemFlag> itemFlags;
     boolean unbreakable;
+
+    public InventoryItem(int slot, ItemStack item) {
+        this.slot = slot;
+        this.amount = item.getAmount();
+        this.material = item.getType();
+        this.durablity = item.getDurability();
+        this.displayname = item.getItemMeta().getDisplayName();
+        this.lore = item.getItemMeta().getLore();
+
+        Map<String, Integer> enchantments = new HashMap<>();
+        item.getEnchantments().forEach((e, x) -> enchantments.put(e.getName(), x));
+        this.enchantments = enchantments;
+
+        this.itemFlags = item.getItemMeta().getItemFlags();
+        this.unbreakable = item.getItemMeta().spigot().isUnbreakable();
+    }
 
 }

@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
+import eu.mcone.coresystem.api.core.exception.SkinNotFoundException;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.networkmanager.core.api.database.Database;
@@ -22,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -31,6 +33,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
 
     private final HashMap<String, UUID> uuidCache = new HashMap<>();
     private final HashMap<UUID, SkinInfo> skinCache = new HashMap<>();
+    private final Map<String, SkinInfo> dbSkinCache = new HashMap<>();
     private final GlobalCoreSystem instance;
     private final MongoDatabase database;
 
@@ -41,12 +44,12 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
 
     @Override
     public SkinInfo constructSkinInfo(String name, String value, String signature) {
-        return new SkinInfo(name, value, signature);
+        return new SkinInfo(name, value, signature, SkinInfo.SkinType.CUSTOM);
     }
 
     private SkinInfo fetchSkinFromMojangAPI(UUID uuid) {
         try {
-            URL skinURL = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString() + "?unsigned=false");
+            URL skinURL = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + toTrimmed(uuid.toString()) + "?unsigned=false");
 
             InputStream skinIS = skinURL.openStream();
             InputStreamReader skinISR = new InputStreamReader(skinIS);
@@ -73,7 +76,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
             skinISR.close();
             skinBR.close();
 
-            SkinInfo skin = new SkinInfo(player_name, value, signature);
+            SkinInfo skin = new SkinInfo(player_name, value, signature, SkinInfo.SkinType.PLAYER);
             instance.runAsync(() -> database.getCollection("userinfo").updateOne(
                     eq("uuid", uuid.toString()),
                     combine(
@@ -113,6 +116,23 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
             return getSkinInfo(uuidCache.get(name));
         } else {
             return getSkinInfo(fetchUuid(name));
+        }
+    }
+
+    @Override
+    public SkinInfo getSkinFromSkinDatabase(String name) throws SkinNotFoundException {
+        if (dbSkinCache.containsKey(name) && dbSkinCache.get(name) != null) {
+            return dbSkinCache.get(name);
+        } else {
+            Document entry = database.getCollection("bungeesystem_textures").find(eq("name", name)).first();
+            if (entry != null) {
+                SkinInfo skin = new SkinInfo(name, entry.getString("texture_value"), entry.getString("texture_signature"), SkinInfo.SkinType.DATABASE);
+
+                dbSkinCache.put(name, skin);
+                return skin;
+            } else {
+                throw new SkinNotFoundException("Skin " + name + " does not exist in the database!");
+            }
         }
     }
 

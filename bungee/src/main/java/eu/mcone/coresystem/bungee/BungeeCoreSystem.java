@@ -250,22 +250,19 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     private void registerEvents() {
         registerEvents(
-                new Chat(),
-                new MoneyChange(),
-                new LabyModPlayerJoin(),
-                new Login(),
-                new PermissionChange(),
-                new PermissionCheck(),
-                new PostLogin(),
-                new PlayerDisconnect(),
-                new PlayerSettingsChange(),
-                new PluginMessage(),
-                new PreLogin(),
-                new ProxyPing(),
-                new ServerConnect(),
-                new ServerSwitch(),
-                new ServerKick(),
-                new TabComplete()
+                new ChatListener(),
+                new CorePlayerListener(),
+                new CorePlayerUpdateListener(),
+                new LabyModListener(),
+                new PermissionCheckListener(),
+                new PlayerVersionCheckListener(),
+                new PluginMessageListener(),
+                new PostLoginListener(),
+                new ProxyPingListener(),
+                new ServerConnectListener(),
+                new ServerKickListener(),
+                new ServerSwitchListener(),
+                new TabCompleteListener()
         );
     }
 

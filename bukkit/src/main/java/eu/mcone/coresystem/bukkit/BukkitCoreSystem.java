@@ -6,18 +6,15 @@
 package eu.mcone.coresystem.bukkit;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.properties.Property;
 import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.MoneyChangeEvent;
-import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
-import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
-import eu.mcone.coresystem.api.bukkit.npc.NPC;
-import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
@@ -25,24 +22,30 @@ import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
 import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
 import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
-import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
-import eu.mcone.coresystem.api.core.exception.RuntimeCoreException;
 import eu.mcone.coresystem.api.core.player.Currency;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.channel.*;
 import eu.mcone.coresystem.bukkit.command.*;
 import eu.mcone.coresystem.api.bukkit.config.ConfigParser;
-import eu.mcone.coresystem.bukkit.hologram.HologramManager;
+import eu.mcone.coresystem.bukkit.hologram.CoreHologramManager;
 import eu.mcone.coresystem.bukkit.inventory.ProfileInventory;
 import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
+import eu.mcone.coresystem.bukkit.json.ItemStackTypeAdapter;
+import eu.mcone.coresystem.bukkit.json.LocationTypeAdapter;
 import eu.mcone.coresystem.bukkit.labymod.LabyModAPI;
 import eu.mcone.coresystem.bukkit.listener.*;
-import eu.mcone.coresystem.bukkit.npc.NpcManager;
-import eu.mcone.coresystem.bukkit.player.*;
-import eu.mcone.coresystem.bukkit.util.*;
+import eu.mcone.coresystem.bukkit.npc.CoreNpcManager;
+import eu.mcone.coresystem.bukkit.player.BukkitCorePlayer;
+import eu.mcone.coresystem.bukkit.player.BukkitOfflineCorePlayer;
+import eu.mcone.coresystem.bukkit.player.CoreAfkManager;
+import eu.mcone.coresystem.bukkit.player.NickManager;
+import eu.mcone.coresystem.bukkit.util.ActionBar;
+import eu.mcone.coresystem.bukkit.util.PluginManager;
+import eu.mcone.coresystem.bukkit.util.TablistInfo;
+import eu.mcone.coresystem.bukkit.util.Title;
 import eu.mcone.coresystem.bukkit.world.WorldManager;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.PermissionManager;
@@ -58,6 +61,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
@@ -87,17 +91,15 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private CoreAfkManager afkManager;
     @Getter
-    private NpcManager npcManager;
+    private CoreNpcManager npcManager;
     @Getter
-    private HologramManager hologramManager;
+    private CoreHologramManager hologramManager;
     @Getter
     private LabyModAPI labyModAPI;
     @Getter
     private PlayerUtils playerUtils;
     @Getter
     private MoneyUtil moneyUtil;
-    @Getter
-    private DatabaseSkinManager databaseSkinManager;
     @Getter
     private Gson gson;
     @Getter
@@ -128,8 +130,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "                                                         /____/  \n"
         );
 
-        mongoConnection = new MongoConnection("db.mcone.eu", "admin", "T6KIq8gjmmF1k7futx0cJiJinQXgfguYXruds1dFx1LF5IsVPQjuDTnlI1zltpD9", "admin", 27017);
-        mongoConnection.connect();
+        mongoConnection = new MongoConnection("db.mcone.eu", "admin", "T6KIq8gjmmF1k7futx0cJiJinQXgfguYXruds1dFx1LF5IsVPQjuDTnlI1zltpD9", "admin", 27017)
+                .withCodecs(new ItemStackTypeAdapter(), new LocationTypeAdapter()).connect();
 
         database1 = mongoConnection.getDatabase(Database.SYSTEM);
         database2 = mongoConnection.getDatabase(Database.STATS);
@@ -145,8 +147,10 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         };
         channelHandler = new ChannelHandler();
         playerUtils = new PlayerUtils(this);
-        databaseSkinManager = new DatabaseSkinManager(database1);
-        gson = new Gson();
+        gson = new GsonBuilder()
+                .registerTypeAdapter(Location.class, new LocationTypeAdapter())
+                .registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter())
+                .create();
         jsonParser = new JsonParser();
         configParser = new ConfigParser();
 
@@ -163,10 +167,10 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         worldManager = new WorldManager(this);
 
         sendConsoleMessage("§aStarting NpcManager...");
-        npcManager = new NpcManager(this);
+        npcManager = new CoreNpcManager(this);
 
         sendConsoleMessage("§aStarting HologramManager...");
-        hologramManager = new HologramManager(this);
+        hologramManager = new CoreHologramManager(this);
 
         sendConsoleMessage("§aStarting AFK-Manager...");
         afkManager = new CoreAfkManager();
@@ -193,7 +197,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
 
         for (Player p : Bukkit.getOnlinePlayers()) {
-            PlayerLogin.setPermissions(p);
+            CorePlayerListener.setPermissions(p);
             Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
 
             new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(
@@ -202,10 +206,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                     new SkinInfo(
                             p.getName(),
                             textures.getValue(),
-                            textures.getSignature()
+                            textures.getSignature(),
+                            SkinInfo.SkinType.PLAYER
                     ),
                     p
-            );
+            ).registerPacketListener(p);
             channelHandler.createSetRequest(p, "UNNICK");
         }
 
@@ -215,7 +220,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Override
     public void onDisable() {
         for (CorePlayer p : getOnlineCorePlayers()) {
-            p.getScoreboard().unregister();
+            ((BukkitCorePlayer) p).unregister();
             ((BukkitCorePlayer) p).unregisterAttachment();
 
             if (p.isNicked()) {
@@ -223,19 +228,21 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             }
         }
 
-        mongoConnection.disconnect();
-        corePlayers.clear();
-
         npcManager.disable();
         hologramManager.disable();
         afkManager.disable();
         labyModAPI.disable();
         pluginManager.disable();
 
+        try {
+            mongoConnection.disconnect();
+        } catch (NoClassDefFoundError ignored) {}
+        corePlayers.clear();
+
         getServer().getMessenger().unregisterIncomingPluginChannel(this);
         getServer().getMessenger().unregisterOutgoingPluginChannel(this);
 
-        getServer().getConsoleSender().sendMessage("§cPlugin disabled!");
+        sendConsoleMessage("§cPlugin disabled!");
     }
 
     private void registerCommands() {
@@ -261,20 +268,13 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     private void registerListener() {
         registerEvents(
-                new LabyModPlayerJoin(),
-                new LanguageChange(),
-                new PermissionChange(),
-                new EntityDamageByEntity(),
-                new PlayerInteractEntity(),
-                new PlayerJoin(),
-                new PlayerLogin(),
-                new PlayerQuit(),
-                new AsyncPlayerChat(),
-                new PlayerSettingsChange(),
-                new InventoryClick(),
-                new InventoryClose(),
-                new PlayerCommandPreprocess(),
-                new SignChange()
+                new ChatListener(),
+                new CoreCommandListener(),
+                new CoreInventoryListener(),
+                new CorePlayerListener(),
+                new CorePlayerUpdateListener(),
+                new LabyModListener(),
+                new SignChangeListener()
         );
     }
 
@@ -330,22 +330,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public NPC constructNpc(String name, String displayname, String skinName, NpcData.SkinKind skinKind, Location location) throws RuntimeCoreException {
-        return new eu.mcone.coresystem.bukkit.npc.NPC(
-                worldManager.getWorld(location.getWorld()),
-                new NpcData(name, displayname, skinName, skinKind, new CoreLocation(location))
-        );
-    }
-
-    @Override
-    public Hologram constructHologram(String name, String[] text, Location location) {
-        return new eu.mcone.coresystem.bukkit.hologram.Hologram(
-                worldManager.getWorld(location.getWorld()),
-                new HologramData(name, text, new CoreLocation(location))
-        );
-    }
-
-    @Override
     public void enableSpawnCommand(CoreWorld world) {
         pluginManager.registerCoreCommand(new SpawnCMD(world), this);
     }
@@ -391,7 +375,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public void setPlayerChatDisabled(boolean disabled) {
-        AsyncPlayerChat.disabled = disabled;
+        ChatListener.disabled = disabled;
     }
 
     @Override

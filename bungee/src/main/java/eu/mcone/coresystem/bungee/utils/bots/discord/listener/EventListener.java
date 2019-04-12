@@ -47,8 +47,6 @@ public class EventListener extends ListenerAdapter {
                 rawMessage = rawMessage.replace("mcone:", "");
                 String[] args = rawMessage.split(" ");
 
-                System.out.println("ARGS LENGTH: " + args.length);
-
                 int i = 0;
                 for (Map.Entry<String, DiscordCommand> entry : BungeeCoreSystem.getSystem().getDiscordControlBot().getCommands().entrySet()) {
                     for (String aliases : entry.getValue().getAliases()) {
@@ -106,8 +104,6 @@ public class EventListener extends ListenerAdapter {
         if (vc.getName().contains("support")) {
             for (Member members : e.getGuild().getMembers()) {
                 if (members.getOnlineStatus().equals(OnlineStatus.ONLINE)) {
-                    System.out.println(members.getUser().getName());
-
                     int i = 0;
                     for (int var = Role.SUPPORTER.getHierarchyID(); var >= 1; var--) {
                         if (i <= 12) {
@@ -119,7 +115,6 @@ public class EventListener extends ListenerAdapter {
                                             "**Der Discord User** *" + joinedMember.getUser().getName() + "* **benötigt Support.**\n" +
                                             "**Mach deine Arbeit!**"
                                     ).queue());
-                                    System.out.println("2");
                                     break;
                                 } else {
                                     i++;

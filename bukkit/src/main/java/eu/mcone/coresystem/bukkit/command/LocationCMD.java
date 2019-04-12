@@ -7,13 +7,14 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
-import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
+import eu.mcone.coresystem.api.bukkit.npc.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -96,10 +97,10 @@ public class LocationCMD extends CorePlayerCommand {
                 return true;
             } else if (args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("teleport")) {
                 CoreWorld w = BukkitCoreSystem.getInstance().getCorePlayer(p).getWorld();
-                CoreLocation loc = w.getLocation(args[1]);
+                Location loc = w.getLocation(args[1]);
 
                 if (loc != null) {
-                    p.teleport(w.getLocation(loc));
+                    p.teleport(loc);
                     BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest erfolgreich zu der Location §a" + args[1] + "§2 teleportiert!");
                 } else {
                     BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die Location §c" + args[1] + "§4 existiert nicht in dieser Welt! Benutze §c/location tp <world-name> <location-name>§4 zum teleportieren zu einer Location von einer anderen Welt!");
@@ -127,10 +128,10 @@ public class LocationCMD extends CorePlayerCommand {
                 CoreWorld w = BukkitCoreSystem.getInstance().getWorldManager().getWorld(args[1]);
 
                 if (w != null) {
-                    CoreLocation loc = w.getLocation(args[2]);
+                    Location loc = w.getLocation(args[2]);
 
                     if (loc != null) {
-                        p.teleport(w.getLocation(loc));
+                        p.teleport(loc);
                         BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest erfolgreich zu der Location §a" + args[1] + "§2 teleportiert!");
                     } else {
                         BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die Location §c" + args[2] + "§4 existiert nicht in der Welt " + args[1] + "!");

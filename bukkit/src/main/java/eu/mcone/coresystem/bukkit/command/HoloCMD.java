@@ -11,7 +11,7 @@ import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.bukkit.hologram.HologramManager;
+import eu.mcone.coresystem.bukkit.hologram.CoreHologramManager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -22,10 +22,10 @@ import java.util.List;
 
 public class HoloCMD extends CorePlayerCommand {
 
-    private HologramManager api;
+    private CoreHologramManager api;
 
-    public HoloCMD(HologramManager api) {
-        super("holo", "system.bukkit.world.holo");
+    public HoloCMD(CoreHologramManager api) {
+        super("holo", "system.bukkit.world.holo", "hologram");
         this.api = api;
     }
 
@@ -67,42 +67,41 @@ public class HoloCMD extends CorePlayerCommand {
                     if (i < args.length - 1) line.append(" ");
                 }
 
-                api.addHologram(args[1], p.getLocation(), line.toString());
+                api.addHologramAndSave(args[1], p.getLocation(), line.toString());
                 BukkitCoreSystem.getInstance().getMessager().send(p, "§2Hologramm §f" + args[1] + "§2 erfolgreich hinzugefügt!");
                 return true;
-            } else if (args.length == 3) {
-                if (args[0].equalsIgnoreCase("remove")) {
-                    CoreWorld oldWord = CoreSystem.getInstance().getWorldManager().getWorld(args[1]);
+            } else if (args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("teleport")) {
+                CoreWorld w = BukkitCoreSystem.getSystem().getWorldManager().getWorld(args[1]);
 
-                    if (oldWord != null) {
-                        api.removeHologram(cp.getWorld(), args[2]);
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Hologramm §a" + args[2] + "§2 wurde erfolgreich aus der Welt " + oldWord.getName() + " gelöscht!");
+                if (w != null) {
+                    eu.mcone.coresystem.api.bukkit.hologram.Hologram holo = CoreSystem.getInstance().getHologramManager().getHologram(w, args[2]);
+
+                    if (holo != null) {
+                        p.teleport(holo.getData().getLocation().bukkit());
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest zum Hologramm §a" + holo.getData().getName() + "§2 teleportiert!");
                     } else {
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene Welt existiert nicht!");
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Das angegebene Hologramm existiert nicht in der Welt §c" + w.getName() + "§4!");
                     }
-
-                    return true;
-                } else if (args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("teleport")) {
-                    CoreWorld w = CoreSystem.getInstance().getWorldManager().getWorld(args[1]);
-
-                    if (w != null) {
-                        eu.mcone.coresystem.api.bukkit.hologram.Hologram holo = CoreSystem.getInstance().getHologramManager().getHologram(w, args[2]);
-
-                        if (holo != null) {
-                            p.teleport(holo.getLocation());
-                            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest zum Hologramm §a" + holo.getData().getName() + "§2 teleportiert!");
-                        } else {
-                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Das angegebene Hologramm existiert nicht in der Welt §c" + w.getName() + "§4!");
-                        }
-                    } else {
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene Welt existiert nicht!");
-                    }
-
-                    return true;
+                } else {
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene Welt existiert nicht!");
                 }
+
+                return true;
             }
         } else if (args.length == 2) {
-            if (args[0].equalsIgnoreCase("list")) {
+            if (args[0].equalsIgnoreCase("remove")) {
+                CoreWorld w = cp.getWorld();
+                Hologram holo = api.getHologram(w, args[1]);
+
+                if (holo != null) {
+                    api.removeHologramAndSave(holo);
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Hologramm §a" + args[1] + "§2 wurde erfolgreich aus der Welt " + w.getName() + " gelöscht!");
+                } else {
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Ein Hologram mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
+                }
+
+                return true;
+            } else if (args[0].equalsIgnoreCase("list")) {
                 CoreWorld w = CoreSystem.getInstance().getWorldManager().getWorld(args[1]);
 
                 if (w != null) {
@@ -137,7 +136,7 @@ public class HoloCMD extends CorePlayerCommand {
                 Hologram holo = CoreSystem.getInstance().getHologramManager().getHologram(cp.getWorld(), args[1]);
 
                 if (holo != null) {
-                    p.teleport(holo.getLocation());
+                    p.teleport(holo.getData().getLocation().bukkit());
                     BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest zum Hologramm §a" + holo.getData().getName() + "§2 teleportiert!");
                 } else {
                     BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene Hologramm existiert nicht!");
@@ -151,12 +150,12 @@ public class HoloCMD extends CorePlayerCommand {
         }
 
         BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: " +
-                "\n§c/holo add <name> <display-name> §4oder " +
-                "\n§c/holo remove <world-name> <name> §4oder " +
-                "\n§c/holo list [world-name] §4oder " +
-                "\n§c/holo tp [world-name] <name> §4oder " +
-                "\n§c/holo reload §4oder "
-        );
+                        "\n§c/holo add <name> <display-name> §4oder " +
+                        "\n§c/holo remove <name> §4oder " +
+                        "\n§c/holo list [world-name] §4oder " +
+                        "\n§c/holo tp [world-name] <name> §4oder " +
+                        "\n§c/holo reload §4oder "
+                );
 
         return true;
     }

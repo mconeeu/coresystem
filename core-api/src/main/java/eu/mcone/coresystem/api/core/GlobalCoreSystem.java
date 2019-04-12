@@ -5,6 +5,8 @@
 
 package eu.mcone.coresystem.api.core;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.PermissionManager;
@@ -21,6 +23,18 @@ public interface GlobalCoreSystem {
      * @return mc1data MongoDB database
      */
     MongoDatabase getMongoDB();
+
+    /**
+     * returns the CoreSystems instance of Gson. Use this for better performance
+     * @return gson instance
+     */
+    Gson getGson();
+
+    /**
+     * returns the CoreSystems instance of JsonParser. Use this for better performance
+     * @return JsonParser instance
+     */
+    JsonParser getJsonParser();
 
     /**
      * returns the BCS TranslationManager

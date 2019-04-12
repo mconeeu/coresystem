@@ -5,23 +5,20 @@
 
 package eu.mcone.coresystem.api.bukkit.player.profile;
 
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
-import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @NoArgsConstructor
 @Getter @Setter
@@ -36,20 +33,7 @@ public class PlayerInventoryProfile extends GameProfile {
             ItemStack item = p.getInventory().getItem(i);
 
             if (item != null) {
-                Map<String, Integer> enchantments = new HashMap<>();
-                item.getEnchantments().forEach((e, x) -> enchantments.put(e.getName(), x));
-
-                items.add(new InventoryItem(
-                        i,
-                        item.getAmount(),
-                        item.getType(),
-                        item.getDurability(),
-                        item.getItemMeta().getDisplayName(),
-                        item.getItemMeta().getLore(),
-                        enchantments,
-                        item.getItemMeta().getItemFlags(),
-                        item.getItemMeta().spigot().isUnbreakable()
-                ));
+                items.add(new InventoryItem(i, item));
             }
         }
     }

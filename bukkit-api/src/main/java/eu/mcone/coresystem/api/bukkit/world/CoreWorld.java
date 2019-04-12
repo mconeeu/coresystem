@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.api.bukkit.world;
 
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
+import eu.mcone.coresystem.api.bukkit.npc.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import org.bukkit.Difficulty;
 import org.bukkit.Location;
@@ -179,13 +180,13 @@ public interface CoreWorld {
     /**
      * get saved location from the internal world storage
      * @param name location name
-     * @return CoreLocation
+     * @return Location
      */
-    CoreLocation getLocation(String name);
+    Location getLocation(String name);
 
     /**
      * get all saved location
-     * @return Collection of all CoreLocations
+     * @return Collection of all Locations
      */
     Map<String, CoreLocation> getLocations();
 
@@ -274,13 +275,6 @@ public interface CoreWorld {
      * save latest changes to bukkit
      */
     void save();
-
-    /**
-     * returns the Bukkit Location object for the given world-location combination
-     * @param location CoreLocation object
-     * @return new Bukkit Location
-     */
-    Location getLocation(CoreLocation location);
 
     /**
      * get json String of actual CoreWorld object

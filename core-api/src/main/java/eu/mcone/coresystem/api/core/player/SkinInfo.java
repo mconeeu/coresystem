@@ -11,7 +11,13 @@ import lombok.Getter;
 @AllArgsConstructor
 public class SkinInfo {
 
+    public enum SkinType {
+        DATABASE, PLAYER, CUSTOM
+    }
+
     @Getter
     private String name, value, signature;
+    @Getter
+    private SkinType type;
 
 }

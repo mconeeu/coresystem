@@ -6,7 +6,6 @@
 package eu.mcone.coresystem.api.bukkit.player;
 
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
-import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
@@ -40,12 +39,6 @@ public interface CorePlayer extends GlobalCorePlayer {
     CoreWorld getWorld();
 
     /**
-     * returns the players current CoreLocation
-     * @return CoreLocation
-     */
-    CoreLocation getLocation();
-
-    /**
      * returns the players stats info object for the specific gamemode
      * @param gamemode wished Gamemode
      * @return StatsAPI object
@@ -69,6 +62,19 @@ public interface CorePlayer extends GlobalCorePlayer {
      * @return afk time in seconds
      */
     long getAfkTime();
+
+    /**
+     * hides/unhides the player from all other players and from tablist
+     * @param vanish if the player should be vanished or unvanished
+     * @return boolean: true if the vanish status was changed, false if the player had already this vanish status
+     */
+    boolean setVanished(boolean vanish);
+
+    /**
+     * checks if the player is currently vanished
+     * @return boolean: true if he is vanished, false otherwise
+     */
+    boolean isVanished();
 
     /**
      * sets the player a custom scoreboard

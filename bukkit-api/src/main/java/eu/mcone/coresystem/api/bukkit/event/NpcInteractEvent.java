@@ -6,8 +6,8 @@
 package eu.mcone.coresystem.api.bukkit.event;
 
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
-import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import lombok.Getter;
+import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -20,18 +20,12 @@ public final class NpcInteractEvent extends Event {
 
     private final Player player;
     private final NPC npc;
-    private final Action action;
-    private final CoreWorld world;
+    private final PacketPlayInUseEntity.EnumEntityUseAction action;
 
-    public NpcInteractEvent(Player player, NPC npc, Action action) {
+    public NpcInteractEvent(Player player, NPC npc, PacketPlayInUseEntity.EnumEntityUseAction action) {
         this.player = player;
         this.npc = npc;
         this.action = action;
-        this.world = npc.getWorld();
-    }
-
-    public enum Action {
-        LEFT_CLICK, RIGHT_CLICK
     }
 
     public HandlerList getHandlers() {

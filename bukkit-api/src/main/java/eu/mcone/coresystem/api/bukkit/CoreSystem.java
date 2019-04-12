@@ -5,33 +5,29 @@
 
 package eu.mcone.coresystem.api.bukkit;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonParser;
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
 import eu.mcone.coresystem.api.bukkit.config.ConfigParser;
-import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
-import eu.mcone.coresystem.api.bukkit.npc.NPC;
-import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.api.bukkit.player.AfkManager;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.NickManager;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
-import eu.mcone.coresystem.api.bukkit.util.*;
+import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
+import eu.mcone.coresystem.api.bukkit.util.CorePluginManager;
+import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
+import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.WorldManager;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
-import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.labymod.LabyModAPI;
 import lombok.Getter;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
@@ -103,24 +99,6 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     public abstract ChannelHandler getChannelHandler();
 
     /**
-     * returns the BCS DatabaseSkinManager
-     * @return DatabaseSkinManager instance
-     */
-    public abstract DatabaseSkinManager getDatabaseSkinManager();
-
-    /**
-     * returns the CoreSystems instance of Gson. Use this for better performance
-     * @return gson instance
-     */
-    public abstract Gson getGson();
-
-    /**
-     * returns the CoreSystems instance of JsonParser. Use this for better performance
-     * @return JsonParser instance
-     */
-    public abstract JsonParser getJsonParser();
-
-    /**
      * returns the CoreSystems instance of ConfigParser. Use this for better performance
      * @return ConfigParser instance
      */
@@ -165,28 +143,6 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return nwe BuildSystem instance
      */
     public abstract BuildSystem initialiseBuildSystem(BuildSystem.BuildEvent... events);
-
-    /**
-     * constructs a new NPC without automatically setting it for all players
-     * you have to manually set them through the NPCs methods
-     * @param name config name
-     * @param displayname npcs displayname
-     * @param skinName skinName from bungeesystem_textures database
-     * @param skinKind choose PLAYER and pass an username as skinName or choose DATABASE and pass a database name as skinName
-     * @param location location
-     * @return NPC instance
-     */
-    public abstract NPC constructNpc(String name, String displayname, String skinName, NpcData.SkinKind skinKind, Location location) throws CoreException;
-
-    /**
-     * constructs a new Hologram without automatically setting it for all players
-     * you have to manually set them through the Holograms methods
-     * @param name config name
-     * @param text holograms text
-     * @param location location
-     * @return Hologram instance
-     */
-    public abstract Hologram constructHologram(String name, String[] text, Location location);
 
     /**
      * enables an global /server spawn command

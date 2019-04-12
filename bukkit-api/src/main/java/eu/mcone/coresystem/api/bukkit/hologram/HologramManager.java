@@ -18,7 +18,10 @@ public interface HologramManager {
     void reload();
 
     /**
-     * adds a new hologram
+     * adds a new temporary hologram
+     * it will be removed on server restart or reload
+     * use /holo or the core-config.json to add Holograms permanently
+     *
      * @param name config name
      * @param location location
      * @param text content of hologram
