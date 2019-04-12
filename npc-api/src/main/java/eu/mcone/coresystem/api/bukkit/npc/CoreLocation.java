@@ -6,9 +6,11 @@
 package eu.mcone.coresystem.api.bukkit.npc;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+@NoArgsConstructor
 public final class CoreLocation {
 
     private transient Location bukkit;
