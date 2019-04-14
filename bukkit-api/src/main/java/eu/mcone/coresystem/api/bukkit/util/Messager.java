@@ -8,12 +8,14 @@ package eu.mcone.coresystem.api.bukkit.util;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.translation.Language;
+import lombok.Getter;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public final class Messager {
 
+    @Getter
     private String prefixTranslation;
 
     public Messager(String prefixTranlation) {

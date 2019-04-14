@@ -11,6 +11,8 @@ import java.util.UUID;
 
 public interface CooldownSystem {
 
+    int DEFAULT_COOLDOWN = 3;
+
     /**
      * adds the current access to list and checks if there already is an list entry
      * @param instance CoreSystem instance
@@ -26,6 +28,13 @@ public interface CooldownSystem {
      * @param clazz target class
      */
     void addPlayer(UUID uuid, Class<?> clazz);
+
+    /**
+     * sets a custom Cooldown time for the specific class
+     * @param clazz target class
+     * @param cooldown cooldown time in seconds
+     */
+    void setCustomCooldownFor(Class<?> clazz, int cooldown);
 
     /**
      * checks if a player is currently bypassing the cooldown or not

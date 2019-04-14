@@ -79,7 +79,7 @@ public class BukkitCoreWorld implements CoreWorld {
 
     @Override
     public Location getLocation(String name) {
-        return locations.getOrDefault(name, null).bukkit();
+        return locations.containsKey(name) ? locations.get(name).bukkit() : null;
     }
 
     @Override

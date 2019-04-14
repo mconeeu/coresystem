@@ -51,7 +51,7 @@ import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
 import eu.mcone.coresystem.core.translation.TranslationManager;
-import eu.mcone.coresystem.core.util.CooldownSystem;
+import eu.mcone.coresystem.core.util.CoreCooldownSystem;
 import eu.mcone.coresystem.core.util.MoneyUtil;
 import eu.mcone.networkmanager.core.api.database.Database;
 import eu.mcone.networkmanager.core.database.MongoConnection;
@@ -335,7 +335,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public CooldownSystem getCooldownSystem() {
+    public CoreCooldownSystem getCooldownSystem() {
         return pluginManager.getCooldownSystem();
     }
 

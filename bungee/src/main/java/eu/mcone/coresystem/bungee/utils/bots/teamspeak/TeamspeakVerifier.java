@@ -49,7 +49,7 @@ import static com.mongodb.client.model.Updates.*;
 public class TeamspeakVerifier {
 
     private final static TS3Config CONFIG = new TS3Config()
-            .setHost("f.rmlk-verwaltung.de")
+            .setHost("192.168.2.11")
             .setQueryPort(10011)
             .setFloodRate(TS3Query.FloodRate.UNLIMITED)
             .setReconnectStrategy(ReconnectStrategy.linearBackoff());

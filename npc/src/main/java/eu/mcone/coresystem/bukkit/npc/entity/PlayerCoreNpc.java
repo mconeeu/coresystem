@@ -121,11 +121,11 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     }
 
     @Override
-    protected void changeDisplayname(String displayname) {
+    public void changeDisplayname(String displayname, Player... players) {
         this.profile = new GameProfile(UUID.randomUUID(), ChatColor.translateAlternateColorCodes('&', displayname));
         this.profile.getProperties().put("textures", new Property("textures", this.skin.getValue(), this.skin.getSignature()));
 
-        super.changeDisplayname(displayname);
+        super.changeDisplayname(displayname, players);
     }
 
     @SuppressWarnings("deprecation")
@@ -189,19 +189,20 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     }
 
     @Override
-    public void setEquipment(EquipmentPosition position, ItemStack item) {
+    public void setEquipment(EquipmentPosition position, ItemStack item, Player... players) {
         entityData.getEquipment().set(position.getId(), item);
-        sendPackets(makeEquipmentPacket(position.getId()));
+        sendPackets(makeEquipmentPacket(position.getId()), players);
     }
 
     @Override
-    public void setSkin(SkinInfo skin) {
+    public void setSkin(SkinInfo skin, Player... players) {
         this.skin = skin;
 
         profile.getProperties().removeAll("textures");
         profile.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
 
-        for (Player p : visiblePlayersList) {
+        players = players.length > 0 ? players : visiblePlayersList.toArray(new Player[0]);
+        for (Player p : players) {
             _despawn(p);
             _spawn(p);
         }
@@ -232,19 +233,19 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     }
 
     @Override
-    public void setTablistName(String name) {
+    public void setTablistName(String name, Player... players) {
         if (!entityData.getTablistName().equals(name)) {
             if (entityData.isVisibleOnTab()) {
-                sendPackets(makeTablistPacket(false), makeTablistPacket(true));
+                sendPackets(new Packet[]{makeTablistPacket(false), makeTablistPacket(true)}, players);
             }
             entityData.setTablistName(name);
         }
     }
 
     @Override
-    public void setVisibleOnTab(boolean visible) {
+    public void setVisibleOnTab(boolean visible, Player... players) {
         if (entityData.isVisibleOnTab() != visible) {
-            sendPackets(makeTablistPacket(visible));
+            sendPackets(makeTablistPacket(visible), players);
             entityData.setVisibleOnTab(visible);
         }
     }

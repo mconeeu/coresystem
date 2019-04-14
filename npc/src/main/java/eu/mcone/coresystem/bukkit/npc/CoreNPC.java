@@ -36,7 +36,6 @@ public abstract class CoreNPC<T extends PlayerNpcData> implements NPC {
     protected NpcData data;
     @Getter
     private NpcVisibilityMode visibilityMode;
-    @Getter
     protected Set<Player> visiblePlayersList;
     @Getter
     protected final int entityId;
@@ -84,14 +83,16 @@ public abstract class CoreNPC<T extends PlayerNpcData> implements NPC {
         }
     }
 
-    public void playerLeaved(Player p) {
-        visiblePlayersList.remove(p);
+    public void playerLeaved(Player... p) {
+        visiblePlayersList.removeAll(Arrays.asList(p));
     }
 
-    protected void changeDisplayname(String displayname) {
+    @Override
+    public void changeDisplayname(String displayname, Player... players) {
         this.data.setDisplayname(displayname);
 
-        for (Player p : visiblePlayersList) {
+        players = players.length > 0 ? players : visiblePlayersList.toArray(new Player[0]);
+        for (Player p : players) {
             despawn(p);
             spawn(p);
         }
@@ -114,41 +115,47 @@ public abstract class CoreNPC<T extends PlayerNpcData> implements NPC {
     }
 
     @Override
-    public void toggleNpcVisibility(NpcVisibilityMode visibility, Player... players) {
-        Set<Player> uuidList = new HashSet<>(Arrays.asList(players));
+    public void toggleNpcVisibility(NpcVisibilityMode visibilityMode, Player... players) {
+        Set<Player> listed = new HashSet<>(Arrays.asList(players));
         Set<Player> doSet = new HashSet<>();
         Set<Player> doUnset = new HashSet<>();
 
-        if (visibility.equals(NpcVisibilityMode.WHITELIST)) {
+        if (visibilityMode.equals(NpcVisibilityMode.WHITELIST)) {
             for (Player player : Bukkit.getOnlinePlayers()) {
-                if (uuidList.contains(player) && !visiblePlayersList.contains(player)) {
+                if (listed.contains(player) && !visiblePlayersList.contains(player)) {
                     doSet.add(player);
                     visiblePlayersList.add(player);
-                } else if (!uuidList.contains(player) && visiblePlayersList.contains(player)) {
+                } else if (!listed.contains(player) && visiblePlayersList.contains(player)) {
                     doUnset.add(player);
                     visiblePlayersList.remove(player);
                 }
             }
-        } else if (visibility.equals(NpcVisibilityMode.BLACKLIST)) {
+
+            visiblePlayersList = new HashSet<>(listed);
+        } else if (visibilityMode.equals(NpcVisibilityMode.BLACKLIST)) {
             for (Player player : Bukkit.getOnlinePlayers()) {
-                if (uuidList.contains(player) && visiblePlayersList.contains(player)) {
+                if (listed.contains(player) && visiblePlayersList.contains(player)) {
                     doUnset.add(player);
                     visiblePlayersList.remove(player);
-                } else if (!uuidList.contains(player) && !visiblePlayersList.contains(player)) {
+                } else if (!listed.contains(player) && !visiblePlayersList.contains(player)) {
                     doSet.add(player);
                     visiblePlayersList.add(player);
                 }
+            }
+
+            visiblePlayersList = new HashSet<>(Bukkit.getOnlinePlayers());
+            for (Player p : listed) {
+                visiblePlayersList.remove(p);
             }
         }
 
+        this.visibilityMode = visibilityMode;
         for (Player p : doSet) {
             spawn(p);
         }
         for (Player p : doUnset) {
             despawn(p);
         }
-
-        visiblePlayersList = uuidList;
     }
 
     @Override
@@ -156,7 +163,7 @@ public abstract class CoreNPC<T extends PlayerNpcData> implements NPC {
         if (canSee && !visiblePlayersList.contains(player)) {
             _spawn(player);
             visiblePlayersList.add(player);
-        } else if (visiblePlayersList.contains(player)) {
+        } else if (!canSee && visiblePlayersList.contains(player)) {
             _despawn(player);
             visiblePlayersList.remove(player);
         }
@@ -177,29 +184,32 @@ public abstract class CoreNPC<T extends PlayerNpcData> implements NPC {
     }
 
     @Override
-    public void sendState(NpcState state) {
+    public Set<Player> getVisiblePlayersList() {
+        return new HashSet<>(visiblePlayersList);
+    }
+
+    @Override
+    public void sendState(NpcState state, Player... players) {
         PacketPlayOutEntityStatus packet = new PacketPlayOutEntityStatus();
         ReflectionManager.setValue(packet, "a", entityId);
         ReflectionManager.setValue(packet, "b", (byte) state.getId());
-        sendPackets(packet);
+
+        sendPackets(packet, players);
     }
 
     @Override
-    public void sendAnimation(NpcAnimation animation) {
-        sendPackets(makeAnimationPacket(animation));
+    public void sendAnimation(NpcAnimation animation, Player... players) {
+        sendPackets(makeAnimationPacket(animation), players);
     }
 
     @Override
-    public void teleport(Location loc) {
-        CoreLocation cloc = new CoreLocation(loc);
-
-        sendPackets(makeTeleportPackets(cloc));
-        this.data.setLocation(cloc);
+    public void teleport(Location loc, Player... players) {
+        teleport(new CoreLocation(loc), players);
     }
 
     @Override
-    public void teleport(CoreLocation loc) {
-        sendPackets(makeTeleportPackets(loc));
+    public void teleport(CoreLocation loc, Player... players) {
+        sendPackets(makeTeleportPackets(loc), players);
         this.data.setLocation(loc);
     }
 
@@ -217,7 +227,25 @@ public abstract class CoreNPC<T extends PlayerNpcData> implements NPC {
     }
 
     protected void sendPackets(Packet<?>... packets) {
-        for (Player p : visiblePlayersList) {
+        sendPackets(packets, visiblePlayersList);
+    }
+
+    protected void sendPackets(Packet<?> packet, Player[] players) {
+        sendPackets(new Packet[]{packet}, players);
+    }
+
+    protected void sendPackets(Packet<?>[] packets, Player... players) {
+        players = players.length > 0 ? players : visiblePlayersList.toArray(new Player[0]);
+
+        for (Player p : players) {
+            sendPackets(p, packets);
+        }
+    }
+
+    protected void sendPackets(Packet<?>[] packets, Set<Player> players) {
+        players = players.size() > 0 ? players : visiblePlayersList;
+
+        for (Player p : players) {
             sendPackets(p, packets);
         }
     }

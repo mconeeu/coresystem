@@ -34,7 +34,7 @@ import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
 import eu.mcone.coresystem.core.translation.TranslationManager;
-import eu.mcone.coresystem.core.util.CooldownSystem;
+import eu.mcone.coresystem.core.util.CoreCooldownSystem;
 import eu.mcone.coresystem.core.util.MoneyUtil;
 import eu.mcone.coresystem.core.util.PreferencesManager;
 import eu.mcone.networkmanager.core.api.database.Database;
@@ -70,7 +70,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private PermissionManager permissionManager;
     @Getter
-    private CooldownSystem cooldownSystem;
+    private CoreCooldownSystem cooldownSystem;
     @Getter
     private FriendSystem friendSystem;
     @Getter
@@ -125,7 +125,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         mongoConnection.connect();
         database = mongoConnection.getDatabase(Database.SYSTEM);
 
-        cooldownSystem = new CooldownSystem();
+        cooldownSystem = new CoreCooldownSystem();
         channelHandler = new ChannelHandler();
         preferences = new PreferencesManager(database, new HashMap<String, Object>() {{
             put("maintenance", false);

@@ -13,7 +13,7 @@ import eu.mcone.coresystem.api.bukkit.util.CorePluginManager;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
-import eu.mcone.coresystem.core.util.CooldownSystem;
+import eu.mcone.coresystem.core.util.CoreCooldownSystem;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
@@ -28,7 +28,7 @@ public class PluginManager implements CorePluginManager {
     private static CommandMap commandMap;
 
     @Getter
-    private CooldownSystem cooldownSystem;
+    private CoreCooldownSystem cooldownSystem;
     @Getter
     private List<CorePlugin> corePlugins;
     private Map<CorePlugin, List<CoreCommand>> commands;
@@ -50,7 +50,7 @@ public class PluginManager implements CorePluginManager {
     }
 
     public PluginManager() {
-        this.cooldownSystem = new CooldownSystem();
+        this.cooldownSystem = new CoreCooldownSystem();
         this.corePlugins = new ArrayList<>();
         this.commands = new HashMap<>();
         this.inventories = new HashMap<>();

@@ -107,14 +107,19 @@ public class NpcCMD extends CorePlayerCommand {
                 }
                 return true;
             } else if (args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("teleport")) {
-                CoreWorld w = cp.getWorld();
-                NPC npc = CoreSystem.getInstance().getNpcManager().getNPC(w, args[2]);
+                CoreWorld w = CoreSystem.getInstance().getWorldManager().getWorld(args[1]);
 
-                if (npc != null) {
-                    p.teleport(npc.getData().getLocation().bukkit());
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest zum NPC §a" + npc.getData().getName() + "§2 teleportiert!");
+                if (w != null) {
+                    NPC npc = CoreSystem.getInstance().getNpcManager().getNPC(w, args[2]);
+
+                    if (npc != null) {
+                        p.teleport(npc.getData().getLocation().bukkit());
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest zum NPC §a" + npc.getData().getName() + "§2 teleportiert!");
+                    } else {
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene NPC existiert nicht in der Welt §c" + w.getName() + "§4!");
+                    }
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene NPC existiert nicht in der Welt §c" + w.getName() + "§4!");
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene Welt existiert nicht!");
                 }
 
                 return true;

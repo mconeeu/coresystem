@@ -55,9 +55,9 @@ public class NpcListener implements Listener {
         Player p = e.getPlayer();
 
         for (CoreNPC<?> npc : api.getNpcSet()) {
-            if (!npc.canBeSeenBy(p)) {
+            if (!npc.canBeSeenBy(p) || !npc.isVisibleFor(p)) {
                 npc.despawn(p);
-            } else if (npc.isVisibleFor(p)) {
+            } else if (npc.canBeSeenBy(p) && npc.isVisibleFor(p)) {
                 Bukkit.getScheduler().runTaskLaterAsynchronously(BukkitCoreSystem.getSystem(), () -> npc.spawn(p), 1L);
             }
         }
@@ -70,9 +70,9 @@ public class NpcListener implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             if (!checkLocation(e.getFrom(), e.getTo())) {
                 for (CoreNPC<?> npc : api.getNpcSet()) {
-                    if (!npc.canBeSeenBy(p)) {
+                    if (!npc.canBeSeenBy(p) || !npc.isVisibleFor(p)) {
                         npc.despawn(p);
-                    } else if (npc.isVisibleFor(p)) {
+                    } else if (npc.canBeSeenBy(p) && npc.isVisibleFor(p)) {
                         npc.spawn(p);
                     }
                 }
