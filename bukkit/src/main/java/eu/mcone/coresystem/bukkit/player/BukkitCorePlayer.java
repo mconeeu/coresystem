@@ -11,6 +11,7 @@ import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.Stats;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
+import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
@@ -130,7 +131,15 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
 
             if (vanish) {
                 for (Player t : Bukkit.getOnlinePlayers()) {
-                    t.hidePlayer(p);
+                    if (!t.hasPermission("system.bukkit.vanish.see") && t != p) {
+                        t.hidePlayer(p);
+                    } else {
+                        CoreScoreboard sb = CoreSystem.getInstance().getCorePlayer(t).getScoreboard();
+
+                        if (sb instanceof MainScoreboard) {
+                            sb.reload();
+                        }
+                    }
                 }
 
                 p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
@@ -138,6 +147,11 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
             } else {
                 for (Player t : Bukkit.getOnlinePlayers()) {
                     t.showPlayer(p);
+
+                    CoreScoreboard sb = CoreSystem.getInstance().getCorePlayer(t).getScoreboard();
+                    if (sb instanceof MainScoreboard) {
+                        sb.reload();
+                    }
                 }
 
                 p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);

@@ -47,16 +47,16 @@ public class GamemodeCMD extends CorePlayerCommand {
 
                 if (args[0].equalsIgnoreCase("1")) {
                     t.setGameMode(GameMode.CREATIVE);
-                    p.setAllowFlight(true);
+                    t.setAllowFlight(true);
                 } else if (args[0].equalsIgnoreCase("0")) {
                     t.setGameMode(GameMode.SURVIVAL);
-                    p.setAllowFlight(false);
+                    t.setAllowFlight(false);
                 } else if (args[0].equalsIgnoreCase("2")) {
                     t.setGameMode(GameMode.ADVENTURE);
-                    p.setAllowFlight(false);
+                    t.setAllowFlight(false);
                 } else if (args[0].equalsIgnoreCase("3")) {
                     t.setGameMode(GameMode.SPECTATOR);
-                    p.setAllowFlight(true);
+                    t.setAllowFlight(true);
                 } else {
                     BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/gm §4oder §c/gamemode <Gamemode> [<Spieler>]");
                     p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);

@@ -31,7 +31,6 @@
         </repository>
         <repository>
             <id>mcone-systems</id>
-            <name>MC ONE Repo</name>
             <url>https://repo.mcone.eu/repository/mcone-systems/</url>
         </repository>
     </repositories>

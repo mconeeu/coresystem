@@ -46,6 +46,9 @@ permissions:
                 description: Allows the player to teleport to a specific postition
           system.bukkit.vanish:
             description: Vanishes the player for all other players
+            children:
+              system.bukkit.vanish.see:
+                description: Allows a player to see vanished players (does not permit to vanish itself)
           system.bukkit.reload:
             description: Reload the CoreSystem
           system.bukkit.sign:

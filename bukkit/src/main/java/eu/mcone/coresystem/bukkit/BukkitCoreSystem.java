@@ -274,7 +274,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new CorePlayerListener(),
                 new CorePlayerUpdateListener(),
                 new LabyModListener(),
-                new SignChangeListener()
+                new SignChangeListener(),
+                new VanishListener()
         );
     }
 

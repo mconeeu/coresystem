@@ -16,12 +16,11 @@ public final class MainScoreboard extends CoreScoreboard {
         Group g = p.isNicked() ? Group.SPIELER : p.getMainGroup();
         t.setPrefix(g.getPrefix());
 
-        return t;
-    }
+        if (p.isVanished()) {
+            t.setSuffix(" §3§lⓋ");
+        }
 
-    private String getNickSuffix(String name) {
-        String nick = name.length()<=12 ? name : name.substring(0, 9)+"...";
-        return "§7 ~" + nick;
+        return t;
     }
 
 }

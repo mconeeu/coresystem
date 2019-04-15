@@ -52,10 +52,10 @@ public class MsgCMD extends Command implements TabExecutor {
                 final CorePlayer t = BungeeCoreSystem.getInstance().getCorePlayer(args[0]);
                 if (t != null) {
                     if (!p.equals(t)) {
-                        if (!t.getFriendData().getBlocks().contains(p.getUuid())) {
-                            if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY)) {
+                        if (!t.getFriendData().getBlocks().contains(p.getUuid()) || p.hasPermission("system.bungee.chat.private.bypass")) {
+                            if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY) || p.hasPermission("system.bungee.chat.private.bypass")) {
                                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§c" + args[0] + "§4 hat private Nachrichten deaktiviert!");
-                            } else if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !t.getFriendData().getFriends().containsKey(p.getUuid())) {
+                            } else if ((t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !t.getFriendData().getFriends().containsKey(p.getUuid())) || p.hasPermission("system.bungee.chat.private.bypass")) {
                                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§c" + args[0] + "§4 hat private Nachrichten nur für Freunde aktiviert!");
                             } else {
                                 if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY)) {
@@ -67,6 +67,7 @@ public class MsgCMD extends Command implements TabExecutor {
                                     for (int i = 1; i < args.length; i++) {
                                         msg.append(args[i]).append(" ");
                                     }
+
                                     BungeeCoreSystem.getInstance().getMessager().sendSimple(sender, new TextComponent(BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.fromme", p).replaceAll("%Msg-Target%", t.getName()) + msg));
                                     t.bungee().sendMessage(new TextComponent(BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.tome", p).replaceAll("%Msg-Player%", p.getName()) + msg));
                                     reply.put(t.getUuid(), p.getUuid());

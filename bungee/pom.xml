@@ -93,14 +93,12 @@
         </repository>
         <repository>
             <id>mcone-systems</id>
-            <name>MC ONE Repo</name>
             <url>https://repo.mcone.eu/repository/mcone-systems/</url>
         </repository>
 
         <!--  DISCORD REPOS -->
         <repository>
             <id>jcenter</id>
-            <name>jcenter-bintray</name>
             <url>http://jcenter.bintray.com</url>
         </repository>
     </repositories>
