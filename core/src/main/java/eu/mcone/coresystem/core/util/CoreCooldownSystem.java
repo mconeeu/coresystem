@@ -54,7 +54,7 @@ public class CoreCooldownSystem implements CooldownSystem {
         } else if (classMap.get(clazz).get(uuid) < ((System.currentTimeMillis() / 1000) - customCooldown.getOrDefault(clazz, DEFAULT_COOLDOWN))) {
             return true;
         } else {
-            p.sendMessage("§8[§7§l!§8] §fSystem §8» §4Bitte warte einen Moment bevor du diesen Befehl wieder ausführst!");
+            p.sendMessage("§8[§7§l!§8] §fSystem §8» §4Bitte warte noch "+(classMap.get(clazz).get(uuid) - ((System.currentTimeMillis() / 1000) - customCooldown.getOrDefault(clazz, DEFAULT_COOLDOWN)))+" Sekunden bevor du diesen Befehl wieder ausführst!");
             return false;
         }
     }

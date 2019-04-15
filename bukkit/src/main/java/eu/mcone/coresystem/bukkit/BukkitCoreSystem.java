@@ -226,6 +226,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             if (p.isNicked()) {
                 nickManager.unnick(p.bukkit(), false);
             }
+            if (p.isVanished()) {
+                for (Player t : Bukkit.getOnlinePlayers()) {
+                    t.showPlayer(p.bukkit());
+                }
+            }
         }
 
         npcManager.disable();

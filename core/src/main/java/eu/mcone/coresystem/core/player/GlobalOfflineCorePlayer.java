@@ -18,6 +18,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.bson.Document;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -25,6 +26,8 @@ import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
 
 public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api.core.player.GlobalOfflineCorePlayer {
+
+    public static final DecimalFormat COINS_FORMAT = new DecimalFormat("#.###");
 
     protected final GlobalCoreSystem instance;
     protected boolean isNew = false;
@@ -170,6 +173,11 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     public Set<Group> updateGroupsFromDatabase() {
         @NonNull Document entry = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
         return groupSet = instance.getPermissionManager().getGroups(entry.get("groups", new ArrayList<>()));
+    }
+
+    @Override
+    public String getFormattedCoins() {
+        return COINS_FORMAT.format(coins);
     }
 
     @Override

@@ -59,6 +59,12 @@ public interface GlobalOfflineCorePlayer {
     int getCoins();
 
     /**
+     * returns the coins formatted with points
+     * @return coins amount formatted with points (e.g. #.###.###)
+     */
+    String getFormattedCoins();
+
+    /**
      * sets the given coin amount
      * @param coins amount
      */
