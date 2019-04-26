@@ -26,7 +26,6 @@ public class ProxyPingListener implements Listener {
             new ServerPing.PlayerInfo("§r", UUID.randomUUID()),
             new ServerPing.PlayerInfo("§6Für ein reibungsloses Spieleerlebnis empfehlen wir", UUID.randomUUID()),
             new ServerPing.PlayerInfo("§6§nLabyMod§6 für die Version 1.8.", UUID.randomUUID()),
-            new ServerPing.PlayerInfo("§7§oAlle Infos dazu findest du über den Link §f§nmcone.eu/launcher", UUID.randomUUID())
     };
 
     private static final ServerPing.PlayerInfo[] PLAYER_INFOS_MAINTENANCE = new ServerPing.PlayerInfo[] {

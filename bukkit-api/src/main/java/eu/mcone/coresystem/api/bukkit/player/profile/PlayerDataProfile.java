@@ -6,16 +6,13 @@
 package eu.mcone.coresystem.api.bukkit.player.profile;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.npc.CoreLocation;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-@NoArgsConstructor
 @Getter @Setter
 public class PlayerDataProfile extends PlayerInventoryProfile {
 
@@ -23,26 +20,33 @@ public class PlayerDataProfile extends PlayerInventoryProfile {
     private static World gameProfileWorld = Bukkit.getWorlds().get(0);
 
     private boolean flying;
-    private String world = gameProfileWorld.getName();
-    private CoreLocation location = new CoreLocation(CoreSystem.getInstance().getWorldManager().getWorld(gameProfileWorld).getLocation("spawn"));
-    int level, foodLevel = 20;
+    private String world;
+    private Location location;
+    int level, foodLevel;
     float exp;
-    double health = 20D;
+    double health;
 
     public PlayerDataProfile(Player p) {
         super(p);
 
         flying = p.isFlying();
         world = p.getWorld().getName();
-        location = new CoreLocation(p.getLocation());
+        location = p.getLocation();
         level = p.getLevel();
         foodLevel = p.getFoodLevel();
         exp = p.getExp();
         health = p.getHealth();
     }
 
+    public PlayerDataProfile() {
+        world = gameProfileWorld.getName();
+        location =CoreSystem.getInstance().getWorldManager().getWorld(gameProfileWorld).getLocation("spawn");
+        foodLevel = 20;
+        health = 20D;
+    }
+
     public void doSetData(Player p) {
-        p.teleport(calculateBukkitLocation());
+        p.teleport(location);
         p.setFlying(flying);
         p.setLevel(level);
         p.setFoodLevel(foodLevel);
@@ -50,10 +54,6 @@ public class PlayerDataProfile extends PlayerInventoryProfile {
         p.setHealth(health);
 
         doSetItemInventory(p);
-    }
-
-    public Location calculateBukkitLocation() {
-        return new Location(Bukkit.getWorld(world), location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
     }
 
     public static void doSetGameProfileWorld(World world) {

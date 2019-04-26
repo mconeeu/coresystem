@@ -15,8 +15,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
+@Builder
 @ToString
-public class PlayerNpcData extends EntityNpcData {
+public class PlayerNpcData extends AbstractNpcData {
 
     private String skinName = "MHF_Question", tablistName = "";
     private SkinInfo.SkinType skinType = SkinInfo.SkinType.PLAYER;

@@ -59,7 +59,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                     World world = Bukkit.getWorld(dir.getName());
 
                     if (config.exists()) {
-                        try (JsonReader reader = new JsonReader(new FileReader(config))) {
+                        try (FileReader reader = new FileReader(config)) {
                             JsonElement json = BukkitCoreSystem.getSystem().getJsonParser().parse(reader);
                             reader.close();
 

@@ -8,4 +8,4 @@ package eu.mcone.coresystem.api.bukkit.npc.data;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public abstract class EntityNpcData {}
+public abstract class AbstractNpcData {}

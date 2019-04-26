@@ -10,6 +10,10 @@ import eu.mcone.coresystem.api.core.player.SkinInfo;
 
 public interface OfflineCorePlayer extends GlobalOfflineCorePlayer {
 
+    /**
+     * returns the current skin of the player
+     * @return skin info
+     */
     SkinInfo getSkin();
 
 }

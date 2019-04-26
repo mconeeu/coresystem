@@ -20,7 +20,11 @@ public class EcCMD extends CorePlayerCommand {
     @Override
     public boolean onPlayerCommand(Player p, String[] args) {
         if (args.length == 0) {
-            p.openInventory(p.getEnderChest());
+            if (BukkitCoreSystem.getSystem().isCustomEnderchestEnabled()) {
+                CoreSystem.getInstance().getCorePlayer(p).openEnderchest();
+            } else {
+                p.openInventory(p.getEnderChest());
+            }
 
             if (p.hasPermission("system.bukkit.ecsee.other")) {
                 BukkitCoreSystem.getInstance().getMessager().send(p, "§f§oTipp: §7Benutze §f/ec <player>§7 um die Enderkiste eines anderen Spielers zu sehen!");
@@ -30,9 +34,13 @@ public class EcCMD extends CorePlayerCommand {
                 Player t = Bukkit.getPlayer(args[0]);
 
                 if (t != null) {
-                    p.openInventory(t.getEnderChest());
+                    p.openInventory(
+                            BukkitCoreSystem.getSystem().isCustomEnderchestEnabled()
+                                    ? CoreSystem.getInstance().getCorePlayer(t).getEnderchest()
+                                    : t.getEnderChest()
+                    );
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler §c"+args[0]+"§4 ist nicht online!");
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler §c" + args[0] + "§4 ist nicht online!");
                 }
             } else {
                 CoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");

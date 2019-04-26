@@ -17,7 +17,9 @@ import eu.mcone.coresystem.core.util.CoreCooldownSystem;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
+import org.bukkit.material.Command;
 import org.bukkit.plugin.SimplePluginManager;
 
 import java.lang.reflect.Field;
@@ -114,6 +116,26 @@ public class PluginManager implements CorePluginManager {
 
         commandMap.register(plugin.getDescription().getName(), command);
         return command;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void unregisterCoreCommand(CoreCommand command) {
+        try {
+            Field map = SimpleCommandMap.class.getDeclaredField("knownCommands");
+            map.setAccessible(true);
+            Map<String, Command> commands = ((Map<String, Command>) map.get(commandMap));
+            for (String alias : command.getAliases()) {
+                commands.remove(alias);
+            }
+            map.setAccessible(false);
+
+            for (Map.Entry<CorePlugin, List<CoreCommand>> e : this.commands.entrySet()) {
+                e.getValue().remove(command);
+            }
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

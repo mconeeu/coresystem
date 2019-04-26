@@ -126,6 +126,11 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         this.profile.getProperties().put("textures", new Property("textures", this.skin.getValue(), this.skin.getSignature()));
 
         super.changeDisplayname(displayname, players);
+
+        if (players.length == 0) {
+            this.profile = new GameProfile(UUID.randomUUID(), ChatColor.translateAlternateColorCodes('&', data.getDisplayname()));
+            this.profile.getProperties().put("textures", new Property("textures", this.skin.getValue(), this.skin.getSignature()));
+        }
     }
 
     @SuppressWarnings("deprecation")

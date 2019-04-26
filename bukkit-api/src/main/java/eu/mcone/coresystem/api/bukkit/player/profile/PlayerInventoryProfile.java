@@ -5,26 +5,21 @@
 
 package eu.mcone.coresystem.api.bukkit.player.profile;
 
-import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @NoArgsConstructor
 @Getter @Setter
 public class PlayerInventoryProfile extends GameProfile {
 
-    private List<InventoryItem> items = new ArrayList<>();
+    private Map<String, ItemStack> items = new HashMap<>();
 
     public PlayerInventoryProfile(Player p) {
         super(p);
@@ -33,36 +28,31 @@ public class PlayerInventoryProfile extends GameProfile {
             ItemStack item = p.getInventory().getItem(i);
 
             if (item != null) {
-                items.add(new InventoryItem(i, item));
+                items.put(String.valueOf(i), item);
             }
+        }
+
+        ItemStack[] armor = p.getInventory().getArmorContents();
+        for (int i=0, x=36; i<4; i++, x++) {
+            items.put(String.valueOf(x), armor[i]);
         }
     }
 
     public void doSetItemInventory(Player p) {
-        Inventory inv = p.getInventory();
-        for (Map.Entry<Integer, ItemStack> item : calculateItems().entrySet()) {
-            inv.setItem(item.getKey(), item.getValue());
+        PlayerInventory inv = p.getInventory();
+
+        ItemStack[] armor = new ItemStack[4];
+        for (Map.Entry<String, ItemStack> item : items.entrySet()) {
+            int i = Integer.valueOf(item.getKey());
+
+            if (i < 36) {
+                inv.setItem(i, item.getValue());
+            } else {
+                armor[i-36] = item.getValue();
+            }
         }
-    }
 
-    public Map<Integer, ItemStack> calculateItems() {
-        Map<Integer, ItemStack> items = new HashMap<>();
-        this.items.forEach(i -> {
-            Map<Enchantment, Integer> enchantments = new HashMap<>();
-            i.getEnchantments().forEach((e, x) -> enchantments.put(Enchantment.getByName(e), x));
-
-            items.put(
-                    i.getSlot(),
-                    new ItemBuilder(i.getMaterial(), i.getAmount(), i.getDurablity())
-                            .displayName(i.getDisplayname())
-                            .lore(i.getLore())
-                            .enchantments(enchantments)
-                            .itemFlags(i.getItemFlags().toArray(new ItemFlag[]{}))
-                            .unbreakable(i.unbreakable)
-                            .create()
-            );
-        });
-        return items;
+        inv.setArmorContents(armor);
     }
 
 }

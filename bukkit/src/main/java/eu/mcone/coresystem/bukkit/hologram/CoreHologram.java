@@ -12,6 +12,7 @@ import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -94,7 +95,7 @@ public class CoreHologram implements eu.mcone.coresystem.api.bukkit.hologram.Hol
         for (int length = (text = data.getText()).length, j = 0; j < length; ++j) {
             final String Text = text[j];
             final EntityArmorStand entity = new EntityArmorStand(((CraftWorld) loc.getWorld()).getHandle(), loc.getX(), loc.getY()-1.8, loc.getZ());
-            entity.setCustomName(Text);
+            entity.setCustomName(ChatColor.translateAlternateColorCodes('&', Text));
             entity.setCustomNameVisible(true);
             entity.setInvisible(true);
             entity.setGravity(false);

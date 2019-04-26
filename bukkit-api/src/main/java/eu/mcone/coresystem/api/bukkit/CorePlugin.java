@@ -74,19 +74,41 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin 
         }
     }
 
+    /**
+     * sends a message to the console with the plugin name as prefix
+     * @param message message
+     */
     public void sendConsoleMessage(String message) {
         getServer().getConsoleSender().sendMessage(consolePrefix + message);
     }
 
+    /**
+     * registers all Event for this plugin
+     * @param listeners listeners array
+     */
     public void registerEvents(Listener... listeners) {
         for (Listener listener : listeners) {
             getServer().getPluginManager().registerEvents(listener, this);
         }
     }
 
+    /**
+     * registers all CoreCommands for this plugin
+     * @param commands commands array
+     */
     public void registerCommands(CoreCommand... commands) {
         for (CoreCommand command : commands) {
             CoreSystem.getInstance().getPluginManager().registerCoreCommand(command, this);
+        }
+    }
+
+    /**
+     * unregisters specific CoreCommands (can be registered by any Plugin)
+     * @param commands commands array
+     */
+    public void unregisterCommands(CoreCommand... commands) {
+        for (CoreCommand command : commands) {
+            CoreSystem.getInstance().getPluginManager().unregisterCoreCommand(command);
         }
     }
 

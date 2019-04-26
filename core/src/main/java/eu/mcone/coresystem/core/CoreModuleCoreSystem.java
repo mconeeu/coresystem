@@ -22,6 +22,10 @@ public interface CoreModuleCoreSystem {
         }
     }
 
+    /**
+     * sends a message to the console with the plugin name as prefix
+     * @param message message
+     */
     void sendConsoleMessage(String message);
 
     MongoDatabase getMongoDB(Database database);

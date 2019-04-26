@@ -17,6 +17,7 @@ import eu.mcone.coresystem.api.core.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.bukkit.listener.CorePlayerListener;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import eu.mcone.networkmanager.core.api.database.Database;
@@ -24,9 +25,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bson.Document;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.plugin.Plugin;
 
 import java.net.InetAddress;
 import java.util.HashMap;
@@ -48,22 +52,24 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     @Getter
     private boolean vanished;
     private PacketListener packetListener;
+    private Map<String, Location> homes;
     @Getter
-    private final PermissionAttachment permissionAttachment;
+    private Inventory enderchest;
+    @Getter
+    private PermissionAttachment permissionAttachment;
 
     public BukkitCorePlayer(CoreSystem instance, InetAddress address, SkinInfo skinInfo, Player p) {
         super(instance, address, p.getUniqueId(), p.getName());
         this.stats = new HashMap<>();
         this.skin = skinInfo;
         this.vanished = false;
+        this.homes = new HashMap<>(BukkitCoreSystem.getSystem().getPlayerDataStorage().getHomes(this.uuid));
+        this.enderchest = BukkitCoreSystem.getSystem().getPlayerDataStorage().getEnderchestItems(p);
 
-        permissionAttachment = p.addAttachment(BukkitCoreSystem.getSystem());
-        for (String permission : permissions) {
-            permissionAttachment.setPermission(permission.startsWith("-") ? permission.substring(1) : permission, !permission.startsWith("-"));
-        }
+        updatePermissionAttachment(p);
 
         instance.runAsync(() -> ((BukkitCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(
-                eq("uuid", uuid.toString()),
+                eq("uuid", this.uuid.toString()),
                 combine(
                         set("texture_value", skinInfo.getValue()),
                         set("texture_signature", skinInfo.getSignature())
@@ -72,6 +78,20 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
 
         ((BukkitCoreSystem) instance).getCorePlayers().put(uuid, this);
         BukkitCoreSystem.getInstance().sendConsoleMessage("Loaded Player " + name + "!");
+    }
+
+    @Override
+    public void reloadPermissions() {
+        super.reloadPermissions();
+
+        if (permissionAttachment != null) {
+            permissionAttachment.remove();
+        }
+
+        Player p = bukkit();
+        if (p != null) {
+            updatePermissionAttachment(p);
+        }
     }
 
     @Override
@@ -98,6 +118,55 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
             StatsAPI api = new StatsAPI((BukkitCoreSystem) instance, this, gamemode);
             stats.put(gamemode, api);
             return api;
+        }
+    }
+
+    @Override
+    public void openEnderchest() {
+        bukkit().openInventory(enderchest);
+    }
+
+    @Override
+    public void teleportWithCooldown(Location location, int cooldown) {
+        Player p = bukkit();
+
+        if (cooldown > 0) {
+            BukkitCoreSystem.getSystem().getMessager().send(p, "§7Du wirst in §f" + cooldown + " Sekunden§7 teleportiert! Bewege dich nicht!");
+            CorePlayerListener.teleports.put(uuid, Bukkit.getScheduler().runTaskLater(BukkitCoreSystem.getSystem(), () -> {
+                CorePlayerListener.teleports.remove(uuid);
+
+                p.teleport(location);
+            }, cooldown * 20));
+        } else {
+            p.teleport(location);
+        }
+    }
+
+    @Override
+    public Map<String, Location> getHomes() {
+        return new HashMap<>(homes);
+    }
+
+    @Override
+    public Location getHome(String name) {
+        return homes.getOrDefault(name, null);
+    }
+
+    @Override
+    public void setHome(String name, Location location) {
+        this.homes.put(name, location);
+        BukkitCoreSystem.getSystem().getPlayerDataStorage().setHome(uuid, name, location);
+    }
+
+    @Override
+    public boolean removeHome(String name) {
+        if (this.homes.containsKey(name)) {
+            this.homes.remove(name);
+            BukkitCoreSystem.getSystem().getPlayerDataStorage().removeHome(uuid, name);
+
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -179,6 +248,14 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
         packetListener.remove();
 
         BukkitCoreSystem.getInstance().sendConsoleMessage("Unloaded Player " + name);
+    }
+
+    private void updatePermissionAttachment(Player p) {
+        permissionAttachment = p.addAttachment((Plugin) instance);
+
+        for (String permission : permissions) {
+            permissionAttachment.setPermission(permission.startsWith("-") ? permission.substring(1) : permission, !permission.startsWith("-"));
+        }
     }
 
 }

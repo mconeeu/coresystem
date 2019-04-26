@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.core.translation;
 
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
@@ -16,12 +17,12 @@ import java.util.*;
 
 public class TranslationManager implements eu.mcone.coresystem.api.core.translation.TranslationManager {
 
-    private MongoDatabase mongoDBManager;
+    private MongoCollection<Document> collection;
     private Map<String, TranslationField> translations;
     private List<String> categories;
 
-    public TranslationManager(MongoDatabase mongoDBManager, GlobalCorePlugin coreSystem, String... categories) {
-        this.mongoDBManager = mongoDBManager;
+    public TranslationManager(MongoDatabase database, GlobalCorePlugin coreSystem, String... categories) {
+        this.collection = database.getCollection("translations");
         this.translations = new HashMap<>();
         this.categories = new ArrayList<>();
 
@@ -34,7 +35,8 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
     @Override
     public void reload() {
         translations.clear();
-        for (Document document : mongoDBManager.getCollection("translations").find()) {
+
+        for (Document document : collection.find()) {
             if (document.getString("category") != null) {
                 for (String cat : categories) {
                     if (document.getString("category").equalsIgnoreCase(cat)) {

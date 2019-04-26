@@ -18,10 +18,8 @@ public interface HologramManager {
     void reload();
 
     /**
-     * adds a new temporary hologram
-     * it will be removed on server restart or reload
+     * adds a temporary Hologram to the Server. This Hologram will not be saved in the core-config and stays until server reload|restart or Hologram-Manager reload
      * use /holo or the core-config.json to add Holograms permanently
-     *
      * @param name config name
      * @param location location
      * @param text content of hologram
@@ -29,7 +27,8 @@ public interface HologramManager {
     Hologram addHologram(String name, Location location, String... text);
 
     /**
-     * deletes an hologram
+     * removes an existing Hologram (if its an permanent Hologram from core-config this is just temporary)
+     * if you want to delete NPC from core-config permanently use ingame command /holo remove
      * @param hologram hologram
      */
     void removeHologram(Hologram hologram);

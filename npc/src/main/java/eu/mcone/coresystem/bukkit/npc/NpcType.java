@@ -21,17 +21,17 @@ public enum NpcType {
     PLAYER(EntityType.PLAYER, PlayerCoreNpc.class);
 
     private EntityType type;
-    private Class<? extends CoreNPC> npcClass;
+    private Class<? extends CoreNPC<?>> npcClass;
 
-    NpcType(EntityType type, Class<? extends CoreNPC> npcClass) {
+    NpcType(EntityType type, Class<? extends CoreNPC<?>> npcClass) {
         this.type = type;
         this.npcClass = npcClass;
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends CoreNPC> T construct(NpcData data, NpcVisibilityMode visibilityMode, Player... players) {
+    public <T extends CoreNPC<?>> T construct(NpcData data, NpcVisibilityMode visibilityMode, Player... players) {
         try {
-            Constructor constructor = npcClass.getDeclaredConstructor(NpcData.class, NpcVisibilityMode.class, Player[].class);
+            Constructor<?> constructor = npcClass.getDeclaredConstructor(NpcData.class, NpcVisibilityMode.class, Player[].class);
             constructor.setAccessible(true);
 
             return (T) constructor.newInstance(data, visibilityMode, players);

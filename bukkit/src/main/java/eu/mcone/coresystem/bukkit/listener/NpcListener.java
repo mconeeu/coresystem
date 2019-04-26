@@ -92,7 +92,7 @@ public class NpcListener implements Listener {
         Player p = e.getPlayer();
 
         for (CoreNPC<?> npc : api.getNpcSet()) {
-            if (!npc.getData().getLocation().getWorld().equals(p.getWorld())) {
+            if (!npc.getData().getLocation().getWorld().equals(p.getWorld().getName())) {
                 npc.despawn(p);
             }
         }

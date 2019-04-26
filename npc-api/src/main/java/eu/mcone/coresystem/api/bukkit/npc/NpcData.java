@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.api.bukkit.npc;
 
 import com.google.gson.JsonElement;
-import eu.mcone.coresystem.api.bukkit.npc.data.EntityNpcData;
+import eu.mcone.coresystem.api.bukkit.npc.data.AbstractNpcData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +23,15 @@ public final class NpcData {
     private CoreLocation location;
     private JsonElement entityData;
 
-    public <T extends EntityNpcData> NpcData(EntityType type, String name, String displayname, CoreLocation location, T entityData) {
+    /**
+     * Creates an NpcData Object for constructing a NPC via CoreSystem#constructNpc()
+     * @param type the entity type of the NPC: currently supported types are PLAYER
+     * @param name the config name of the NPC (must be unique per world)
+     * @param displayname the displayname of the NPC (must not be longer than 16 chars, including color code chars)
+     * @param location the Location where the NPC should appear (including yaw & pitch)
+     * @param entityData the entity specific Data (i.e. for PLAYER: PlayerNpcData.class)
+     */
+    public <T extends AbstractNpcData> NpcData(EntityType type, String name, String displayname, CoreLocation location, T entityData) {
         this.type = type;
         this.name = name;
         this.displayname = displayname;

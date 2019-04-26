@@ -10,7 +10,7 @@
     <parent>
         <artifactId>mcone-coresystem</artifactId>
         <groupId>eu.mcone.coresystem</groupId>
-        <version>10.2.1-SNAPSHOT</version>
+        <version>10.2.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -21,7 +21,7 @@
         <dependency>
             <groupId>eu.mcone.coresystem</groupId>
             <artifactId>core-api</artifactId>
-            <version>10.2.1-SNAPSHOT</version>
+            <version>10.2.2-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency> <!-- Spigot (this includes Spigot API, Bukkit API, Craftbukkit and NMS) -->

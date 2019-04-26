@@ -19,8 +19,16 @@ import java.util.List;
 
 public interface CorePluginManager {
 
+    /**
+     * returns the Cooldownsystem to register or check for custom cooldowns
+     * @return CooldownSystem
+     */
     CooldownSystem getCooldownSystem();
 
+    /**
+     * returns a List of all registered CorePlugins
+     * @return CorePlugin List
+     */
     List<CorePlugin> getCorePlugins();
 
     /**
@@ -66,6 +74,12 @@ public interface CorePluginManager {
     CoreCommand registerCoreCommand(CoreCommand coreCommand, CorePlugin plugin);
 
     /**
+     * removes a CoreCommand from CommandMap
+     * @param command command to be removed
+     */
+    void unregisterCoreCommand(CoreCommand command);
+
+    /**
      * returns the CoreCommand with a specific name
      * null if no CoreCommand with that name exists
      * @param plugin CorePlugin
@@ -87,10 +101,22 @@ public interface CorePluginManager {
      */
     Collection<CoreCommand> getCoreCommands(CorePlugin plugin);
 
+    /**
+     * returns a list of all loaded GameProfiles from any plugin
+     * @return GameProfile List
+     */
     Collection<GameProfile> getGameProfiles();
 
+    /**
+     * sets the default world for all GameProfiles (might not be necessary)
+     * @param world world
+     */
     void setGameProfileWorld(CoreWorld world);
 
+    /**
+     * returns the set GameProfile world
+     * @return
+     */
     String getGameProfileWorld();
 
 }

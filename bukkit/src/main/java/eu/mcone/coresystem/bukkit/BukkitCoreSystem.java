@@ -9,8 +9,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import com.mojang.authlib.properties.Property;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoDatabase;
+import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.CraftItemStackCodecProvider;
+import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.LocationCodecProvider;
+import eu.mcone.coresystem.api.bukkit.config.typeadapter.gson.CraftItemStackTypeAdapter;
+import eu.mcone.coresystem.api.bukkit.config.typeadapter.gson.LocationTypeAdapter;
 import eu.mcone.coresystem.api.bukkit.event.MoneyChangeEvent;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
@@ -29,12 +35,9 @@ import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.channel.*;
 import eu.mcone.coresystem.bukkit.command.*;
-import eu.mcone.coresystem.api.bukkit.config.ConfigParser;
 import eu.mcone.coresystem.bukkit.hologram.CoreHologramManager;
 import eu.mcone.coresystem.bukkit.inventory.ProfileInventory;
 import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
-import eu.mcone.coresystem.bukkit.json.ItemStackTypeAdapter;
-import eu.mcone.coresystem.bukkit.json.LocationTypeAdapter;
 import eu.mcone.coresystem.bukkit.labymod.LabyModAPI;
 import eu.mcone.coresystem.bukkit.listener.*;
 import eu.mcone.coresystem.bukkit.npc.CoreNpcManager;
@@ -42,10 +45,7 @@ import eu.mcone.coresystem.bukkit.player.BukkitCorePlayer;
 import eu.mcone.coresystem.bukkit.player.BukkitOfflineCorePlayer;
 import eu.mcone.coresystem.bukkit.player.CoreAfkManager;
 import eu.mcone.coresystem.bukkit.player.NickManager;
-import eu.mcone.coresystem.bukkit.util.ActionBar;
-import eu.mcone.coresystem.bukkit.util.PluginManager;
-import eu.mcone.coresystem.bukkit.util.TablistInfo;
-import eu.mcone.coresystem.bukkit.util.Title;
+import eu.mcone.coresystem.bukkit.util.*;
 import eu.mcone.coresystem.bukkit.world.WorldManager;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.PermissionManager;
@@ -56,10 +56,16 @@ import eu.mcone.coresystem.core.util.MoneyUtil;
 import eu.mcone.networkmanager.core.api.database.Database;
 import eu.mcone.networkmanager.core.database.MongoConnection;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
+import org.bson.UuidRepresentation;
+import org.bson.codecs.UuidCodecProvider;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -104,13 +110,17 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private Gson gson;
     @Getter
     private JsonParser jsonParser;
-    @Getter
-    private ConfigParser configParser;
 
+    @Getter
+    private CorePlayerDataStorage playerDataStorage;
     @Getter
     private Map<UUID, BukkitCorePlayer> corePlayers;
     @Getter
     private boolean cloudsystemAvailable;
+
+    @Getter
+    @Setter
+    private boolean customEnderchestEnabled = false;
 
     @Override
     public void onEnable() {
@@ -131,12 +141,23 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         );
 
         mongoConnection = new MongoConnection("db.mcone.eu", "admin", "T6KIq8gjmmF1k7futx0cJiJinQXgfguYXruds1dFx1LF5IsVPQjuDTnlI1zltpD9", "admin", 27017)
-                .withCodecs(new ItemStackTypeAdapter(), new LocationTypeAdapter()).connect();
+                .codecRegistry(
+                        MongoClientSettings.getDefaultCodecRegistry(),
+                        CodecRegistries.fromProviders(
+                                new CraftItemStackCodecProvider(),
+                                new LocationCodecProvider(),
+                                new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY),
+                                PojoCodecProvider.builder().automatic(true).build()
+                        )
+                )
+                .connect();
 
         database1 = mongoConnection.getDatabase(Database.SYSTEM);
         database2 = mongoConnection.getDatabase(Database.STATS);
         database3 = mongoConnection.getDatabase(Database.DATA);
         database4 = mongoConnection.getDatabase(Database.CLOUD);
+
+        System.out.println(database1.getCodecRegistry().get(CraftItemStack.class));
 
         pluginManager = new PluginManager();
         moneyUtil = new MoneyUtil(this, database1) {
@@ -149,10 +170,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         playerUtils = new PlayerUtils(this);
         gson = new GsonBuilder()
                 .registerTypeAdapter(Location.class, new LocationTypeAdapter())
-                .registerTypeAdapter(ItemStack.class, new ItemStackTypeAdapter())
+                .registerTypeAdapter(ItemStack.class, new CraftItemStackTypeAdapter())
+                .registerTypeAdapter(CraftItemStack.class, new CraftItemStackTypeAdapter())
                 .create();
         jsonParser = new JsonParser();
-        configParser = new ConfigParser();
+        playerDataStorage = new CorePlayerDataStorage(this);
 
         cloudsystemAvailable = checkIfCloudSystemAvailable();
         sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
@@ -241,7 +263,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         try {
             mongoConnection.disconnect();
-        } catch (NoClassDefFoundError ignored) {}
+        } catch (NoClassDefFoundError ignored) {
+        }
         corePlayers.clear();
 
         getServer().getMessenger().unregisterIncomingPluginChannel(this);
@@ -336,11 +359,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public void enableSpawnCommand(CoreWorld world) {
-        pluginManager.registerCoreCommand(new SpawnCMD(world), this);
-    }
-
-    @Override
     public CoreCooldownSystem getCooldownSystem() {
         return pluginManager.getCooldownSystem();
     }
@@ -380,8 +398,23 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public void setPlayerChatDisabled(boolean disabled) {
-        ChatListener.disabled = disabled;
+    public void setPlayerChatEnabled(boolean enabled) {
+        ChatListener.enabled = enabled;
+    }
+
+    @Override
+    public void enableSpawnCommand(CorePlugin plugin, CoreWorld world, int cooldown) {
+        plugin.registerCommands(new SpawnCMD(plugin, world, cooldown));
+    }
+
+    @Override
+    public void enableHomeSystem(CorePlugin plugin, int cooldown) {
+        plugin.registerCommands(new HomeCMD(plugin, cooldown), new SethomeCMD(plugin), new DelhomeCMD(plugin), new ListHomesCMD(plugin));
+    }
+
+    @Override
+    public void enableTpaSystem(CorePlugin plugin, int cooldown) {
+        plugin.registerCommands(new TpaCMD(plugin), new TpacceptCMD(plugin, cooldown), new TpdenyCMD(plugin));
     }
 
     @Override

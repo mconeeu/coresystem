@@ -9,6 +9,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 public interface CoreItemEvent {
 
+    /**
+     * gets called when the player clicks on an item in the inventory
+     * @param e InventoryClickEvent
+     */
     void onClick(InventoryClickEvent e);
 
 }

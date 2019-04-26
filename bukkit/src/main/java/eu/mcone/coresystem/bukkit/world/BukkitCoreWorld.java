@@ -5,9 +5,8 @@
 
 package eu.mcone.coresystem.bukkit.world;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.config.CoreJsonConfig;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
@@ -15,7 +14,6 @@ import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.npc.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.bukkit.json.LocationTypeAdapter;
 import eu.mcone.coresystem.core.annotation.DontObfuscate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +25,7 @@ import org.bukkit.entity.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,8 +37,6 @@ import java.util.Map;
 @Getter @Setter
 @DontObfuscate
 public class BukkitCoreWorld implements CoreWorld {
-
-    private final static Gson PRETTY_GSON = new GsonBuilder().registerTypeAdapter(Location.class, new LocationTypeAdapter()).setPrettyPrinting().create();
 
     private String name, alias, generator, generatorSettings;
     private WorldType worldType = WorldType.NORMAL;
@@ -207,7 +204,9 @@ public class BukkitCoreWorld implements CoreWorld {
                 throw new FileNotFoundException("Config File could not be created!");
             }
 
-            FileUtils.writeStringToFile(config, PRETTY_GSON.toJson(this, getClass()));
+            FileWriter fw = new FileWriter(config, false);
+            CoreJsonConfig.PRETTY_GSON.toJson(this, getClass(), fw);
+            fw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -18,11 +18,11 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class ChatListener implements Listener {
 
-    public static boolean disabled = false;
+    public static boolean enabled = true;
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e) {
-        if (!disabled) {
+        if (enabled) {
             Player p = e.getPlayer();
             CorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(p);
             String message;

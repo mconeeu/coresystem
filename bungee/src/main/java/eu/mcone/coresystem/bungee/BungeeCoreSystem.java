@@ -7,6 +7,7 @@ package eu.mcone.coresystem.bungee;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.bungee.CorePlugin;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
@@ -42,6 +43,10 @@ import eu.mcone.networkmanager.core.database.MongoConnection;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import org.bson.UuidRepresentation;
+import org.bson.codecs.UuidCodecProvider;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.pojo.PojoCodecProvider;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
@@ -121,8 +126,15 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         gson = new Gson();
         jsonParser = new JsonParser();
 
-        mongoConnection = new MongoConnection("db.mcone.eu", "admin", "T6KIq8gjmmF1k7futx0cJiJinQXgfguYXruds1dFx1LF5IsVPQjuDTnlI1zltpD9", "admin", 27017);
-        mongoConnection.connect();
+        mongoConnection = new MongoConnection("db.mcone.eu", "admin", "T6KIq8gjmmF1k7futx0cJiJinQXgfguYXruds1dFx1LF5IsVPQjuDTnlI1zltpD9", "admin", 27017)
+                .codecRegistry(
+                        MongoClientSettings.getDefaultCodecRegistry(),
+                        CodecRegistries.fromProviders(
+                                new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY),
+                                PojoCodecProvider.builder().automatic(true).build()
+                        )
+                )
+                .connect();
         database = mongoConnection.getDatabase(Database.SYSTEM);
 
         cooldownSystem = new CoreCooldownSystem();

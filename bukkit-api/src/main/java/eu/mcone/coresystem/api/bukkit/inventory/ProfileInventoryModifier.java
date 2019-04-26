@@ -7,8 +7,14 @@ package eu.mcone.coresystem.api.bukkit.inventory;
 
 import org.bukkit.entity.Player;
 
-public abstract class ProfileInventoryModifier {
+public interface ProfileInventoryModifier {
 
-    public abstract void onCreate(CoreInventory inventory, Player player);
+    /**
+     * Use this to modify the ProfileInventory (opens with /profile)
+     * You can adjust the size and add items with ClickEvents
+     * @param inventory the inventory
+     * @param player the player for which it will open
+     */
+    void onCreate(CoreInventory inventory, Player player);
 
 }

@@ -3,23 +3,16 @@
  * You are not allowed to decompile the code
  */
 
-package eu.mcone.coresystem.bukkit.json;
+package eu.mcone.coresystem.api.bukkit.config.typeadapter.gson;
 
 import com.google.gson.*;
-import com.mongodb.MongoClientSettings;
-import org.bson.*;
-import org.bson.codecs.Codec;
-import org.bson.codecs.DecoderContext;
-import org.bson.codecs.EncoderContext;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.lang.reflect.Type;
 
-public class LocationTypeAdapter implements JsonDeserializer<Location>, JsonSerializer<Location>, Codec<Location> {
-
-    private static final Codec<Document> documentCodec = MongoClientSettings.getDefaultCodecRegistry().get(Document.class);
+public class LocationTypeAdapter implements JsonSerializer<Location>, JsonDeserializer<Location> {
 
     @Override
     public Location deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
@@ -84,42 +77,4 @@ public class LocationTypeAdapter implements JsonDeserializer<Location>, JsonSeri
         return obj;
     }
 
-    @Override
-    public Location decode(BsonReader reader, DecoderContext decoderContext) {
-        Document document = documentCodec.decode(reader, decoderContext);
-        final String world = document.getString("world");
-        final Double x = document.getDouble("x");
-        final Double y = document.getDouble("y");
-        final Double z = document.getDouble("z");
-        final Double yaw = document.getDouble("yaw");
-        final Double pitch = document.getDouble("pitch");
-
-        if (world == null || x == null || y == null || z == null || yaw == null || pitch == null) {
-            throw new BSONException("Malformed location BSON string!");
-        }
-
-        World bukkitWorld = Bukkit.getWorld(world);
-        if (bukkitWorld == null) {
-            throw new IllegalArgumentException("Unknown/not loaded world");
-        }
-
-        return new Location(bukkitWorld, x, y, z, yaw.floatValue(), pitch.floatValue());
-    }
-
-    @Override
-    public void encode(BsonWriter writer, Location location, EncoderContext encoderContext) {
-        Document document = new Document("world", location.getWorld().getName())
-                .append("x", location.getX())
-                .append("y", location.getY())
-                .append("z", location.getZ())
-                .append("yaw", location.getYaw())
-                .append("pitch", location.getPitch());
-
-        documentCodec.encode(writer, document, encoderContext);
-    }
-
-    @Override
-    public Class<Location> getEncoderClass() {
-        return Location.class;
-    }
 }

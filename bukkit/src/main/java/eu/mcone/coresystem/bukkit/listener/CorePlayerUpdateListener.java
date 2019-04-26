@@ -34,6 +34,7 @@ public class CorePlayerUpdateListener implements Listener {
                 Group target = e.getGroups().iterator().next();
                 Set<Group> groups = BukkitCoreSystem.getInstance().getPermissionManager().getChildren(target);
                 groups.add(target);
+
                 for (CorePlayer player : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
                     for (Group g : player.getGroups()) {
                         if (groups.contains(g)) {

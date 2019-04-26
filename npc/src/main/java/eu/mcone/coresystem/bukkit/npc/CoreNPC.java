@@ -9,7 +9,7 @@ import eu.mcone.coresystem.api.bukkit.npc.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.npc.NpcModule;
-import eu.mcone.coresystem.api.bukkit.npc.data.PlayerNpcData;
+import eu.mcone.coresystem.api.bukkit.npc.data.AbstractNpcData;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcState;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcVisibilityMode;
@@ -28,7 +28,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class CoreNPC<T extends PlayerNpcData> implements NPC {
+public abstract class CoreNPC<T extends AbstractNpcData> implements NPC {
 
     private final Set<Player> spawned;
 
@@ -64,16 +64,16 @@ public abstract class CoreNPC<T extends PlayerNpcData> implements NPC {
     protected abstract void onUpdate(T entityData);
 
     @Override
-    public void spawn(Player p) {
-        if (spawned.add(p)) {
-            _spawn(p);
+    public void spawn(Player player) {
+        if (spawned.add(player)) {
+            _spawn(player);
         }
     }
 
     @Override
-    public void despawn(Player p) {
-        if (spawned.remove(p)) {
-            _despawn(p);
+    public void despawn(Player player) {
+        if (spawned.remove(player)) {
+            _despawn(player);
         }
     }
 
@@ -89,9 +89,12 @@ public abstract class CoreNPC<T extends PlayerNpcData> implements NPC {
 
     @Override
     public void changeDisplayname(String displayname, Player... players) {
-        this.data.setDisplayname(displayname);
+        if (players.length > 0) {
+            this.data.setDisplayname(displayname);
+        } else {
+            players = visiblePlayersList.toArray(new Player[0]);
+        }
 
-        players = players.length > 0 ? players : visiblePlayersList.toArray(new Player[0]);
         for (Player p : players) {
             despawn(p);
             spawn(p);
@@ -208,9 +211,12 @@ public abstract class CoreNPC<T extends PlayerNpcData> implements NPC {
     }
 
     @Override
-    public void teleport(CoreLocation loc, Player... players) {
-        sendPackets(makeTeleportPackets(loc), players);
-        this.data.setLocation(loc);
+    public void teleport(CoreLocation location, Player... players) {
+        sendPackets(makeTeleportPackets(location), players);
+
+        if (players.length > 0) {
+            this.data.setLocation(location);
+        }
     }
 
     private static synchronized int getNextEntityId() {

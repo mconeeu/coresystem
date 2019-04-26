@@ -6,7 +6,6 @@
 package eu.mcone.coresystem.api.bukkit;
 
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
-import eu.mcone.coresystem.api.bukkit.config.ConfigParser;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
@@ -99,12 +98,6 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     public abstract ChannelHandler getChannelHandler();
 
     /**
-     * returns the CoreSystems instance of ConfigParser. Use this for better performance
-     * @return ConfigParser instance
-     */
-    public abstract ConfigParser getConfigParser();
-
-    /**
      * returns if the mc one Cloudsystem is available
      * @return boolean cloudsystem available
      */
@@ -143,14 +136,6 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return nwe BuildSystem instance
      */
     public abstract BuildSystem initialiseBuildSystem(BuildSystem.BuildEvent... events);
-
-    /**
-     * enables an global /server spawn command
-     * IMPORTANT: The location "spawn" must be set in the core-config.json of the given world!
-     * otherwise the spawn command will throw an error to the player!
-     * @param world CoreWorld
-     */
-    public abstract void enableSpawnCommand(CoreWorld world);
 
     /**
      * creates a new player title
@@ -200,13 +185,44 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * disables all Player chat formatting
      * @param disabled if chat should be disabled
      */
-    public abstract void setPlayerChatDisabled(boolean disabled);
+    public abstract void setPlayerChatEnabled(boolean disabled);
 
     /**
      * allows you to add items to the ProfileInventory
      * @param modifier ProfileInventoryModifier
      */
     public abstract void modifyProfileInventory(ProfileInventoryModifier modifier);
+
+    /**
+     * allows you to change the size of the ProfileInventory
+     * @param enabled if custom enderchest (with variable size) should be enabled
+     */
+    public abstract void setCustomEnderchestEnabled(boolean enabled);
+
+    /**
+     * enables an global /server spawn command
+     * IMPORTANT: The location "spawn" must be set in the core-config.json of the given world!
+     * otherwise the spawn command will throw an error to the player!
+     * @param plugin the plugin for message prefix
+     * @param world CoreWorld
+     * @param cooldown cooldown in seconds where the must not move until he get teleported, use 0 for no cooldown
+     */
+    public abstract void enableSpawnCommand(CorePlugin plugin, CoreWorld world, int cooldown);
+
+    /**
+     * allows all players to use /home /sethome /delhome commands
+     * allowed home amount can be set with "system.bukkit.home.<i>i</i>" permission where <i>i</i> stands for the maximum allowed homes
+     * @param plugin the plugin for message prefix
+     * @param cooldown cooldown in seconds where the must not move until he get teleported, use 0 for no cooldown
+     */
+    public abstract void enableHomeSystem(CorePlugin plugin, int cooldown);
+
+    /**
+     * allows all players to use the /tpa /tpaccept /tpdeny commands
+     * @param plugin the plugin for message prefix
+     * @param cooldown cooldown in seconds where the must not move until he get teleported, use 0 for no cooldown
+     */
+    public abstract void enableTpaSystem(CorePlugin plugin, int cooldown);
 
     /**
      * allows you to change the size of the ProfileInventory
