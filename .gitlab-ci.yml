@@ -13,7 +13,7 @@ variables:
 cache:
   key: "$CI_JOB_NAME"
   paths:
-    - root/.m2/repository
+    - /root/.m2/repository
 
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
 # Because some enforcer rules might check dependency convergence and class duplications
@@ -70,7 +70,7 @@ pages:
   image: busybox:latest
   stage: deploy
   script:
-    - mv target/apidocs public
+    - mv $CI_PROJECT_DIR/target/apidocs $CI_PROJECT_DIR/public
   dependencies:
     - deploy:jdk8
   artifacts:
