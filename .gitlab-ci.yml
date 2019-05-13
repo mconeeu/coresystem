@@ -63,7 +63,7 @@ pages:
   image: busybox:latest
   stage: deploy
   script:
-    - mv $CI_PROJECT_DIR/target/apidocs $CI_PROJECT_DIR/public
+    - mv $CI_PROJECT_DIR/target/site/apidocs $CI_PROJECT_DIR/public
   dependencies:
     - deploy:jdk8
   artifacts:
