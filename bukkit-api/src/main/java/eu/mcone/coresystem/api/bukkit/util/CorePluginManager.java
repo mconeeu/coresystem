@@ -115,7 +115,7 @@ public interface CorePluginManager {
 
     /**
      * returns the set GameProfile world
-     * @return
+     * @return default world name used for all game profiles where no world is set
      */
     String getGameProfileWorld();
 

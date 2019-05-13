@@ -6,14 +6,7 @@ variables:
   # when running from the command line.
   # `installAtEnd` and `deployAtEnd` are only effective with recent version of the corresponding plugins.
   MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
-  MAVEN_JAVADOC_OPTS: "-pl :mcone-coresystem,:core-api,:bungee-api,:bukkit-api,:npc-api"
-  MAVEN_SOURCE_OPTS: "-pl :mcone-coresystem,:core-api,:bungee-api,:bukkit-api,:npc-api"
-
-# Cache downloaded dependencies and plugins between builds and across branches ('key: "$CI_JOB_NAME"')
-cache:
-  key: "$CI_JOB_NAME"
-  paths:
-    - /root/.m2/repository
+  MAVEN_DEPLOY_OPTS: "-pl :mcone-coresystem,:core-api,:bungee-api,:bukkit-api,:npc-api"
 
 # This will only validate and compile stuff and run e.g. maven-enforcer-plugin.
 # Because some enforcer rules might check dependency convergence and class duplications
@@ -55,13 +48,13 @@ verify:merges:jdk8:
 deploy:jdk8:
   stage: test
   script:
-    - 'mvn $MAVEN_CLI_OPTS javadoc:aggregate-jar $MAVEN_JAVADOC_OPTS source:jar $MAVEN_SOURCE_OPTS deploy'
+    - 'mvn $MAVEN_CLI_OPTS javadoc:jar javadoc:aggregate source:jar $MAVEN_DEPLOY_OPTS'
   only:
     - master
   artifacts:
     name: "$CI_PROJECT_PATH-javadoc"
     paths:
-      - $CI_PROJECT_DIR/target/apidocs
+      - $CI_PROJECT_DIR/target/site/apidocs
       - $CI_PROJECT_DIR/*/target/*-javadoc.jar
       - $CI_PROJECT_DIR/*/target/*-sources.jar
   image: maven:3.6.1-jdk-8
