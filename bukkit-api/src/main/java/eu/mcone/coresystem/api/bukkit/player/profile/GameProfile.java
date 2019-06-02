@@ -24,4 +24,6 @@ public abstract class GameProfile {
         }
     }
 
+    public abstract void doSetData(Player player);
+
 }

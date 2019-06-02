@@ -53,14 +53,14 @@ public class MsgCMD extends Command implements TabExecutor {
                 if (t != null) {
                     if (!p.equals(t)) {
                         if (!t.getFriendData().getBlocks().contains(p.getUuid()) || p.hasPermission("system.bungee.chat.private.bypass")) {
-                            if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY) || p.hasPermission("system.bungee.chat.private.bypass")) {
+                            if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY) && !p.hasPermission("system.bungee.chat.private.bypass")) {
                                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§c" + args[0] + "§4 hat private Nachrichten deaktiviert!");
-                            } else if ((t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !t.getFriendData().getFriends().containsKey(p.getUuid())) || p.hasPermission("system.bungee.chat.private.bypass")) {
+                            } else if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !t.getFriendData().getFriends().containsKey(p.getUuid()) && !p.hasPermission("system.bungee.chat.private.bypass")) {
                                 BungeeCoreSystem.getInstance().getMessager().send(sender, "§c" + args[0] + "§4 hat private Nachrichten nur für Freunde aktiviert!");
                             } else {
-                                if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY)) {
+                                if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY) && !t.hasPermission("system.bungee.chat.private.bypass")) {
                                     BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Du hast private Nachrichten §cdeaktiviert§4!");
-                                } else if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !p.getFriendData().getFriends().containsKey(t.getUuid())) {
+                                } else if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !p.getFriendData().getFriends().containsKey(t.getUuid()) && !t.hasPermission("system.bungee.chat.private.bypass")) {
                                     BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Du hast private Nachrichten nur für Freunde aktiviert!");
                                 } else {
                                     StringBuilder msg = new StringBuilder();

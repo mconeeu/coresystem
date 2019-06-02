@@ -190,7 +190,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         sendConsoleMessage("§aRegistering Commands, Events & Scheduler...");
         registerCommand();
-        postRegisterCommand();
         registerEvents();
         loadSchedulers();
 
@@ -223,6 +222,11 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new MaintenanceCMD(),
                 new DataProtectionCMD(),
                 new CoinsCMD(),
+                new PayCMD(),
+
+                new LobbyCMD(),
+                new ServerCMD(),
+                new SendCMD(),
 
                 new NickCMD(),
                 new UnnickCMD(),
@@ -245,18 +249,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new TsCMD(),
                 new DiscordCMD(),
                 new BugreportCMD()
-        );
-    }
-
-    private void postRegisterCommand() {
-        getProxy().getScheduler().schedule(
-                getInstance(),
-                () -> registerCommands(
-                        new ServerCMD(),
-                        new SendCMD()
-                ),
-                1,
-                TimeUnit.SECONDS
         );
     }
 

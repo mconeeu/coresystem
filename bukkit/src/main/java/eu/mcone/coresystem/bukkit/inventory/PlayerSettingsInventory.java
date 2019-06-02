@@ -12,10 +12,6 @@ import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.translation.Language;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -37,31 +33,8 @@ class PlayerSettingsInventory extends CoreInventory {
                 }
         );
 
-        setItem(InventorySlot.ROW_2_SLOT_4, new ItemBuilder(Material.BOOK_AND_QUILL, 1, 0).displayName("§f§lDatenschutzerklärung akzeptiert").create());
-        setItem(InventorySlot.ROW_3_SLOT_4, cp.getSettings().isAcceptedAgbs() ?
-                        new ItemBuilder(Material.INK_SACK, 1, 10).displayName("§a§lAkzeptiert").lore("§7§oWenn du die Datenschutzerklärung", "§7§onicht mehr akzeptierst, musst", "§7§oDu deinen Account löschen!", "", "§8» §f§nLinksklick§8 | §7§oKonto Öffnen").create() :
-                        new ItemBuilder(Material.INK_SACK, 1, 1).displayName("§c§lNicht Akzeptiert").lore("§7§oKlicke zum akzeptieren").create(),
-                e -> {
-                    if (cp.getSettings().isAcceptedAgbs()) {
-                        p.spigot().sendMessage(new ComponentBuilder(CoreSystem.getInstance().getTranslationManager().get("system.prefix.server"))
-                                .append("§7Deinen Account kannst du auf unserer Homepage löschen. Öffne dafür dein ")
-                                .color(ChatColor.GRAY)
-                                .append("Online-Profil")
-                                .color(ChatColor.WHITE)
-                                .bold(true)
-                                .underlined(true)
-                                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7§oBrowser öffnen").create()))
-                                .event(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.mcone.eu/dashboard/account.php")).create());
-                        p.closeInventory();
-                    } else {
-                        cp.getSettings().setAcceptedAgbs(true);
-                        cp.updateSettings();
-                        new PlayerSettingsInventory(p);
-                    }
-                });
-
-        setItem(InventorySlot.ROW_2_SLOT_5, ItemBuilder.createSkullItemFromURL("http://textures.minecraft.net/texture/6f74f58f541342393b3b16787dd051dfacec8cb5cd3229c61e5f73d63947ad", 1).displayName("§f§lSprache").create());
-        setItem(InventorySlot.ROW_3_SLOT_5, ItemBuilder.createSkullItemFromURL(cp.getSettings().getLanguage().getTextureUrl(), 1).displayName("§f§l" + cp.getSettings().getLanguage().getName()).lore("§7§oKlicke zum ändern").create(), e -> {
+        setItem(InventorySlot.ROW_2_SLOT_4, ItemBuilder.createSkullItemFromURL("http://textures.minecraft.net/texture/6f74f58f541342393b3b16787dd051dfacec8cb5cd3229c61e5f73d63947ad", 1).displayName("§f§lSprache").create());
+        setItem(InventorySlot.ROW_3_SLOT_4, ItemBuilder.createSkullItemFromURL(cp.getSettings().getLanguage().getTextureUrl(), 1).displayName("§f§l" + cp.getSettings().getLanguage().getName()).lore("§7§oKlicke zum ändern").create(), e -> {
             switch (cp.getSettings().getLanguage()) {
                 case ENGLISH:
                     cp.getSettings().setLanguage(Language.GERMAN);

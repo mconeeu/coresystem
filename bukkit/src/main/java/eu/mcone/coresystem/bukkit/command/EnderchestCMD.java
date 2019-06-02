@@ -7,24 +7,25 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class EcCMD extends CorePlayerCommand {
+public class EnderchestCMD extends CorePlayerCommand {
 
-    public EcCMD() {
-        super("ec", "system.bukkit.ecsee.self", "ecsee");
+    private final EnderchestManagerGetter apiGetter;
+
+    public EnderchestCMD(EnderchestManagerGetter apiGetter) {
+        super("enderchest", "system.bukkit.ecsee.self", "ec", "ecsee");
+        this.apiGetter = apiGetter;
     }
 
     @Override
     public boolean onPlayerCommand(Player p, String[] args) {
+
         if (args.length == 0) {
-            if (BukkitCoreSystem.getSystem().isCustomEnderchestEnabled()) {
-                CoreSystem.getInstance().getCorePlayer(p).openEnderchest();
-            } else {
-                p.openInventory(p.getEnderChest());
-            }
+            p.openInventory(apiGetter.getEnderchestManager(p).getEnderchest());
 
             if (p.hasPermission("system.bukkit.ecsee.other")) {
                 BukkitCoreSystem.getInstance().getMessager().send(p, "§f§oTipp: §7Benutze §f/ec <player>§7 um die Enderkiste eines anderen Spielers zu sehen!");
@@ -34,11 +35,7 @@ public class EcCMD extends CorePlayerCommand {
                 Player t = Bukkit.getPlayer(args[0]);
 
                 if (t != null) {
-                    p.openInventory(
-                            BukkitCoreSystem.getSystem().isCustomEnderchestEnabled()
-                                    ? CoreSystem.getInstance().getCorePlayer(t).getEnderchest()
-                                    : t.getEnderChest()
-                    );
+                    p.openInventory(apiGetter.getEnderchestManager(t).getEnderchest());
                 } else {
                     BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler §c" + args[0] + "§4 ist nicht online!");
                 }

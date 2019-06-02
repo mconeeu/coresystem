@@ -6,8 +6,9 @@
 package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManager;
+import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
 import eu.mcone.coresystem.api.bukkit.util.Messager;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -21,16 +22,20 @@ import java.util.Map;
 public class ListHomesCMD extends CorePlayerCommand {
 
     private final Messager messager;
+    private final HomeManagerGetter apiGetter;
 
-    public ListHomesCMD(CorePlugin plugin) {
+    public ListHomesCMD(CorePlugin plugin, HomeManagerGetter apiGetter) {
         super("listhomes", null, "listhome", "homelist", "lhome", "lhomes");
         this.messager = plugin.getMessager();
+        this.apiGetter = apiGetter;
     }
 
     @Override
     public boolean onPlayerCommand(Player p, String[] args) {
+        HomeManager api = apiGetter.getHomeManager(p);
+
         if (args.length == 0) {
-            Map<String, Location> homes = CoreSystem.getInstance().getCorePlayer(p).getHomes();
+            Map<String, Location> homes = api.getHomes();
 
             if (homes.size() > 0) {
                 messager.send(p, "§7Du hast folgende Homes auf diesem Server: ");

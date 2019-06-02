@@ -18,7 +18,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.bson.Document;
 
-import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -27,7 +27,11 @@ import static com.mongodb.client.model.Updates.set;
 
 public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api.core.player.GlobalOfflineCorePlayer {
 
-    public static final DecimalFormat COINS_FORMAT = new DecimalFormat("#.###");
+    private static final NumberFormat NUMBERFORMAT = NumberFormat.getInstance();
+
+    static {
+        NUMBERFORMAT.setGroupingUsed(true);
+    }
 
     protected final GlobalCoreSystem instance;
     protected boolean isNew = false;
@@ -177,7 +181,7 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
 
     @Override
     public String getFormattedCoins() {
-        return COINS_FORMAT.format(coins);
+        return NUMBERFORMAT.format(coins);
     }
 
     @Override

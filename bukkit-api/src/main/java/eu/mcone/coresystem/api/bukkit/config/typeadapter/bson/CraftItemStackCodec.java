@@ -54,7 +54,7 @@ public class CraftItemStackCodec implements Codec<CraftItemStack> {
             repairPenalty = document.getInteger("repairPenalty");
         }
 
-        ItemStack stuff = new ItemStack(material, 1, document.getInteger("durability").shortValue());
+        ItemStack stuff = new ItemStack(material, document.getInteger("amount"), document.getInteger("durability").shortValue());
         if ((material == Material.BOOK_AND_QUILL || material == Material.WRITTEN_BOOK) && document.containsKey("book-meta")) {
             BookMeta meta = ItemStackTypeAdapterUtils.getBookMeta(document.get("book-meta", Document.class));
             stuff.setItemMeta(meta);
@@ -141,6 +141,7 @@ public class CraftItemStackCodec implements Codec<CraftItemStack> {
 
         document.append("material", itemStack.getType().name());
         document.append("durability", itemStack.getDurability());
+        document.append("amount", itemStack.getAmount());
         if (name != null) {
             document.append("name", name);
         }

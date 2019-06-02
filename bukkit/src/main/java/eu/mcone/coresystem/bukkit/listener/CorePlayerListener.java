@@ -6,7 +6,6 @@
 package eu.mcone.coresystem.bukkit.listener;
 
 import com.mojang.authlib.properties.Property;
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
@@ -15,16 +14,16 @@ import eu.mcone.coresystem.bukkit.player.BukkitCorePlayer;
 import eu.mcone.coresystem.bukkit.player.NickManager;
 import eu.mcone.coresystem.bukkit.player.PermissibleBase;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.lang.reflect.Field;
@@ -70,25 +69,6 @@ public class CorePlayerListener implements Listener {
             teleports.remove(p.getUniqueId());
 
             BukkitCoreSystem.getSystem().getMessager().send(p, "§4Der Teleportvorgang wurde abgebrochen, weil du dich bewegt hast!");
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOW)
-    public void onInteract(PlayerInteractEvent e) {
-        if (BukkitCoreSystem.getSystem().isCustomEnderchestEnabled()
-                && e.getAction().equals(Action.RIGHT_CLICK_BLOCK)
-                && e.getClickedBlock() != null
-                && e.getClickedBlock().getType().equals(Material.ENDER_CHEST)
-        ) {
-            e.setCancelled(true);
-            CoreSystem.getInstance().getCorePlayer(e.getPlayer()).openEnderchest();
-        }
-    }
-
-    @EventHandler
-    public void onInventoryClose(InventoryCloseEvent e) {
-        if (e.getInventory().getTitle().equals("§7Deine Enderkiste")) {
-            BukkitCoreSystem.getSystem().getPlayerDataStorage().updateEnderchestItems(e.getPlayer().getUniqueId(), e.getInventory());
         }
     }
 

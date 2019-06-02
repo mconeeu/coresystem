@@ -23,11 +23,11 @@ public final class PermissionChangeEvent extends Event {
     @Getter
     private static final HandlerList handlerList = new HandlerList();
 
-    private Kind kind;
+    private Type type;
     private final CorePlayer player;
     private Set<Group> groups;
 
-    public enum Kind {
+    public enum Type {
         USER_PERMISSION,
         GROUP_PERMISSION,
         GROUP_CHANGE
@@ -37,9 +37,9 @@ public final class PermissionChangeEvent extends Event {
         this.player = player;
 
         if (data.length >= 1) {
-            kind = Kind.valueOf(data[0]);
+            type = Type.valueOf(data[0]);
 
-            if (!kind.equals(Kind.USER_PERMISSION)) {
+            if (!type.equals(Type.USER_PERMISSION)) {
                 groups = new HashSet<>();
                 JsonArray array = CoreSystem.getInstance().getJsonParser().parse(data[1]).getAsJsonArray();
 

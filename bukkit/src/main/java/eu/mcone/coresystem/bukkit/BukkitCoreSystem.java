@@ -23,6 +23,8 @@ import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
+import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
 import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
 import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
@@ -45,7 +47,10 @@ import eu.mcone.coresystem.bukkit.player.BukkitCorePlayer;
 import eu.mcone.coresystem.bukkit.player.BukkitOfflineCorePlayer;
 import eu.mcone.coresystem.bukkit.player.CoreAfkManager;
 import eu.mcone.coresystem.bukkit.player.NickManager;
-import eu.mcone.coresystem.bukkit.util.*;
+import eu.mcone.coresystem.bukkit.util.ActionBar;
+import eu.mcone.coresystem.bukkit.util.PluginManager;
+import eu.mcone.coresystem.bukkit.util.TablistInfo;
+import eu.mcone.coresystem.bukkit.util.Title;
 import eu.mcone.coresystem.bukkit.world.WorldManager;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.PermissionManager;
@@ -112,8 +117,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private JsonParser jsonParser;
 
     @Getter
-    private CorePlayerDataStorage playerDataStorage;
-    @Getter
     private Map<UUID, BukkitCorePlayer> corePlayers;
     @Getter
     private boolean cloudsystemAvailable;
@@ -174,7 +177,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 .registerTypeAdapter(CraftItemStack.class, new CraftItemStackTypeAdapter())
                 .create();
         jsonParser = new JsonParser();
-        playerDataStorage = new CorePlayerDataStorage(this);
 
         cloudsystemAvailable = checkIfCloudSystemAvailable();
         sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
@@ -281,7 +283,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new GamemodeCMD(),
                 new HealCMD(),
                 new InvCMD(),
-                new EcCMD(),
                 new TpCMD(),
                 new TphereCMD(),
                 new TpallCMD(),
@@ -408,8 +409,14 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public void enableHomeSystem(CorePlugin plugin, int cooldown) {
-        plugin.registerCommands(new HomeCMD(plugin, cooldown), new SethomeCMD(plugin), new DelhomeCMD(plugin), new ListHomesCMD(plugin));
+    public void enableHomeSystem(CorePlugin plugin, HomeManagerGetter apiGetter, int cooldown) {
+        plugin.registerCommands(new HomeCMD(plugin, apiGetter, cooldown), new SethomeCMD(plugin, apiGetter), new DelhomeCMD(plugin, apiGetter), new ListHomesCMD(plugin, apiGetter));
+    }
+
+    @Override
+    public void enableEnderchestSystem(EnderchestManagerGetter apiGetter) {
+        registerCommands(new EnderchestCMD(apiGetter));
+        registerEvents(new EnderchestListener(apiGetter));
     }
 
     @Override

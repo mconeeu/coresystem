@@ -33,7 +33,7 @@ public class PremiumCheck implements Runnable {
 
                     p.removeGroup(Group.getGroupById(premiumEntry.getInteger("group")));
                     if (p instanceof BungeeCorePlayer)
-                        ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.GROUP_CHANGE, (BungeeCorePlayer) p, p.getGroups()));
+                        ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Type.GROUP_CHANGE, (BungeeCorePlayer) p, p.getGroups()));
                 } catch (PlayerNotResolvedException e) {
                     e.printStackTrace();
                 }

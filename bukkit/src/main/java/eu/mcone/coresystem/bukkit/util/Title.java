@@ -14,13 +14,7 @@ import org.bukkit.entity.Player;
 public class Title implements CoreTitle {
 
     private String title, subtitle;
-    private int fadeIn, stay, fadeOut;
-
-    public Title() {
-        this.fadeIn = -1;
-        this.stay = -1;
-        this.fadeOut = -1;
-    }
+    private int fadeIn = 1, stay = 5, fadeOut = 1;
 
     @Override
     public Title title(String title) {
@@ -66,7 +60,7 @@ public class Title implements CoreTitle {
 
     @Override
     public Title send(Player p) {
-        if ((fadeIn > 0 && stay > 0 && fadeOut > 0) && (title != null || subtitle != null)) {
+        if (title != null || subtitle != null) {
             if (title != null) {
                 IChatBaseComponent chatTitle = IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + title + "\"}");
 

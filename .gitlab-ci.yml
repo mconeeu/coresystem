@@ -12,6 +12,8 @@ variables:
 # Because some enforcer rules might check dependency convergence and class duplications
 # we use `test-compile` here instead of `validate`, so the correct classpath is picked up.
 .validate: &validate
+  tags:
+    - maven
   stage: build
   script:
     - 'mvn $MAVEN_CLI_OPTS test-compile'
@@ -19,6 +21,8 @@ variables:
 # For merge requests do not `deploy` but only run `verify`.
 # See https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html
 .verify: &verify
+  tags:
+    - maven
   stage: test
   script:
     - 'mvn $MAVEN_CLI_OPTS verify'
@@ -46,6 +50,8 @@ verify:merges:jdk8:
 # For `master` branch run `mvn deploy` automatically.
 # Uses mounted settings.xml for authenticating with mcone-repo
 deploy:jdk8:
+  tags:
+    - maven
   stage: test
   script:
     - 'mvn $MAVEN_CLI_OPTS javadoc:jar javadoc:aggregate source:jar $MAVEN_DEPLOY_OPTS'
@@ -63,7 +69,7 @@ pages:
   image: busybox:latest
   stage: deploy
   script:
-    - mv $CI_PROJECT_DIR/target/site/apidocs $CI_PROJECT_DIR/public
+    - 'mv $CI_PROJECT_DIR/target/site/apidocs $CI_PROJECT_DIR/public'
   dependencies:
     - deploy:jdk8
   artifacts:

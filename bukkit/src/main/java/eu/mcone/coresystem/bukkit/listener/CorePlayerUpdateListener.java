@@ -27,7 +27,7 @@ public class CorePlayerUpdateListener implements Listener {
     public void onPermissionChange(PermissionChangeEvent e) {
         final CorePlayer p = e.getPlayer();
 
-        if (e.getKind() == PermissionChangeEvent.Kind.GROUP_PERMISSION) {
+        if (e.getType() == PermissionChangeEvent.Type.GROUP_PERMISSION) {
             Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
                 BukkitCoreSystem.getInstance().getPermissionManager().reload();
 
@@ -45,7 +45,7 @@ public class CorePlayerUpdateListener implements Listener {
                     }
                 }
             });
-        } else if (e.getKind() == PermissionChangeEvent.Kind.USER_PERMISSION) {
+        } else if (e.getType() == PermissionChangeEvent.Type.USER_PERMISSION) {
             if (p!=null) {
                 Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
                     BukkitCoreSystem.getInstance().getPermissionManager().reload();
@@ -53,7 +53,7 @@ public class CorePlayerUpdateListener implements Listener {
                     BukkitCoreSystem.getInstance().getMessager().send(p.bukkit(), "§7§oDeine Permissions wurden upgedated!");
                 });
             }
-        } else if (e.getKind() == PermissionChangeEvent.Kind.GROUP_CHANGE) {
+        } else if (e.getType() == PermissionChangeEvent.Type.GROUP_CHANGE) {
             if (p != null) {
                 ((GlobalCorePlayer) p).setGroupSet(e.getGroups());
                 p.reloadPermissions();

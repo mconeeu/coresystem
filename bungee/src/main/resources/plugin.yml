@@ -2,3 +2,5 @@ name: MCONE-BungeeCoreSystem
 main: eu.mcone.coresystem.bungee.BungeeCoreSystem
 version: ${project.version}
 author: Dominik Lippl & Rufus Maiwald
+
+softDepends: ["cmd_server", "cmd_send"]

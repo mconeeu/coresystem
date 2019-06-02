@@ -12,9 +12,6 @@ import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-
-import java.util.Map;
 
 public interface CorePlayer extends GlobalCorePlayer {
 
@@ -56,49 +53,11 @@ public interface CorePlayer extends GlobalCorePlayer {
     SkinInfo getSkin();
 
     /**
-     * opens the CoreSystems custom encderchest with variable size for the player
-     */
-    void openEnderchest();
-
-    /**
      * teleports a player to a specific location with a waiting cooldown where the player is not allowed to move
      * @param location location to where the player should be teleported
      * @param cooldown the cooldown the player must not move in seconds
      */
     void teleportWithCooldown(Location location, int cooldown);
-
-    /**
-     * returns the location for a home with a specific name
-     * @param name home name
-     * @return home Location
-     */
-    Location getHome(String name);
-
-    /**
-     * returns all Homes of the player (set with /sethome <home> or /home set <home>
-     * @return all homes with name and location in a map
-     */
-    Map<String, Location> getHomes();
-
-    /**
-     * adds a new home or updates an existing home
-     * @param name name of the home
-     * @param location location
-     */
-    void setHome(String name, Location location);
-
-    /**
-     * removes an existing home
-     * @param name name of the home
-     * @return true if home was removed, false if there was no home with this name
-     */
-    boolean removeHome(String name);
-
-    /**
-     * returns the CoreSystems custom Enderchest Inventory with variable size
-     * @return Inventory with players enderchest items
-     */
-    Inventory getEnderchest();
 
     /**
      * returns if the player afk

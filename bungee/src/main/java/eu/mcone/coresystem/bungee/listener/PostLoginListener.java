@@ -36,6 +36,7 @@ public class PostLoginListener implements Listener {
 
         BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "\n\n\n\n§8[§7§l!§8] §3MC ONE §8» §7§o" + getRandomWelcomeMSG(p, cp.isNew()) + ", §f§o" + p.getName() + "§7§o!");
         if (cp.isNew()) {
+            ProxyServer.getInstance().getPluginManager().dispatchCommand(p, "datenschutz");
             BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "§8[§7§l!§8] §3MC ONE §8» §2Als kleines Willkommensgeschenk bekommst du 20 Coins gutgeschrieben!");
         } else {
             ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getSystem(), () ->
@@ -49,9 +50,6 @@ public class PostLoginListener implements Listener {
             BungeeCoreSystem.getInstance().getMessager().send(p, "§7Du hast noch §f" + requests.size() + " §7offene Freundschaftsanfrage(n)!");
             BungeeCoreSystem.getInstance().getMessager().send(p, "§7Benutze §f/friend req §7zum einsehen!");
         }
-
-        if (!cp.getSettings().isAcceptedAgbs())
-            ProxyServer.getInstance().getPluginManager().dispatchCommand(p, "datenschutz");
 
         Title title = ProxyServer.getInstance().createTitle();
         title.title(new TextComponent("§fWillkommen auf §3§lMC ONE"));

@@ -16,8 +16,8 @@ import lombok.Setter;
 @Getter @Setter
 public final class PlayerSettings {
 
-    private boolean enableFriendRequests = true, acceptedAgbs = false;
-    private Language language;
+    private boolean enableFriendRequests = true;
+    private Language language = Language.GERMAN;
     private Sender privateMessages = Sender.FRIENDS, partyInvites = Sender.ALL;
 
     public enum Sender {

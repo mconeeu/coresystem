@@ -29,7 +29,7 @@ public class CorePlayerUpdateListener implements Listener {
 
     @EventHandler
     public void onPermissionChange(PermissionChangeEvent e) {
-        if (e.getKind() == PermissionChangeEvent.Kind.GROUP_PERMISSION) {
+        if (e.getType() == PermissionChangeEvent.Type.GROUP_PERMISSION) {
             ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
                 BungeeCoreSystem.getInstance().getPermissionManager().reload();
 
@@ -56,7 +56,7 @@ public class CorePlayerUpdateListener implements Listener {
                     CoreSystem.getInstance().getChannelHandler().createInfoRequest(p, "EVENT", "PermissionChangeEvent", "GROUP_PERMISSION;["+target.getId()+"]");
                 }
             });
-        } else if (e.getKind() == PermissionChangeEvent.Kind.USER_PERMISSION) {
+        } else if (e.getType() == PermissionChangeEvent.Type.USER_PERMISSION) {
             final CorePlayer p = e.getPlayer();
 
             if (p != null) {
@@ -67,7 +67,7 @@ public class CorePlayerUpdateListener implements Listener {
                     CoreSystem.getInstance().getChannelHandler().createInfoRequest(p.bungee(), "EVENT", "PermissionChangeEvent", "USER_PERMISSION;");
                 });
             }
-        } else if (e.getKind() == PermissionChangeEvent.Kind.GROUP_CHANGE) {
+        } else if (e.getType() == PermissionChangeEvent.Type.GROUP_CHANGE) {
             final CorePlayer p = e.getPlayer();
 
             if (p != null) {

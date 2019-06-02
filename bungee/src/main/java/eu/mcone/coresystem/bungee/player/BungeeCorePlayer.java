@@ -145,7 +145,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
 
     private void updateDatabaseGroupsAsync(Set<Group> groupSet) {
         instance.runAsync(() -> {
-            ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Kind.GROUP_CHANGE, this, groupSet));
+            ProxyServer.getInstance().getPluginManager().callEvent(new PermissionChangeEvent(PermissionChangeEvent.Type.GROUP_CHANGE, this, groupSet));
             ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(
                     eq("uuid", uuid.toString()),
                     set("groups", instance.getPermissionManager().getGroupIDs(groupSet))

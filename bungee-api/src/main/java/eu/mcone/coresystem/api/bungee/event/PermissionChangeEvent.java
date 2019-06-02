@@ -19,24 +19,24 @@ import java.util.Set;
 @AllArgsConstructor
 public final class PermissionChangeEvent extends Event {
 
-    private final Kind kind;
+    private final Type type;
     private final CorePlayer player;
     private final Set<Group> groups;
 
-    public enum Kind {
+    public enum Type {
         USER_PERMISSION,
         GROUP_PERMISSION,
         GROUP_CHANGE
     }
 
-    public PermissionChangeEvent(Kind k, CorePlayer p) {
-        this.kind = k;
+    public PermissionChangeEvent(Type k, CorePlayer p) {
+        this.type = k;
         this.player = p;
         this.groups = null;
     }
 
-    public PermissionChangeEvent(Kind k, Group group) {
-        this.kind = k;
+    public PermissionChangeEvent(Type k, Group group) {
+        this.type = k;
         this.player = null;
         this.groups = new HashSet<>(Collections.singletonList(group));
     }

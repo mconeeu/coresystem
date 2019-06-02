@@ -28,7 +28,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.Plugin;
 
@@ -52,9 +51,6 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     @Getter
     private boolean vanished;
     private PacketListener packetListener;
-    private Map<String, Location> homes;
-    @Getter
-    private Inventory enderchest;
     @Getter
     private PermissionAttachment permissionAttachment;
 
@@ -63,8 +59,6 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
         this.stats = new HashMap<>();
         this.skin = skinInfo;
         this.vanished = false;
-        this.homes = new HashMap<>(BukkitCoreSystem.getSystem().getPlayerDataStorage().getHomes(this.uuid));
-        this.enderchest = BukkitCoreSystem.getSystem().getPlayerDataStorage().getEnderchestItems(p);
 
         updatePermissionAttachment(p);
 
@@ -122,11 +116,6 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     }
 
     @Override
-    public void openEnderchest() {
-        bukkit().openInventory(enderchest);
-    }
-
-    @Override
     public void teleportWithCooldown(Location location, int cooldown) {
         Player p = bukkit();
 
@@ -139,34 +128,6 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
             }, cooldown * 20));
         } else {
             p.teleport(location);
-        }
-    }
-
-    @Override
-    public Map<String, Location> getHomes() {
-        return new HashMap<>(homes);
-    }
-
-    @Override
-    public Location getHome(String name) {
-        return homes.getOrDefault(name, null);
-    }
-
-    @Override
-    public void setHome(String name, Location location) {
-        this.homes.put(name, location);
-        BukkitCoreSystem.getSystem().getPlayerDataStorage().setHome(uuid, name, location);
-    }
-
-    @Override
-    public boolean removeHome(String name) {
-        if (this.homes.containsKey(name)) {
-            this.homes.remove(name);
-            BukkitCoreSystem.getSystem().getPlayerDataStorage().removeHome(uuid, name);
-
-            return true;
-        } else {
-            return false;
         }
     }
 

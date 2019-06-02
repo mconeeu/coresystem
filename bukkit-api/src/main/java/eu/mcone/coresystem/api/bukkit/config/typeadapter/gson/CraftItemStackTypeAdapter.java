@@ -47,7 +47,7 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
             repairPenalty = jsonObject.get("repairPenalty").getAsInt();
         }
 
-        ItemStack stuff = new ItemStack(material, 1, (short) jsonObject.get("durability").getAsInt());
+        ItemStack stuff = new ItemStack(material, jsonObject.get("amount").getAsInt(), (short) jsonObject.get("durability").getAsInt());
         if ((material == Material.BOOK_AND_QUILL || material == Material.WRITTEN_BOOK) && jsonObject.has("book-meta")) {
             BookMeta meta = ItemStackTypeAdapterUtils.getBookMeta(context.deserialize(jsonObject.get("book-meta"), Map.class));
             stuff.setItemMeta(meta);
@@ -132,6 +132,7 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
 
         values.addProperty("material", itemStack.getType().name());
         values.addProperty("durability", itemStack.getDurability());
+        values.addProperty("amount", itemStack.getAmount());
         if (name != null) {
             values.addProperty("name", name);
         }

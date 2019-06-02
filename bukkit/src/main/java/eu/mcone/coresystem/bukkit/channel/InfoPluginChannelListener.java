@@ -84,6 +84,9 @@ public class InfoPluginChannelListener implements PluginMessageListener {
                     ));
                     break;
                 }
+                case "CMD": {
+                    Bukkit.dispatchCommand(p, in.readUTF());
+                }
             }
 
         } catch (IOException e) {

@@ -26,6 +26,19 @@ permissions:
                 description: Allows the player to see inventories from all players
               system.bukkit.invsee.modify.other:
                 description: Allows the player to modify inventories from all players
+          system.bukkit.enderchest:
+            description: Basic Permission for all Enderchest sizes
+            children:
+              system.bukkit.enderchest.xs:
+                description: Sets the player a xs Enderchest
+              system.bukkit.enderchest.s:
+                description: Sets the player a s Enderchest
+              system.bukkit.enderchest.m:
+                description: Sets the player a m Enderchest
+              system.bukkit.enderchest.l:
+                description: Sets the player a l Enderchest
+              system.bukkit.enderchest.xl:
+                description: Sets the player a xl Enderchest
           system.bukkit.ecsee:
             description: Basic Permission for /ecsee
             children:

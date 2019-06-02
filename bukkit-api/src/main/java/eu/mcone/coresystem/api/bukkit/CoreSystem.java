@@ -15,6 +15,8 @@ import eu.mcone.coresystem.api.bukkit.player.AfkManager;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.NickManager;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
+import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
 import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
 import eu.mcone.coresystem.api.bukkit.util.CorePluginManager;
 import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
@@ -215,7 +217,10 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @param plugin the plugin for message prefix
      * @param cooldown cooldown in seconds where the must not move until he get teleported, use 0 for no cooldown
      */
-    public abstract void enableHomeSystem(CorePlugin plugin, int cooldown);
+    public abstract void enableHomeSystem(CorePlugin plugin, HomeManagerGetter apiGetter, int cooldown);
+
+
+    public abstract void enableEnderchestSystem(EnderchestManagerGetter apiGetter);
 
     /**
      * allows all players to use the /tpa /tpaccept /tpdeny commands
