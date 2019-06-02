@@ -54,7 +54,8 @@ deploy:jdk8:
     - maven
   stage: test
   script:
-    - 'mvn $MAVEN_CLI_OPTS javadoc:jar javadoc:aggregate source:jar $MAVEN_DEPLOY_OPTS'
+    - 'mvn install'
+    - 'mvn $MAVEN_CLI_OPTS javadoc:jar javadoc:aggregate source:jar deploy $MAVEN_DEPLOY_OPTS'
   only:
     - master
   artifacts:
