@@ -43,7 +43,10 @@ public class PacketListener extends MessageToMessageDecoder<Packet<?>> {
                 NPC npc = BukkitCoreSystem.getSystem().getNpcManager().getNPC((int) ReflectionManager.getValue(packet, "a"));
 
                 if (npc != null) {
-                    Bukkit.getPluginManager().callEvent(new NpcInteractEvent(player, npc, packet.a()));
+                    Bukkit.getScheduler().runTask(
+                            BukkitCoreSystem.getSystem(),
+                            () -> Bukkit.getPluginManager().callEvent(new NpcInteractEvent(player, npc, packet.a()))
+                    );
                 }
             }
         }

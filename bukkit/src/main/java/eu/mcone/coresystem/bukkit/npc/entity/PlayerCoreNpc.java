@@ -12,12 +12,12 @@ import eu.mcone.coresystem.api.bukkit.npc.data.PlayerNpcData;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
-import eu.mcone.coresystem.api.bukkit.npc.enums.NpcVisibilityMode;
+import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.core.exception.NpcCreateException;
 import eu.mcone.coresystem.api.core.exception.SkinNotFoundException;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.npc.CoreNPC;
-import eu.mcone.coresystem.api.bukkit.npc.NpcModule;
 import eu.mcone.coresystem.bukkit.npc.util.ReflectionManager;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.*;
@@ -43,7 +43,7 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     @Getter
     private GameProfile profile;
 
-    protected PlayerCoreNpc(NpcData data, NpcVisibilityMode visibilityMode, Player[] players) {
+    protected PlayerCoreNpc(NpcData data, ListMode visibilityMode, Player[] players) {
         super(PlayerNpcData.class, data, visibilityMode, players);
         this.bedLocation = new Location(data.getLocation().bukkit().getWorld(), 1, 1, 1);
     }
@@ -54,10 +54,10 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
             switch (entityData.getSkinType()) {
                 case CUSTOM:
                 case DATABASE:
-                    this.skin = NpcModule.getInstance().getCoreSystem().getPlayerUtils().getSkinFromSkinDatabase(entityData.getSkinName());
+                    this.skin = BukkitCoreSystem.getInstance().getPlayerUtils().getSkinFromSkinDatabase(entityData.getSkinName());
                     break;
                 case PLAYER:
-                    this.skin = NpcModule.getInstance().getCoreSystem().getPlayerUtils().getSkinInfo(entityData.getSkinName());
+                    this.skin = BukkitCoreSystem.getInstance().getPlayerUtils().getSkinInfo(entityData.getSkinName());
                     break;
             }
         } catch (SkinNotFoundException e) {
@@ -84,10 +84,10 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
                 switch (entityData.getSkinType()) {
                     case CUSTOM:
                     case DATABASE:
-                        skin = NpcModule.getInstance().getCoreSystem().getPlayerUtils().getSkinFromSkinDatabase(entityData.getSkinName());
+                        skin = BukkitCoreSystem.getInstance().getPlayerUtils().getSkinFromSkinDatabase(entityData.getSkinName());
                         break;
                     case PLAYER:
-                        skin = NpcModule.getInstance().getCoreSystem().getPlayerUtils().getSkinInfo(entityData.getSkinName());
+                        skin = BukkitCoreSystem.getInstance().getPlayerUtils().getSkinInfo(entityData.getSkinName());
                         break;
                 }
 

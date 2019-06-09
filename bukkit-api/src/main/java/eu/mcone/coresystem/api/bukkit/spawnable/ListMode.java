@@ -3,9 +3,9 @@
  * You are not allowed to decompile the code
  */
 
-package eu.mcone.coresystem.api.bukkit.npc.enums;
+package eu.mcone.coresystem.api.bukkit.spawnable;
 
-public enum NpcVisibilityMode {
+public enum ListMode {
 
     BLACKLIST, WHITELIST
 

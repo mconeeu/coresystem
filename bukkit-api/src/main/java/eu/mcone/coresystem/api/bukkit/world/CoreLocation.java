@@ -3,7 +3,7 @@
  * You are not allowed to decompile the code
  */
 
-package eu.mcone.coresystem.api.bukkit.npc;
+package eu.mcone.coresystem.api.bukkit.world;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

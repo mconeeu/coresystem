@@ -5,13 +5,14 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
+import eu.mcone.coresystem.bukkit.hologram.CoreHologram;
 import eu.mcone.coresystem.bukkit.hologram.CoreHologramManager;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 @RequiredArgsConstructor
 public class HologramListener implements Listener {
@@ -20,15 +21,21 @@ public class HologramListener implements Listener {
 
     @EventHandler
     public void on(PlayerJoinEvent e) {
-        api.setHolograms(e.getPlayer());
+        for (CoreHologram holo : api.getHologramSet()) {
+            holo.playerJoined(e.getPlayer());
+        }
+    }
+
+    @EventHandler
+    public void on(PlayerQuitEvent e) {
+        for (CoreHologram holo : api.getHologramSet()) {
+            holo.playerLeaved(e.getPlayer());
+        }
     }
 
     @EventHandler
     public void on(PlayerChangedWorldEvent e) {
-        Player p = e.getPlayer();
-
-        api.unsetHolograms(p);
-        api.setHolograms(p);
+        api.reload(e.getPlayer());
     }
 
 }

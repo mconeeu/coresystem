@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.api.bukkit.event;
 
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.api.core.gamemode.Gamemode;
+import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import lombok.Getter;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

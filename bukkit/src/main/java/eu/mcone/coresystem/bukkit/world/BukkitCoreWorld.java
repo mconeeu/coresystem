@@ -11,7 +11,7 @@ import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
-import eu.mcone.coresystem.api.bukkit.npc.CoreLocation;
+import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.annotation.DontObfuscate;
@@ -119,7 +119,7 @@ public class BukkitCoreWorld implements CoreWorld {
     public List<Hologram> getHolograms() {
         List<Hologram> result = new ArrayList<>();
 
-        for (Hologram hologram : CoreSystem.getInstance().getHologramManager().getHolograms()) {
+        for (Hologram hologram : BukkitCoreSystem.getSystem().getHologramManager().getHologramSet()) {
             if (hologram.getData().getLocation().bukkit().getWorld().getName().equals(name)) result.add(hologram);
         }
 

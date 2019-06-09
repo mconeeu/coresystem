@@ -60,9 +60,13 @@ import eu.mcone.coresystem.core.util.CoreCooldownSystem;
 import eu.mcone.coresystem.core.util.MoneyUtil;
 import eu.mcone.networkmanager.core.api.database.Database;
 import eu.mcone.networkmanager.core.database.MongoConnection;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
+import net.minecraft.server.v1_8_R3.PacketDataSerializer;
+import net.minecraft.server.v1_8_R3.PacketPlayOutCustomPayload;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -159,8 +163,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         database2 = mongoConnection.getDatabase(Database.STATS);
         database3 = mongoConnection.getDatabase(Database.DATA);
         database4 = mongoConnection.getDatabase(Database.CLOUD);
-
-        System.out.println(database1.getCodecRegistry().get(CraftItemStack.class));
 
         pluginManager = new PluginManager();
         moneyUtil = new MoneyUtil(this, database1) {
@@ -382,6 +384,21 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Override
     public CoreAnvilInventory createAnvilInventory(AnvilClickEventHandler handler) {
         return new AnvilInventory(handler);
+    }
+
+    @Override
+    public void openBook(Player player, ItemStack book) {
+        int slot = player.getInventory().getHeldItemSlot();
+        ItemStack old = player.getInventory().getItem(slot);
+        player.getInventory().setItem(slot, book);
+
+        ByteBuf buf = Unpooled.buffer(256);
+        buf.setByte(0, (byte) 0);
+        buf.writerIndex(1);
+
+        PacketPlayOutCustomPayload packet = new PacketPlayOutCustomPayload("MC|BOpen", new PacketDataSerializer(buf));
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+        player.getInventory().setItem(slot, old);
     }
 
     @Override

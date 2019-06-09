@@ -174,4 +174,5 @@ public class PluginManager implements CorePluginManager {
     public void setGameProfileWorld(CoreWorld world) {
         gameProfileWorld = world.getName();
     }
+
 }

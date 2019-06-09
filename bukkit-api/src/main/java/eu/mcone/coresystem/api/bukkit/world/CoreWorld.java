@@ -6,7 +6,6 @@
 package eu.mcone.coresystem.api.bukkit.world;
 
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
-import eu.mcone.coresystem.api.bukkit.npc.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import org.bukkit.Difficulty;
 import org.bukkit.Location;

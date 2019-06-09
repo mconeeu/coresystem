@@ -30,6 +30,7 @@ import eu.mcone.coresystem.api.core.labymod.LabyModAPI;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -156,6 +157,13 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return new ActionBar
      */
     public abstract CoreActionBar createActionBar();
+
+    /**
+     * opens a predefined book for a player
+     * @param player player
+     * @param book book
+     */
+    public abstract void openBook(Player player, ItemStack book);
 
     /**
      * creates a new AnvilInventory

@@ -5,7 +5,7 @@
 
 package eu.mcone.coresystem.api.bukkit.hologram;
 
-import eu.mcone.coresystem.api.bukkit.npc.CoreLocation;
+import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

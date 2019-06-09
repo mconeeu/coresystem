@@ -5,8 +5,8 @@
 
 package eu.mcone.coresystem.bukkit.npc;
 
+import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
-import eu.mcone.coresystem.api.bukkit.npc.enums.NpcVisibilityMode;
 import eu.mcone.coresystem.bukkit.npc.entity.PlayerCoreNpc;
 import lombok.Getter;
 import org.bukkit.entity.EntityType;
@@ -29,9 +29,9 @@ public enum NpcType {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends CoreNPC<?>> T construct(NpcData data, NpcVisibilityMode visibilityMode, Player... players) {
+    public <T extends CoreNPC<?>> T construct(NpcData data, ListMode visibilityMode, Player... players) {
         try {
-            Constructor<?> constructor = npcClass.getDeclaredConstructor(NpcData.class, NpcVisibilityMode.class, Player[].class);
+            Constructor<?> constructor = npcClass.getDeclaredConstructor(NpcData.class, ListMode.class, Player[].class);
             constructor.setAccessible(true);
 
             return (T) constructor.newInstance(data, visibilityMode, players);

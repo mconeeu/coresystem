@@ -5,7 +5,7 @@
 
 package eu.mcone.coresystem.api.bukkit.player;
 
-import eu.mcone.coresystem.api.core.gamemode.Gamemode;
+import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 
 public interface Stats {
 

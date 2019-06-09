@@ -7,7 +7,7 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
-import eu.mcone.coresystem.api.bukkit.npc.CoreLocation;
+import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import net.md_5.bungee.api.ChatColor;

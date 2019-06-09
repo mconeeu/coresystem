@@ -68,6 +68,19 @@ public final class ItemBuilder {
         itemMeta = itemStack.getItemMeta();
     }
 
+    private ItemBuilder(ItemStack itemStack) {
+        this.itemStack = itemStack;
+        this.itemMeta = itemStack.getItemMeta();
+    }
+
+    public static ItemBuilder wrap(ItemStack itemStack) {
+        if (!itemStack.hasItemMeta()) {
+            throw new IllegalStateException("missing ItemMeta!");
+        } else {
+            return new ItemBuilder(itemStack);
+        }
+    }
+
     /**
      * create ItemBuilder for SkullItem by owner
      * @param owner owner of the skull

@@ -6,12 +6,12 @@
 package eu.mcone.coresystem.bukkit.hologram;
 
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
+import eu.mcone.coresystem.bukkit.util.PlayerListModeToggleUtil;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
@@ -21,69 +21,47 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CoreHologram implements eu.mcone.coresystem.api.bukkit.hologram.Hologram {
+public class CoreHologram extends PlayerListModeToggleUtil implements eu.mcone.coresystem.api.bukkit.hologram.Hologram {
 
     private static final double DISTANCE = 0.25;
 
     private final List<EntityArmorStand> entitylist;
-    private List<Player> playerList;
-
     @Getter
     private HologramData data;
 
-    public CoreHologram(HologramData data) {
+    public CoreHologram(HologramData data, ListMode listMode, Player... players) {
         this.entitylist = new ArrayList<>();
-        this.playerList = new ArrayList<>();
-
         this.data = data;
-        this.create();
+
+        create();
+        togglePlayerVisibility(listMode, players);
     }
 
     @Override
-    public void showPlayerTemp(final Player p, final int Time) {
-        this.showPlayer(p);
-        Bukkit.getScheduler().runTaskLater(BukkitCoreSystem.getInstance(), () -> CoreHologram.this.hidePlayer(p), (long)Time);
-    }
-
-    @Override
-    public void showAllTemp(final int Time) {
-        this.showAll();
-        Bukkit.getScheduler().runTaskLater(BukkitCoreSystem.getInstance(), CoreHologram.this::hideAll, (long)Time);
-    }
-
-    @Override
-    public void showPlayer(final Player p) {
-        if (!playerList.contains(p)) {
+    public void spawn(final Player p) {
+        if (p.getWorld().equals(data.getLocation().bukkit().getWorld())) {
             for (final EntityArmorStand armor : this.entitylist) {
                 final PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(armor);
                 ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
             }
-            playerList.add(p);
         }
     }
 
     @Override
-    public void hidePlayer(final Player p) {
-        if (playerList.contains(p)) {
+    public void despawn(final Player p) {
+        if (p.getWorld().equals(data.getLocation().bukkit().getWorld())) {
             for (final EntityArmorStand armor : this.entitylist) {
                 final PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(armor.getId());
                 ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
             }
-            playerList.remove(p);
         }
     }
 
     @Override
-    public void showAll() {
-        for (final Player p : Bukkit.getOnlinePlayers()) {
-            showPlayer(p);
-        }
-    }
-
-    @Override
-    public void hideAll() {
-        for (final Player p : Bukkit.getOnlinePlayers()) {
-            hidePlayer(p);
+    public void playerJoined(Player... players) {
+        super.playerJoined(players);
+        for (Player player : players) {
+            spawn(player);
         }
     }
 

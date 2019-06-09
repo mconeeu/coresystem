@@ -8,8 +8,11 @@ package eu.mcone.coresystem.bukkit.npc;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.npc.*;
-import eu.mcone.coresystem.api.bukkit.npc.enums.NpcVisibilityMode;
+import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
+import eu.mcone.coresystem.api.bukkit.npc.NPC;
+import eu.mcone.coresystem.api.bukkit.npc.NpcData;
+import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
+import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.NpcCreateException;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
@@ -34,7 +37,6 @@ public class CoreNpcManager implements NpcManager {
     public CoreNpcManager(BukkitCoreSystem instance) {
         instance.registerEvents(new NpcListener(instance, this));
         instance.registerCommands(new NpcCMD(this));
-        new NpcModule(instance);
 
         reload();
     }
@@ -43,7 +45,7 @@ public class CoreNpcManager implements NpcManager {
     public void reload() {
         if (this.npcSet != null) {
             for (NPC npc : npcSet) {
-                npc.toggleNpcVisibility(NpcVisibilityMode.WHITELIST);
+                npc.togglePlayerVisibility(ListMode.WHITELIST);
             }
         } else {
             this.npcSet = new HashSet<>();
@@ -58,7 +60,7 @@ public class CoreNpcManager implements NpcManager {
     }
 
     public void addNPCAndSave(EntityType entity, String name, String displayname, Location location) {
-        NPC npc = addNPC(new NpcData(entity, name, displayname, new CoreLocation(location), new JsonObject()));
+        NPC npc = addNPC(new NpcData(entity, name, displayname, new eu.mcone.coresystem.api.bukkit.world.CoreLocation(location), new JsonObject()));
 
         BukkitCoreWorld world = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(location.getWorld());
         world.getNpcData().add(npc.getData());
@@ -67,11 +69,11 @@ public class CoreNpcManager implements NpcManager {
 
     @Override
     public NPC addNPC(NpcData data) {
-        return addNPC(data, NpcVisibilityMode.BLACKLIST);
+        return addNPC(data, ListMode.BLACKLIST);
     }
 
     @Override
-    public NPC addNPC(NpcData data, NpcVisibilityMode mode, Player... players) {
+    public NPC addNPC(NpcData data, ListMode listMode, Player... players) {
         for (CoreNPC<?> npc : npcSet) {
             if (npc.getData().getLocation().getWorld().equals(data.getLocation().getWorld()) && npc.getData().getName().equalsIgnoreCase(data.getName())) {
                 throw new NpcCreateException("Could not create NPC +"+data.getName()+": NPC with that name already exists in this world!");
@@ -81,7 +83,7 @@ public class CoreNpcManager implements NpcManager {
         CoreNPC<?> npc = null;
         for (NpcType type : NpcType.values()) {
             if (data.getType().equals(type.getType())) {
-                npc = type.construct(data, mode, players);
+                npc = type.construct(data, listMode, players);
                 break;
             }
         }
@@ -128,7 +130,7 @@ public class CoreNpcManager implements NpcManager {
 
     @Override
     public void removeNPC(NPC npc) {
-        npc.toggleNpcVisibility(NpcVisibilityMode.WHITELIST);
+        npc.togglePlayerVisibility(ListMode.WHITELIST);
         npcSet.remove(npc);
     }
 
@@ -159,7 +161,7 @@ public class CoreNpcManager implements NpcManager {
 
     public void disable() {
         for (NPC npc : npcSet) {
-            npc.toggleNpcVisibility(NpcVisibilityMode.WHITELIST);
+            npc.togglePlayerVisibility(ListMode.WHITELIST);
         }
 
         npcSet.clear();

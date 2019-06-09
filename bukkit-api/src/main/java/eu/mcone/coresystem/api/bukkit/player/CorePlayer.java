@@ -7,7 +7,7 @@ package eu.mcone.coresystem.api.bukkit.player;
 
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import eu.mcone.coresystem.api.core.gamemode.Gamemode;
+import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import org.bukkit.Location;

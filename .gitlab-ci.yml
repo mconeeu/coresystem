@@ -25,7 +25,7 @@ variables:
     - maven
   stage: test
   script:
-    - 'mvn $MAVEN_CLI_OPTS verify'
+    - 'mvn $MAVEN_CLI_OPTS install'
 
 validate:jdk8:
   <<: *validate
@@ -54,7 +54,6 @@ deploy:jdk8:
     - maven
   stage: test
   script:
-    - 'mvn install'
     - 'mvn $MAVEN_CLI_OPTS javadoc:jar javadoc:aggregate source:jar deploy $MAVEN_DEPLOY_OPTS'
   only:
     - master

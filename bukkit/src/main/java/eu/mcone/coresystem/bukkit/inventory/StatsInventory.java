@@ -10,7 +10,7 @@ import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
-import eu.mcone.coresystem.api.core.gamemode.Gamemode;
+import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;

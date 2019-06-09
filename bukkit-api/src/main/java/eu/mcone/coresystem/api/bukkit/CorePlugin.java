@@ -8,6 +8,7 @@ package eu.mcone.coresystem.api.bukkit;
 import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
+import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
 import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.api.core.GlobalCorePlugin;
@@ -23,11 +24,26 @@ import static com.mongodb.client.model.Filters.eq;
 public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin {
 
     @Getter
+    private Gamemode gamemode;
+    @Getter
     private String pluginName, consolePrefix;
     @Getter
     private Messager messager;
 
+    protected CorePlugin(Gamemode pluginGamemode, String prefixTranslation) {
+        this(pluginGamemode, pluginGamemode.getName().toLowerCase(), pluginGamemode.getColor(), prefixTranslation);
+    }
+
     protected CorePlugin(String pluginName, ChatColor pluginColor, String prefixTranslation) {
+        this(Gamemode.UNDEFINED, pluginName, pluginColor, prefixTranslation);
+    }
+
+    private CorePlugin(Gamemode pluginGamemode, String pluginName, ChatColor pluginColor, String prefixTranslation) {
+        if (pluginGamemode == null) {
+            throw new NullPointerException("Gamemode must not be null!");
+        }
+
+        this.gamemode = pluginGamemode;
         this.pluginName = pluginName;
         this.consolePrefix = "§8[" + pluginColor + pluginName + "§8] §7";
         this.messager = new Messager(prefixTranslation);

@@ -13,7 +13,7 @@ import eu.mcone.coresystem.api.bukkit.player.Stats;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import eu.mcone.coresystem.api.core.gamemode.Gamemode;
+import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;

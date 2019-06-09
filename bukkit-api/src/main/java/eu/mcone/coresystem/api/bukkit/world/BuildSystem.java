@@ -5,7 +5,8 @@
 
 package eu.mcone.coresystem.api.bukkit.world;
 
-import org.bukkit.Material;
+import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public interface BuildSystem {
@@ -28,6 +29,15 @@ public interface BuildSystem {
     boolean hasBuildModeEnabled(Player player);
 
     /**
+     * default ListMode is Blacklist with no worlds, which means BuildSystem rules are applied to all worlds
+     * if you want the BuildSystem rules to only work at specific worlds blacklist the used worlds or use the whitelist to apply rules only to used worlds
+     * notice that new loaded worlds will not get added to black or whitelist automatically!
+     * @param mode list mode
+     * @param worlds worlds that stay on the list
+     */
+    void setWorlds(ListMode mode, World... worlds);
+
+    /**
      * should players be informed if their action is blocked by the BuildSystem?
      * @param notify inform players on blocked action
      */
@@ -37,8 +47,8 @@ public interface BuildSystem {
      * filter specific items for the given event
      * this items dont get blocked by given event from the BuildSystem
      * @param event event
-     * @param filter array of materials that should be filtered
+     * @param filter array of material ids that should be filtered
      */
-    void addFilter(BuildEvent event, Material... filter);
+    void addFilter(BuildEvent event, Integer... filter);
 
 }

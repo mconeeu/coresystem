@@ -9,13 +9,14 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
-import eu.mcone.coresystem.api.bukkit.npc.CoreLocation;
+import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
+import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.HoloCMD;
 import eu.mcone.coresystem.bukkit.listener.HologramListener;
 import eu.mcone.coresystem.bukkit.world.BukkitCoreWorld;
-import org.bukkit.Bukkit;
+import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -26,7 +27,8 @@ import java.util.Set;
 
 public class CoreHologramManager implements HologramManager {
 
-    private Set<CoreHologram> holograms;
+    @Getter
+    private Set<CoreHologram> hologramSet;
 
     public CoreHologramManager(BukkitCoreSystem instance) {
         instance.registerEvents(new HologramListener(this));
@@ -37,38 +39,32 @@ public class CoreHologramManager implements HologramManager {
 
     @Override
     public void reload() {
-        if (this.holograms != null) {
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                this.unsetHolograms(p);
+        if (this.hologramSet != null) {
+            for (Hologram holo : hologramSet) {
+                holo.togglePlayerVisibility(ListMode.WHITELIST);
             }
         } else {
-            holograms = new HashSet<>();
+            hologramSet = new HashSet<>();
         }
 
-        holograms.clear();
+        hologramSet.clear();
         for (CoreWorld w : CoreSystem.getInstance().getWorldManager().getWorlds()) {
             for (HologramData data : ((BukkitCoreWorld) w).getHologramData()) {
-                this.holograms.add(new CoreHologram(data));
+                addHologram(data);
             }
-        }
-
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            this.setHolograms(p);
         }
     }
 
     @Override
-    public List<Hologram> getHolograms() {
-        return new ArrayList<>(holograms);
-    }
-
     public void reload(Player p) {
-        unsetHolograms(p);
-        setHolograms(p);
+        for (CoreHologram holo : hologramSet) {
+            holo.despawn(p);
+            holo.spawn(p);
+        }
     }
 
     public void addHologramAndSave(String name, Location location, String... text) {
-        Hologram hologram = addHologram(name, location, text);
+        Hologram hologram = addHologram(new HologramData(name, text, new CoreLocation(location)));
 
         BukkitCoreWorld world = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(location.getWorld());
         world.getHologramData().add(hologram.getData());
@@ -76,12 +72,14 @@ public class CoreHologramManager implements HologramManager {
     }
 
     @Override
-    public Hologram addHologram(String name, Location location, String... text) {
-        HologramData data = new HologramData(name, text, new CoreLocation(location));
-        CoreHologram hologram = new CoreHologram(data);
+    public Hologram addHologram(HologramData data) {
+        return addHologram(data, ListMode.BLACKLIST);
+    }
 
-        this.holograms.add(hologram);
-        this.updateHolograms();
+    @Override
+    public Hologram addHologram(HologramData data, ListMode listMode, Player... players) {
+        CoreHologram hologram = new CoreHologram(data, listMode, players);
+        this.hologramSet.add(hologram);
 
         return hologram;
     }
@@ -98,13 +96,13 @@ public class CoreHologramManager implements HologramManager {
 
     @Override
     public void removeHologram(Hologram hologram) {
-        hologram.hideAll();
-        this.holograms.remove(hologram);
+        hologram.togglePlayerVisibility(ListMode.WHITELIST);
+        this.hologramSet.remove(hologram);
     }
 
     @Override
     public Hologram getHologram(CoreWorld world, String name) {
-        for (CoreHologram hologram : holograms) {
+        for (CoreHologram hologram : hologramSet) {
             if (hologram.getData().getLocation().bukkit().getWorld().getName().equals(world.getName()) && hologram.getData().getName().equals(name)) {
                 return hologram;
             }
@@ -113,36 +111,16 @@ public class CoreHologramManager implements HologramManager {
     }
 
     @Override
-    public void updateHolograms() {
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            this.unsetHolograms(p);
-            this.setHolograms(p);
-        }
-    }
-
-    public void setHolograms(Player p) {
-        for (CoreHologram hologram : holograms) {
-            if (hologram.getData().getLocation().bukkit().getWorld().equals(p.getWorld())) {
-                hologram.showPlayer(p);
-            }
-        }
-    }
-
-    public void unsetHolograms(Player p) {
-        for (CoreHologram h : this.holograms) {
-            h.hidePlayer(p);
-        }
-    }
-
-    public void unsetHolograms() {
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            unsetHolograms(p);
-        }
+    public List<Hologram> getHolograms() {
+        return new ArrayList<>(hologramSet);
     }
 
     public void disable() {
-        unsetHolograms();
-        holograms.clear();
+        for (CoreHologram holo : hologramSet) {
+            holo.togglePlayerVisibility(ListMode.WHITELIST);
+        }
+
+        hologramSet.clear();
     }
 
 }

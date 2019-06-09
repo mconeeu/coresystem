@@ -5,8 +5,9 @@
 
 package eu.mcone.coresystem.api.bukkit.hologram;
 
+import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -17,14 +18,24 @@ public interface HologramManager {
      */
     void reload();
 
+    void reload(Player p);
+
+    /**
+     * adds a temporary Hologram to the Server. This Hologram will not be saved in the core-config and stays until server reload|restart or Hologram-Manager reload
+     * @param data hologram data
+     * @return new hologram
+     */
+    Hologram addHologram(HologramData data);
+
     /**
      * adds a temporary Hologram to the Server. This Hologram will not be saved in the core-config and stays until server reload|restart or Hologram-Manager reload
      * use /holo or the core-config.json to add Holograms permanently
-     * @param name config name
-     * @param location location
-     * @param text content of hologram
+     * @param data npc data
+     * @param listMode Choose a Visbility mode and the players that should be on the list (i.e. BLACKLIST with no players means that all players can see the NPC)
+     * @param players players that should be on the list
+     * @return new hologram
      */
-    Hologram addHologram(String name, Location location, String... text);
+    Hologram addHologram(HologramData data, ListMode listMode, Player... players);
 
     /**
      * removes an existing Hologram (if its an permanent Hologram from core-config this is just temporary)
@@ -47,10 +58,5 @@ public interface HologramManager {
      * @return List of Holograms
      */
     List<Hologram> getHolograms();
-
-    /**
-     * update all hologram to all players
-     */
-    void updateHolograms();
 
 }

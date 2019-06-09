@@ -34,7 +34,7 @@ public class HoloCMD extends CorePlayerCommand {
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(p);
 
         if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("list"))) {
-            if (api.getHolograms().size() > 0) {
+            if (api.getHologramSet().size() > 0) {
                 CoreSystem.getInstance().getMessager().send(p, "§7Folgende Hologramme existieren auf diesem Server: ");
 
                 for (CoreWorld w : BukkitCoreSystem.getInstance().getWorldManager().getWorlds()) {

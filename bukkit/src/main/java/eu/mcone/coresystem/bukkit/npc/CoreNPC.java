@@ -5,16 +5,17 @@
 
 package eu.mcone.coresystem.bukkit.npc;
 
-import eu.mcone.coresystem.api.bukkit.npc.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
-import eu.mcone.coresystem.api.bukkit.npc.NpcModule;
 import eu.mcone.coresystem.api.bukkit.npc.data.AbstractNpcData;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcState;
-import eu.mcone.coresystem.api.bukkit.npc.enums.NpcVisibilityMode;
+import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
+import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.core.exception.NpcCreateException;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.npc.util.ReflectionManager;
+import eu.mcone.coresystem.bukkit.util.PlayerListModeToggleUtil;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
@@ -24,35 +25,30 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public abstract class CoreNPC<T extends AbstractNpcData> implements NPC {
+public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeToggleUtil implements NPC {
 
     private final Set<Player> spawned;
 
     @Getter
     protected NpcData data;
     @Getter
-    private NpcVisibilityMode visibilityMode;
-    protected Set<Player> visiblePlayersList;
-    @Getter
     protected final int entityId;
     @Getter
     protected T entityData;
 
-    protected CoreNPC(Class<T> dataClass, NpcData data, NpcVisibilityMode visibilityMode, Player... players) {
+    protected CoreNPC(Class<T> dataClass, NpcData data, ListMode listMode, Player... players) {
         this.spawned = new HashSet<>();
         this.data = data;
-        this.visibilityMode = visibilityMode;
         this.visiblePlayersList = new HashSet<>();
         this.entityId = getNextEntityId();
-        this.entityData = NpcModule.getInstance().getCoreSystem().getGson().fromJson(data.getEntityData(), dataClass);
-        this.data.setEntityData(NpcModule.getInstance().getCoreSystem().getGson().toJsonTree(entityData));
+        this.entityData = BukkitCoreSystem.getInstance().getGson().fromJson(data.getEntityData(), dataClass);
+        this.data.setEntityData(BukkitCoreSystem.getInstance().getGson().toJsonTree(entityData));
 
         onCreate();
-        toggleNpcVisibility(visibilityMode, players);
+        togglePlayerVisibility(listMode, players);
     }
 
     protected abstract void _spawn(Player player);
@@ -63,28 +59,16 @@ public abstract class CoreNPC<T extends AbstractNpcData> implements NPC {
 
     protected abstract void onUpdate(T entityData);
 
-    @Override
     public void spawn(Player player) {
         if (spawned.add(player)) {
             _spawn(player);
         }
     }
 
-    @Override
     public void despawn(Player player) {
         if (spawned.remove(player)) {
             _despawn(player);
         }
-    }
-
-    public void playerJoined(Player... players) {
-        if (visibilityMode.equals(NpcVisibilityMode.BLACKLIST)) {
-            visiblePlayersList.addAll(Arrays.asList(players));
-        }
-    }
-
-    public void playerLeaved(Player... p) {
-        visiblePlayersList.removeAll(Arrays.asList(p));
     }
 
     @Override
@@ -108,72 +92,13 @@ public abstract class CoreNPC<T extends AbstractNpcData> implements NPC {
             if (!this.data.getLocation().equals(data.getLocation())) teleport(data.getLocation().bukkit());
             if (!this.data.getDisplayname().equals(data.getDisplayname())) changeDisplayname(data.getDisplayname());
 
-            T entityData = (T) NpcModule.getInstance().getCoreSystem().getGson().fromJson(data.getEntityData(), this.entityData.getClass());
+            T entityData = (T) BukkitCoreSystem.getInstance().getGson().fromJson(data.getEntityData(), this.entityData.getClass());
             onUpdate(entityData);
             this.entityData = entityData;
-            this.data.setEntityData(NpcModule.getInstance().getCoreSystem().getGson().toJsonTree(this.entityData));
+            this.data.setEntityData(BukkitCoreSystem.getInstance().getGson().toJsonTree(this.entityData));
         } else {
             throw new NpcCreateException("Could not update npc " + data.getName() + ": EntityTypes are not equal (" + this.data.getType() + " != " + data.getType() + ")");
         }
-    }
-
-    @Override
-    public void toggleNpcVisibility(NpcVisibilityMode visibilityMode, Player... players) {
-        Set<Player> listed = new HashSet<>(Arrays.asList(players));
-        Set<Player> doSet = new HashSet<>();
-        Set<Player> doUnset = new HashSet<>();
-
-        if (visibilityMode.equals(NpcVisibilityMode.WHITELIST)) {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                if (listed.contains(player) && !visiblePlayersList.contains(player)) {
-                    doSet.add(player);
-                    visiblePlayersList.add(player);
-                } else if (!listed.contains(player) && visiblePlayersList.contains(player)) {
-                    doUnset.add(player);
-                    visiblePlayersList.remove(player);
-                }
-            }
-
-            visiblePlayersList = new HashSet<>(listed);
-        } else if (visibilityMode.equals(NpcVisibilityMode.BLACKLIST)) {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                if (listed.contains(player) && visiblePlayersList.contains(player)) {
-                    doUnset.add(player);
-                    visiblePlayersList.remove(player);
-                } else if (!listed.contains(player) && !visiblePlayersList.contains(player)) {
-                    doSet.add(player);
-                    visiblePlayersList.add(player);
-                }
-            }
-
-            visiblePlayersList = new HashSet<>(Bukkit.getOnlinePlayers());
-            for (Player p : listed) {
-                visiblePlayersList.remove(p);
-            }
-        }
-
-        this.visibilityMode = visibilityMode;
-        for (Player p : doSet) {
-            spawn(p);
-        }
-        for (Player p : doUnset) {
-            despawn(p);
-        }
-    }
-
-    @Override
-    public void toggleVisibility(Player player, boolean canSee) {
-        if (canSee && !visiblePlayersList.contains(player)) {
-            _spawn(player);
-            visiblePlayersList.add(player);
-        } else if (!canSee && visiblePlayersList.contains(player)) {
-            _despawn(player);
-            visiblePlayersList.remove(player);
-        }
-    }
-
-    public boolean isVisibleFor(Player player) {
-        return visiblePlayersList.contains(player);
     }
 
     @Override
@@ -263,7 +188,7 @@ public abstract class CoreNPC<T extends AbstractNpcData> implements NPC {
             if (packet != null) {
                 if (packet instanceof PacketPlayOutPlayerInfo) {
                     if (multipleInfoSend) {
-                        Bukkit.getScheduler().scheduleSyncDelayedTask((Plugin) NpcModule.getInstance().getCoreSystem(), () ->
+                        Bukkit.getScheduler().scheduleSyncDelayedTask((Plugin) BukkitCoreSystem.getInstance(), () ->
                                 ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet), 50);
                         continue;
                     } else {

@@ -6,10 +6,12 @@
 package eu.mcone.coresystem.bukkit.world;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.BuildCMD;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -26,10 +28,27 @@ import java.util.*;
 
 public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.world.BuildSystem {
 
+    private static final Set<EntityType> RELEVANT_ENTITY_TYPES = new HashSet<>(Arrays.asList(
+            EntityType.PAINTING,
+            EntityType.ITEM_FRAME,
+            EntityType.ARMOR_STAND,
+            EntityType.MINECART_COMMAND,
+            EntityType.BOAT,
+            EntityType.MINECART,
+            EntityType.MINECART_CHEST,
+            EntityType.MINECART_FURNACE,
+            EntityType.MINECART_TNT,
+            EntityType.MINECART_HOPPER,
+            EntityType.MINECART_MOB_SPAWNER,
+            EntityType.ENDER_CRYSTAL
+    ));
+
     private Map<UUID, GameMode> allowedPlayers;
-    private Map<BuildEvent, Set<Material>> filteredBlocks;
+    private Map<BuildEvent, List<Integer>> filteredBlocks;
 
     private boolean notify = false;
+    private ListMode listMode = ListMode.BLACKLIST;
+    private List<World> worlds = new ArrayList<>();
 
     public BuildSystem(BukkitCoreSystem instance, BuildEvent... events) {
         this.allowedPlayers = new HashMap<>();
@@ -45,10 +64,16 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                         public void on(BlockBreakEvent e) {
                             Player p = e.getPlayer();
 
-                            if (isNotAllowedBuild(p) && !filteredBlocks.getOrDefault(BuildEvent.BLOCK_BREAK, new HashSet<>()).contains(e.getBlock().getType())) {
-                                e.setCancelled(true);
-                                if (notify)
-                                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst hier nicht abbauen!");
+                            if (applyRules(p.getWorld())) {
+                                if (
+                                        !p.hasPermission("system.bukkit.build." + p.getWorld().getName().toLowerCase() + ".break." + e.getBlock().getType().getId())
+                                                && isNotAllowedBuild(p)
+                                                && !filteredBlocks.getOrDefault(BuildEvent.BLOCK_BREAK, new ArrayList<>()).contains(e.getBlock().getType().getId())
+                                ) {
+                                    e.setCancelled(true);
+                                    if (notify)
+                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst hier nicht abbauen!");
+                                }
                             }
                         }
 
@@ -57,8 +82,18 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                             if (e.getRemover() instanceof Player) {
                                 Player p = (Player) e.getRemover();
 
-                                if (isNotAllowedBuild(p) && !filteredBlocks.getOrDefault(BuildEvent.BLOCK_BREAK, new HashSet<>()).contains(Material.ITEM_FRAME)) {
-                                    e.setCancelled(true);
+                                if (applyRules(p.getWorld())) {
+                                    if (RELEVANT_ENTITY_TYPES.contains(e.getEntity().getType())) {
+                                        if (
+                                                !p.hasPermission("system.bukkit.build." + p.getWorld().getName().toLowerCase() + ".break." + e.getEntity().getType().getTypeId())
+                                                        && isNotAllowedBuild(p)
+                                                        && !filteredBlocks.getOrDefault(BuildEvent.BLOCK_BREAK, new ArrayList<>()).contains((int) e.getEntity().getType().getTypeId())
+                                        ) {
+                                            e.setCancelled(true);
+                                            if (notify)
+                                                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst hier nicht abbauen!");
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -67,12 +102,18 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                         public void on(PlayerInteractEvent e) {
                             Player p = e.getPlayer();
 
-                            if (isNotAllowedBuild(p) && !filteredBlocks.getOrDefault(BuildEvent.BLOCK_BREAK, new HashSet<>()).contains(Material.SOIL)) {
+                            if (applyRules(p.getWorld())) {
                                 if ((e.getAction() == Action.PHYSICAL)) {
-                                    if (p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType() == Material.SOIL) {
-                                        e.setCancelled(true);
-                                        if (notify)
-                                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst das Feld nicht zertrampeln!");
+                                    if (p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.SOIL)) {
+                                        if (
+                                                !p.hasPermission("system.bukkit.build." + p.getWorld().getName().toLowerCase() + ".break." + Material.SOIL.getId())
+                                                        && isNotAllowedBuild(p)
+                                                        && !filteredBlocks.getOrDefault(BuildEvent.BLOCK_BREAK, new ArrayList<>()).contains(Material.SOIL.getId())
+                                        ) {
+                                            e.setCancelled(true);
+                                            if (notify)
+                                                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst das Feld nicht zertrampeln!");
+                                        }
                                     }
                                 }
                             }
@@ -86,10 +127,16 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                         public void on(BlockPlaceEvent e) {
                             Player p = e.getPlayer();
 
-                            if (isNotAllowedBuild(p) && !filteredBlocks.getOrDefault(BuildEvent.BLOCK_PLACE, new HashSet<>()).contains(e.getBlock().getType())) {
-                                e.setCancelled(true);
-                                if (notify)
-                                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst hier keine Blöcke bauen!");
+                            if (applyRules(p.getWorld())) {
+                                if (
+                                        !p.hasPermission("system.bukkit.build." + p.getWorld().getName().toLowerCase() + ".place." + e.getBlock().getType().getId())
+                                                && isNotAllowedBuild(p)
+                                                && !filteredBlocks.getOrDefault(BuildEvent.BLOCK_PLACE, new ArrayList<>()).contains(e.getBlock().getType().getId())
+                                ) {
+                                    e.setCancelled(true);
+                                    if (notify)
+                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst hier nicht bauen!");
+                                }
                             }
                         }
                     }, instance);
@@ -101,16 +148,40 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                         public void on(PlayerInteractEvent e) {
                             Player p = e.getPlayer();
 
-                            if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK) && isNotAllowedBuild(p) && !filteredBlocks.getOrDefault(BuildEvent.INTERACT, new HashSet<>()).contains(e.getClickedBlock().getType())) {
-                                if (notify) BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst mit diesem Block nicht interagieren!");
-                                e.setCancelled(true);
+                            if (applyRules(p.getWorld())) {
+                                if (
+                                        e.getAction().equals(Action.RIGHT_CLICK_BLOCK)
+                                                || (e.getAction().equals(Action.PHYSICAL) && !p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.SOIL))
+                                ) {
+                                    if (
+                                            !p.hasPermission("system.bukkit.build." + p.getWorld().getName().toLowerCase() + ".interact." + e.getClickedBlock().getType().getId())
+                                                    && isNotAllowedBuild(p)
+                                                    && !filteredBlocks.getOrDefault(BuildEvent.INTERACT, new ArrayList<>()).contains(e.getClickedBlock().getType().getId())
+                                    ) {
+                                        e.setCancelled(true);
+                                        if (notify)
+                                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst damit nicht interagieren!");
+                                    }
+                                }
                             }
                         }
 
                         @EventHandler
                         public void on(PlayerInteractAtEntityEvent e) {
-                            if (e.getRightClicked().getType().equals(EntityType.ARMOR_STAND)) {
-                                e.setCancelled(true);
+                            Player p = e.getPlayer();
+
+                            if (applyRules(p.getWorld())) {
+                                if (RELEVANT_ENTITY_TYPES.contains(e.getRightClicked().getType())) {
+                                    if (
+                                            !p.hasPermission("system.bukkit.build." + p.getWorld().getName().toLowerCase() + ".interact." + e.getRightClicked().getType().getTypeId())
+                                                    && isNotAllowedBuild(p)
+                                                    && !filteredBlocks.getOrDefault(BuildEvent.INTERACT, new ArrayList<>()).contains((int) e.getRightClicked().getType().getTypeId())
+                                    ) {
+                                        e.setCancelled(true);
+                                        if (notify)
+                                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst damit nicht interagieren!");
+                                    }
+                                }
                             }
                         }
                     }, instance);
@@ -121,16 +192,22 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
     }
 
     @Override
+    public void setWorlds(ListMode mode, World... worlds) {
+        this.listMode = mode;
+        this.worlds = Arrays.asList(worlds);
+    }
+
+    @Override
     public void setNotifying(boolean notify) {
         this.notify = notify;
     }
 
     @Override
-    public void addFilter(BuildEvent event, Material... filter) {
+    public void addFilter(BuildEvent event, Integer... filter) {
         if (filteredBlocks.containsKey(event)) {
             filteredBlocks.get(event).addAll(Arrays.asList(filter));
         } else {
-            filteredBlocks.put(event, new HashSet<>(Arrays.asList(filter)));
+            filteredBlocks.put(event, new ArrayList<>(Arrays.asList(filter)));
         }
     }
 
@@ -154,6 +231,11 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
 
     private boolean isNotAllowedBuild(Player p) {
         return !allowedPlayers.containsKey(p.getUniqueId());
+    }
+
+    private boolean applyRules(World w) {
+        return (listMode.equals(ListMode.WHITELIST) && worlds.contains(w))
+                        || (listMode.equals(ListMode.BLACKLIST) && !worlds.contains(w));
     }
 
 }

@@ -5,7 +5,7 @@
 
 package eu.mcone.coresystem.api.bukkit.npc;
 
-import eu.mcone.coresystem.api.bukkit.npc.enums.NpcVisibilityMode;
+import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import org.bukkit.entity.Player;
 
@@ -29,11 +29,11 @@ public interface NpcManager {
      * adds a temporary NPC to the Server. This NPC will not be saved in the core-config and stays until server reload|restart or NPC-Manager reload
      * use /npc or the core-config.json to add Holograms permanently
      * @param data npc data
-     * @param mode Choose a Visbility mode and the players that should be on the list (i.e. BLACKLIST with no players means that all players can see the NPC)
+     * @param listMode Choose a Visbility listMode and the players that should be on the list (i.e. BLACKLIST with no players means that all players can see the NPC)
      * @param players players that should be on the list
      * @return the new NPC
      */
-    NPC addNPC(NpcData data, NpcVisibilityMode mode, Player... players);
+    NPC addNPC(NpcData data, ListMode listMode, Player... players);
 
     /**
      * removes an existing NPC (if its an permanent NPC from core-config this is just temporary)
