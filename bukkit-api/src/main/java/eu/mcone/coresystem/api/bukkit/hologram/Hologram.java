@@ -15,4 +15,5 @@ public interface Hologram extends PlayerListModeToggleable {
      */
     HologramData getData();
 
+    void update(HologramData data);
 }

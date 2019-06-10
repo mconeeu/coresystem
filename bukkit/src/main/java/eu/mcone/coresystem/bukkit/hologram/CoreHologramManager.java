@@ -84,6 +84,15 @@ public class CoreHologramManager implements HologramManager {
         return hologram;
     }
 
+    public void updateAndSave(Hologram holo, String[] text, Location location) {
+        holo.update(new HologramData(
+                holo.getData().getName(),
+                text,
+                new CoreLocation(location)
+        ));
+        BukkitCoreSystem.getInstance().getWorldManager().getWorld(holo.getData().getLocation().getWorld()).save();
+    }
+
     public void removeHologramAndSave(Hologram hologram) {
         removeHologram(hologram);
 

@@ -18,6 +18,8 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class HoloCMD extends CorePlayerCommand {
@@ -87,9 +89,98 @@ public class HoloCMD extends CorePlayerCommand {
                 }
 
                 return true;
+            } else if (args[0].equalsIgnoreCase("addline") || args[0].equalsIgnoreCase("al")) {
+                StringBuilder line = new StringBuilder();
+                for (int i = 2; i < args.length; i++) {
+                    line.append(args[i]);
+                    if (i < args.length - 1) line.append(" ");
+                }
+
+                CoreWorld w = cp.getWorld();
+                Hologram holo = api.getHologram(w, args[1]);
+
+                if (holo != null) {
+                    List<String> text = new ArrayList<>(Arrays.asList(holo.getData().getText()));
+                    text.add(line.toString());
+
+                    api.updateAndSave(holo, text.toArray(new String[0]), holo.getData().getLocation().bukkit());
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Zeile wurde hinzugefügt!");
+                } else {
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Ein Hologram mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
+                }
+
+                return true;
+            } else if (args[0].equalsIgnoreCase("setline") || args[0].equalsIgnoreCase("sl")) {
+                StringBuilder line = new StringBuilder();
+                for (int i = 3; i < args.length; i++) {
+                    line.append(args[i]);
+                    if (i < args.length - 1) line.append(" ");
+                }
+
+                CoreWorld w = cp.getWorld();
+                Hologram holo = api.getHologram(w, args[1]);
+
+                if (holo != null) {
+                    try {
+                        int i = Integer.parseInt(args[2]);
+                        List<String> text = new ArrayList<>(Arrays.asList(holo.getData().getText()));
+
+                        if (i <= text.size()) {
+                            text.set(i-1, line.toString());
+
+                            api.updateAndSave(holo, text.toArray(new String[0]), holo.getData().getLocation().bukkit());
+                            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Zeile §a" + args[2] + "§2 wurde gesetzt!");
+                        } else {
+                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Das Hologram §o" + args[1] + "§4 hat nur §c" + text.size() + " Zeilen§4!");
+                        }
+                    } catch (NumberFormatException ignored) {
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§c" + args[2] + "§4 ist keine Zahl!");
+                    }
+                } else {
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Ein Hologram mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
+                }
+
+                return true;
+            } else if (args[0].equalsIgnoreCase("removeline") || args[0].equalsIgnoreCase("deleteline") || args[0].equalsIgnoreCase("delline") || args[0].equalsIgnoreCase("dl") || args[0].equalsIgnoreCase("rl")) {
+                CoreWorld w = cp.getWorld();
+                Hologram holo = api.getHologram(w, args[1]);
+
+                if (holo != null) {
+                    try {
+                        int i = Integer.parseInt(args[2]);
+                        List<String> text = new ArrayList<>(Arrays.asList(holo.getData().getText()));
+
+                        if (i <= text.size()) {
+                            text.remove(i-1);
+
+                            api.updateAndSave(holo, text.toArray(new String[0]), holo.getData().getLocation().bukkit());
+                            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Zeile §a" + args[2] + "§2 wurde gelöscht!");
+                        } else {
+                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Das Hologram §o" + args[1] + "§4 hat nur §c" + text.size() + " Zeilen§4!");
+                        }
+                    } catch (NumberFormatException ignored) {
+                        BukkitCoreSystem.getInstance().getMessager().send(p, "§c" + args[2] + "§4 ist keine Zahl!");
+                    }
+                } else {
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Ein Hologram mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
+                }
             }
+
+            return true;
         } else if (args.length == 2) {
-            if (args[0].equalsIgnoreCase("remove")) {
+            if (args[0].equalsIgnoreCase("setlocation") || args[0].equalsIgnoreCase("sl") || args[0].equalsIgnoreCase("setposition") || args[0].equalsIgnoreCase("sp")) {
+                CoreWorld w = cp.getWorld();
+                Hologram holo = api.getHologram(w, args[1]);
+
+                if (holo != null) {
+                    api.updateAndSave(holo, holo.getData().getText(), p.getLocation());
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast das Hologram erfolgreich zu deiner Position verschoben!");
+                } else {
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Ein Hologram mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
+                }
+
+                return true;
+            } else if (args[0].equalsIgnoreCase("remove")) {
                 CoreWorld w = cp.getWorld();
                 Hologram holo = api.getHologram(w, args[1]);
 
@@ -150,12 +241,16 @@ public class HoloCMD extends CorePlayerCommand {
         }
 
         BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: " +
-                        "\n§c/holo add <name> <display-name> §4oder " +
-                        "\n§c/holo remove <name> §4oder " +
-                        "\n§c/holo list [world-name] §4oder " +
-                        "\n§c/holo tp [world-name] <name> §4oder " +
-                        "\n§c/holo reload §4oder "
-                );
+                "\n§c/holo add <name> <display-name> §4oder " +
+                "\n§c/holo remove <name> §4oder " +
+                "\n§c/holo setline <holo-name> <line> <text> §4oder " +
+                "\n§c/holo addline <holo-name> <text> §4oder " +
+                "\n§c/holo removeline <holo-name> <line> §4oder " +
+                "\n§c/holo setlocation <holo-name>§4oder " +
+                "\n§c/holo list [world-name] §4oder " +
+                "\n§c/holo tp [world-name] <name> §4oder " +
+                "\n§c/holo reload §4oder "
+        );
 
         return true;
     }

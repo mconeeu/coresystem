@@ -237,6 +237,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                     ),
                     p
             ).registerPacketListener(p);
+
             channelHandler.createSetRequest(p, "UNNICK");
         }
 
@@ -283,6 +284,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new FeedCMD(),
                 new FlyCMD(),
                 new GamemodeCMD(),
+                new GiveCMD(),
                 new HealCMD(),
                 new InvCMD(),
                 new TpCMD(),

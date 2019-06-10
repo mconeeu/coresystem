@@ -8,9 +8,7 @@ package eu.mcone.coresystem.bukkit.command;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class BukkitCMD extends CoreCommand {
 
@@ -30,51 +28,71 @@ public class BukkitCMD extends CoreCommand {
             sender.sendMessage("§8§m---------- §r§3§lMCONE-BukkitCoreSystem §8§m----------");
             sender.sendMessage("");
         } else if (args[0].equals("reload")) {
-            if (sender instanceof Player) {
-                Player p = (Player)sender;
+            if (sender.hasPermission("system.bukkit.reload")) {
 
-                if (!p.hasPermission("system.bukkit.reload")) {
-                    BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
-                    return true;
-                }
-            }
-
-            if (args.length == 1) {
-                BukkitCoreSystem.getInstance().getMessager().send(sender, "§aTranslationManager wird neu geladen...");
-                BukkitCoreSystem.getInstance().getTranslationManager().reload();
-
-                BukkitCoreSystem.getInstance().getMessager().send(sender, "§aPermissions werden neu geladen...");
-                Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
+                if (args.length == 1) {
+                    BukkitCoreSystem.getInstance().getMessager().send(sender, "§aPermissions werden neu geladen...");
                     BukkitCoreSystem.getInstance().getPermissionManager().reload();
                     for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
                         cp.reloadPermissions();
                     }
-                });
 
-                BukkitCoreSystem.getInstance().getMessager().send(sender, "§aScorebard wird neu geladen...");
-                for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
-                    cp.getScoreboard().reload();
-                }
-            } else if (args.length == 2) {
-                if (args[1].equalsIgnoreCase("tranlsations")) {
+                    BukkitCoreSystem.getInstance().getMessager().send(sender, "§aWorldManager wird neu geladen...");
+                    BukkitCoreSystem.getInstance().getWorldManager().reload();
+
                     BukkitCoreSystem.getInstance().getMessager().send(sender, "§aTranslationManager wird neu geladen...");
                     BukkitCoreSystem.getInstance().getTranslationManager().reload();
-                } else if (args[1].equalsIgnoreCase("permissions")) {
-                    BukkitCoreSystem.getInstance().getMessager().send(sender, "§aPermissions werden neu geladen...");
-                    Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
-                        BukkitCoreSystem.getInstance().getPermissionManager().reload();
-                        for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
-                            cp.reloadPermissions();
-                        }
-                    });
-                } else if (args[1].equalsIgnoreCase("scoreboard")) {
+
                     BukkitCoreSystem.getInstance().getMessager().send(sender, "§aScorebard wird neu geladen...");
                     for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
                         cp.getScoreboard().reload();
                     }
+
+                    BukkitCoreSystem.getInstance().getMessager().send(sender, "§aNpcManager wird neu geladen...");
+                    BukkitCoreSystem.getInstance().getNpcManager().reload();
+
+                    BukkitCoreSystem.getInstance().getMessager().send(sender, "§aHologramManager wird neu geladen...");
+                    BukkitCoreSystem.getInstance().getHologramManager().reload();
+                    return true;
+                } else if (args.length == 2) {
+                    if (args[1].equalsIgnoreCase("permissions")) {
+                        BukkitCoreSystem.getInstance().getMessager().send(sender, "§aPermissions werden neu geladen...");
+                        BukkitCoreSystem.getInstance().getPermissionManager().reload();
+                        for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
+                            cp.reloadPermissions();
+                        }
+                        return true;
+                    } else if (args[1].equalsIgnoreCase("worlds")) {
+                        BukkitCoreSystem.getInstance().getMessager().send(sender, "§aWorldManager wird neu geladen...");
+                        BukkitCoreSystem.getInstance().getWorldManager().reload();
+                        return true;
+                    } else if (args[1].equalsIgnoreCase("tranlsations")) {
+                        BukkitCoreSystem.getInstance().getMessager().send(sender, "§aTranslationManager wird neu geladen...");
+                        BukkitCoreSystem.getInstance().getTranslationManager().reload();
+                        return true;
+                    } else if (args[1].equalsIgnoreCase("scoreboard")) {
+                        BukkitCoreSystem.getInstance().getMessager().send(sender, "§aScorebard wird neu geladen...");
+                        for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
+                            cp.getScoreboard().reload();
+                        }
+                        return true;
+                    } else if (args[1].equalsIgnoreCase("npcs")) {
+                        BukkitCoreSystem.getInstance().getMessager().send(sender, "§aNpcManager wird neu geladen...");
+                        BukkitCoreSystem.getInstance().getNpcManager().reload();
+                        return true;
+                    } else if (args[1].equalsIgnoreCase("holograms")) {
+                        BukkitCoreSystem.getInstance().getMessager().send(sender, "§aHologramManager wird neu geladen...");
+                        BukkitCoreSystem.getInstance().getHologramManager().reload();
+                        return true;
+                    }
                 }
+            } else {
+                BukkitCoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.noperm");
+                return false;
             }
         }
-        return true;
+
+        BukkitCoreSystem.getInstance().getMessager().send(sender, "§4Bitte benutze: §c/bukkit [reload] [<permissions | worlds | translations | scoreboard | npcs | holograms>]");
+        return false;
     }
 }

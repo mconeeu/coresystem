@@ -58,22 +58,38 @@ public class CoreHologram extends PlayerListModeToggleUtil implements eu.mcone.c
     }
 
     @Override
+    public void update(HologramData data) {
+        this.data.setLocation(data.getLocation());
+        this.data.setText(data.getText());
+
+        for (Player p : visiblePlayersList) {
+            despawn(p);
+        }
+        create();
+        for (Player p : visiblePlayersList) {
+            spawn(p);
+        }
+    }
+
+    @Override
     public void playerJoined(Player... players) {
         super.playerJoined(players);
         for (Player player : players) {
-            spawn(player);
+            if (visiblePlayersList.contains(player)) {
+                spawn(player);
+            }
         }
     }
 
     private void create() {
+        entitylist.clear();
         Location loc = data.getLocation().bukkit();
         int count = 0;
 
-        String[] text;
-        for (int length = (text = data.getText()).length, j = 0; j < length; ++j) {
-            final String Text = text[j];
-            final EntityArmorStand entity = new EntityArmorStand(((CraftWorld) loc.getWorld()).getHandle(), loc.getX(), loc.getY()-1.8, loc.getZ());
-            entity.setCustomName(ChatColor.translateAlternateColorCodes('&', Text));
+        String[] text = data.getText();
+        for (final String line : text) {
+            final EntityArmorStand entity = new EntityArmorStand(((CraftWorld) loc.getWorld()).getHandle(), loc.getX(), loc.getY() - 1.8, loc.getZ());
+            entity.setCustomName(ChatColor.translateAlternateColorCodes('&', line));
             entity.setCustomNameVisible(true);
             entity.setInvisible(true);
             entity.setGravity(false);

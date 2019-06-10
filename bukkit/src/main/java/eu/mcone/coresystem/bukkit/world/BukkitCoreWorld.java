@@ -13,6 +13,7 @@ import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
+import eu.mcone.coresystem.api.core.exception.RuntimeCoreException;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.annotation.DontObfuscate;
 import lombok.AllArgsConstructor;
@@ -71,7 +72,11 @@ public class BukkitCoreWorld implements CoreWorld {
     @Override
     public void teleportSilently(Player p, String locationName) {
         Location loc = getLocation(locationName);
-        if (getLocation(locationName) != null) p.teleport(loc);
+        if (getLocation(locationName) != null) {
+            p.teleport(loc);
+        } else {
+            throw new RuntimeCoreException("Could not teleport Player "+p.getName()+" to location "+locationName+". Location does not exist!");
+        }
     }
 
     @Override
