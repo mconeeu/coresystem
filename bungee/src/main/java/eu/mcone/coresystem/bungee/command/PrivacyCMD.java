@@ -15,10 +15,10 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
-public class DataProtectionCMD extends Command {
+public class PrivacyCMD extends Command {
 
-    public DataProtectionCMD() {
-        super("datenschutz", null, "datenschutzerklärung", "dataprotection", "agb", "agbs");
+    public PrivacyCMD() {
+        super("privacy", null, "datenschutz", "datenschutzerklärung", "agb", "agbs");
     }
 
     @Override
@@ -28,8 +28,6 @@ public class DataProtectionCMD extends Command {
 
             CoreSystem.getInstance().getMessager().send(p.bungee(),
                     new ComponentBuilder("§7§oMit dem Spielen auf MC ONE akzeptierst du unsere Datenschutzvereinbarung!\n")
-                            .color(ChatColor.DARK_RED)
-                            .italic(true)
                             .append("[DATENSCHUTZERKLÄRUNG ÖFFNEN]", ComponentBuilder.FormatRetention.NONE)
                             .color(ChatColor.GREEN)
                             .event(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.mcone.eu/datenschutz.php"))

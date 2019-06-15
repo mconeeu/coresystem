@@ -8,8 +8,9 @@ package eu.mcone.coresystem.bukkit.inventory;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
+import eu.mcone.coresystem.api.bukkit.item.Skull;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
+import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import lombok.Setter;
 import org.bukkit.Material;
@@ -32,7 +33,7 @@ public class ProfileInventory extends CoreInventory {
         double onlinetime = Math.floor(((double) cp.getOnlinetime() / 60 / 60) * 100) / 100;
         String status = cp.getState().getName();
 
-        setItem(InventorySlot.ROW_1_SLOT_5, ItemBuilder.createSkullItem(p.getName(), 1).displayName("§f§l" + p.getName()).lore(
+        setItem(InventorySlot.ROW_1_SLOT_5, new Skull(p.getName(), 1).toItemBuilder().displayName("§f§l" + p.getName()).lore(
                 cp.getMainGroup().getLabel(),
                 "",
                 "§7Coins: §f" + cp.getCoins(),

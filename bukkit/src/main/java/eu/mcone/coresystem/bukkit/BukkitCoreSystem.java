@@ -40,7 +40,7 @@ import eu.mcone.coresystem.bukkit.command.*;
 import eu.mcone.coresystem.bukkit.hologram.CoreHologramManager;
 import eu.mcone.coresystem.bukkit.inventory.ProfileInventory;
 import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
-import eu.mcone.coresystem.bukkit.labymod.LabyModAPI;
+import eu.mcone.coresystem.bukkit.player.LabyModManager;
 import eu.mcone.coresystem.bukkit.listener.*;
 import eu.mcone.coresystem.bukkit.npc.CoreNpcManager;
 import eu.mcone.coresystem.bukkit.player.BukkitCorePlayer;
@@ -110,7 +110,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private CoreHologramManager hologramManager;
     @Getter
-    private LabyModAPI labyModAPI;
+    private LabyModManager labyModAPI;
     @Getter
     private PlayerUtils playerUtils;
     @Getter
@@ -186,8 +186,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aLoading Translations...");
         translationManager = new TranslationManager(database1, this);
 
-        sendConsoleMessage("§aInitializing LabyModAPI...");
-        labyModAPI = new LabyModAPI();
+        sendConsoleMessage("§aInitializing LabyModManager...");
+        labyModAPI = new LabyModManager();
 
         sendConsoleMessage("§aStarting WorldManager...");
         worldManager = new WorldManager(this);
@@ -223,7 +223,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
 
         for (Player p : Bukkit.getOnlinePlayers()) {
-            CorePlayerListener.setPermissions(p);
+            CorePlayerListener.setCorePermissibleBase(p);
             Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
 
             new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(
@@ -268,8 +268,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         try {
             mongoConnection.disconnect();
-        } catch (NoClassDefFoundError ignored) {
-        }
+        } catch (NoClassDefFoundError ignored) {}
         corePlayers.clear();
 
         getServer().getMessenger().unregisterIncomingPluginChannel(this);

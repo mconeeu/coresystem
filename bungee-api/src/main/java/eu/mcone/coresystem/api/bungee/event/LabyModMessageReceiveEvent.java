@@ -15,8 +15,8 @@ import net.md_5.bungee.api.plugin.Event;
 @Getter
 public final class LabyModMessageReceiveEvent extends Event {
 
-    private ProxiedPlayer player;
-    private String messageKey;
-    private JsonElement jsonElement;
+    private final ProxiedPlayer player;
+    private final String messageKey;
+    private final JsonElement jsonElement;
 
 }

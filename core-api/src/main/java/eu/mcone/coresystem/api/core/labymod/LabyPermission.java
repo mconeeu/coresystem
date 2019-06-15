@@ -7,9 +7,6 @@ package eu.mcone.coresystem.api.core.labymod;
 
 import lombok.Getter;
 
-/**
- * Class created by qlow | Jan
- */
 public enum LabyPermission {
 
     // Permissions that are disabled by default

@@ -15,7 +15,7 @@ import net.md_5.bungee.api.plugin.Event;
 @Getter
 public final class LabyModPlayerJoinEvent extends Event {
 
-    private ProxiedPlayer player;
-    private LabyModConnection connection;
+    private final ProxiedPlayer player;
+    private final LabyModConnection connection;
 
 }

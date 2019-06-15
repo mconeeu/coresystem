@@ -3,7 +3,7 @@
  * You are not allowed to decompile the code
  */
 
-package eu.mcone.coresystem.api.bukkit.util;
+package eu.mcone.coresystem.api.bukkit.item;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import org.bukkit.Material;
@@ -13,28 +13,47 @@ import org.bukkit.inventory.meta.BookMeta;
 
 import java.util.List;
 
-public class Book {
+public final class Book extends ExtendedItemBuilder<BookMeta> {
 
-    private final ItemStack book;
-    private final BookMeta meta;
-
-    public Book(String title, String author, String... pages) {
-        this();
+    /**
+     * creates new Book with predefined variables
+     * @param amount item amount in ItemStack
+     * @param title title of the book
+     * @param author author of the book
+     * @param pages pages as Stings, may not be longer than 256 chars
+     */
+    public Book(int amount, String title, String author, String... pages) {
+        this(amount);
         setTitle(title);
         setAuthor(author);
         setPages(pages);
     }
 
+    /**
+     * creates new Book instance with item amount 1
+     */
     public Book() {
-        this.book = new ItemStack(Material.WRITTEN_BOOK, 1);
-        this.meta = (BookMeta) book.getItemMeta();
+        this(1);
+    }
+
+    /**
+     * creates new Book instance
+     * @param amount amount of items in ItemStack
+     */
+    public Book(int amount) {
+        super(new ItemStack(Material.WRITTEN_BOOK, amount));
     }
 
     private Book(ItemStack book) {
-        this.book = book;
-        this.meta = (BookMeta) book.getItemMeta();
+        super(book);
     }
 
+    /**
+     * wraps an existing ItemStack which must be of Material.WRITTEN_BOOK or Material.BOOK_AND_QUILL in an Book object
+     * @param book ItemStack
+     * @return new Book instance
+     * @throws ClassCastException if ItemStack has a conflicting Material
+     */
     public static Book wrap(ItemStack book) throws ClassCastException {
         BookMeta meta = (BookMeta) book.getItemMeta();
         return new Book(book);
@@ -179,24 +198,8 @@ public class Book {
      * @return this
      */
     public Book open(Player player) {
-        CoreSystem.getInstance().openBook(player, toItemStack());
+        CoreSystem.getInstance().openBook(player, getItemStack());
         return this;
-    }
-
-    /**
-     * converts the Book to an ItemBuilder for further modifying
-     * @return ItemBuilder
-     */
-    public ItemBuilder toItemBuilder() {
-        return ItemBuilder.wrap(book);
-    }
-
-    /**
-     * converts the Book to an ItemStack
-     * @return ItemStack
-     */
-    public ItemStack toItemStack() {
-        return book;
     }
 
 }

@@ -7,14 +7,15 @@ package eu.mcone.coresystem.bukkit.player;
 
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissibleBase;
 
 import java.util.UUID;
 
-public class PermissibleBase extends org.bukkit.permissions.PermissibleBase {
+public class CorePermissibleBase extends PermissibleBase {
 
     private Player player;
 
-    public PermissibleBase(Player player) {
+    public CorePermissibleBase(Player player) {
         super(player);
         this.player = player;
     }

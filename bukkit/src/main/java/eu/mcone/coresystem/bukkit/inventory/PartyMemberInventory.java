@@ -7,7 +7,8 @@ package eu.mcone.coresystem.bukkit.inventory;
 
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
-import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
+import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
+import eu.mcone.coresystem.api.bukkit.item.Skull;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -18,7 +19,7 @@ class PartyMemberInventory extends CoreInventory {
     PartyMemberInventory(Player p, String member) {
         super("§8» §f§l" + member + " §8| §5Aktionen", p, InventorySlot.ROW_4, Option.FILL_EMPTY_SLOTS);
 
-        setItem(InventorySlot.ROW_1_SLOT_5, ItemBuilder.createSkullItem(member, 1).displayName("§f§l" + member).create());
+        setItem(InventorySlot.ROW_1_SLOT_5, new Skull(member, 1).toItemBuilder().displayName("§f§l" + member).create());
 
         setItem(InventorySlot.ROW_3_SLOT_4, new ItemBuilder(Material.NETHER_STAR, 1, 0).displayName("§7Zum §ePartyleader§7 promoten").create(), e -> {
             BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "party promote " + member);

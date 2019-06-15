@@ -3,24 +3,20 @@
  * You are not allowed to decompile the code
  */
 
-package eu.mcone.coresystem.api.bukkit.util;
+package eu.mcone.coresystem.api.bukkit.item;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import eu.mcone.coresystem.api.core.player.SkinInfo;
-import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Color;
 import org.bukkit.Material;
-import org.bukkit.SkullType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 
-import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public final class ItemBuilder {
 
@@ -79,52 +75,6 @@ public final class ItemBuilder {
         } else {
             return new ItemBuilder(itemStack);
         }
-    }
-
-    /**
-     * create ItemBuilder for SkullItem by owner
-     * @param owner owner of the skull
-     * @param amount amount of items in ItemStack
-     * @return new ItemBuilder
-     */
-    public static ItemBuilder createSkullItem(String owner, int amount) {
-        ItemBuilder factory = new ItemBuilder(Material.SKULL_ITEM, amount, (short) SkullType.PLAYER.ordinal());
-        ((SkullMeta) factory.itemMeta).setOwner(owner);
-
-        return factory;
-    }
-
-    /**
-     * create ItemBuilder for SkullItem by predefined Skin
-     * @param skin BCS SkinInfo object
-     * @param amount amount of items in ItemStack
-     * @return new ItemBuilder
-     */
-    public static ItemBuilder createSkullItem(SkinInfo skin, int amount) {
-        ItemBuilder factory = new ItemBuilder(Material.SKULL_ITEM, amount, (short) SkullType.PLAYER.ordinal());
-
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-        profile.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
-
-        setProfileField(factory.itemMeta, profile);
-        return factory;
-    }
-
-    /**
-     * create ItemBuilder for SkullItem by URL
-     * @param url url of skin.png
-     * @param amount amount of items in ItemStack
-     * @return new ItemBuilder
-     */
-    public static ItemBuilder createSkullItemFromURL(String url, int amount) {
-        ItemBuilder factory = new ItemBuilder(Material.SKULL_ITEM, amount, (short) SkullType.PLAYER.ordinal());
-
-        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-        byte[] encodedData = Base64.encodeBase64(String.format("{textures:{SKIN:{url:\"%s\"}}}", url).getBytes());
-        profile.getProperties().put("textures", new Property("textures", new String(encodedData)));
-
-        setProfileField(factory.itemMeta, profile);
-        return factory;
     }
 
     /**
@@ -220,18 +170,6 @@ public final class ItemBuilder {
     public ItemStack create() {
         itemStack.setItemMeta(itemMeta);
         return itemStack;
-    }
-
-    private static void setProfileField(ItemMeta meta, GameProfile profile) {
-        Field profileField;
-
-        try {
-            profileField = ((SkullMeta) meta).getClass().getDeclaredField("profile");
-            profileField.setAccessible(true);
-            profileField.set(meta, profile);
-        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
     }
 
 }

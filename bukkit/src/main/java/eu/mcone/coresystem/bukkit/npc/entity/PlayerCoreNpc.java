@@ -5,6 +5,8 @@
 
 package eu.mcone.coresystem.bukkit.npc.entity;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
@@ -18,7 +20,7 @@ import eu.mcone.coresystem.api.core.exception.SkinNotFoundException;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.npc.CoreNPC;
-import eu.mcone.coresystem.bukkit.npc.util.ReflectionManager;
+import eu.mcone.coresystem.bukkit.util.ReflectionManager;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
@@ -30,14 +32,15 @@ import org.bukkit.craftbukkit.v1_8_R3.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
 
+    private static final Random UUID_RANDOM = new Random();
     private final Location bedLocation;
 
+    @Getter
+    private UUID uuid;
     @Getter
     private SkinInfo skin;
     @Getter
@@ -50,6 +53,8 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
 
     @Override
     protected void onCreate() {
+        this.uuid = new UUID(UUID_RANDOM.nextLong(), 0);
+
         try {
             switch (entityData.getSkinType()) {
                 case CUSTOM:
@@ -71,8 +76,7 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
             throw new NpcCreateException("Could not create NPC: ", e);
         }
 
-        this.profile = new GameProfile(UUID.randomUUID(), ChatColor.translateAlternateColorCodes('&', data.getDisplayname()));
-        this.profile.getProperties().put("textures", new Property("textures", this.skin.getValue(), this.skin.getSignature()));
+        this.profile = makeGameProfile(uuid, data.getDisplayname(), skin);
     }
 
     @Override
@@ -122,14 +126,11 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
 
     @Override
     public void changeDisplayname(String displayname, Player... players) {
-        this.profile = new GameProfile(UUID.randomUUID(), ChatColor.translateAlternateColorCodes('&', displayname));
-        this.profile.getProperties().put("textures", new Property("textures", this.skin.getValue(), this.skin.getSignature()));
-
+        this.profile = makeGameProfile(uuid, displayname, skin);
         super.changeDisplayname(displayname, players);
 
         if (players.length == 0) {
-            this.profile = new GameProfile(UUID.randomUUID(), ChatColor.translateAlternateColorCodes('&', data.getDisplayname()));
-            this.profile.getProperties().put("textures", new Property("textures", this.skin.getValue(), this.skin.getSignature()));
+            this.profile = makeGameProfile(uuid, data.getDisplayname(), skin);
         }
     }
 
@@ -153,6 +154,7 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         ReflectionManager.setValue(packets[1], "g", (byte) ((int) (data.getLocation().getPitch() * 256.0F / 360.0F)));
         ReflectionManager.setValue(packets[1], "h", 0);
         DataWatcher watcher = new DataWatcher(null);
+        watcher.a(0, (byte) 0);
         watcher.a(6, (float) 20);
         watcher.a(10, (byte) 127);
         ReflectionManager.setValue(packets[1], "i", watcher);
@@ -255,12 +257,26 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         }
     }
 
+    @Override
+    public void playLabymodEmote(int emoteId, Player... players) {
+        JsonArray array = new JsonArray();
+
+        JsonObject emote = new JsonObject();
+        emote.addProperty("uuid", uuid.toString());
+        emote.addProperty("emote_id", emoteId);
+        array.add(emote);
+
+        Collection<? extends Player> send = players.length > 0 ? Arrays.asList(players) : Bukkit.getOnlinePlayers();
+        for (Player player : send) {
+            BukkitCoreSystem.getInstance().getLabyModAPI().sendServerMessage(player, "emote_api", array);
+        }
+    }
 
     private PacketPlayOutPlayerInfo makeTablistPacket(boolean add) {
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo();
         ReflectionManager.setValue(packet, "a", add ? PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER : PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER);
         ReflectionManager.setValue(packet, "b", new ArrayList<>(Collections.singleton(
-                packet.new PlayerInfoData(profile, 0, WorldSettings.EnumGamemode.CREATIVE, CraftChatMessage.fromString(entityData.getTablistName())[0])
+                packet.new PlayerInfoData(profile, 0, WorldSettings.EnumGamemode.SURVIVAL, CraftChatMessage.fromString(entityData.getTablistName())[0])
         )));
 
         return packet;
@@ -285,6 +301,13 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
                 tpPackets[1],
                 tpPackets[2]
         };
+    }
+
+    private GameProfile makeGameProfile(UUID uuid, String name, SkinInfo skin) {
+        GameProfile profile = new GameProfile(uuid, ChatColor.translateAlternateColorCodes('&', name));
+        profile.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
+
+        return profile;
     }
 
 }

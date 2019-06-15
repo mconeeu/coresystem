@@ -12,7 +12,7 @@ import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.player.BukkitCorePlayer;
 import eu.mcone.coresystem.bukkit.player.NickManager;
-import eu.mcone.coresystem.bukkit.player.PermissibleBase;
+import eu.mcone.coresystem.bukkit.player.CorePermissibleBase;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -38,7 +38,7 @@ public class CorePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onLogin(PlayerLoginEvent e) {
         Player p = e.getPlayer();
-        setPermissions(p);
+        setCorePermissibleBase(p);
 
         Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
         new BukkitCorePlayer(BukkitCoreSystem.getInstance(), e.getAddress(), new SkinInfo(p.getName(), textures.getValue(), textures.getSignature(), SkinInfo.SkinType.PLAYER), p);
@@ -85,13 +85,13 @@ public class CorePlayerListener implements Listener {
         Bukkit.getScheduler().runTask(BukkitCoreSystem.getInstance(), p::unregister);
     }
 
-    public static void setPermissions(Player p) {
+    public static void setCorePermissibleBase(Player p) {
         Field f;
 
         try {
             f = CraftHumanEntity.class.getDeclaredField("perm");
             f.setAccessible(true);
-            f.set(p, new PermissibleBase(p));
+            f.set(p, new CorePermissibleBase(p));
             f.setAccessible(false);
         } catch (IllegalAccessException | NoSuchFieldException e1) {
             e1.printStackTrace();

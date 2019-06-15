@@ -6,7 +6,6 @@
 package eu.mcone.coresystem.api.bukkit;
 
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
-import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
@@ -80,7 +79,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * returns the BCS HologramManager
      * @return HologramManager instance
      */
-    public abstract HologramManager getHologramManager();
+    public abstract eu.mcone.coresystem.api.bukkit.hologram.HologramManager getHologramManager();
 
     /**
      * returns the BCS AfkManager
@@ -92,7 +91,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * returns the bukkit Labymod API
      * @return bukkit Labymod API instance
      */
-    public abstract LabyModAPI getLabyModAPI();
+    public abstract LabyModAPI<Player> getLabyModAPI();
 
     /**
      * returns the mc one plugin messaging channel handler

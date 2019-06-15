@@ -5,7 +5,9 @@
 
 package eu.mcone.coresystem.core.labymod;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import eu.mcone.coresystem.api.core.labymod.LabyModAPI;
 import eu.mcone.coresystem.api.core.labymod.LabyPermission;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -15,38 +17,23 @@ import io.netty.handler.codec.EncoderException;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-/**
- * Class created by qlow | Jan
- */
-public class LabyModConnectionHandler {
+public abstract class LMCUtils<P> implements LabyModAPI<P> {
 
-    /**
-     * Gets the bytes we should send to a player to update the permissions
-     *
-     * @param permissions a map containing the permissions
-     * @return the byte array that should be the payload
-     */
-    public byte[] getBytesToSend(Map<LabyPermission, Boolean> permissions) {
-        // Creating a json object we will put the permissions in
+    protected abstract void sendLMCMessage(P player, byte[] message);
+
+    @Override
+    public void sendPermissions(P player, Map<LabyPermission, Boolean> permissions) {
         JsonObject object = new JsonObject();
 
-        // Adding the permissions to the json object
         for (Map.Entry<LabyPermission, Boolean> permissionEntry : permissions.entrySet()) {
             object.addProperty(permissionEntry.getKey().name(), permissionEntry.getValue());
         }
 
-        // Returning the byte array
-        return getBytesToSend("PERMISSIONS", object.toString());
+        sendServerMessage(player, "PERMISSIONS", object);
     }
 
-    /**
-     * Gets the bytes that are required to send the given message
-     *
-     * @param messageKey      the message's key
-     * @param messageContents the message's contents
-     * @return the byte array that should be the payload
-     */
-    public byte[] getBytesToSend(String messageKey, String messageContents) {
+    @Override
+    public void sendServerMessage(P player, String messageKey, JsonElement data) {
         // Getting an empty buffer
         ByteBuf byteBuf = Unpooled.buffer();
 
@@ -54,14 +41,14 @@ public class LabyModConnectionHandler {
         writeString(byteBuf, messageKey);
 
         // Writing the contents to the buffer
-        writeString(byteBuf, messageContents);
+        writeString(byteBuf, data.toString());
 
         // Copying the buffer's bytes to the byte array
         byte[] bytes = new byte[byteBuf.readableBytes()];
         byteBuf.readBytes(bytes);
 
         // Returning the byte array
-        return bytes;
+        sendLMCMessage(player, bytes);
     }
 
     /**

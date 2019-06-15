@@ -7,7 +7,8 @@ package eu.mcone.coresystem.bukkit.inventory;
 
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
-import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
+import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
+import eu.mcone.coresystem.api.bukkit.item.Skull;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -24,7 +25,7 @@ class FriendsInventory extends CoreInventory {
                 if (friend.equals("") || i > 44) continue;
 
                 String[] data = friend.split(":");
-                setItem(i, ItemBuilder.createSkullItem(data[1], 1).displayName("§f§l" + data[1]).lore(data[2], "", "§8» §f§nRechtsklick§8 | §7§oAktionen").create(), e -> {
+                setItem(i, new Skull(data[1], 1).toItemBuilder().displayName("§f§l" + data[1]).lore(data[2], "", "§8» §f§nRechtsklick§8 | §7§oAktionen").create(), e -> {
                     new FriendInventory(p, data[1]);
                     p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
                 });

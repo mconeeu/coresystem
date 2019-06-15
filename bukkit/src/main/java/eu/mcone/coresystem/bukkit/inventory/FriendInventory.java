@@ -7,7 +7,8 @@ package eu.mcone.coresystem.bukkit.inventory;
 
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
-import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
+import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
+import eu.mcone.coresystem.api.bukkit.item.Skull;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -18,7 +19,7 @@ class FriendInventory extends CoreInventory {
     FriendInventory(Player p, String friend) {
         super("§8» §f§l" + friend + " §8| §7Aktionen", p, InventorySlot.ROW_4, Option.FILL_EMPTY_SLOTS);
 
-        setItem(InventorySlot.ROW_1_SLOT_5, ItemBuilder.createSkullItem(friend, 1).displayName("§f§l" + friend).create());
+        setItem(InventorySlot.ROW_1_SLOT_5, new Skull(friend, 1).toItemBuilder().displayName("§f§l" + friend).create());
         setItem(InventorySlot.ROW_3_SLOT_3, new ItemBuilder(Material.ENDER_PEARL, 1, 0).displayName("§7Teleportieren").create(), e -> {
             p.closeInventory();
             BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "jump " + friend);
