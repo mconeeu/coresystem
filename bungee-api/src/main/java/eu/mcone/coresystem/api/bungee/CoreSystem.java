@@ -41,7 +41,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     public abstract NickManager getNickManager();
 
-    public abstract LabyModAPI getLabyModAPI();
+    public abstract LabyModAPI<ProxiedPlayer> getLabyModAPI();
 
     public abstract ChannelHandler getChannelHandler();
 

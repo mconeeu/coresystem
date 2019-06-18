@@ -12,7 +12,7 @@
     <groupId>eu.mcone.coresystem</groupId>
     <artifactId>mcone-coresystem</artifactId>
     <packaging>pom</packaging>
-    <version>10.3.0-SNAPSHOTT</version>
+    <version>10.2.5-SNAPSHOT</version>
 
     <modules>
         <module>core</module>

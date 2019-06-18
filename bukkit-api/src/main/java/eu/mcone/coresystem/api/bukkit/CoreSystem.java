@@ -6,12 +6,10 @@
 package eu.mcone.coresystem.api.bukkit;
 
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
-import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
-import eu.mcone.coresystem.api.bukkit.inventory.modification.InventoryModificationManager;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.api.bukkit.player.AfkManager;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
@@ -43,7 +41,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     private static CoreSystem instance;
 
     protected CoreSystem() {
-        super(Gamemode.UNDEFINED, "bukkitsystem", ChatColor.WHITE, "system.prefix.server");
+        super("bukkitsystem", ChatColor.WHITE, "system.prefix.server");
     }
 
     protected void setInstance(CoreSystem instance) {
@@ -78,17 +76,11 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      */
     public abstract NpcManager getNpcManager();
 
-//    /**
-//     * returns the InventoryModificationManager
-//     * @return InventoryModificationManager
-//     */
-//    public abstract InventoryModificationManager getInventoryModificationManager();
-
     /**
      * returns the BCS HologramManager
      * @return HologramManager instance
      */
-    public abstract HologramManager getHologramManager();
+    public abstract eu.mcone.coresystem.api.bukkit.hologram.HologramManager getHologramManager();
 
     /**
      * returns the BCS AfkManager
@@ -100,7 +92,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * returns the bukkit Labymod API
      * @return bukkit Labymod API instance
      */
-    public abstract LabyModAPI getLabyModAPI();
+    public abstract LabyModAPI<Player> getLabyModAPI();
 
     /**
      * returns the mc one plugin messaging channel handler

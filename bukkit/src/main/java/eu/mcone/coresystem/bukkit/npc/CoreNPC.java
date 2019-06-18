@@ -14,7 +14,7 @@ import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.core.exception.NpcCreateException;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.bukkit.npc.util.ReflectionManager;
+import eu.mcone.coresystem.bukkit.util.ReflectionManager;
 import eu.mcone.coresystem.bukkit.util.PlayerListModeToggleUtil;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.*;

@@ -8,10 +8,11 @@ package eu.mcone.coresystem.bukkit.npc;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.event.NpcManagerReloadedEvent;
+import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
-import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.NpcCreateException;
@@ -20,6 +21,7 @@ import eu.mcone.coresystem.bukkit.command.NpcCMD;
 import eu.mcone.coresystem.bukkit.listener.NpcListener;
 import eu.mcone.coresystem.bukkit.world.BukkitCoreWorld;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -57,6 +59,8 @@ public class CoreNpcManager implements NpcManager {
                 addNPC(data);
             }
         }
+
+        Bukkit.getPluginManager().callEvent(new NpcManagerReloadedEvent(this));
     }
 
     public void addNPCAndSave(EntityType entity, String name, String displayname, Location location) {

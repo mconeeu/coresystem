@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bukkit.hologram;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.event.HologramManagerReloadedEvent;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
@@ -17,6 +18,7 @@ import eu.mcone.coresystem.bukkit.command.HoloCMD;
 import eu.mcone.coresystem.bukkit.listener.HologramListener;
 import eu.mcone.coresystem.bukkit.world.BukkitCoreWorld;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -61,6 +63,8 @@ public class CoreHologramManager implements HologramManager {
             holo.despawn(p);
             holo.spawn(p);
         }
+
+        Bukkit.getPluginManager().callEvent(new HologramManagerReloadedEvent(this));
     }
 
     public void addHologramAndSave(String name, Location location, String... text) {

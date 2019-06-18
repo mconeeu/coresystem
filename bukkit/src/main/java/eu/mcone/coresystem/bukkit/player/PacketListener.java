@@ -8,7 +8,7 @@ package eu.mcone.coresystem.bukkit.player;
 import eu.mcone.coresystem.api.bukkit.event.NpcInteractEvent;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.bukkit.npc.util.ReflectionManager;
+import eu.mcone.coresystem.bukkit.util.ReflectionManager;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.MessageToMessageDecoder;

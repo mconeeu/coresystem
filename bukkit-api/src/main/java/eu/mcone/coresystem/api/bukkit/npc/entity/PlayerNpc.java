@@ -11,7 +11,16 @@ import eu.mcone.coresystem.api.core.player.SkinInfo;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.UUID;
+
 public interface PlayerNpc extends NPC {
+
+    /**
+     * returns the current UUID of the NPC
+     * they UUID may change when changing name or skin of the NPC
+     * @return current npcs uuid
+     */
+    UUID getUuid();
 
     /**
      * Sets a specific item in the NPCs inventory and makes it visible for other players
@@ -59,5 +68,12 @@ public interface PlayerNpc extends NPC {
      * @param players players which should receive the name add|remove (choose no players to send the update to all players and save this setting in PlayerNpcData & core-config)
      */
     void setVisibleOnTab(boolean visible, Player... players);
+
+    /**
+     * Sends emote message to make the npc do an specific emote
+     * @param emoteId LabyMod Emote ID
+     * @param players players which should receive the name add|remove (choose no players to send the update to all players and save this setting in PlayerNpcData & core-config)
+     */
+    void playLabymodEmote(int emoteId, Player... players);
 
 }

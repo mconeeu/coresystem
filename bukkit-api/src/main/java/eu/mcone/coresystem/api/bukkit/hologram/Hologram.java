@@ -15,5 +15,10 @@ public interface Hologram extends PlayerListModeToggleable {
      */
     HologramData getData();
 
+    /**
+     * Updates the Holograms data and sends update packets for all changes to visible players dynamically
+     * @param data new NpcData
+     */
     void update(HologramData data);
+
 }

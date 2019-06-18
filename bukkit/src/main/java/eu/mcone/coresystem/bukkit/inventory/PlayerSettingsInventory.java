@@ -8,8 +8,9 @@ package eu.mcone.coresystem.bukkit.inventory;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
+import eu.mcone.coresystem.api.bukkit.item.Skull;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
+import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.translation.Language;
 import org.bukkit.Material;
@@ -36,8 +37,8 @@ class PlayerSettingsInventory extends CoreInventory {
                 }
         );
 
-        setItem(InventorySlot.ROW_2_SLOT_4, ItemBuilder.createSkullItemFromURL("http://textures.minecraft.net/texture/6f74f58f541342393b3b16787dd051dfacec8cb5cd3229c61e5f73d63947ad", 1).displayName("§f§lSprache").create());
-        setItem(InventorySlot.ROW_3_SLOT_4, ItemBuilder.createSkullItemFromURL(cp.getSettings().getLanguage().getTextureUrl(), 1).displayName("§f§l" + cp.getSettings().getLanguage().getName()).lore("§7§oKlicke zum ändern").create(), e -> {
+        setItem(InventorySlot.ROW_2_SLOT_4, Skull.fromUrl("http://textures.minecraft.net/texture/6f74f58f541342393b3b16787dd051dfacec8cb5cd3229c61e5f73d63947ad", 1).toItemBuilder().displayName("§f§lSprache").create());
+        setItem(InventorySlot.ROW_3_SLOT_4, Skull.fromUrl(cp.getSettings().getLanguage().getTextureUrl(), 1).toItemBuilder().displayName("§f§l" + cp.getSettings().getLanguage().getName()).lore("§7§oKlicke zum ändern").create(), e -> {
             switch (cp.getSettings().getLanguage()) {
                 case ENGLISH:
                     cp.getSettings().setLanguage(Language.GERMAN);

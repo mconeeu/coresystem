@@ -36,11 +36,18 @@ public class PostLoginListener implements Listener {
 
         BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "\n\n\n\n§8[§7§l!§8] §3MC ONE §8» §7§o" + getRandomWelcomeMSG(p, cp.isNew()) + ", §f§o" + p.getName() + "§7§o!");
         if (cp.isNew()) {
-            ProxyServer.getInstance().getPluginManager().dispatchCommand(p, "datenschutz");
+            ProxyServer.getInstance().getPluginManager().dispatchCommand(p, "privacy");
             BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "§8[§7§l!§8] §3MC ONE §8» §2Als kleines Willkommensgeschenk bekommst du 20 Coins gutgeschrieben!");
         } else {
             ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getSystem(), () ->
-                    BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", p.getUniqueId().toString()), combine(set("ip", cp.getIpAdress()), set("state", 1), set("timestamp", System.currentTimeMillis() / 1000)))
+                    BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(
+                            eq("uuid", p.getUniqueId().toString()),
+                            combine(
+                                    set("ip", cp.getIpAdress()),
+                                    set("state", 1),
+                                    set("timestamp", System.currentTimeMillis() / 1000)
+                            )
+                    )
             );
         }
 
@@ -69,7 +76,7 @@ public class PostLoginListener implements Listener {
                 );
             }
 
-            BungeeCoreSystem.getInstance().getLabyModAPI().sendPermissions(cp, new HashMap<LabyPermission, Boolean>() {{
+            BungeeCoreSystem.getInstance().getLabyModAPI().sendPermissions(p, new HashMap<LabyPermission, Boolean>() {{
                 put(LabyPermission.IMPROVED_LAVA, true);
                 put(LabyPermission.CROSSHAIR_SYNC, true);
                 put(LabyPermission.REFILL_FIX, true);

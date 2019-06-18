@@ -28,7 +28,7 @@ import eu.mcone.coresystem.bungee.runnable.Broadcast;
 import eu.mcone.coresystem.bungee.runnable.OnlineTime;
 import eu.mcone.coresystem.bungee.runnable.PremiumCheck;
 import eu.mcone.coresystem.bungee.utils.ChannelHandler;
-import eu.mcone.coresystem.bungee.utils.LabyModAPI;
+import eu.mcone.coresystem.bungee.player.LabyModManager;
 import eu.mcone.coresystem.bungee.utils.bots.discord.DiscordControlBot;
 import eu.mcone.coresystem.bungee.utils.bots.teamspeak.TeamspeakVerifier;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
@@ -91,7 +91,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private MoneyUtil moneyUtil;
     @Getter
-    private LabyModAPI labyModAPI;
+    private LabyModManager labyModAPI;
     @Getter
     private Gson gson;
     @Getter
@@ -163,8 +163,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aLoading FriendSystem...");
         friendSystem = new FriendSystem(database);
 
-        sendConsoleMessage("§aInitializing LabyModAPI...");
-        labyModAPI = new LabyModAPI();
+        sendConsoleMessage("§aInitializing LabyModManager...");
+        labyModAPI = new LabyModManager(this);
 
         if (!Boolean.valueOf(System.getProperty("DisableTsQuery"))) {
             sendConsoleMessage("§aLoading TeamSpeakQuery...");
@@ -207,7 +207,9 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             ((eu.mcone.coresystem.core.player.GlobalCorePlayer) p).setState(PlayerState.OFFLINE);
         }
 
-        mongoConnection.disconnect();
+        try {
+            mongoConnection.disconnect();
+        } catch (NoClassDefFoundError ignored) {}
         sendConsoleMessage("§cPlugin disabled!");
     }
 
@@ -220,7 +222,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new WhoisCMD(),
                 new RestartCMD(),
                 new MaintenanceCMD(),
-                new DataProtectionCMD(),
+                new PrivacyCMD(),
                 new CoinsCMD(),
                 new PayCMD(),
 

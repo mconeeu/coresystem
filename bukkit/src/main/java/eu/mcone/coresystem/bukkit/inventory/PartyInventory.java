@@ -8,7 +8,8 @@ package eu.mcone.coresystem.bukkit.inventory;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
-import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
+import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
+import eu.mcone.coresystem.api.bukkit.item.Skull;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -40,7 +41,7 @@ class PartyInventory extends CoreInventory {
                     if (isPartyLeader && !data[0].equalsIgnoreCase(p.getName()))
                         lores.addAll(Arrays.asList("", "§8» §f§nRechtsklick§8 | §7§oAktionen"));
 
-                    setItem(i, ItemBuilder.createSkullItem(data[0], 1).displayName("§f§l" + data[0]).lore(lores).create(), e -> {
+                    setItem(i, new Skull(data[0], 1).toItemBuilder().displayName("§f§l" + data[0]).lore(lores).create(), e -> {
                         new PartyMemberInventory().createInventory(p, data[0]);
                         p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
                     });
