@@ -9,6 +9,7 @@ import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
+import eu.mcone.coresystem.api.bukkit.inventory.modification.InventoryModificationManager;
 import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
 import eu.mcone.coresystem.api.bukkit.util.Messager;
 import eu.mcone.coresystem.api.core.GlobalCorePlugin;
@@ -38,7 +39,7 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin 
         this(Gamemode.UNDEFINED, pluginName, pluginColor, prefixTranslation);
     }
 
-    private CorePlugin(Gamemode pluginGamemode, String pluginName, ChatColor pluginColor, String prefixTranslation) {
+    protected CorePlugin(Gamemode pluginGamemode, String pluginName, ChatColor pluginColor, String prefixTranslation) {
         if (pluginGamemode == null) {
             throw new NullPointerException("Gamemode must not be null!");
         }
@@ -55,6 +56,10 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin 
                 e.printStackTrace();
             }
         }
+    }
+
+    public InventoryModificationManager getInventoryModificationManager() {
+        return CoreSystem.getInstance().getPluginManager().getInventoryModificationManager(this);
     }
 
     public <T> T loadGameProfile(Player player, Class<T> clazz) {
@@ -92,6 +97,7 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin 
 
     /**
      * sends a message to the console with the plugin name as prefix
+     *
      * @param message message
      */
     public void sendConsoleMessage(String message) {
@@ -100,6 +106,7 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin 
 
     /**
      * registers all Event for this plugin
+     *
      * @param listeners listeners array
      */
     public void registerEvents(Listener... listeners) {
@@ -110,6 +117,7 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin 
 
     /**
      * registers all CoreCommands for this plugin
+     *
      * @param commands commands array
      */
     public void registerCommands(CoreCommand... commands) {
@@ -120,6 +128,7 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin 
 
     /**
      * unregisters specific CoreCommands (can be registered by any Plugin)
+     *
      * @param commands commands array
      */
     public void unregisterCommands(CoreCommand... commands) {

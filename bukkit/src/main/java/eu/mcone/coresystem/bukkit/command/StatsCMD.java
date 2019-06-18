@@ -17,7 +17,7 @@ public class StatsCMD extends CorePlayerCommand {
 
     @Override
     public boolean onPlayerCommand(Player p, String[] args) {
-        new StatsInventory(p);
+        new StatsInventory().openInventory(p);
         return true;
     }
 

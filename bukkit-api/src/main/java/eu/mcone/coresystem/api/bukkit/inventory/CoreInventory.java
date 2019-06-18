@@ -7,7 +7,9 @@ package eu.mcone.coresystem.api.bukkit.inventory;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -20,70 +22,95 @@ public abstract class CoreInventory {
 
     public static final ItemStack EMPTY_SLOT_ITEM = new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 7).displayName("§8//§oMCONE§8//").create();
 
+    @Setter
     @Getter
-    private String name;
+    private String title;
     @Getter
-    private Inventory inventory;
+    private int size;
     @Getter
-    private Player player;
+    private Map<Integer, CoreItemStack> items;
+    @Setter
     @Getter
-    private Map<ItemStack, CoreItemEvent> events;
-    @Getter
-    private Option[] options;
+    private List<Option> options;
 
     /**
      * creates new CoreInventory
-     * @param name inventory title
-     * @param player target player
+     *
+     * @param title inventory title
+     * @param size  inventory size
+     * @param args  options
+     */
+    public CoreInventory(String title, int size, Option... args) {
+        this.title = title;
+        this.size = size;
+        this.items = new HashMap<>();
+        this.options = new ArrayList<>(Arrays.asList(args));
+    }
+
+
+    /**
+     * creates new CoreInventory
+     *
      * @param size inventory size
      * @param args options
      */
-    protected CoreInventory(String name, Player player, int size, Option... args) {
-        this.name = name;
-        this.inventory = Bukkit.createInventory(null, size, name);
-        this.player = player;
-        this.events = new HashMap<>();
-        this.options = args;
-
-        CoreSystem.getInstance().getPluginManager().registerCoreInventory(this, player);
-
-        List<Option> options = new ArrayList<>(Arrays.asList(args));
-        if (options.contains(Option.FILL_EMPTY_SLOTS)) {
-            for (int i = 0; i < size; i++) {
-                inventory.setItem(i, EMPTY_SLOT_ITEM);
-            }
-        }
+    public CoreInventory(int size, Option... args) {
+        this.size = size;
+        this.items = new HashMap<>();
+        this.options = new ArrayList<>(Arrays.asList(args));
     }
 
     /**
      * sets an item in the inventory
-     * @param slot inventory slot
-     * @param item item stack
+     *
+     * @param slot  inventory slot
+     * @param item  item stack
      * @param event event, called when player clicks on the item
      */
     public void setItem(int slot, ItemStack item, CoreItemEvent event) {
-        inventory.setItem(slot, item);
-        events.put(item, event);
+        items.put(slot, new CoreItemStack(item, event));
     }
 
     /**
      * sets an item in the inventory
+     *
      * @param slot inventory slot
      * @param item item stack
      */
     public void setItem(int slot, ItemStack item) {
-        inventory.setItem(slot, item);
+        items.put(slot, new CoreItemStack(item, null));
     }
 
     /**
      * opens the inventory
      */
-    protected void openInventory() {
+    public Inventory openInventory(final Player player) {
+        CoreSystem.getInstance().getPluginManager().registerCoreInventory(player, this);
+
+        Inventory inventory = Bukkit.createInventory(null, size, title);
+
+        if (options.contains(Option.FILL_EMPTY_SLOTS)) {
+            for (int i = 0; i < size; i++) {
+                inventory.setItem(i, EMPTY_SLOT_ITEM);
+            }
+        }
+
+        for (Map.Entry<Integer, CoreItemStack> entry : items.entrySet()) {
+            inventory.setItem(entry.getKey(), entry.getValue().getItemStack());
+        }
+
         player.openInventory(inventory);
+        return inventory;
     }
 
     public enum Option {
-        FILL_EMPTY_SLOTS, ENABLE_CLICK_EVENT
+        FILL_EMPTY_SLOTS, ENABLE_CLICK_EVENT, CAN_MODIFY
     }
 
+    @Getter
+    @AllArgsConstructor
+    public static class CoreItemStack {
+        private ItemStack itemStack;
+        private CoreItemEvent coreItemEvent;
+    }
 }

@@ -6,10 +6,12 @@
 package eu.mcone.coresystem.api.bukkit;
 
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
+import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
+import eu.mcone.coresystem.api.bukkit.inventory.modification.InventoryModificationManager;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.api.bukkit.player.AfkManager;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
@@ -41,7 +43,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     private static CoreSystem instance;
 
     protected CoreSystem() {
-        super("bukkitsystem", ChatColor.WHITE, "system.prefix.server");
+        super(Gamemode.UNDEFINED, "bukkitsystem", ChatColor.WHITE, "system.prefix.server");
     }
 
     protected void setInstance(CoreSystem instance) {
@@ -75,6 +77,12 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return NpcManager instance
      */
     public abstract NpcManager getNpcManager();
+
+//    /**
+//     * returns the InventoryModificationManager
+//     * @return InventoryModificationManager
+//     */
+//    public abstract InventoryModificationManager getInventoryModificationManager();
 
     /**
      * returns the BCS HologramManager

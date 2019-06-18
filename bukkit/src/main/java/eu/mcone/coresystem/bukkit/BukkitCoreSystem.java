@@ -195,6 +195,18 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aStarting NpcManager...");
         npcManager = new CoreNpcManager(this);
 
+//        // TEST
+////        sendConsoleMessage("§aStarting InventoryModificationManager...");
+//        getInventoryModificationManager().loadModifiedInventories();
+//        getInventoryModificationManager().registerInventories(
+//                new TestInventory1(),
+//                new TestInventory2(),
+//                new TestInventory3(),
+//                new TestInventory4(),
+//                new TestInventory5(),
+//                new TestInventory6()
+//        );
+
         sendConsoleMessage("§aStarting HologramManager...");
         hologramManager = new CoreHologramManager(this);
 
@@ -207,7 +219,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aStarting NickManager...");
         nickManager = new NickManager(this);
 
-        sendConsoleMessage("§aLoading Commands, Events...");
+        sendConsoleMessage("§aLoading Commands, Events, CoreInventories...");
         this.registerListener();
         this.registerCommands();
         corePlayers = new HashMap<>();
@@ -223,6 +235,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
 
         for (Player p : Bukkit.getOnlinePlayers()) {
+            getInventoryModificationManager().loadModifiedInventories(p);
             CorePlayerListener.setPermissions(p);
             Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
 
@@ -265,6 +278,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         afkManager.disable();
         labyModAPI.disable();
         pluginManager.disable();
+        getInventoryModificationManager().disable();
 
         try {
             mongoConnection.disconnect();

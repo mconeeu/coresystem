@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.bukkit.inventory;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
 import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
@@ -19,9 +20,11 @@ import java.util.List;
 
 class PartyInventory extends CoreInventory {
 
-    PartyInventory(Player p) {
-        super("§8» §5§lMeine Party", p, InventorySlot.ROW_6, Option.FILL_EMPTY_SLOTS);
+    PartyInventory() {
+        super("§8» §5§lMeine Party", InventorySlot.ROW_6, Option.FILL_EMPTY_SLOTS);
+    }
 
+    public void createInventory(Player p) {
         BukkitCoreSystem.getInstance().getChannelHandler().createGetRequest(p, member -> {
             if (!member.equals("false")) {
                 String[] members = member.split(",");
@@ -38,7 +41,7 @@ class PartyInventory extends CoreInventory {
                         lores.addAll(Arrays.asList("", "§8» §f§nRechtsklick§8 | §7§oAktionen"));
 
                     setItem(i, ItemBuilder.createSkullItem(data[0], 1).displayName("§f§l" + data[0]).lore(lores).create(), e -> {
-                        new PartyMemberInventory(p, data[0]);
+                        new PartyMemberInventory().createInventory(p, data[0]);
                         p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
                     });
                     i++;
@@ -46,7 +49,7 @@ class PartyInventory extends CoreInventory {
 
                 setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
                     p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
-                    new ProfileInventory(p);
+                    new ProfileInventory().openInventory(p);
                 });
 
                 if (isPartyLeader)
@@ -67,17 +70,15 @@ class PartyInventory extends CoreInventory {
 
                 setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
                     p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
-                    new ProfileInventory(p);
+                    new ProfileInventory().openInventory(p);
                 });
             }
-
-            openInventory();
         }, "PARTY", "member");
     }
 
     private static boolean isPartyLeader(Player p, String[] members) {
         for (String m : members) {
-            String data[] = m.split(":");
+            String[] data = m.split(":");
             if (data[0].equals(p.getName()) && data.length > 2 && data[2].equals("leader")) return true;
         }
         return false;

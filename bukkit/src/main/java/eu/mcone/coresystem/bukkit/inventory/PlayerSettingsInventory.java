@@ -18,8 +18,11 @@ import org.bukkit.entity.Player;
 
 class PlayerSettingsInventory extends CoreInventory {
 
-    PlayerSettingsInventory(Player p) {
-        super("§8» §c§lEinstellungen", p, InventorySlot.ROW_4, Option.FILL_EMPTY_SLOTS);
+    PlayerSettingsInventory() {
+        super("§8» §c§lEinstellungen", InventorySlot.ROW_4, Option.FILL_EMPTY_SLOTS);
+    }
+
+    public void createInventory(Player p) {
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(p);
 
         setItem(InventorySlot.ROW_2_SLOT_3, new ItemBuilder(Material.SKULL_ITEM, 1, 3).displayName("§f§lErhalte Freundschaftsanfragen").create());
@@ -29,7 +32,7 @@ class PlayerSettingsInventory extends CoreInventory {
                 e -> {
                     cp.getSettings().setEnableFriendRequests(!cp.getSettings().isEnableFriendRequests());
                     cp.updateSettings();
-                    new PlayerSettingsInventory(p);
+                    new PlayerSettingsInventory().createInventory(p);
                 }
         );
 
@@ -48,7 +51,7 @@ class PlayerSettingsInventory extends CoreInventory {
             }
 
             cp.updateSettings();
-            new PlayerSettingsInventory(p);
+            new PlayerSettingsInventory().createInventory(p);
         });
 
         setItem(InventorySlot.ROW_2_SLOT_6, new ItemBuilder(Material.PAPER).displayName("§f§lPrivate Nachrichten erhalten").create());
@@ -66,7 +69,7 @@ class PlayerSettingsInventory extends CoreInventory {
             }
 
             cp.updateSettings();
-            new PlayerSettingsInventory(p);
+            new PlayerSettingsInventory().createInventory(p);
         });
 
         setItem(InventorySlot.ROW_2_SLOT_7, new ItemBuilder(Material.CAKE).displayName("§f§lPartyanfragenanfragen erhalten").create());
@@ -84,15 +87,15 @@ class PlayerSettingsInventory extends CoreInventory {
             }
 
             cp.updateSettings();
-            new PlayerSettingsInventory(p);
+            new PlayerSettingsInventory().createInventory(p);
         });
 
         setItem(InventorySlot.ROW_4_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
-            new ProfileInventory(p);
+            new ProfileInventory().createInventory(p);
             p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
         });
 
-        openInventory();
+        super.openInventory(p);
     }
 
     private ItemBuilder getSenderItem(PlayerSettings.Sender sender) {

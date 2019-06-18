@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bukkit.listener;
 
 import com.mojang.authlib.properties.Property;
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
@@ -55,6 +56,9 @@ public class CorePlayerListener implements Listener {
         p.registerPacketListener(bp);
         ((NickManager) BukkitCoreSystem.getInstance().getNickManager()).setNicks(bp);
 
+        //Loads all ModifiedInventories for the player
+        CoreSystem.getInstance().getInventoryModificationManager().loadModifiedInventories(bp);
+
         for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
             cp.getScoreboard().reload();
         }
@@ -83,6 +87,7 @@ public class CorePlayerListener implements Listener {
         p.unregisterAttachment();
 
         Bukkit.getScheduler().runTask(BukkitCoreSystem.getInstance(), p::unregister);
+        CoreSystem.getInstance().getInventoryModificationManager().pushModifications(e.getPlayer());
     }
 
     public static void setPermissions(Player p) {

@@ -15,9 +15,11 @@ import org.bukkit.entity.Player;
 
 class FriendsInventory extends CoreInventory {
 
-    FriendsInventory(Player p) {
-        super("§8» §9§lMeine Freunde", p, InventorySlot.ROW_6, Option.FILL_EMPTY_SLOTS);
+    FriendsInventory() {
+        super("§8» §9§lMeine Freunde", InventorySlot.ROW_6, Option.FILL_EMPTY_SLOTS);
+    }
 
+    public void createInventory(Player p) {
         BukkitCoreSystem.getInstance().getChannelHandler().createGetRequest(p, friends -> {
             int i = 0;
             for (String friend : friends.split(",")) {
@@ -25,7 +27,7 @@ class FriendsInventory extends CoreInventory {
 
                 String[] data = friend.split(":");
                 setItem(i, ItemBuilder.createSkullItem(data[1], 1).displayName("§f§l" + data[1]).lore(data[2], "", "§8» §f§nRechtsklick§8 | §7§oAktionen").create(), e -> {
-                    new FriendInventory(p, data[1]);
+                    new FriendInventory().createInventory(p, data[1]);
                     p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
                 });
 
@@ -34,11 +36,10 @@ class FriendsInventory extends CoreInventory {
 
             setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
                 p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
-                new ProfileInventory(p);
+                new ProfileInventory().openInventory(p);
             });
-
-            openInventory();
         }, "FRIENDS");
-    }
 
+        super.openInventory(p);
+    }
 }

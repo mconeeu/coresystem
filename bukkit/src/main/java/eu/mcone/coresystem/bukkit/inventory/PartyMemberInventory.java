@@ -15,9 +15,12 @@ import org.bukkit.entity.Player;
 
 class PartyMemberInventory extends CoreInventory {
 
-    PartyMemberInventory(Player p, String member) {
-        super("§8» §f§l" + member + " §8| §5Aktionen", p, InventorySlot.ROW_4, Option.FILL_EMPTY_SLOTS);
+    PartyMemberInventory() {
+        super(InventorySlot.ROW_4, Option.FILL_EMPTY_SLOTS);
+    }
 
+    public void createInventory(Player p, String member){
+        setTitle("§8» §f§l" + member + " §8| §5Aktionen");
         setItem(InventorySlot.ROW_1_SLOT_5, ItemBuilder.createSkullItem(member, 1).displayName("§f§l" + member).create());
 
         setItem(InventorySlot.ROW_3_SLOT_4, new ItemBuilder(Material.NETHER_STAR, 1, 0).displayName("§7Zum §ePartyleader§7 promoten").create(), e -> {
@@ -32,10 +35,9 @@ class PartyMemberInventory extends CoreInventory {
 
         setItem(InventorySlot.ROW_4_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Partymenü").create(), e -> {
             p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
-            new PartyInventory(p);
+            new PartyInventory().createInventory(p);
         });
 
-        openInventory();
+        super.openInventory(p);
     }
-
 }

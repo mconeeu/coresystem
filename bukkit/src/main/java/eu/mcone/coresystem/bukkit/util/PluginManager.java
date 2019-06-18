@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bukkit.util;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.inventory.modification.InventoryModificationManager;
 import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
 import eu.mcone.coresystem.api.bukkit.util.CorePluginManager;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
@@ -34,7 +35,8 @@ public class PluginManager implements CorePluginManager {
     @Getter
     private List<CorePlugin> corePlugins;
     private Map<CorePlugin, List<CoreCommand>> commands;
-    private Map<Player, CoreInventory> inventories;
+    private Map<Player, CoreInventory> coreInventories;
+    private Map<CorePlugin, InventoryModificationManager> inventoryModificationManager;
     private List<AnvilInventory> anvilInventories;
     private List<GameProfile> gameProfiles;
     @Getter
@@ -55,7 +57,8 @@ public class PluginManager implements CorePluginManager {
         this.cooldownSystem = new CoreCooldownSystem();
         this.corePlugins = new ArrayList<>();
         this.commands = new HashMap<>();
-        this.inventories = new HashMap<>();
+        this.coreInventories = new HashMap<>();
+        this.inventoryModificationManager = new HashMap<>();
         this.anvilInventories = new ArrayList<>();
         this.gameProfiles = new ArrayList<>();
         this.gameProfileWorld = Bukkit.getWorlds().get(0).getName();
@@ -64,7 +67,7 @@ public class PluginManager implements CorePluginManager {
     public void disable() {
         corePlugins.clear();
         commands.clear();
-        inventories.clear();
+        inventoryModificationManager.clear();
         gameProfiles.clear();
     }
 
@@ -77,24 +80,26 @@ public class PluginManager implements CorePluginManager {
         }
     }
 
+    public void registerCoreInventory(Player player, CoreInventory coreInventory) {
+        coreInventories.put(player, coreInventory);
+    }
+
+    public List<CoreInventory> getCoreInventories() {
+        return new ArrayList<>(coreInventories.values());
+    }
+
     @Override
-    public void registerCoreInventory(CoreInventory inventory, Player player) {
-        inventories.put(player, inventory);
+    public InventoryModificationManager getInventoryModificationManager(final CorePlugin plugin) {
+        if (inventoryModificationManager.containsKey(plugin)) {
+            return inventoryModificationManager.get(plugin);
+        } else {
+            inventoryModificationManager.put(plugin, new eu.mcone.coresystem.bukkit.inventory.modification.InventoryModificationManager(plugin.getGamemode()));
+            return inventoryModificationManager.get(plugin);
+        }
     }
 
     public void registerCoreAnvilInventory(AnvilInventory inventory) {
         anvilInventories.add(inventory);
-    }
-
-
-    @Override
-    public CoreInventory getCoreInventory(Player player) {
-        return inventories.getOrDefault(player, null);
-    }
-
-    @Override
-    public Collection<CoreInventory> getCoreInventories() {
-        return inventories.values();
     }
 
     @Override
@@ -167,7 +172,7 @@ public class PluginManager implements CorePluginManager {
 
     @Override
     public Collection<GameProfile> getGameProfiles() {
-       return gameProfiles;
+        return gameProfiles;
     }
 
     @Override

@@ -8,6 +8,7 @@ package eu.mcone.coresystem.api.bukkit.util;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.inventory.modification.InventoryModificationManager;
 import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.CoreException;
@@ -21,60 +22,68 @@ public interface CorePluginManager {
 
     /**
      * returns the Cooldownsystem to register or check for custom cooldowns
+     *
      * @return CooldownSystem
      */
     CooldownSystem getCooldownSystem();
 
     /**
      * returns a List of all registered CorePlugins
+     *
      * @return CorePlugin List
      */
     List<CorePlugin> getCorePlugins();
 
     /**
      * registers new CorePlugin in BCS
+     *
      * @param plugin CorePlugin
      * @throws CoreException thrown if the plugin is already registered in BCS
      */
     void registerCorePlugin(CorePlugin plugin) throws CoreException;
 
     /**
-     * registers a new CoreInventory (not necessary, extending the CoreInventory class will do this)
-     * @param inventory CoreInventory
-     * @param player Player
+     * returns the registered inventoryModificationManager for the specified CorePlugin
+     *
+     * @param plugin CorePlugin
+     * @return InventoryModificationManager instance
      */
-    void registerCoreInventory(CoreInventory inventory, Player player);
+    InventoryModificationManager getInventoryModificationManager(CorePlugin plugin);
 
     /**
-     * returns the CoreInventory with a specific name
-     * null if no CoreInventory with that name exists
-     * @param player Player
-     * @return CoreInventory object
+     * registers a coreInventory for the specified
+     *
+     * @param player        Bukkit Player
+     * @param coreInventory CoreInventory
      */
-    CoreInventory getCoreInventory(Player player);
+    void registerCoreInventory(Player player, CoreInventory coreInventory);
 
     /**
      * returns all current saved CoreInventories
+     *
      * @return list of all CoreInventories
      */
-    Collection<CoreInventory> getCoreInventories();
+    List<CoreInventory> getCoreInventories();
 
     /**
      * register a new GameProfile
+     *
      * @param gameProfile GameProfile
      */
     void registerGameProfile(final GameProfile gameProfile);
 
     /**
      * registers a new CoreCommand
+     *
      * @param coreCommand CoreCommand
-     * @param plugin CorePlugin
+     * @param plugin      CorePlugin
      * @return CoreCommand object
      */
     CoreCommand registerCoreCommand(CoreCommand coreCommand, CorePlugin plugin);
 
     /**
      * removes a CoreCommand from CommandMap
+     *
      * @param command command to be removed
      */
     void unregisterCoreCommand(CoreCommand command);
@@ -82,20 +91,23 @@ public interface CorePluginManager {
     /**
      * returns the CoreCommand with a specific name
      * null if no CoreCommand with that name exists
+     *
      * @param plugin CorePlugin
-     * @param name command name
+     * @param name   command name
      * @return CoreCommand object
      */
     CoreCommand getCoreCommand(CorePlugin plugin, String name);
 
     /**
      * returns all current saved CoreCommands
+     *
      * @return Map of all CoreCommands
      */
     Collection<CoreCommand> getCoreCommands();
 
     /**
      * returns all current saved CoreCommands registered by a specific plugin
+     *
      * @param plugin CorePlugin
      * @return Map of all plugin CoreCommands
      */
@@ -103,18 +115,21 @@ public interface CorePluginManager {
 
     /**
      * returns a list of all loaded GameProfiles from any plugin
+     *
      * @return GameProfile List
      */
     Collection<GameProfile> getGameProfiles();
 
     /**
      * sets the default world for all GameProfiles (might not be necessary)
+     *
      * @param world world
      */
     void setGameProfileWorld(CoreWorld world);
 
     /**
      * returns the set GameProfile world
+     *
      * @return default world name used for all game profiles where no world is set
      */
     String getGameProfileWorld();

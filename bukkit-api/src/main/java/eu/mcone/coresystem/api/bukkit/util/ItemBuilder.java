@@ -26,6 +26,7 @@ public final class ItemBuilder {
 
     private ItemStack itemStack;
     private ItemMeta itemMeta;
+    private List<String> lore;
 
     /**
      * create ItemBuilder
@@ -34,6 +35,7 @@ public final class ItemBuilder {
     public ItemBuilder(Material material) {
         itemStack = new ItemStack(material);
         itemMeta = itemStack.getItemMeta();
+        lore = new ArrayList<>();
     }
 
     /**
@@ -44,6 +46,7 @@ public final class ItemBuilder {
     public ItemBuilder(Material material, int amount) {
         itemStack = new ItemStack(material, amount);
         itemMeta = itemStack.getItemMeta();
+        lore = new ArrayList<>();
     }
 
     /**
@@ -55,6 +58,7 @@ public final class ItemBuilder {
     public ItemBuilder(Material material, int amount, int subId) {
         itemStack = new ItemStack(material, amount, (short) subId);
         itemMeta = itemStack.getItemMeta();
+        lore = new ArrayList<>();
     }
 
     /**
@@ -66,6 +70,7 @@ public final class ItemBuilder {
     public ItemBuilder(Material material, int amount, short subId) {
         itemStack = new ItemStack(material, amount, subId);
         itemMeta = itemStack.getItemMeta();
+        lore = new ArrayList<>();
     }
 
     private ItemBuilder(ItemStack itemStack) {
@@ -151,22 +156,32 @@ public final class ItemBuilder {
     }
 
     /**
-     * set lores of the item
-     * @param lore lores (Array)
+     * set loren of the item
+     * @param lore loren (Array)
      * @return this
      */
     public ItemBuilder lore(String... lore) {
-        itemMeta.setLore(new ArrayList<>(Arrays.asList(lore)));
+        this.lore = new ArrayList<>(Arrays.asList(lore));
         return this;
     }
 
     /**
-     * set lores of the item
-     * @param lores lores (ArrayList)
+     * set loren of the item
+     * @param loren loren (ArrayList)
      * @return this
      */
-    public ItemBuilder lore(List<String> lores) {
-        itemMeta.setLore(lores);
+    public ItemBuilder lore(List<String> loren) {
+        this.lore = loren;
+        return this;
+    }
+
+    /**
+     * add a lore of the item
+     * @param lore lore (String)
+     * @return this
+     */
+    public ItemBuilder addLore(String lore) {
+        this.lore.add(lore);
         return this;
     }
 
@@ -218,6 +233,9 @@ public final class ItemBuilder {
      * @return ItemStack
      */
     public ItemStack create() {
+        if (!lore.isEmpty())
+            itemMeta.setLore(this.lore);
+
         itemStack.setItemMeta(itemMeta);
         return itemStack;
     }
