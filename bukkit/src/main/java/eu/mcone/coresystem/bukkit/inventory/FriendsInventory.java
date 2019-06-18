@@ -12,7 +12,6 @@ import eu.mcone.coresystem.api.bukkit.item.Skull;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.block.Skull;
 import org.bukkit.entity.Player;
 
 class FriendsInventory extends CoreInventory {
@@ -41,7 +40,6 @@ class FriendsInventory extends CoreInventory {
                 new ProfileInventory().openInventory(p);
             });
         }, "FRIENDS");
-    }
 
         super.openInventory(p);
     }

@@ -5,7 +5,7 @@ import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreItemEvent;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
-import eu.mcone.coresystem.api.bukkit.util.ItemBuilder;
+import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
