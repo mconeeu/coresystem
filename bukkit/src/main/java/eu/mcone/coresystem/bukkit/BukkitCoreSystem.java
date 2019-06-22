@@ -40,13 +40,9 @@ import eu.mcone.coresystem.bukkit.command.*;
 import eu.mcone.coresystem.bukkit.hologram.CoreHologramManager;
 import eu.mcone.coresystem.bukkit.inventory.ProfileInventory;
 import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
-import eu.mcone.coresystem.bukkit.player.LabyModManager;
 import eu.mcone.coresystem.bukkit.listener.*;
 import eu.mcone.coresystem.bukkit.npc.CoreNpcManager;
-import eu.mcone.coresystem.bukkit.player.BukkitCorePlayer;
-import eu.mcone.coresystem.bukkit.player.BukkitOfflineCorePlayer;
-import eu.mcone.coresystem.bukkit.player.CoreAfkManager;
-import eu.mcone.coresystem.bukkit.player.NickManager;
+import eu.mcone.coresystem.bukkit.player.*;
 import eu.mcone.coresystem.bukkit.util.ActionBar;
 import eu.mcone.coresystem.bukkit.util.PluginManager;
 import eu.mcone.coresystem.bukkit.util.TablistInfo;
@@ -280,6 +276,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private void registerCommands() {
         registerCommands(
                 new BukkitCMD(),
+                new ClearCMD(),
+                new EnderchestCMD(),
                 new FeedCMD(),
                 new FlyCMD(),
                 new GamemodeCMD(),
@@ -433,7 +431,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public void enableEnderchestSystem(EnderchestManagerGetter apiGetter) {
-        registerCommands(new EnderchestCMD(apiGetter));
         registerEvents(new EnderchestListener(apiGetter));
     }
 

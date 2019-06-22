@@ -10,7 +10,6 @@ import eu.mcone.coresystem.api.core.labymod.LabyPermission;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.bots.teamspeak.TeamspeakVerifier;
 import eu.mcone.networkmanager.core.api.database.Database;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.Title;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -71,8 +70,15 @@ public class PostLoginListener implements Listener {
         ProxyServer.getInstance().getScheduler().schedule(BungeeCoreSystem.getInstance(), () -> {
             if (p.getServer() != null) {
                 p.setTabHeader(
-                        new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', "§f§lMC ONE §3Minecraftnetzwerk §8» §7" + e.getPlayer().getServer().getInfo().getName())).create(),
-                        new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', "§7§oPublic Beta 5.0")).create()
+                        new ComponentBuilder(
+                                "§3§lMC ONE §8» §7§oDein Nummer 1 Netzwerk"
+                                        + "\n§7Online: §f§l"+ProxyServer.getInstance().getOnlineCount()+" Spieler§8 ×§7 Server: §f§l" + e.getPlayer().getServer().getInfo().getName()
+                                        + "\n"
+                        ).create(),
+                        new ComponentBuilder(
+                                "\n§7Hol' Dir §6§lPremium§7 auf §f§nshop.mcone.eu§7!"
+                                        + "\n§r  §7TS: §3§nts.mcone.eu§8 ×§7 Discord: §3§ndiscord.mcone.eu§r  "
+                        ).create()
                 );
             }
 

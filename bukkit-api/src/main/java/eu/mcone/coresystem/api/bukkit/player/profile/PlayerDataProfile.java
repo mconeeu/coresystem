@@ -29,6 +29,7 @@ public class PlayerDataProfile extends GameProfile {
     int level, foodLevel;
     float exp;
     double health;
+    long lastLogin;
 
     public PlayerDataProfile(Player p, Map<String, Location> homes) {
         this(p);
@@ -45,6 +46,7 @@ public class PlayerDataProfile extends GameProfile {
         foodLevel = p.getFoodLevel();
         exp = p.getExp();
         health = p.getHealth();
+        lastLogin = System.currentTimeMillis() / 1000;
     }
 
     public PlayerDataProfile() {

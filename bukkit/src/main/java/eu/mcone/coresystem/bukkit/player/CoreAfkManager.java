@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bukkit.player;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.event.AfkEvent;
 import eu.mcone.coresystem.api.bukkit.player.AfkManager;
 import eu.mcone.coresystem.api.core.exception.RuntimeCoreException;
 import eu.mcone.coresystem.api.core.player.PlayerState;
@@ -61,12 +62,16 @@ public class CoreAfkManager implements AfkManager {
                         afkPlayers.remove(p.getUniqueId());
                         BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du bist nun nicht mehr AFK!");
                         ((GlobalCorePlayer) BukkitCoreSystem.getInstance().getCorePlayer(p)).setState(PlayerState.ONLINE);
+
+                        Bukkit.getPluginManager().callEvent(new AfkEvent(p, PlayerState.ONLINE));
                     }
                 } else {
                     if (i>150) {
                         afkPlayers.add(p.getUniqueId());
                         BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du bist nun AFK!");
                         ((GlobalCorePlayer) BukkitCoreSystem.getInstance().getCorePlayer(p)).setState(PlayerState.AFK);
+
+                        Bukkit.getPluginManager().callEvent(new AfkEvent(p, PlayerState.AFK));
                     }
                 }
 

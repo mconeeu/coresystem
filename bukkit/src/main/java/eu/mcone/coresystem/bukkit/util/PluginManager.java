@@ -14,6 +14,7 @@ import eu.mcone.coresystem.api.bukkit.util.CorePluginManager;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
+import eu.mcone.coresystem.bukkit.inventory.modification.CoreInventoryModificationManager;
 import eu.mcone.coresystem.core.util.CoreCooldownSystem;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -36,7 +37,7 @@ public class PluginManager implements CorePluginManager {
     private List<CorePlugin> corePlugins;
     private Map<CorePlugin, List<CoreCommand>> commands;
     private Map<Player, CoreInventory> coreInventories;
-    private Map<CorePlugin, InventoryModificationManager> inventoryModificationManager;
+    private Map<CorePlugin, InventoryModificationManager> inventoryModificationManagers;
     private List<AnvilInventory> anvilInventories;
     private List<GameProfile> gameProfiles;
     @Getter
@@ -58,7 +59,7 @@ public class PluginManager implements CorePluginManager {
         this.corePlugins = new ArrayList<>();
         this.commands = new HashMap<>();
         this.coreInventories = new HashMap<>();
-        this.inventoryModificationManager = new HashMap<>();
+        this.inventoryModificationManagers = new HashMap<>();
         this.anvilInventories = new ArrayList<>();
         this.gameProfiles = new ArrayList<>();
         this.gameProfileWorld = Bukkit.getWorlds().get(0).getName();
@@ -67,7 +68,7 @@ public class PluginManager implements CorePluginManager {
     public void disable() {
         corePlugins.clear();
         commands.clear();
-        inventoryModificationManager.clear();
+        inventoryModificationManagers.clear();
         gameProfiles.clear();
     }
 
@@ -80,21 +81,21 @@ public class PluginManager implements CorePluginManager {
         }
     }
 
-    public void registerCoreInventory(Player player, CoreInventory coreInventory) {
-        coreInventories.put(player, coreInventory);
+    public void registerCoreInventory(Player player, CoreInventory inv) {
+        coreInventories.put(player, inv);
     }
 
-    public List<CoreInventory> getCoreInventories() {
-        return new ArrayList<>(coreInventories.values());
+    public CoreInventory getCurrentCoreInventory(Player player) {
+        return coreInventories.getOrDefault(player, null);
     }
 
     @Override
     public InventoryModificationManager getInventoryModificationManager(final CorePlugin plugin) {
-        if (inventoryModificationManager.containsKey(plugin)) {
-            return inventoryModificationManager.get(plugin);
+        if (inventoryModificationManagers.containsKey(plugin)) {
+            return inventoryModificationManagers.get(plugin);
         } else {
-            inventoryModificationManager.put(plugin, new eu.mcone.coresystem.bukkit.inventory.modification.InventoryModificationManager(plugin.getGamemode()));
-            return inventoryModificationManager.get(plugin);
+            inventoryModificationManagers.put(plugin, new CoreInventoryModificationManager(plugin));
+            return inventoryModificationManagers.get(plugin);
         }
     }
 

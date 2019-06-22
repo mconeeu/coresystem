@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bukkit.inventory;
 
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.inventory.InventoryOption;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.item.Skull;
@@ -16,12 +17,9 @@ import org.bukkit.entity.Player;
 
 class PartyMemberInventory extends CoreInventory {
 
-    PartyMemberInventory() {
-        super(InventorySlot.ROW_4, Option.FILL_EMPTY_SLOTS);
-    }
+    PartyMemberInventory(Player p, String member) {
+        super("§8» §f§l" + member + " §8| §5Aktionen", p, InventorySlot.ROW_4, InventoryOption.FILL_EMPTY_SLOTS);
 
-    public void createInventory(Player p, String member){
-        setTitle("§8» §f§l" + member + " §8| §5Aktionen");
         setItem(InventorySlot.ROW_1_SLOT_5, new Skull(member, 1).toItemBuilder().displayName("§f§l" + member).create());
 
         setItem(InventorySlot.ROW_3_SLOT_4, new ItemBuilder(Material.NETHER_STAR, 1, 0).displayName("§7Zum §ePartyleader§7 promoten").create(), e -> {
@@ -36,10 +34,8 @@ class PartyMemberInventory extends CoreInventory {
 
         setItem(InventorySlot.ROW_4_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Partymenü").create(), e -> {
             p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
-            new PartyInventory().createInventory(p);
+            new PartyInventory(p).openInventory();
         });
-
-        super.openInventory(p);
     }
 
 }

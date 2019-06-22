@@ -183,7 +183,7 @@ public final class ItemBuilder {
      * @return ItemStack
      */
     public ItemStack create() {
-        if (!lore.isEmpty())
+        if (lore != null && !lore.isEmpty())
             itemMeta.setLore(this.lore);
 
         itemStack.setItemMeta(itemMeta);

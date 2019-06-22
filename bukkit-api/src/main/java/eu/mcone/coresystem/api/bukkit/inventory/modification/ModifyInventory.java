@@ -1,131 +1,166 @@
 package eu.mcone.coresystem.api.bukkit.inventory.modification;
 
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
-import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreItemEvent;
-import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
-import lombok.AllArgsConstructor;
+import eu.mcone.coresystem.api.bukkit.inventory.CoreItemStack;
+import eu.mcone.coresystem.api.bukkit.inventory.InventoryOption;
+import eu.mcone.coresystem.api.bukkit.inventory.ItemEventStore;
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
-public abstract class ModifyInventory extends CoreInventory {
+public abstract class ModifyInventory implements ItemEventStore {
 
-    public static ItemStack EXIT_ITEM = new ItemBuilder(Material.IRON_DOOR).displayName("§c§oZurück").create();
+    private final InventoryModificationManager api;
 
-    @Setter
     @Getter
-    private Gamemode gamemode = Gamemode.UNDEFINED;
+    private final Gamemode gamemode;
     @Getter
-    private String category;
+    private final String category, name, title;
     @Getter
-    private String name;
+    private final int size;
     @Getter
-    private HashMap<Integer, UniqueItemStack> uniqueItemStacks;
+    private final List<InventoryOption> options;
+    @Getter
+    private final Map<Integer, CoreItemStack> items;
+    @Getter
+    private final Map<UUID, Integer> uniqueItemStacks;
+    @Getter
+    private final Map<Player, Inventory> inventories;
 
     /**
      * creates new CoreInventory
      *
-     * @param name inventory title
-     * @param size inventory size
-     * @param args options
-     */
-    public ModifyInventory(String name, String title, int size, Option... args) {
-        super(title, size, args);
-        this.name = name;
-        this.uniqueItemStacks = new HashMap<>();
-    }
-
-    /**
-     * creates new CoreInventory
-     *
+     * @param plugin      the target CorePlugin
      * @param name     inventory title
      * @param category category of the inventory
      * @param size     inventory size
-     * @param args     options
+     * @param options  options
      */
-    public ModifyInventory(String name, String title, String category, int size, Option... args) {
-        super(title, size, args);
-        this.name = name;
+    public ModifyInventory(CorePlugin plugin, String name, String title, String category, int size, InventoryOption... options) {
+        this(plugin.getInventoryModificationManager(), name, title, category, size, options);
+    }
+
+    /**
+     * creates new CoreInventory
+     *
+     * @param api      the InventoryModificationManager api
+     * @param name     inventory title
+     * @param category category of the inventory
+     * @param size     inventory size
+     * @param options  options
+     */
+    public ModifyInventory(InventoryModificationManager api, String name, String title, String category, int size, InventoryOption... options) {
+        this(api, api.getGamemode(), name, title, category, size, options);
+    }
+
+    /**
+     * creates new CoreInventory
+     *
+     * @param api      the InventoryModificationManager api
+     * @param name     inventory title
+     * @param category category of the inventory
+     * @param size     inventory size
+     * @param options  options
+     */
+    public ModifyInventory(InventoryModificationManager api, Gamemode gamemode, String name, String title, String category, int size, InventoryOption... options) {
+        this(api, gamemode, null, null, name, title, category, size, options);
+    }
+
+    /**
+     * creates new CoreInventory
+     *
+     * @param api      the InventoryModificationManager api
+     * @param name     inventory title
+     * @param category category of the inventory
+     * @param size     inventory size
+     * @param options  options
+     */
+    public ModifyInventory(InventoryModificationManager api, Gamemode gamemode, Map<UUID, Integer> uniqueItemStacks, Map<Integer, CoreItemStack> items, String name, String title, String category, int size, InventoryOption... options) {
+        this.api = api;
+
+        this.gamemode = gamemode;
         this.category = category;
-        this.uniqueItemStacks = new HashMap<>();
+        this.name = name;
+        this.title = title;
+        this.size = size;
+        this.options = Arrays.asList(options);
+
+        this.items = items != null ? items : new HashMap<>();
+        this.uniqueItemStacks = uniqueItemStacks != null ? uniqueItemStacks : new HashMap<>();
+        this.inventories = new HashMap<>();
     }
 
-
-    @Override
     public void setItem(int slot, ItemStack item, CoreItemEvent event) {
-        UniqueItemStack uniqueItemStack = new UniqueItemStack(UUID.randomUUID(), item);
-        uniqueItemStacks.put(slot, uniqueItemStack);
-        super.setItem(slot, item, event);
+        items.put(slot, new CoreItemStack(item, event));
+        uniqueItemStacks.put(UUID.randomUUID(), slot);
     }
 
-    @Override
     public void setItem(int slot, ItemStack item) {
-        UniqueItemStack uniqueItemStack = new UniqueItemStack(UUID.randomUUID(), item);
-        uniqueItemStacks.put(slot, uniqueItemStack);
-        super.setItem(slot, item);
+        items.put(slot, new CoreItemStack(item, null));
+        uniqueItemStacks.put(UUID.randomUUID(), slot);
     }
 
-    public Inventory openInventory(final Player player) {
+    public void setItem(int slot, ItemStack item, UUID uuid) {
+        items.put(slot, new CoreItemStack(item, null));
+        uniqueItemStacks.put(uuid, slot);
+    }
+
+    public void openInventory(final Player player) {
+        Map<String, UUID> modifiedInventoryItems = api.getModifiedInventoryItems(player.getUniqueId(), this);
+        Map<Integer, ItemStack> modifiedItems = new HashMap<>();
+
         //Check if Inventory is modified
-        if (CoreSystem.getInstance().getInventoryModificationManager().isInventoryModified(player.getUniqueId(), getInventoryKey())) {
-            //Create inventory from modified and default inventory data
-            DefaultInventory defaultInventory = CoreSystem.getInstance().getInventoryModificationManager().getDefaultInventory(getInventoryKey());
-            ModifiedInventory modifiedInventory = CoreSystem.getInstance().getInventoryModificationManager().getModifiedInventory(player, this);
-            if (defaultInventory != null && modifiedInventory != null) {
-                Inventory inventory = Bukkit.createInventory(null, getSize(), getTitle());
-                for (Map.Entry<String, UUID> modifiedEntry : modifiedInventory.getUniqueItemStack().entrySet()) {
-                    for (Map.Entry<Integer, ModifyInventory.UniqueItemStack> defaultEntry : defaultInventory.getDefaultItemsAsMap().entrySet()) {
-                        if (defaultEntry.getValue().getUuid().equals(modifiedEntry.getValue())) {
-                            inventory.setItem(Integer.valueOf(modifiedEntry.getKey()), defaultEntry.getValue().getItemStack());
-                            break;
-                        }
-                    }
-                }
-
-                player.openInventory(inventory);
-                return inventory;
-            } else {
-                CoreSystem.getInstance().getMessager().send(player, "§cDas Inventar konnte nicht geöffnet werden, §f§omelde dies bitte einem MCONE Teammitglied!");
-                player.closeInventory();
-                return null;
+        if (modifiedInventoryItems != null) {
+            for (Map.Entry<String, UUID> modifiedEntry : modifiedInventoryItems.entrySet()) {
+                modifiedItems.put(Integer.valueOf(modifiedEntry.getKey()), items.get(uniqueItemStacks.get(modifiedEntry.getValue())).getItemStack());
             }
+
+            openInventory(player, title, size, items, modifiedItems);
         } else {
-            Inventory inventory = Bukkit.createInventory(null, getSize(), getTitle());
-
-            if (getOptions().contains(Option.FILL_EMPTY_SLOTS)) {
-                for (int i = 0; i < getSize(); i++) {
-                    inventory.setItem(i, EMPTY_SLOT_ITEM);
-                }
-            }
-
-            for (Map.Entry<Integer, CoreItemStack> entry : getItems().entrySet()) {
-                inventory.setItem(entry.getKey(), entry.getValue().getItemStack());
-            }
-
-            player.openInventory(inventory);
-            return inventory;
+            openInventory(player, title, size, items, Collections.emptyMap());
         }
     }
 
-    public String getInventoryKey() {
-        return gamemode + "." + category + "." + name;
+    public Inventory getCurrentInventory(Player player) {
+        return inventories.getOrDefault(player, null);
     }
 
-    @Getter
-    @AllArgsConstructor
-    public static class UniqueItemStack implements Serializable {
-        private final UUID uuid;
-        private final ItemStack itemStack;
+    private void openInventory(Player player, String title, int size, Map<Integer, CoreItemStack> items, Map<Integer, ItemStack> modifiedItems) {
+        Inventory inventory = Bukkit.createInventory(null, size, title);
+
+        for (Map.Entry<Integer, CoreItemStack> item : items.entrySet()) {
+            inventory.setItem(
+                    modifiedItems.containsValue(item.getValue().getItemStack()) ? getModifiedSlotForItem(modifiedItems, item.getValue().getItemStack()) : item.getKey(),
+                    item.getValue().getItemStack()
+            );
+        }
+
+        inventories.put(player, inventory);
+        player.openInventory(inventory);
     }
+
+    private int getModifiedSlotForItem(Map<Integer, ItemStack> modifiedItems, ItemStack itemStack) {
+        for (Map.Entry<Integer, ItemStack> entry : modifiedItems.entrySet()) {
+            if (entry.getValue().equals(itemStack)) {
+                return entry.getKey();
+            }
+        }
+        return 0;
+    }
+
+    public UUID getUuidForSlot(int slot) {
+        for (Map.Entry<UUID, Integer> uuidIntegerEntry : uniqueItemStacks.entrySet()) {
+            if (uuidIntegerEntry.getValue().equals(slot)) {
+                return uuidIntegerEntry.getKey();
+            }
+        }
+        return null;
+    }
+
 }

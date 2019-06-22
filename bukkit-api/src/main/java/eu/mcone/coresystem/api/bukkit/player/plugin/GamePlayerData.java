@@ -37,16 +37,27 @@ public abstract class GamePlayerData<P extends PlayerDataProfile> extends GamePl
 
     @Override
     public void setHome(String name, Location location) {
-        homes.put(name, location);
+        setHomeLocally(name, location);
         saveData();
     }
 
     @Override
+    public void setHomeLocally(String name, Location location) {
+        homes.put(name, location);
+    }
+
+    @Override
     public boolean removeHome(String name) {
+        boolean result = removeHomeLocally(name);
+        saveData();
+
+        return result;
+    }
+
+    @Override
+    public boolean removeHomeLocally(String name) {
         if (homes.containsKey(name)) {
             homes.remove(name);
-            saveData();
-
             return true;
         } else {
             return false;

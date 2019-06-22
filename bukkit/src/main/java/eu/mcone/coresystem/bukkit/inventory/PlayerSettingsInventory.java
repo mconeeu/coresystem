@@ -7,10 +7,11 @@ package eu.mcone.coresystem.bukkit.inventory;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.inventory.InventoryOption;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
+import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.item.Skull;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.translation.Language;
 import org.bukkit.Material;
@@ -19,21 +20,18 @@ import org.bukkit.entity.Player;
 
 class PlayerSettingsInventory extends CoreInventory {
 
-    PlayerSettingsInventory() {
-        super("§8» §c§lEinstellungen", InventorySlot.ROW_4, Option.FILL_EMPTY_SLOTS);
-    }
-
-    public void createInventory(Player p) {
+    PlayerSettingsInventory(Player p) {
+        super("§8» §c§lEinstellungen", p, InventorySlot.ROW_4, InventoryOption.FILL_EMPTY_SLOTS);
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(p);
 
         setItem(InventorySlot.ROW_2_SLOT_3, new ItemBuilder(Material.SKULL_ITEM, 1, 3).displayName("§f§lErhalte Freundschaftsanfragen").create());
         setItem(InventorySlot.ROW_3_SLOT_3, cp.getSettings().isEnableFriendRequests() ?
-                        new ItemBuilder(Material.INK_SACK, 1, 10).displayName("§a§lAktiviert").lore("§7§oKlicke zum deaktivieren").create() :
-                        new ItemBuilder(Material.INK_SACK, 1, 1).displayName("§c§lDeaktiviert").lore("§7§oKlicke zum aktivieren").create(),
+                        new ItemBuilder(Material.INK_SACK, 1, 10).displayName("§a§lAktiviert").lore("§7§oKlicke zum akzeptieren von", "§7§oFreundschaftsanfragen").create() :
+                        new ItemBuilder(Material.INK_SACK, 1, 1).displayName("§c§lDeaktiviert").lore("§7§oKlicke zum ablehnen von", "§7§oFreundschaftsanfragen").create(),
                 e -> {
                     cp.getSettings().setEnableFriendRequests(!cp.getSettings().isEnableFriendRequests());
                     cp.updateSettings();
-                    new PlayerSettingsInventory().createInventory(p);
+                    new PlayerSettingsInventory(p).openInventory();
                 }
         );
 
@@ -52,8 +50,21 @@ class PlayerSettingsInventory extends CoreInventory {
             }
 
             cp.updateSettings();
-            new PlayerSettingsInventory().createInventory(p);
+            new PlayerSettingsInventory(p).openInventory();
         });
+
+        if (p.hasPermission("system.bungee.nick")) {
+            setItem(InventorySlot.ROW_2_SLOT_5, new ItemBuilder(Material.NAME_TAG).displayName("§f§lAutomatisch Nicken").create());
+            setItem(InventorySlot.ROW_3_SLOT_5, cp.getSettings().isAutoNick() ?
+                            new ItemBuilder(Material.INK_SACK, 1, 10).displayName("§a§lAktiviert").lore("§7§oKlicke, um nicht mehr automatisch", "§7§ogenickt zu werden").create() :
+                            new ItemBuilder(Material.INK_SACK, 1, 1).displayName("§c§lDeaktiviert").lore("§7§oKlicke, um automatisch genickt", "§7§ozu werden").create(),
+                    e -> {
+                        cp.getSettings().setAutoNick(!cp.getSettings().isAutoNick());
+                        cp.updateSettings();
+                        new PlayerSettingsInventory(p).openInventory();
+                    }
+            );
+        }
 
         setItem(InventorySlot.ROW_2_SLOT_6, new ItemBuilder(Material.PAPER).displayName("§f§lPrivate Nachrichten erhalten").create());
         setItem(InventorySlot.ROW_3_SLOT_6, getSenderItem(cp.getSettings().getPrivateMessages()).lore("§7§oKlicke um auszuwählen von wem", "§7§odu private Nachrichten erhalten", "§7möchtest.").create(), e -> {
@@ -70,7 +81,7 @@ class PlayerSettingsInventory extends CoreInventory {
             }
 
             cp.updateSettings();
-            new PlayerSettingsInventory().createInventory(p);
+            new PlayerSettingsInventory(p).openInventory();
         });
 
         setItem(InventorySlot.ROW_2_SLOT_7, new ItemBuilder(Material.CAKE).displayName("§f§lPartyanfragenanfragen erhalten").create());
@@ -88,15 +99,13 @@ class PlayerSettingsInventory extends CoreInventory {
             }
 
             cp.updateSettings();
-            new PlayerSettingsInventory().createInventory(p);
+            new PlayerSettingsInventory(p).openInventory();
         });
 
         setItem(InventorySlot.ROW_4_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
-            new ProfileInventory().createInventory(p);
+            new ProfileInventory(p).openInventory();
             p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
         });
-
-        super.openInventory(p);
     }
 
     private ItemBuilder getSenderItem(PlayerSettings.Sender sender) {

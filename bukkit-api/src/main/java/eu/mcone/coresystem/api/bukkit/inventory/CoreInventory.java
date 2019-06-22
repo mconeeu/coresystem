@@ -7,57 +7,45 @@ package eu.mcone.coresystem.api.bukkit.inventory;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-public abstract class CoreInventory {
+public class CoreInventory implements ItemEventStore {
 
-    public static final ItemStack EMPTY_SLOT_ITEM = new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 7).displayName("§8//§oMCONE§8//").create();
+    public static final ItemStack PLACEHOLDER_ITEM = new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 7).displayName("§8//§oMCONE§8//").create();
 
-    @Setter
     @Getter
-    private String title;
+    protected final Player player;
     @Getter
-    private int size;
+    protected final Inventory inventory;
     @Getter
-    private Map<Integer, CoreItemStack> items;
-    @Setter
-    @Getter
-    private List<Option> options;
+    protected Map<Integer, CoreItemStack> items;
 
     /**
      * creates new CoreInventory
      *
      * @param title inventory title
      * @param size  inventory size
-     * @param args  options
+     * @param options  options
      */
-    public CoreInventory(String title, int size, Option... args) {
-        this.title = title;
-        this.size = size;
+    public CoreInventory(String title, Player player, int size, InventoryOption... options) {
+        this.player = player;
+        this.inventory = Bukkit.createInventory(null, size, title);
         this.items = new HashMap<>();
-        this.options = new ArrayList<>(Arrays.asList(args));
-    }
 
-
-    /**
-     * creates new CoreInventory
-     *
-     * @param size inventory size
-     * @param args options
-     */
-    public CoreInventory(int size, Option... args) {
-        this.size = size;
-        this.items = new HashMap<>();
-        this.options = new ArrayList<>(Arrays.asList(args));
+        if (Arrays.asList(options).contains(InventoryOption.FILL_EMPTY_SLOTS)) {
+            for (int i = 0; i < size; i++) {
+                inventory.setItem(i, PLACEHOLDER_ITEM);
+            }
+        }
     }
 
     /**
@@ -84,16 +72,8 @@ public abstract class CoreInventory {
     /**
      * opens the inventory
      */
-    public Inventory openInventory(final Player player) {
+    public Inventory openInventory() {
         CoreSystem.getInstance().getPluginManager().registerCoreInventory(player, this);
-
-        Inventory inventory = Bukkit.createInventory(null, size, title);
-
-        if (options.contains(Option.FILL_EMPTY_SLOTS)) {
-            for (int i = 0; i < size; i++) {
-                inventory.setItem(i, EMPTY_SLOT_ITEM);
-            }
-        }
 
         for (Map.Entry<Integer, CoreItemStack> entry : items.entrySet()) {
             inventory.setItem(entry.getKey(), entry.getValue().getItemStack());
@@ -103,14 +83,4 @@ public abstract class CoreInventory {
         return inventory;
     }
 
-    public enum Option {
-        FILL_EMPTY_SLOTS, ENABLE_CLICK_EVENT, CAN_MODIFY
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class CoreItemStack {
-        private ItemStack itemStack;
-        private CoreItemEvent coreItemEvent;
-    }
 }

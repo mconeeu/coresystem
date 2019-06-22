@@ -11,7 +11,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 @Getter
-public class HologramManagerReloadedEvent extends Event {
+public final class HologramManagerReloadedEvent extends Event {
 
     @Getter
     private static final HandlerList handlerList = new HandlerList();

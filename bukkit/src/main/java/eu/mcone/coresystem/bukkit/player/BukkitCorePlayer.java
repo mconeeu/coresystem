@@ -7,14 +7,13 @@ package eu.mcone.coresystem.bukkit.player;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.PlayerSettingsChangeEvent;
-import eu.mcone.coresystem.api.bukkit.inventory.modification.ModifiedInventory;
+import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.Stats;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
@@ -29,13 +28,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.Plugin;
 
 import java.net.InetAddress;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -57,15 +54,12 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     private PacketListener packetListener;
     @Getter
     private PermissionAttachment permissionAttachment;
-    @Getter
-    private Map<String, ModifiedInventory> modifiedInventories;
 
     public BukkitCorePlayer(CoreSystem instance, InetAddress address, SkinInfo skinInfo, Player p) {
         super(instance, address, p.getUniqueId(), p.getName());
         this.stats = new HashMap<>();
         this.skin = skinInfo;
         this.vanished = false;
-        this.modifiedInventories = CoreSystem.getInstance().getInventoryModificationManager().getModifiedInventories(p.getUniqueId());
 
         updatePermissionAttachment(p);
 

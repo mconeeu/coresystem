@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bukkit.inventory;
 
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.inventory.InventoryOption;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.item.Skull;
@@ -16,12 +17,8 @@ import org.bukkit.entity.Player;
 
 class FriendInventory extends CoreInventory {
 
-    FriendInventory() {
-        super(InventorySlot.ROW_4, Option.FILL_EMPTY_SLOTS);
-    }
-
-    public void createInventory(Player p, String friend) {
-        setTitle("§8» §f§l" + friend + " §8| §7Aktionen");
+    FriendInventory(Player p, String friend) {
+        super("§8» §f§l" + friend + " §8| §7Aktionen", p, InventorySlot.ROW_4, InventoryOption.FILL_EMPTY_SLOTS);
 
         setItem(InventorySlot.ROW_1_SLOT_5, new Skull(friend, 1).toItemBuilder().displayName("§f§l" + friend).create());
         setItem(InventorySlot.ROW_3_SLOT_3, new ItemBuilder(Material.ENDER_PEARL, 1, 0).displayName("§7Teleportieren").create(), e -> {
@@ -38,9 +35,8 @@ class FriendInventory extends CoreInventory {
         });
         setItem(InventorySlot.ROW_4_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Freundemenü").create(), e -> {
             p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
-            new FriendInventory().openInventory(p);
+            new FriendInventory(p, friend).openInventory();
         });
-
-        openInventory(p);
     }
+
 }

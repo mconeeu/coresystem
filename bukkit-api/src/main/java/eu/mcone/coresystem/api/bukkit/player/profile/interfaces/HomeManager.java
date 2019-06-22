@@ -16,6 +16,7 @@ public interface HomeManager {
 
     /**
      * returns the location for a home with a specific name
+     *
      * @param name home name
      * @return home Location
      */
@@ -23,22 +24,40 @@ public interface HomeManager {
 
     /**
      * returns all Homes of the player (set with /sethome <home> or /home set <home>
+     *
      * @return all homes with name and location in a map
      */
     Map<String, Location> getHomes();
 
     /**
      * adds a new home or updates an existing home
+     *
      * @param name name of the home
      * @param location location
      */
     void setHome(String name, Location location);
 
     /**
+     * adds a new home or updates an existing home without saving it to the database
+     *
+     * @param name name of the home
+     * @param location location
+     */
+    void setHomeLocally(String name, Location location);
+
+    /**
      * removes an existing home
+     *
      * @param name name of the home
      * @return true if home was removed, false if there was no home with this name
      */
     boolean removeHome(String name);
 
+    /**
+     * removes an existing home without saving it to the database
+     *
+     * @param name name of the home
+     * @return true if home was removed, false if there was no home with this name
+     */
+    boolean removeHomeLocally(String name);
 }

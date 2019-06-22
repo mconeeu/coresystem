@@ -162,7 +162,6 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
 
         p.setDisplayName(name);
         instance.getCorePlayer(p).getScoreboard().reload();
-        CoreSystem.getInstance().createTitle().subTitle("§2§oDu bist nun genickt!").send(p);
     }
 
     public static void setGameProfileName(GameProfile gp, String name) {

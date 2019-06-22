@@ -25,6 +25,7 @@ import java.util.*;
 @Getter @Setter
 public class PlayerInventoryProfile extends PlayerDataProfile {
 
+    public static final String ENDERCHEST_TITLE = "§8Deine Enderkiste";
     private static final LinkedHashMap<String, Integer> ENDERCHEST_SIZES = new LinkedHashMap<String, Integer>(){{
         put("system.bukkit.enderchest.xl", InventorySlot.ROW_6);
         put("system.bukkit.enderchest.l", InventorySlot.ROW_5);
@@ -40,7 +41,7 @@ public class PlayerInventoryProfile extends PlayerDataProfile {
     private Map<String, ItemStack> items = new HashMap<>();
     private Map<String, ItemStack> enderChestItems = new HashMap<>();
 
-    private transient Inventory enderchest = Bukkit.createInventory(null, InventorySlot.ROW_3, "§8Deine Enderkiste");
+    private transient Inventory enderchest = Bukkit.createInventory(null, InventorySlot.ROW_3, ENDERCHEST_TITLE);
     private transient boolean sizeChange = false;
 
     public PlayerInventoryProfile(Player p, Inventory enderchest, Map<String, Location> homes) {
@@ -125,7 +126,7 @@ public class PlayerInventoryProfile extends PlayerDataProfile {
             }
         }
 
-        enderchest = Bukkit.createInventory(null, size, "§8Deine Enderkiste");
+        enderchest = Bukkit.createInventory(null, size, ENDERCHEST_TITLE);
         List<ItemStack> leftItems = new ArrayList<>();
 
         for (Map.Entry<String, ItemStack> e : enderChestItems.entrySet()) {

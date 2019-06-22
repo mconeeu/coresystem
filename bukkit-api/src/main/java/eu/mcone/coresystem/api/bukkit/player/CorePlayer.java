@@ -5,18 +5,13 @@
 
 package eu.mcone.coresystem.api.bukkit.player;
 
-import eu.mcone.coresystem.api.bukkit.inventory.modification.ModifiedInventory;
+import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-
-import java.util.List;
-import java.util.Map;
 
 public interface CorePlayer extends GlobalCorePlayer {
 
@@ -106,12 +101,5 @@ public interface CorePlayer extends GlobalCorePlayer {
      * @param scoreboard scoreboard
      */
     void setScoreboard(CoreScoreboard scoreboard);
-
-    /**
-     * returns a Map of all modified inventories from the player
-     *
-     * @return map of modified inventories
-     */
-    Map<String, ModifiedInventory> getModifiedInventories();
 
 }

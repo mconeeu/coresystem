@@ -116,7 +116,7 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         this.name = name;
         this.groupSet = new HashSet<>(Collections.singletonList(Group.SPIELER));
         this.onlinetime = 0;
-        this.coins = 20;
+        this.coins = 1000;
         this.emeralds = 0;
         this.settings = new PlayerSettings();
         this.state = online ? PlayerState.ONLINE : PlayerState.OFFLINE;

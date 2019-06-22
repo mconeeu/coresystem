@@ -39,7 +39,7 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin 
         this(Gamemode.UNDEFINED, pluginName, pluginColor, prefixTranslation);
     }
 
-    protected CorePlugin(Gamemode pluginGamemode, String pluginName, ChatColor pluginColor, String prefixTranslation) {
+    private CorePlugin(Gamemode pluginGamemode, String pluginName, ChatColor pluginColor, String prefixTranslation) {
         if (pluginGamemode == null) {
             throw new NullPointerException("Gamemode must not be null!");
         }

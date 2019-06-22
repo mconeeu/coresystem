@@ -31,7 +31,7 @@ public class PartyCMD extends Command implements TabExecutor {
         if (sender instanceof ProxiedPlayer) {
             final ProxiedPlayer p = (ProxiedPlayer) sender;
 
-            if (p.getServer().getInfo().getName().contains("Citybuild")) {
+            if (p.getServer().getInfo().getName().contains("Citybuild") || p.getServer().getInfo().getName().contains("Build")) {
                 StringBuilder sb = new StringBuilder("ps");
                 for (String arg : args) {
                     sb.append(" ").append(arg);

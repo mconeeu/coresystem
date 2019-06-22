@@ -54,16 +54,16 @@ public interface CorePluginManager {
      * registers a coreInventory for the specified
      *
      * @param player        Bukkit Player
-     * @param coreInventory CoreInventory
+     * @param inventory     CoreInventory
      */
-    void registerCoreInventory(Player player, CoreInventory coreInventory);
+    void registerCoreInventory(Player player, CoreInventory inventory);
 
     /**
      * returns all current saved CoreInventories
      *
      * @return list of all CoreInventories
      */
-    List<CoreInventory> getCoreInventories();
+    CoreInventory getCurrentCoreInventory(Player player);
 
     /**
      * register a new GameProfile

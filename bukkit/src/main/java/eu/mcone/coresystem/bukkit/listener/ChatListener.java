@@ -58,7 +58,7 @@ public class ChatListener implements Listener {
                 }
             }
 
-            e.setFormat(message);
+            e.setMessage(message);
 
             e.getRecipients().remove(p);
             p.sendMessage(playerMessage);

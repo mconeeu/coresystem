@@ -6,14 +6,13 @@
 package eu.mcone.coresystem.bukkit.listener;
 
 import com.mojang.authlib.properties.Property;
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.player.BukkitCorePlayer;
-import eu.mcone.coresystem.bukkit.player.NickManager;
 import eu.mcone.coresystem.bukkit.player.CorePermissibleBase;
+import eu.mcone.coresystem.bukkit.player.NickManager;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -56,9 +55,6 @@ public class CorePlayerListener implements Listener {
         p.registerPacketListener(bp);
         ((NickManager) BukkitCoreSystem.getInstance().getNickManager()).setNicks(bp);
 
-        //Loads all ModifiedInventories for the player
-        CoreSystem.getInstance().getInventoryModificationManager().loadModifiedInventories(bp);
-
         for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
             cp.getScoreboard().reload();
         }
@@ -87,7 +83,6 @@ public class CorePlayerListener implements Listener {
         p.unregisterAttachment();
 
         Bukkit.getScheduler().runTask(BukkitCoreSystem.getInstance(), p::unregister);
-        CoreSystem.getInstance().getInventoryModificationManager().pushModifications(e.getPlayer());
     }
 
     public static void setCorePermissibleBase(Player p) {

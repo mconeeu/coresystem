@@ -5,21 +5,24 @@
 
 package eu.mcone.coresystem.api.bukkit.event;
 
-import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
+import eu.mcone.coresystem.api.core.player.PlayerState;
 import lombok.Getter;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 @Getter
-public final class NpcManagerReloadedEvent extends Event {
+public final class AfkEvent extends Event {
 
     @Getter
     private static final HandlerList handlerList = new HandlerList();
 
-    private final NpcManager npcManager;
+    private final Player player;
+    private final PlayerState state;
 
-    public NpcManagerReloadedEvent(NpcManager npcManager) {
-        this.npcManager = npcManager;
+    public AfkEvent(Player player, PlayerState state) {
+        this.player = player;
+        this.state = state;
     }
 
     public HandlerList getHandlers() {

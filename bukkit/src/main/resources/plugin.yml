@@ -74,6 +74,11 @@ permissions:
             description: Allows to manage the spawn points
           system.bukkit.speed:
             description: Allows to use the speed cmd
+          system.bukkit.clear:
+            description: Allows to clear own inventory
+            children:
+              system.bukkit.clear.other:
+                description: Allows to clear the inventories from others
           system.bukkit.world:
             description: Basic Permission for /world info and /world list
             children:
