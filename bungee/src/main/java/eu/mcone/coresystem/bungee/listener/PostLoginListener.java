@@ -68,19 +68,7 @@ public class PostLoginListener implements Listener {
 
 
         ProxyServer.getInstance().getScheduler().schedule(BungeeCoreSystem.getInstance(), () -> {
-            if (p.getServer() != null) {
-                p.setTabHeader(
-                        new ComponentBuilder(
-                                "§3§lMC ONE §8» §7§oDein Nummer 1 Netzwerk"
-                                        + "\n§7Online: §f§l"+ProxyServer.getInstance().getOnlineCount()+" Spieler§8 ×§7 Server: §f§l" + e.getPlayer().getServer().getInfo().getName()
-                                        + "\n"
-                        ).create(),
-                        new ComponentBuilder(
-                                "\n§7Hol' Dir §6§lPremium§7 auf §f§nshop.mcone.eu§7!"
-                                        + "\n§r  §7TS: §3§nts.mcone.eu§8 ×§7 Discord: §3§ndiscord.mcone.eu§r  "
-                        ).create()
-                );
-            }
+            updateTabHeader(p);
 
             BungeeCoreSystem.getInstance().getLabyModAPI().sendPermissions(p, new HashMap<LabyPermission, Boolean>() {{
                 put(LabyPermission.IMPROVED_LAVA, true);
@@ -128,4 +116,19 @@ public class PostLoginListener implements Listener {
             return Arrays.asList(welcomeMSG).get(new Random().nextInt(welcomeMSG.length));
         }
     }
+
+    public static void updateTabHeader(ProxiedPlayer p) {
+        p.setTabHeader(
+                new ComponentBuilder(
+                        "§3§lMC ONE §8» §7§oDein Nummer 1 Netzwerk"
+                                + "\n§7Online: §f§l"+ProxyServer.getInstance().getOnlineCount()+" Spieler§8 ×§7 Server: §f§l" + (p.getServer() != null ? p.getServer().getInfo().getName() : "?")
+                                + "\n"
+                ).create(),
+                new ComponentBuilder(
+                        "\n§7Hol' Dir §6§lPremium§7 auf §f§nshop.mcone.eu§7!"
+                                + "\n§r  §7TS: §3§nts.mcone.eu§8 ×§7 Discord: §3§ndiscord.mcone.eu§r  "
+                ).create()
+        );
+    }
+
 }

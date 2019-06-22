@@ -10,7 +10,7 @@
     <parent>
         <artifactId>mcone-coresystem</artifactId>
         <groupId>eu.mcone.coresystem</groupId>
-        <version>10.4.1-SNAPSHOT</version>
+        <version>10.4.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>eu.mcone.coresystem</groupId>
             <artifactId>core-api</artifactId>
-            <version>10.4.1-SNAPSHOT</version>
+            <version>10.4.2-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

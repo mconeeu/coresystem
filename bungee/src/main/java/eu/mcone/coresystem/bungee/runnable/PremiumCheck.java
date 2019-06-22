@@ -10,9 +10,11 @@ import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.bungee.listener.PostLoginListener;
 import eu.mcone.coresystem.bungee.player.BungeeCorePlayer;
 import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.bson.Document;
 
 import java.util.UUID;
@@ -22,7 +24,6 @@ import static com.mongodb.client.model.Filters.eq;
 public class PremiumCheck implements Runnable {
 
     public void run() {
-
         for (Document premiumEntry : BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_premium").find()) {
             long millis = System.currentTimeMillis() / 1000;
 
@@ -46,6 +47,10 @@ public class PremiumCheck implements Runnable {
                     }
                 }
             }
+        }
+
+        for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
+            PostLoginListener.updateTabHeader(p);
         }
     }
 }

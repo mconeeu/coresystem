@@ -41,7 +41,13 @@ public interface BuildSystem {
      * should players be informed if their action is blocked by the BuildSystem?
      * @param notify inform players on blocked action
      */
-    void setNotifying(boolean notify);
+    void setNotify(boolean notify);
+
+    /**
+     * should players with build permissions like system.bukkit.build.<world>.<event>.<blockid> should bypass build restrictions?
+     * @param useBuildPermissionNodes if players with build permissions should bypass build restrictions
+     */
+    void setUseBuildPermissionNodes(boolean useBuildPermissionNodes);
 
     /**
      * filter specific items for the given event
