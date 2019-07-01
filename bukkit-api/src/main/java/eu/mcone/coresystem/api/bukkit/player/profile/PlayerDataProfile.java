@@ -39,22 +39,24 @@ public class PlayerDataProfile extends GameProfile {
     public PlayerDataProfile(Player p) {
         super(p);
 
-        flying = p.isFlying();
-        world = p.getWorld().getName();
-        location = p.getLocation();
-        level = p.getLevel();
-        foodLevel = p.getFoodLevel();
-        exp = p.getExp();
-        health = p.getHealth();
-        lastLogin = System.currentTimeMillis() / 1000;
+        this.flying = p.isFlying();
+        this.world = p.getWorld().getName();
+        this.location = p.getLocation();
+        this.level = p.getLevel();
+        this.foodLevel = p.getFoodLevel();
+        this.exp = p.getExp();
+        this.health = p.getHealth();
+        this.homes = new HashMap<>();
+        this.lastLogin = System.currentTimeMillis() / 1000;
     }
 
     public PlayerDataProfile() {
-        world = gameProfileWorld.getName();
-        location = CoreSystem.getInstance().getWorldManager().getWorld(gameProfileWorld).getLocation("spawn");
-        foodLevel = 20;
-        health = 20D;
-        homes = new HashMap<>();
+        this.world = gameProfileWorld.getName();
+        this.location = CoreSystem.getInstance().getWorldManager().getWorld(gameProfileWorld).getLocation("spawn");
+        this.foodLevel = 20;
+        this.health = 20D;
+        this.homes = new HashMap<>();
+        this.lastLogin = System.currentTimeMillis() / 1000;
     }
 
     public void doSetData(Player p) {

@@ -43,7 +43,7 @@ public class BukkitCoreWorld implements CoreWorld {
     private WorldType worldType = WorldType.NORMAL;
     private World.Environment environment = World.Environment.NORMAL;
     private Difficulty difficulty = Difficulty.NORMAL;
-    private boolean generateStructures = false, loadOnStartup = true, autoSave = true, pvp = false, allowAnimals = false, allowMonsters = false, keepSpawnInMemory = true;
+    private boolean generateStructures = false, loadOnStartup = true, autoSave = true, pvp = false, allowAnimals = true, allowMonsters = true, spawnAnimals = false, spawnMonsters = false, keepSpawnInMemory = true;
     private int[] spawnLocation = new int[]{0, 0, 0};
 
     private Map<String, CoreLocation> locations = new HashMap<>();
@@ -81,7 +81,11 @@ public class BukkitCoreWorld implements CoreWorld {
 
     @Override
     public Location getLocation(String name) {
-        return locations.containsKey(name) ? locations.get(name).bukkit() : null;
+        if (name.equalsIgnoreCase("spawn")) {
+            return locations.containsKey(name) ? locations.get(name).bukkit() : new Location(bukkit(), spawnLocation[0], spawnLocation[1], spawnLocation[2]);
+        } else {
+            return locations.containsKey(name) ? locations.get(name).bukkit() : null;
+        }
     }
 
     @Override
@@ -225,12 +229,13 @@ public class BukkitCoreWorld implements CoreWorld {
         w.setPVP(pvp);
         w.setKeepSpawnInMemory(keepSpawnInMemory);
         w.setAutoSave(autoSave);
+        w.setSpawnFlags(allowAnimals, allowMonsters);
 
-        if (!allowAnimals) {
+        if (!spawnAnimals) {
             w.setAnimalSpawnLimit(0);
             w.setWaterAnimalSpawnLimit(0);
         }
-        if (!allowMonsters) {
+        if (!spawnMonsters) {
             w.setMonsterSpawnLimit(0);
         }
     }

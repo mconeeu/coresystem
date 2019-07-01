@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bukkit.command;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
+import eu.mcone.coresystem.api.bukkit.world.WorldCreateProperties;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.world.BukkitCoreWorld;
 import lombok.Setter;
@@ -79,6 +80,8 @@ public class WorldCMD extends CorePlayerCommand {
                         "\n§7§opvp §8: §f{true, false}" +
                         "\n§7§oallowAnimals §8: §f{true, false}" +
                         "\n§7§oallowMonsters §8: §f{true, false}" +
+                        "\n§7§ospawnAnimals §8: §f{true, false}" +
+                        "\n§7§ospawnMonsters §8: §f{true, false}" +
                         "\n§7§okeepSpawnInMemory §8: §f{true, false}" +
                         "\n§7§oloadOnStartup §8: §f{true, false}" +
                         "\n§7§otemplateName §8: §f{name}"
@@ -103,7 +106,6 @@ public class WorldCMD extends CorePlayerCommand {
 
                     if (w == null) {
                         Map<String, String> settings = new HashMap<>();
-                        settings.put("name", args[1]);
 
                         for (int i = 2; i < args.length; i++) {
                             String[] setting = args[i].split("=");
@@ -118,13 +120,13 @@ public class WorldCMD extends CorePlayerCommand {
 
                         try {
                             BukkitCoreSystem.getInstance().getMessager().send(p, "§7Erstelle Welt...");
-                            if (BukkitCoreSystem.getInstance().getWorldManager().createWorld(args[1], settings)) {
+                            if (BukkitCoreSystem.getInstance().getWorldManager().createWorld(args[1], WorldCreateProperties.fromMap(settings)) != null) {
                                 BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Welt §a" + args[1] + "§2 wurde erfolgreich erstellt!");
                             } else {
-                                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die Welt " + args[1] + " konnte nicht erstellt werden, da wahrscheinlich ein falsches Key-Value Konstrukt verwendet wurde!");
+                                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die Welt " + args[1] + " konnte nicht erstellt werden. Konsole nach Fehlern überprüfen!");
                             }
                         } catch (IllegalArgumentException e) {
-                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die Welt §c" + args[1] + "§4 wurde erstellt, allerdings konnte mindestens eine Einstellung nicht übernommen werden: \n§7§o" + e.getMessage());
+                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Mindestens eine Einstellung wurde falsch angegeben: \n§7§o" + e.getMessage());
                         }
                     } else {
                         BukkitCoreSystem.getInstance().getMessager().send(p, "§4Eine Welt mit dem Namen §c" + args[1] + "§4 ist bereits geladen!");
@@ -136,7 +138,7 @@ public class WorldCMD extends CorePlayerCommand {
             }
 
             if (args.length == 2) {
-                if (args[0].equalsIgnoreCase("purge")) {
+                if (args[0].equalsIgnoreCase("purge") || args[0].equalsIgnoreCase("killall")) {
                     if (p.hasPermission("system.bukkit.world.purge")) {
                         if (args[1].equalsIgnoreCase("animals")) {
                             CoreSystem.getInstance().getCorePlayer(p).getWorld().purgeAnimals();
@@ -183,6 +185,8 @@ public class WorldCMD extends CorePlayerCommand {
                                     "\n§7§opvp: §f" + bw.getPVP() +
                                     "\n§7§oallowAnimals: §f" + w.isAllowAnimals() +
                                     "\n§7§oallowMonsters: §f" + w.isAllowMonsters() +
+                                    "\n§7§ospawnAnimals: §f" + (bw.getAnimalSpawnLimit() > 0) +
+                                    "\n§7§ospawnMonsters: §f" + (bw.getMonsterSpawnLimit() > 0) +
                                     "\n§7§okeepSpawnInMemory: §f" + bw.getKeepSpawnInMemory() +
                                     "\n§7§oloadOnStartup: §f" + w.isLoadOnStartup()
                             );
@@ -293,6 +297,10 @@ public class WorldCMD extends CorePlayerCommand {
                             } else if (args[1].equalsIgnoreCase("allowMonsters")) {
                                 w.setAllowMonsters(Boolean.valueOf(args[2]));
                                 if (!Boolean.valueOf(args[2])) w.purgeMonsters();
+                            } else if (args[1].equalsIgnoreCase("spawnAnimals")) {
+                                w.setSpawnAnimals(Boolean.valueOf(args[2]));
+                            } else if (args[1].equalsIgnoreCase("spawnMonsters")) {
+                                w.setSpawnMonsters(Boolean.valueOf(args[2]));
                             } else if (args[1].equalsIgnoreCase("keepSpawnInMemory")) {
                                 w.setKeepSpawnInMemory(Boolean.valueOf(args[2]));
                             } else if (args[1].equalsIgnoreCase("loadOnStartup")) {
@@ -353,7 +361,8 @@ public class WorldCMD extends CorePlayerCommand {
         BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: " +
                 "\n§c/world <name> " +
                 "\n§c/world list §4oder " +
-                "\n§c/world <info | upload | delete | tp> <world-name> §4oder " +
+                "\n§c/world <info | upload | unload | delete | tp> <world-name> §4oder " +
+                "\n§c/world purge <animals | monsters> §4oder " +
                 "\n§c/world set <key> <value> §4oder " +
                 "\n§c/world import <name> <NORMAL | NETHER | THE_END>" +
                 "\n§c/world create <name> [<key>=<value>]..." +

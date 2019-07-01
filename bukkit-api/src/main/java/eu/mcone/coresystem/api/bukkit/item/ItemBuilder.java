@@ -78,7 +78,7 @@ public final class ItemBuilder {
         if (!itemStack.hasItemMeta()) {
             throw new IllegalStateException("missing ItemMeta!");
         } else {
-            return new ItemBuilder(itemStack);
+            return new ItemBuilder(itemStack.clone());
         }
     }
 
@@ -176,6 +176,17 @@ public final class ItemBuilder {
     public ItemBuilder unbreakable(boolean unbreakable) {
         itemMeta.spigot().setUnbreakable(unbreakable);
         return this;
+    }
+
+    /**
+     * returns a new ItemBuilder with a fresh ItemStack instance
+     * @return new ItemBuilder
+     */
+    public ItemBuilder clone() {
+        ItemStack item = itemStack.clone();
+        item.setItemMeta(itemMeta);
+
+        return ItemBuilder.wrap(item);
     }
 
     /**

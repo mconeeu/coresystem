@@ -11,6 +11,7 @@ import com.google.gson.stream.JsonReader;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.npc.data.PlayerNpcData;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
+import eu.mcone.coresystem.api.bukkit.world.WorldCreateProperties;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.LocationCMD;
@@ -31,7 +32,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     final static String CONFIG_NAME = "core-config.json";
 
     private final static String CONFIG_VERSION_KEY = "configVersion";
-    private final static int LATEST_CONFIG_VERSION = 2;
+    private final static int LATEST_CONFIG_VERSION = 3;
 
     private WorldCMD worldCMD;
     List<BukkitCoreWorld> coreWorlds;
@@ -98,7 +99,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                             coreWorlds.add(constructNewCoreWorld(world));
                             BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + world.getName());
                         } else {
-                            BukkitCoreSystem.getInstance().sendConsoleMessage("Recognized world "+dir.getName()+" but has no config! Import manually (/world import "+dir.getName()+")");
+                            BukkitCoreSystem.getInstance().sendConsoleMessage("Recognized world " + dir.getName() + " but has no config! Import manually (/world import " + dir.getName() + ")");
                         }
                     }
                 }
@@ -162,7 +163,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                     BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + world.getName());
                     return true;
                 } else {
-                    BukkitCoreSystem.getInstance().sendConsoleMessage("§4Could not import world"+name+"! WorldCreator returned null!");
+                    BukkitCoreSystem.getInstance().sendConsoleMessage("§4Could not import world" + name + "! WorldCreator returned null!");
                     return false;
                 }
             } catch (Exception e) {
@@ -176,42 +177,34 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     }
 
     @Override
-    public boolean createWorld(String name, Map<String, String> settings) throws IllegalArgumentException {
+    public World createWorld(String name, WorldCreateProperties properties) throws IllegalArgumentException {
         WorldCreator wc = new WorldCreator(name);
 
-        try {
-            if (settings.containsKey("seed")) wc.seed(Long.valueOf(settings.get("seed")));
-            if (settings.containsKey("type")) wc.type(WorldType.valueOf(settings.get("type")));
-            if (settings.containsKey("environment"))
-                wc.environment(World.Environment.valueOf(settings.get("environment")));
-            if (settings.containsKey("generator")) {
-                wc.generator(settings.get("generator"));
-                if (settings.containsKey("generatorSettings")) wc.generatorSettings(settings.get("generatorSettings"));
-            }
-            if (settings.containsKey("generateStructures"))
-                wc.generateStructures(Boolean.valueOf(settings.get("generateStructures")));
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            return false;
+        if (properties.getSeed() != 0) wc.seed(properties.getSeed());
+        if (properties.getWorldType() != null) wc.type(properties.getWorldType());
+        if (properties.getEnvironment() != null) wc.environment(properties.getEnvironment());
+        if (properties.getGenerator() != null) {
+            wc.generator(properties.getGenerator());
+            if (properties.getGeneratorSettings() != null) wc.generatorSettings(properties.getGeneratorSettings());
         }
+        wc.generateStructures(properties.isGenerateStructures());
 
         World world = wc.createWorld();
-        if (settings.containsKey("difficulty")) world.setDifficulty(Difficulty.valueOf(settings.get("difficulty")));
-        if (settings.containsKey("autoSave")) world.setAutoSave(Boolean.valueOf(settings.get("autoSave")));
-        if (settings.containsKey("pvp")) world.setPVP(Boolean.valueOf(settings.get("pvp")));
-        if (settings.containsKey("allowAnimals") && !Boolean.valueOf("allowAnimals")) {
+        if (properties.getDifficulty() != null) world.setDifficulty(properties.getDifficulty());
+        world.setAutoSave(properties.isAutoSave());
+        world.setPVP(properties.isPvp());
+        world.setSpawnFlags(properties.isAllowAnimals(), properties.isAllowMonsters());
+        if (!properties.isSpawnAnimals()) {
             world.setAnimalSpawnLimit(0);
             world.setWaterAnimalSpawnLimit(0);
         }
-        if (settings.containsKey("allowMonsters") && !Boolean.valueOf("allowMonsters")) {
+        if (!properties.isSpawnMonsters()) {
             world.setMonsterSpawnLimit(0);
         }
-        if (settings.containsKey("keepSpawnInMemory"))
-            world.setKeepSpawnInMemory(Boolean.valueOf(settings.get("keepSpawnInMemory")));
+        world.setKeepSpawnInMemory(properties.isKeepSpawnInMemory());
 
         coreWorlds.add(constructNewCoreWorld(world));
-
-        return true;
+        return world;
     }
 
     private BukkitCoreWorld constructNewCoreWorld(World world) {
@@ -230,6 +223,8 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                 world.getPVP(),
                 world.getAllowAnimals(),
                 world.getAllowMonsters(),
+                world.getAnimalSpawnLimit() > 0,
+                world.getMonsterSpawnLimit() > 0,
                 world.getKeepSpawnInMemory(),
                 new int[]{(int) loc.getX(), (int) loc.getY(), (int) loc.getZ()},
                 Collections.emptyMap(),
@@ -279,6 +274,18 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                 }
                 for (JsonElement e : json.getAsJsonObject().get("hologramData").getAsJsonArray()) {
                     e.getAsJsonObject().add("location", insertWorldVar(e.getAsJsonObject().get("location").getAsJsonObject(), worldName));
+                }
+            }
+            case 2: {
+                CoreSystem.getInstance().sendConsoleMessage("§7Updating Config from version 2 to 3...");
+
+                if (json.getAsJsonObject().has("allowAnimals")) {
+                    json.getAsJsonObject().addProperty("spawnAnimals", json.getAsJsonObject().get("allowAnimals").getAsBoolean());
+                    json.getAsJsonObject().addProperty("allowAnimals", true);
+                }
+                if (json.getAsJsonObject().has("allowMonsters")) {
+                    json.getAsJsonObject().addProperty("spawnMonsters", json.getAsJsonObject().get("allowMonsters").getAsBoolean());
+                    json.getAsJsonObject().addProperty("allowMonsters", true);
                 }
             }
         }

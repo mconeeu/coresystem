@@ -8,7 +8,6 @@ package eu.mcone.coresystem.api.bukkit.world;
 import org.bukkit.World;
 
 import java.util.List;
-import java.util.Map;
 
 public interface WorldManager {
 
@@ -47,11 +46,11 @@ public interface WorldManager {
     /**
      * To use for new non-existing worlds
      * @param name name
-     * @param settings Map of world settings [key, value]
+     * @param properties WorldProperties for creating and maintaining
      * @return boolean created
      * @throws IllegalArgumentException thrown if one setting was formatted false, but world was created though
      */
-    boolean createWorld(String name, Map<String, String> settings) throws IllegalArgumentException;
+    World createWorld(String name, WorldCreateProperties properties) throws IllegalArgumentException;
 
     /**
      * reloads all world configs

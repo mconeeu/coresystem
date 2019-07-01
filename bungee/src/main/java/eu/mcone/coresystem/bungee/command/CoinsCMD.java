@@ -6,10 +6,10 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.core.util.MoneyUtil;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
@@ -23,14 +23,12 @@ public class CoinsCMD extends Command{
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (sender instanceof ProxiedPlayer) {
-            MoneyUtil coinsAPI = BungeeCoreSystem.getSystem().getMoneyUtil();
-
             ProxiedPlayer p = (ProxiedPlayer) sender;
+            CorePlayer cp = BungeeCoreSystem.getSystem().getCorePlayer(p);
             if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
 
             if (args.length == 0) {
-                int coins = coinsAPI.getCoins(p.getUniqueId());
-                BungeeCoreSystem.getInstance().getMessager().send(p, "§7Du hast momentan §a" + coins + " Coins!");
+                BungeeCoreSystem.getInstance().getMessager().send(p, "§7Du hast momentan §a" + cp.getFormattedCoins() + " Coins!");
             } else if (p.hasPermission("system.bungee.coins")) {
                 if (args.length == 1) {
                     if (args[0].equalsIgnoreCase("add")) {
@@ -40,8 +38,12 @@ public class CoinsCMD extends Command{
                     } else if (args[0].equalsIgnoreCase("set")) {
                         BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/coins set <Spieler> <Anzahl>");
                     } else {
-                        String name = args[0];
-                        BungeeCoreSystem.getInstance().getMessager().send(p, "§7Der Spieler §f" + name + "§7 hat momentan §a" + coinsAPI.getCoins(name) + " Coins!");
+                        try {
+                            OfflineCorePlayer t = CoreSystem.getInstance().getOfflineCorePlayer(args[0]);
+                            BungeeCoreSystem.getInstance().getMessager().send(p, "§7Der Spieler §f" + t.getName() + "§7 hat momentan §a" + t.getFormattedCoins() + " Coins§7!");
+                        } catch (PlayerNotResolvedException e) {
+                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spieler §c" + args[0] + "§4 existiert nicht!");
+                        }
                     }
                 } else if (args.length == 2) {
                     if (args[0].equalsIgnoreCase("add")) {
@@ -63,7 +65,7 @@ public class CoinsCMD extends Command{
                             o.addCoins(coins);
                             BungeeCoreSystem.getInstance().getMessager().send(p, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins§2 hinzugefügt");
                         } catch (PlayerNotResolvedException e) {
-                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
+                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spieler §c" + args[0] + "§4 existiert nicht!");
                         }
                     } else if (args[0].equalsIgnoreCase("remove")) {
                         String name = args[1];
@@ -74,7 +76,7 @@ public class CoinsCMD extends Command{
                             o.removeCoins(coins);
                             BungeeCoreSystem.getInstance().getMessager().send(p, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins §2abgezogen");
                         } catch (PlayerNotResolvedException e) {
-                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
+                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spieler §c" + args[0] + "§4 existiert nicht!");
                         }
                     } else if (args[0].equalsIgnoreCase("set")) {
                         String name = args[1];
@@ -85,7 +87,7 @@ public class CoinsCMD extends Command{
                             o.setCoins(coins);
                             BungeeCoreSystem.getInstance().getMessager().send(p, "§f" + name + "§2 hat nun §a" + coins + " Coins§2!");
                         } catch (PlayerNotResolvedException e) {
-                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
+                            BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Spieler §c" + args[0] + "§4 existiert nicht!");
                         }
                     } else {
                         BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/coins <add|remove|set> <Spieler> <Anzahl>");

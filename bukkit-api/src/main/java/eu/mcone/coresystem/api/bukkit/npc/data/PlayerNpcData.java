@@ -19,9 +19,13 @@ import java.util.List;
 @ToString
 public class PlayerNpcData extends AbstractNpcData {
 
+    @Builder.Default
     private String skinName = "MHF_Question", tablistName = "";
+    @Builder.Default
     private SkinInfo.SkinType skinType = SkinInfo.SkinType.PLAYER;
+    @Builder.Default
     private boolean visibleOnTab = false, sleeping = false, sleepWithBed = false;
+    @Builder.Default
     private List<ItemStack> equipment = new ArrayList<>();
 
 }

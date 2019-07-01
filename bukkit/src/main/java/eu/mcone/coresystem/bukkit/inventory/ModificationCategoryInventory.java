@@ -15,6 +15,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class ModificationCategoryInventory extends CategoryInventory {
 
     private final CoreInventoryModificationManager api;
@@ -34,7 +37,9 @@ public class ModificationCategoryInventory extends CategoryInventory {
             ModifiedInventory modifiedInventory = api.getModifiedInventory(player.getUniqueId(), inv);
 
             addItem(new ItemBuilder(Material.CHEST).displayName(inv.getTitle()).lore(
-                    modifiedInventory != null ? "§7§oZuletzt bearbeitet: "+modifiedInventory.getLastUpdate() : "§7§oNoch nie bearbeitet"
+                    modifiedInventory != null
+                            ? "§7§oZuletzt bearbeitet: "+new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date(modifiedInventory.getLastUpdate() * 1000))
+                            : "§7§oNoch nie bearbeitet"
             ).create(), e -> api.setCurrentlyModifying(player, inv).openInventory(player));
         }
     }

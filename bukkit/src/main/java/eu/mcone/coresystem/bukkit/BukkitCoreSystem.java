@@ -289,6 +289,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new TpallCMD(),
                 new TpposCMD(),
                 new SetWorldSpawnCMD(),
+                new SlowchatCMD(),
                 new StatsCMD(),
                 new SpeedCMD(),
                 new VanishCMD(),
@@ -416,7 +417,12 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public void setPlayerChatEnabled(boolean enabled) {
-        ChatListener.enabled = enabled;
+        ChatListener.setEnabled(enabled);
+    }
+
+    @Override
+    public void setPlayerChatCooldown(int cooldown) {
+        ChatListener.setCooldown(cooldown);
     }
 
     @Override

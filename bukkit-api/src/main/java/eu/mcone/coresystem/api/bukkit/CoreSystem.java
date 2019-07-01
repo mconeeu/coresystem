@@ -6,7 +6,6 @@
 package eu.mcone.coresystem.api.bukkit;
 
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
-import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
@@ -208,6 +207,13 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @param enabled if custom enderchest (with variable size) should be enabled
      */
     public abstract void setCustomEnderchestEnabled(boolean enabled);
+
+    /**
+     * allows to set the cooldown time for how long players must wait to write their next message
+     * use 0 for no cooldown
+     * @param cooldown cooldown in seconds
+     */
+    public abstract void setPlayerChatCooldown(int cooldown);
 
     /**
      * enables an global /server spawn command

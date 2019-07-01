@@ -5,9 +5,12 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -18,14 +21,27 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class ChatListener implements Listener {
 
-    public static boolean enabled = true;
+    @Getter @Setter
+    private static boolean enabled = true;
+    @Getter
+    private static int cooldown = 0;
 
     @EventHandler
     public void onChat(AsyncPlayerChatEvent e) {
-        if (enabled) {
+        if (enabled && !e.isCancelled()) {
             Player p = e.getPlayer();
             CorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(p);
             String message;
+
+            if (
+                    cooldown > 0
+                    && !CoreSystem.getInstance().getCooldownSystem().addAndCheck(CoreSystem.getInstance(), getClass(), p.getUniqueId())
+                    && !p.hasPermission("system.bukkit.chat.cooldown.bypass")
+            ) {
+                CoreSystem.getInstance().getMessager().send(p, "Bitte warte "+cooldown+" Sekunden bevor du eine neue Nachricht schreibst!");
+                e.setCancelled(true);
+                return;
+            }
 
             if (cp.isNicked()) {
                 message = Group.SPIELER.getPrefix() + BukkitCoreSystem.getInstance().getTranslationManager().get("system.bukkit.chat")
@@ -64,4 +80,10 @@ public class ChatListener implements Listener {
             p.sendMessage(playerMessage);
         }
     }
+
+    public static void setCooldown(int cooldown) {
+        ChatListener.cooldown = cooldown;
+        BukkitCoreSystem.getInstance().getCooldownSystem().setCustomCooldownFor(ChatListener.class, cooldown);
+    }
+
 }

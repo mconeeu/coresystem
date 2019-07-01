@@ -11,6 +11,14 @@ permissions:
       system.bukkit:
         description: Bypass all MCONE-BukkitCoreSystem Permissions
         children:
+          system.bukkit.chat:
+            description: Basic Permission for the Player Chat
+            children:
+              system.bukkit.chat.cooldown:
+                description: Permission to (de)activate the slowchat and to set the cooldown in seconds
+                children:
+                  system.bukkit.chat.cooldown.bypass:
+                    description: Permission to bypass the Chat Cooldown, use system.bungee.cooldown otherwise
           system.bukkit.feed:
             description: Feed the player
           system.bukkit.gamemode:
@@ -68,8 +76,6 @@ permissions:
             description: Allows to create colored signs
           system.bukkit.build:
             description: Allows to bypass build restrictions
-          system.bukkit.cooldown:
-            description: Allows to bypass the CooldownSystem
           system.bukkit.setspawn:
             description: Allows to manage the spawn points
           system.bukkit.speed:
@@ -100,3 +106,8 @@ permissions:
                 description: Allows to import an existing world from server folder
               system.bukkit.world.create:
                 description: Allows to create a new world with specific parameters
+      system.bungee:
+        description: Basic BungeeCord Permission
+        children:
+          system.bungee.cooldown:
+            description: Allows to bypass the CooldownSystem

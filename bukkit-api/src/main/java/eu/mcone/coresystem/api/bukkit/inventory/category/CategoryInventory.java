@@ -9,6 +9,7 @@ import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreItemEvent;
 import eu.mcone.coresystem.api.bukkit.inventory.InventoryOption;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
+import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.item.Skull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,9 +18,9 @@ import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -79,18 +80,19 @@ public abstract class CategoryInventory extends CoreInventory {
             ItemStack categoryItem = categoryItems.get(i);
 
             if (categoryItem.equals(UP_ITEM)) {
-                setItem(CATEGORY_SLOTS[i], categoryItem, e -> openCategoryInventory(categories.get(categoryPage-1), player));
+                int catItemIndex = categoryPage-1 == 1 ? 0 : 1;
+                setItem(CATEGORY_SLOTS[i], categoryItem, e -> openCategoryInventory(getCategoryPageItems(categoryPages, categoryPage-1).get(catItemIndex), player));
             } else if (categoryItem.equals(DOWN_ITEM)) {
-                setItem(CATEGORY_SLOTS[i], categoryItem, e -> openCategoryInventory(categories.get(categoryPage+1), player));
+                setItem(CATEGORY_SLOTS[i], categoryItem, e -> openCategoryInventory(getCategoryPageItems(categoryPages, categoryPage+1).get(1), player));
             } else if (categoryItem.equals(currentCategoryItem)) {
-                categoryItem.getItemMeta().addEnchant(Enchantment.DAMAGE_ALL, 1, true);
-                setItem(CATEGORY_SLOTS[i], categoryItem);
+                setItem(CATEGORY_SLOTS[i], ItemBuilder.wrap(categoryItem).enchantment(Enchantment.DAMAGE_ALL, 1).itemFlags(ItemFlag.HIDE_ENCHANTS).create());
             } else  {
                 setItem(CATEGORY_SLOTS[i], categoryItem, e -> openCategoryInventory(categoryItem, player));
             }
         }
 
-        for (int i = (itemPage-1) * 18, x = 11; i < i+18 && i < categoryInvItems.size(); i++, x++) {
+        int startItem = ((itemPage-1) * 18);
+        for (int i = startItem, x = 11; i < startItem+18 && i < categoryInvItems.size(); i++, x++) {
             if (x == 17) x = 20;
             else if (x == 26) x = 29;
 
@@ -122,14 +124,6 @@ public abstract class CategoryInventory extends CoreInventory {
     @Override
     public Inventory openInventory() {
         return openInventory(1);
-    }
-
-    private static void openCategoryInventory(Class<? extends CategoryInventory> categoryInvClass, Player p) {
-        try {
-            categoryInvClass.getDeclaredConstructor(Player.class).newInstance(p).openInventory();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
-            e1.printStackTrace();
-        }
     }
 
     private List<ItemStack> getCategoryPageItems(int allPages, int currentPage) {
@@ -271,13 +265,6 @@ public abstract class CategoryInventory extends CoreInventory {
     private class CategoryInvItem {
         private ItemStack itemStack;
         private CoreItemEvent itemEvent;
-    }
-
-    @AllArgsConstructor
-    @Getter @Setter
-    private class Category {
-        private ItemStack itemStack;
-        private Class<? extends CategoryInventory> categoryInventoryClass;
     }
 
     void setCurrentCategoryItem(ItemStack currentCategoryItem) {
