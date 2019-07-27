@@ -28,7 +28,7 @@ public class ModificationGamemodeInventory extends CoreInventory {
 
             setItem(
                     i,
-                    new ItemBuilder(gamemode.getItem()).displayName(gamemode.getColor() + gamemode.getName()).lore("§7§o"+inventories+" modifizierbare Inventare").create(),
+                    new ItemBuilder(gamemode.getItem()).displayName(gamemode.getColor() + gamemode.getName()).lore("§7§o" + inventories + " modifizierbare Inventare").create(),
                     event
             );
             i += 2;

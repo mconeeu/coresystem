@@ -28,6 +28,7 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -146,44 +147,72 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
         ModifyInventory dbDefaultInventory = getModifyInventory(modifyInventory.getGamemode(), modifyInventory.getCategory(), modifyInventory.getName());
 
         if (dbDefaultInventory != null) {
-            int proved = 0;
+            if (localDefaultInventory.getGamemode().toString().equalsIgnoreCase(dbDefaultInventory.getGamemode().toString())
+                    && localDefaultInventory.getCategory().equalsIgnoreCase(dbDefaultInventory.getCategory())
+                    && localDefaultInventory.getName().equalsIgnoreCase(dbDefaultInventory.getName())) {
 
-            dbLoop:
-            for (CoreItemStack dbItem : dbDefaultInventory.getItems().values()) {
-                for (CoreItemStack registeredItem: modifyInventory.getItems().values()) {
-                    if (dbItem.getItemStack().equals(registeredItem.getItemStack())) {
-                        proved++;
-                        continue dbLoop;
+                int proved = 0;
+
+                dbLoop:
+                for (CoreItemStack dbItem : dbDefaultInventory.getItems().values()) {
+                    for (CoreItemStack registeredItem : modifyInventory.getItems().values()) {
+                        if (dbItem.getItemStack().equals(registeredItem.getItemStack())) {
+                            proved++;
+                            continue dbLoop;
+                        }
                     }
                 }
-            }
 
-            //Check if the data in the localDefaultInventory equals to there in the database
-            if (dbDefaultInventory.getItems().size() != proved || modifyInventory.getItems().size() != proved) {
-                CoreSystem.getInstance().sendConsoleMessage("§2Merge all ModifiedInventories with the DefaultInventory " + localDefaultInventory + "...");
-                mergeModifiedInventories(localDefaultInventory, dbDefaultInventory);
+                //Check if the data in the localDefaultInventory equals to there in the database
+                if (dbDefaultInventory.getItems().size() != proved || modifyInventory.getItems().size() != proved) {
+                    CoreSystem.getInstance().sendConsoleMessage("§2Merge all ModifiedInventories with the DefaultInventory " + localDefaultInventory + "...");
+                    mergeModifiedInventories(localDefaultInventory, dbDefaultInventory);
 
+                    defaultInventoriesCollection.replaceOne(combine(
+                            eq("gamemode", modifyInventory.getGamemode().toString()),
+                            eq("category", modifyInventory.getCategory()),
+                            eq("name", modifyInventory.getName())
+                    ), localDefaultInventory);
+
+                    modifyInventories.remove(dbDefaultInventory);
+                    modifyInventories.add(modifyInventory);
+                } else {
+                    modifyInventories.remove(dbDefaultInventory);
+                    modifyInventories.add(new ModifyInventory(
+                            this,
+                            dbDefaultInventory.getGamemode(),
+                            dbDefaultInventory.getUniqueItemStacks(),
+                            modifyInventory.getItems(),
+                            dbDefaultInventory.getName(),
+                            dbDefaultInventory.getTitle(),
+                            dbDefaultInventory.getCategory(),
+                            dbDefaultInventory.getSize()
+                    ) {
+                    });
+                    CoreSystem.getInstance().sendConsoleMessage("§2Overwrite existing ModifyInventory " + localDefaultInventory + " with registered object...");
+                }
+            } else {
                 defaultInventoriesCollection.replaceOne(combine(
                         eq("gamemode", modifyInventory.getGamemode().toString()),
                         eq("category", modifyInventory.getCategory()),
                         eq("name", modifyInventory.getName())
                 ), localDefaultInventory);
 
-                modifyInventories.remove(dbDefaultInventory);
-                modifyInventories.add(modifyInventory);
-            } else {
-                modifyInventories.remove(dbDefaultInventory);
-                modifyInventories.add(new ModifyInventory(
-                        this,
-                        dbDefaultInventory.getGamemode(),
-                        dbDefaultInventory.getUniqueItemStacks(),
-                        modifyInventory.getItems(),
-                        dbDefaultInventory.getName(),
-                        dbDefaultInventory.getTitle(),
-                        dbDefaultInventory.getCategory(),
-                        dbDefaultInventory.getSize()
-                ) {});
-                CoreSystem.getInstance().sendConsoleMessage("§2Overwrite existing ModifyInventory " + localDefaultInventory + " with registered object...");
+                for (Document userInfo : userInfoCollection.find()) {
+                    ModifiedInventory modifiedInventory = null;
+                    List<Document> modifiedInventories = userInfo.getList("modifiedInventories", Document.class);
+                    for (Document entry : modifiedInventories) {
+                        if (dbDefaultInventory.getGamemode().equals(Gamemode.valueOf(entry.getString("gamemode")))
+                                && dbDefaultInventory.getCategory().equals(entry.getString("category"))
+                                && dbDefaultInventory.getName().equals(entry.getString("name"))
+                        ) {
+                            modifiedInventory = new ModifiedInventory(entry);
+                            break;
+                        }
+                    }
+
+                    userInfoCollection.updateOne(eq("uuid", userInfo.getString("uuid")), push("modifiedInventories", modifiedInventory));
+                }
             }
         } else {
             modifyInventories.add(modifyInventory);
@@ -356,8 +385,6 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
         return getModifiedInventory(uuid, inv.getGamemode(), inv.getCategory(), inv.getName()) != null;
     }
 
-
-
     /*
      * Modified Inventories
      */
@@ -469,8 +496,6 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
             );
         }
     }
-
-
 
     /*
      * Util

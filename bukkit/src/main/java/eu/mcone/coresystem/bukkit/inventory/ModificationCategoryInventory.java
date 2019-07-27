@@ -54,7 +54,7 @@ public class ModificationCategoryInventory extends CategoryInventory {
     }
 
     private static ItemStack makeItem(String category) {
-        return new ItemBuilder(Material.BOOKSHELF).displayName("§f§l"+category).lore("§7§oKategorie von", "§7§omodifizierten Inventaren").create();
+        return new ItemBuilder(Material.BOOKSHELF).displayName("§f§l" + category).lore("§7§oKategorie von", "§7§omodifizierten Inventaren").create();
     }
 
 }

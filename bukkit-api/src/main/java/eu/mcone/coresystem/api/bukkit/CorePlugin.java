@@ -29,6 +29,8 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin 
     @Getter
     private String pluginName, consolePrefix;
     @Getter
+    private ChatColor pluginColor;
+    @Getter
     private Messager messager;
 
     protected CorePlugin(Gamemode pluginGamemode, String prefixTranslation) {
@@ -47,6 +49,7 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin 
         this.gamemode = pluginGamemode;
         this.pluginName = pluginName;
         this.consolePrefix = "§8[" + pluginColor + pluginName + "§8] §7";
+        this.pluginColor = pluginColor;
         this.messager = new Messager(prefixTranslation);
 
         if (CoreSystem.getInstance() != null) {

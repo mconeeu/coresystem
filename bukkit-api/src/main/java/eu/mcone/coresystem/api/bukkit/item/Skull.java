@@ -16,12 +16,18 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public final class Skull extends ExtendedItemBuilder<SkullMeta> {
 
+    private List<String> lore;
+
     /**
      * create ItemBuilder for SkullItem by owner
+     *
      * @param owner owner of the skull
      */
     public Skull(String owner) {
@@ -30,7 +36,8 @@ public final class Skull extends ExtendedItemBuilder<SkullMeta> {
 
     /**
      * create ItemBuilder for SkullItem by owner
-     * @param owner owner of the skull
+     *
+     * @param owner  owner of the skull
      * @param amount amount of items in ItemStack
      */
     public Skull(String owner, int amount) {
@@ -39,8 +46,60 @@ public final class Skull extends ExtendedItemBuilder<SkullMeta> {
     }
 
     /**
+     * change displayname of the item
+     *
+     * @param displayName displayname
+     * @return this
+     */
+    public Skull setDisplayName(String displayName) {
+        meta.setDisplayName(displayName);
+        return this;
+    }
+
+    /**
+     * set loren of the item
+     *
+     * @param lore loren (Array)
+     * @return this
+     */
+    public Skull lore(String... lore) {
+        this.lore = new ArrayList<>(Arrays.asList(lore));
+        return this;
+    }
+
+    /**
+     * set loren of the item
+     *
+     * @param loren loren (ArrayList)
+     * @return this
+     */
+    public Skull lore(List<String> loren) {
+        this.lore = loren;
+        return this;
+    }
+
+    /**
+     * add a lore of the item
+     *
+     * @param lore lore (String)
+     * @return this
+     */
+    public Skull addLore(String lore) {
+        this.lore.add(lore);
+        return this;
+    }
+
+    @Override
+    public ItemStack getItemStack() {
+        if (lore != null && !lore.isEmpty())
+            meta.setLore(this.lore);
+        return super.getItemStack();
+    }
+
+    /**
      * create ItemBuilder for SkullItem by predefined Skin
-     * @param skin BCS SkinInfo object
+     *
+     * @param skin   BCS SkinInfo object
      * @param amount amount of items in ItemStack
      */
     public Skull(SkinInfo skin, int amount) {
@@ -73,7 +132,8 @@ public final class Skull extends ExtendedItemBuilder<SkullMeta> {
 
     /**
      * create ItemBuilder for SkullItem by URL
-     * @param url url of skin.png
+     *
+     * @param url    url of skin.png
      * @param amount amount of items in ItemStack
      * @return new ItemBuilder
      */
@@ -86,6 +146,7 @@ public final class Skull extends ExtendedItemBuilder<SkullMeta> {
 
     /**
      * wraps an existing ItemStack which must be of Material.SKULL in an Skull object
+     *
      * @param skull ItemStack
      * @return new Skull instance
      * @throws ClassCastException if ItemStack has a conflicting Material
@@ -97,6 +158,7 @@ public final class Skull extends ExtendedItemBuilder<SkullMeta> {
 
     /**
      * create ItemBuilder for SkullItem by URL
+     *
      * @param url url of skin.png
      * @return new ItemBuilder
      */
@@ -111,6 +173,7 @@ public final class Skull extends ExtendedItemBuilder<SkullMeta> {
 
     /**
      * Gets the owner of the skull.
+     *
      * @return the owner of the ckull
      */
     public String getOwner() {
@@ -119,6 +182,7 @@ public final class Skull extends ExtendedItemBuilder<SkullMeta> {
 
     /**
      * Checks to see if the skull has an owner.
+     *
      * @return true if the skull has an owner
      */
     public boolean hasOwner() {

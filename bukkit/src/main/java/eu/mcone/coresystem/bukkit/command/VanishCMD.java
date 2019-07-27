@@ -26,7 +26,7 @@ public class VanishCMD extends CorePlayerCommand {
 
             if (t != null) {
                 setVanished(BukkitCoreSystem.getSystem().getCorePlayer(t));
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§2Der Vanish Modus von §a"+t.getName()+"§2 wurde geändert!");
+                BukkitCoreSystem.getInstance().getMessager().send(p, "§2Der Vanish Modus von §a" + t.getName() + "§2 wurde geändert!");
             } else {
                 BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler ist nicht online!");
             }

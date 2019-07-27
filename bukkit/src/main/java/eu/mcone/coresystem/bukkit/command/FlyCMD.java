@@ -7,6 +7,7 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -35,8 +36,25 @@ public class FlyCMD extends CorePlayerCommand {
                 fly.add(p.getUniqueId());
                 BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast den §fFlugmodus §2aktiviert!");
             }
+        } else if (args.length == 1) {
+            Player target = Bukkit.getPlayer(args[0]);
+            if (target != null) {
+                if (fly.contains(target.getUniqueId())) {
+                    target.setAllowFlight(false);
+                    target.setFlying(false);
+                    fly.remove(target.getUniqueId());
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast den §fFlugmodus §2für §f" + target.getName() + " §2deaktiviert!");
+                } else {
+                    target.setAllowFlight(true);
+                    target.setFlying(true);
+                    fly.add(target.getUniqueId());
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast den §fFlugmodus §2für §f" + target.getName() + " §2aktiviert!");
+                }
+            } else {
+                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler §c" + args[0] + " §4konnte nicht gefunden werden");
+            }
         } else {
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/fly");
+            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/fly §4oder §c/fly {spieler}");
         }
 
         return true;
