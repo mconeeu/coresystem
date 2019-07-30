@@ -220,25 +220,25 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         if (coins < 0) {
             throw new RuntimeCoreException("Cannot set negative coin amount!");
         } else {
-            this.coins = coins;
+            this.emeralds = coins;
             ((CoreModuleCoreSystem) instance).getMoneyUtil().setEmeralds(uuid, coins);
         }
     }
 
     @Override
     public void addEmeralds(int amount) {
-        this.coins += amount;
+        this.emeralds += amount;
         ((CoreModuleCoreSystem) instance).getMoneyUtil().addEmeralds(uuid, amount);
     }
 
     @Override
     public void removeEmeralds(int amount) {
-        if (coins - amount < 0) {
-            amount = coins;
+        if (emeralds - amount < 0) {
+            amount = emeralds;
             ((CoreModuleCoreSystem) instance).sendConsoleMessage("§7Tried to remove more emeralds than Player §f" + name + "§7 has! (" + coins + "-" + amount + ")");
         }
 
-        this.coins -= amount;
+        this.emeralds -= amount;
         ((CoreModuleCoreSystem) instance).getMoneyUtil().removeEmeralds(uuid, amount);
     }
 

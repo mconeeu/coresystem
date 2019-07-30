@@ -22,7 +22,10 @@ public abstract class GamePlayer<P extends GameProfile> {
     }
 
     public P reload() {
-        return loadData();
+        P profile = loadData();
+        profile.doSetData(bukkit());
+
+        return profile;
     }
 
     /**
