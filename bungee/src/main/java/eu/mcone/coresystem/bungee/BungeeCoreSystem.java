@@ -224,6 +224,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new MaintenanceCMD(),
                 new PrivacyCMD(),
                 new CoinsCMD(),
+                new EmeraldsCMD(),
                 new PayCMD(),
 
                 new LobbyCMD(),
