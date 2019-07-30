@@ -14,6 +14,7 @@ variables:
 .validate: &validate
   tags:
     - maven
+  image: maven:3.6.1-jdk-8
   stage: build
   script:
     - 'mvn $MAVEN_CLI_OPTS test-compile'
@@ -23,57 +24,77 @@ variables:
 .verify: &verify
   tags:
     - maven
+  image: maven:3.6.1-jdk-8
   stage: test
   script:
     - 'mvn $MAVEN_CLI_OPTS install'
 
 validate:jdk8:
   <<: *validate
-  image: maven:3.6.1-jdk-8
 
 verify:master:jdk8:
   <<: *verify
-  image: maven:3.6.1-jdk-8
   artifacts:
     name: "$CI_PROJECT_PATH-jars-packaged-$CI_JOB_NAME"
     paths:
       - $CI_PROJECT_DIR/*/target/*.jar
   only:
-    - master
+    - 1.8.8
+    - 1.13.2
 
 verify:merges:jdk8:
   <<: *verify
-  image: maven:3.6.1-jdk-8
   except:
-    - master
+    - 1.8.8
+    - 1.13.2
 
 # For `master` branch run `mvn deploy` automatically.
 # Uses mounted settings.xml for authenticating with mcone-repo
 deploy:jdk8:
   tags:
     - maven
+  image: maven:3.6.1-jdk-8
   stage: test
   script:
     - 'mvn $MAVEN_CLI_OPTS javadoc:jar javadoc:aggregate source:jar deploy $MAVEN_DEPLOY_OPTS'
-  only:
-    - master
   artifacts:
     name: "$CI_PROJECT_PATH-javadoc"
     paths:
       - $CI_PROJECT_DIR/target/site/apidocs
       - $CI_PROJECT_DIR/*/target/*-javadoc.jar
       - $CI_PROJECT_DIR/*/target/*-sources.jar
-  image: maven:3.6.1-jdk-8
+  only:
+    - 1.8.8
+    - 1.13.2
 
 pages:
   image: busybox:latest
   stage: deploy
   script:
-    - 'mv $CI_PROJECT_DIR/target/site/apidocs $CI_PROJECT_DIR/public'
+    - 'mv $CI_PROJECT_DIR/target/site/apidocs $CI_PROJECT_DIR/public/'
   dependencies:
     - deploy:jdk8
   artifacts:
     paths:
       - public
   only:
-    - master
+    - 1.8.8
+
+.deploy:artifacts:
+  tags:
+    - maven
+  image: maven:3.6.1-jdk-8
+  stage: deploy
+  script:
+    - export MVN_PROJECT_VERSION=$(mvn --non-recursive help:evaluate -Dexpression=project.version | grep -v '\[.*')
+    - |
+      curl -X PUT \
+      --data-binary "$CI_PROJECT_DIR/bungee/target/mcone-coresystem-bungee-$MVN_PROJECT_VERSION.jar" \
+      https://repo.mcone.eu/repository/plugin-repo/eu/mcone/coresystem/bungee/$CI_COMMIT_REF_NAME/$MVN_PROJECT_VERSION/mcone-coresystem-bungee-$MVN_PROJECT_VERSION.jar
+    - |
+      curl -X PUT \
+      --data-binary "$CI_PROJECT_DIR/bungee/target/mcone-coresystem-bukkit-$MVN_PROJECT_VERSION.jar" \
+      https://repo.mcone.eu/repository/plugin-repo/eu/mcone/coresystem/bukkit/$CI_COMMIT_REF_NAME/$MVN_PROJECT_VERSION/mcone-coresystem-bukkit-$MVN_PROJECT_VERSION.jar
+  only:
+    - 1.8.8
+    - 1.13.2

@@ -13,25 +13,25 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
-public class CoinsCMD extends Command {
+public class EmeraldsCMD extends Command {
 
-    public CoinsCMD() {
-        super("coins", null, "coin");
+    public EmeraldsCMD() {
+        super("emeralds", null, "emerald");
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (args.length == 0) {
             if (sender instanceof ProxiedPlayer) {
-                BungeeCoreSystem.getInstance().getMessager().send(sender, "§7Du hast momentan §a" + CoreSystem.getInstance().getCorePlayer(((ProxiedPlayer) sender)).getFormattedCoins() + " Coins!");
+                BungeeCoreSystem.getInstance().getMessager().send(sender, "§7Du hast momentan §a" + CoreSystem.getInstance().getCorePlayer(((ProxiedPlayer) sender)).getEmeralds() + " Emeralds!");
             } else {
                 BungeeCoreSystem.getInstance().getMessager().send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
             }
-        } else if (sender.hasPermission("system.bungee.coins")) {
+        } else if (sender.hasPermission("system.bungee.emeralds")) {
             if (args.length == 1) {
                 try {
                     OfflineCorePlayer t = CoreSystem.getInstance().getOfflineCorePlayer(args[0]);
-                    BungeeCoreSystem.getInstance().getMessager().send(sender, "§7Der Spieler §f" + t.getName() + "§7 hat momentan §a" + t.getFormattedCoins() + " Coins§7!");
+                    BungeeCoreSystem.getInstance().getMessager().send(sender, "§7Der Spieler §f" + t.getName() + "§7 hat momentan §a" + t.getEmeralds() + " Emeralds§7!");
                 } catch (PlayerNotResolvedException e) {
                     BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Minecraftaccount mit dem Namen §c" + args[0] + "§4konnte nicht gefunden werden: \n§f§o" + e.getMessage());
                 }
@@ -44,14 +44,14 @@ public class CoinsCMD extends Command {
                     int coins = Integer.valueOf(args[2]);
 
                     if (args[0].equalsIgnoreCase("add")) {
-                        o.addCoins(coins);
-                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins§2 hinzugefügt");
+                        o.addEmeralds(coins);
+                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Emeralds§2 hinzugefügt");
                     } else if (args[0].equalsIgnoreCase("remove")) {
-                        o.removeCoins(coins);
-                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins §2abgezogen");
+                        o.removeEmeralds(coins);
+                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Emeralds§2 abgezogen");
                     } else if (args[0].equalsIgnoreCase("set")) {
-                        o.setCoins(coins);
-                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§f" + name + "§2 hat nun §a" + coins + " Coins§2!");
+                        o.setEmeralds(coins);
+                        BungeeCoreSystem.getInstance().getMessager().send(sender, "§f" + name + "§2 hat nun §a" + coins + " Emeralds§2!");
                     }
                 } catch (PlayerNotResolvedException e) {
                     BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Der Minecraftaccount mit dem Namen §c" + args[0] + "§4konnte nicht gefunden werden: \n§f§o" + e.getMessage());
@@ -60,7 +60,7 @@ public class CoinsCMD extends Command {
                 return;
             }
 
-            BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Bitte benutze: §c/coins <add|remove|set> <Spieler> <Anzahl>");
+            BungeeCoreSystem.getInstance().getMessager().send(sender, "§4Bitte benutze: §c/emeralds <add|remove|set> <Spieler> <Anzahl>");
         } else {
             BungeeCoreSystem.getInstance().getMessager().send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.noperm"));
         }
