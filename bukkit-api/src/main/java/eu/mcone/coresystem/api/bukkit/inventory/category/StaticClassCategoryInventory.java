@@ -46,9 +46,11 @@ public class StaticClassCategoryInventory extends CategoryInventory {
         ItemStack item = null;
 
         for (Map.Entry<ItemStack, Class<? extends StaticClassCategoryInventory>> itemStackClassEntry : categoryInventories.entrySet()) {
-            if (itemStackClassEntry.getValue().equals(getClass())) {
-                item = itemStackClassEntry.getKey();
-                break;
+            if (itemStackClassEntry.getValue() != null) {
+                if (itemStackClassEntry.getValue().equals(getClass())) {
+                    item = itemStackClassEntry.getKey();
+                    break;
+                }
             }
         }
 
