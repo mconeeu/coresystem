@@ -14,13 +14,13 @@ import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.core.exception.NpcCreateException;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.bukkit.util.ReflectionManager;
 import eu.mcone.coresystem.bukkit.util.PlayerListModeToggleUtil;
+import eu.mcone.coresystem.bukkit.util.ReflectionManager;
 import lombok.Getter;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_13_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -206,27 +206,26 @@ public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeT
             throw new IllegalArgumentException("Locations are not in the same world.");
         }
 
-        return new Packet[]{
-                new PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook(
-                        entityId,
-                        (byte) ((loc.getX() - data.getLocation().getX()) * 32),
-                        (byte) ((loc.getY() - data.getLocation().getX()) * 32),
-                        (byte) ((loc.getZ() - data.getLocation().getX()) * 32),
-                        (byte) (loc.getYaw() * 256F / 360F),
-                        (byte) (loc.getPitch() * 256F / 360F),
-                        false
-                ),
-                new PacketPlayOutEntityTeleport(
-                        entityId,
-                        (int) (loc.getX() * 32),
-                        (int) (loc.getY() * 32),
-                        (int) (loc.getZ() * 32),
-                        (byte) (loc.getYaw() * 256F / 360F),
-                        (byte) (loc.getPitch() * 256F / 360F),
-                        false
-                ),
-                makeHeadRotationPacket(loc.getYaw())
-        };
+        PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook lookPacket = new PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook(
+                entityId,
+                (byte) ((loc.getX() - data.getLocation().getX()) * 32),
+                (byte) ((loc.getY() - data.getLocation().getX()) * 32),
+                (byte) ((loc.getZ() - data.getLocation().getX()) * 32),
+                (byte) (loc.getYaw() * 256F / 360F),
+                (byte) (loc.getPitch() * 256F / 360F),
+                false
+        );
+
+        PacketPlayOutEntityTeleport tpPacket = new PacketPlayOutEntityTeleport();
+        ReflectionManager.setValue(tpPacket, "a", entityId);
+        ReflectionManager.setValue(tpPacket, "b", (int) (loc.getX() * 32));
+        ReflectionManager.setValue(tpPacket, "c", (int) (loc.getY() * 32));
+        ReflectionManager.setValue(tpPacket, "d", (int) (loc.getZ() * 32));
+        ReflectionManager.setValue(tpPacket, "e", (byte) (loc.getYaw() * 256F / 360F));
+        ReflectionManager.setValue(tpPacket, "f", (byte) (loc.getPitch() * 256F / 360F));
+        ReflectionManager.setValue(tpPacket, "g", false);
+
+        return new Packet[]{lookPacket, tpPacket, makeHeadRotationPacket(loc.getYaw())};
     }
 
     protected PacketPlayOutEntityHeadRotation makeHeadRotationPacket(float yaw) {

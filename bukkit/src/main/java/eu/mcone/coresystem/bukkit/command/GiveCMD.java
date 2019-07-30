@@ -48,16 +48,15 @@ public class GiveCMD extends CoreCommand {
 
         if (material != null) {
             p.getInventory().addItem(new ItemStack(material));
-            BukkitCoreSystem.getInstance().getMessager().send(sender, "§2Du hast das Item §a" + material.toString() + " §2erhalten!");
+            BukkitCoreSystem.getInstance().getMessager().send(sender, "§2Du hast das Item §a" + material.name() + " §2erhalten!");
         } else {
-            BukkitCoreSystem.getInstance().getMessager().send(sender, "§4Das Item §c" + arg + " §4konnte nicht gefunden werden!");
+            BukkitCoreSystem.getInstance().getMessager().send(sender, "§4Das Item §c" + arg.toUpperCase() + " §4konnte nicht gefunden werden!");
         }
     }
 
     private static Material resolveItem(String arg) {
         try {
-            int id = Integer.parseInt(arg);
-            return Material.getMaterial(id);
+            return Material.getMaterial(arg.toUpperCase(), false);
         } catch (NumberFormatException ignored) {
             return Material.getMaterial(arg.toUpperCase());
         }

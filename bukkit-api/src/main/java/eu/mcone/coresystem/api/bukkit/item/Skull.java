@@ -10,7 +10,6 @@ import com.mojang.authlib.properties.Property;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Material;
-import org.bukkit.SkullType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -123,7 +122,7 @@ public final class Skull extends ExtendedItemBuilder<SkullMeta> {
     }
 
     private Skull(int amount) {
-        super(new ItemStack(Material.SKULL_ITEM, amount, (short) SkullType.PLAYER.ordinal()));
+        super(new ItemStack(Material.PLAYER_HEAD, amount));
     }
 
     private Skull(ItemStack item) {

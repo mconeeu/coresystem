@@ -14,7 +14,7 @@ import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
@@ -54,8 +54,8 @@ public class CraftItemStackCodec implements Codec<CraftItemStack> {
             repairPenalty = document.getInteger("repairPenalty");
         }
 
-        ItemStack stuff = new ItemStack(material, document.getInteger("amount"), document.getInteger("durability").shortValue());
-        if ((material == Material.BOOK_AND_QUILL || material == Material.WRITTEN_BOOK) && document.containsKey("book-meta")) {
+        ItemStack stuff = new ItemStack(material, document.getInteger("amount"));
+        if ((material == Material.WRITABLE_BOOK || material == Material.WRITTEN_BOOK) && document.containsKey("book-meta")) {
             BookMeta meta = ItemStackTypeAdapterUtils.getBookMeta(document.get("book-meta", Document.class));
             stuff.setItemMeta(meta);
         } else if (material == Material.ENCHANTED_BOOK && document.containsKey("book-meta")) {
@@ -64,16 +64,18 @@ public class CraftItemStackCodec implements Codec<CraftItemStack> {
         } else if (ItemStackTypeAdapterUtils.isLeatherArmor(material) && document.containsKey("armor-meta")) {
             LeatherArmorMeta meta = ItemStackTypeAdapterUtils.getLeatherArmorMeta(document.get("armor-meta", Document.class));
             stuff.setItemMeta(meta);
-        } else if (material == Material.SKULL_ITEM && document.containsKey("skull-meta")) {
+        } else if ((material == Material.PLAYER_HEAD || material == Material.PLAYER_WALL_HEAD) && document.containsKey("skull-meta")) {
             SkullMeta meta = ItemStackTypeAdapterUtils.getSkullMeta(document.get("skull-meta", Document.class));
             stuff.setItemMeta(meta);
-        } else if (material == Material.FIREWORK && document.containsKey("firework-meta")) {
+        } else if (material == Material.FIREWORK_ROCKET && document.containsKey("firework-meta")) {
             FireworkMeta meta = ItemStackTypeAdapterUtils.getFireworkMeta(document.get("firework-meta", Document.class));
             stuff.setItemMeta(meta);
         }
 
         ItemMeta meta = stuff.getItemMeta();
-
+        if (meta instanceof Damageable) {
+            ((Damageable) meta).setDamage(document.getInteger("durability"));
+        }
         if (meta != null) {
             if (name != null) {
                 meta.setDisplayName(name);
@@ -81,13 +83,11 @@ public class CraftItemStackCodec implements Codec<CraftItemStack> {
             meta.setLore(lore);
             stuff.setItemMeta(meta);
         }
-
         if (repairPenalty != 0) {
             Repairable rep = (Repairable) meta;
             rep.setRepairCost(repairPenalty);
             stuff.setItemMeta((ItemMeta) rep);
         }
-
         if (enchants != null) {
             stuff.addUnsafeEnchantments(enchants);
         }
@@ -109,15 +109,15 @@ public class CraftItemStackCodec implements Codec<CraftItemStack> {
         Material material = itemStack.getType();
         Map<String, Object> bookMeta = null, armorMeta = null, skullMeta = null, fwMeta = null;
 
-        if (material == Material.BOOK_AND_QUILL || material == Material.WRITTEN_BOOK) {
+        if (material == Material.WRITABLE_BOOK || material == Material.WRITTEN_BOOK) {
             bookMeta = ItemStackTypeAdapterUtils.serializeBookMeta((BookMeta) itemStack.getItemMeta());
         } else if (material == Material.ENCHANTED_BOOK) {
             bookMeta = ItemStackTypeAdapterUtils.serializeEnchantedBookMeta((EnchantmentStorageMeta) itemStack.getItemMeta());
         } else if (ItemStackTypeAdapterUtils.isLeatherArmor(material)) {
             armorMeta = ItemStackTypeAdapterUtils.serializeArmor((LeatherArmorMeta) itemStack.getItemMeta());
-        } else if (material == Material.SKULL_ITEM) {
+        } else if (material == Material.PLAYER_HEAD || material == Material.PLAYER_WALL_HEAD) {
             skullMeta = ItemStackTypeAdapterUtils.serializeSkull((SkullMeta) itemStack.getItemMeta());
-        } else if (material == Material.FIREWORK) {
+        } else if (material == Material.FIREWORK_ROCKET) {
             fwMeta = ItemStackTypeAdapterUtils.serializeFireworkMeta((FireworkMeta) itemStack.getItemMeta());
         }
 

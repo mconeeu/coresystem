@@ -6,8 +6,8 @@
 package eu.mcone.coresystem.api.bukkit.npc.entity;
 
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
-import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
+import net.minecraft.server.v1_13_R2.EnumItemSlot;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -25,11 +25,11 @@ public interface PlayerNpc extends NPC {
     /**
      * Sets a specific item in the NPCs inventory and makes it visible for other players
      * (if specific players are chosen, this update is temporary and will not be saved permanently to NpcData)
-     * @param position equipment position
+     * @param slot equipment position
      * @param item item
      * @param players players which should receive the item update (choose no players to send the update to all players and save the item in PlayerNpcData & core-config)
      */
-    void setEquipment(EquipmentPosition position, ItemStack item, Player... players);
+    void setEquipment(EnumItemSlot slot, ItemStack item, Player... players);
 
     /**
      * Sends a packet to update the skin (if specific players are chosen, this update is temporary and will not be saved permanently to NpcData)

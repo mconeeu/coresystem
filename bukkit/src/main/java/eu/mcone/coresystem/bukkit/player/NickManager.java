@@ -13,11 +13,11 @@ import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_13_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -76,7 +76,7 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
                 connection.sendPacket(new PacketPlayOutEntityDestroy(player.getEntityId()));
                 connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, ((CraftPlayer) player).getHandle()));
                 connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ((CraftPlayer) player).getHandle()));
-                connection.sendPacket(player != p ? new PacketPlayOutNamedEntitySpawn(((CraftPlayer) p).getHandle()) : new PacketPlayOutRespawn(p.getEntityId(), EnumDifficulty.EASY, ep.world.G(), ep.playerInteractManager.getGameMode()));
+                connection.sendPacket(player != p ? new PacketPlayOutNamedEntitySpawn(((CraftPlayer) p).getHandle()) : new PacketPlayOutRespawn(ep.getWorldServer().worldProvider.getDimensionManager(), EnumDifficulty.EASY, ep.world.S(), ep.playerInteractManager.getGameMode()));
 
                 instance.getCorePlayer(p).getScoreboard().reload();
             }
@@ -127,7 +127,7 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
             double maxHealth = p.getMaxHealth();
             double health = p.getHealth();
 
-            ep.playerConnection.sendPacket(new PacketPlayOutRespawn(0, ((CraftWorld) p.getWorld()).getHandle().getDifficulty(), ((CraftWorld) p.getWorld()).getHandle().worldData.getType(), WorldSettings.EnumGamemode.getById(p.getGameMode().getValue())));
+            ep.playerConnection.sendPacket(new PacketPlayOutRespawn(ep.getWorldServer().worldProvider.getDimensionManager(), ((CraftWorld) p.getWorld()).getHandle().getDifficulty(), ((CraftWorld) p.getWorld()).getHandle().worldData.getType(), EnumGamemode.getById(p.getGameMode().getValue())));
 
             p.setFlying(flying);
             p.teleport(location);

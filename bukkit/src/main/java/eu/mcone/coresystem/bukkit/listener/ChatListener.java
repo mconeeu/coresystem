@@ -69,7 +69,7 @@ public class ChatListener implements Listener {
 
                         e.getRecipients().remove(receiver);
                         receiver.sendMessage(targetMessage);
-                        receiver.playSound(receiver.getLocation(), Sound.NOTE_BASS, 1.0F, 1.0F);
+                        receiver.playSound(receiver.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0F, 1.0F);
                     }
                 }
             }

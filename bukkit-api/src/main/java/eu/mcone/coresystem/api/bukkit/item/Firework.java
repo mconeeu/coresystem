@@ -28,7 +28,7 @@ public final class Firework extends ExtendedItemBuilder<FireworkMeta> {
      * @param effects firework effects that should be bound to this item
      */
     public Firework(int amount, FireworkEffect... effects) {
-        super(new ItemStack(Material.FIREWORK, amount));
+        super(new ItemStack(Material.FIREWORK_ROCKET, amount));
 
         if (effects.length > 0) {
             addEffects(effects);

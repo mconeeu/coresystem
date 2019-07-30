@@ -9,7 +9,7 @@ import com.google.gson.*;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.ItemStackTypeAdapterUtils;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
@@ -47,8 +47,8 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
             repairPenalty = jsonObject.get("repairPenalty").getAsInt();
         }
 
-        ItemStack stuff = new ItemStack(material, jsonObject.get("amount").getAsInt(), (short) jsonObject.get("durability").getAsInt());
-        if ((material == Material.BOOK_AND_QUILL || material == Material.WRITTEN_BOOK) && jsonObject.has("book-meta")) {
+        ItemStack stuff = new ItemStack(material, jsonObject.get("amount").getAsInt());
+        if ((material == Material.WRITABLE_BOOK || material == Material.WRITTEN_BOOK) && jsonObject.has("book-meta")) {
             BookMeta meta = ItemStackTypeAdapterUtils.getBookMeta(context.deserialize(jsonObject.get("book-meta"), Map.class));
             stuff.setItemMeta(meta);
         } else if (material == Material.ENCHANTED_BOOK && jsonObject.has("book-meta")) {
@@ -57,15 +57,18 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
         } else if (ItemStackTypeAdapterUtils.isLeatherArmor(material) && jsonObject.has("armor-meta")) {
             LeatherArmorMeta meta = ItemStackTypeAdapterUtils.getLeatherArmorMeta(context.deserialize(jsonObject.get("armor-meta"), Map.class));
             stuff.setItemMeta(meta);
-        } else if (material == Material.SKULL_ITEM && jsonObject.has("skull-meta")) {
+        } else if ((material == Material.PLAYER_HEAD || material == Material.PLAYER_WALL_HEAD) && jsonObject.has("skull-meta")) {
             SkullMeta meta = ItemStackTypeAdapterUtils.getSkullMeta(context.deserialize(jsonObject.get("skull-meta"), Map.class));
             stuff.setItemMeta(meta);
-        } else if (material == Material.FIREWORK && jsonObject.has("firework-meta")) {
+        } else if (material == Material.FIREWORK_ROCKET && jsonObject.has("firework-meta")) {
             FireworkMeta meta = ItemStackTypeAdapterUtils.getFireworkMeta(context.deserialize(jsonObject.get("firework-meta"), Map.class));
             stuff.setItemMeta(meta);
         }
 
         ItemMeta meta = stuff.getItemMeta();
+        if (meta instanceof Damageable) {
+            ((Damageable) meta).setDamage(jsonObject.get("durability").getAsInt());
+        }
         if (name != null) {
             meta.setDisplayName(name);
         }
@@ -100,15 +103,15 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
         Material material = itemStack.getType();
         Map<String, Object> bookMeta = null, armorMeta = null, skullMeta = null, fwMeta = null;
 
-        if (material == Material.BOOK_AND_QUILL || material == Material.WRITTEN_BOOK) {
+        if (material == Material.WRITABLE_BOOK || material == Material.WRITTEN_BOOK) {
             bookMeta = ItemStackTypeAdapterUtils.serializeBookMeta((BookMeta) itemStack.getItemMeta());
         } else if (material == Material.ENCHANTED_BOOK) {
             bookMeta = ItemStackTypeAdapterUtils.serializeEnchantedBookMeta((EnchantmentStorageMeta) itemStack.getItemMeta());
         } else if (ItemStackTypeAdapterUtils.isLeatherArmor(material)) {
             armorMeta = ItemStackTypeAdapterUtils.serializeArmor((LeatherArmorMeta) itemStack.getItemMeta());
-        } else if (material == Material.SKULL_ITEM) {
+        } else if (material == Material.PLAYER_HEAD || material == Material.PLAYER_WALL_HEAD) {
             skullMeta = ItemStackTypeAdapterUtils.serializeSkull((SkullMeta) itemStack.getItemMeta());
-        } else if (material == Material.FIREWORK) {
+        } else if (material == Material.FIREWORK_ROCKET) {
             fwMeta = ItemStackTypeAdapterUtils.serializeFireworkMeta((FireworkMeta) itemStack.getItemMeta());
         }
 

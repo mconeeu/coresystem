@@ -9,13 +9,14 @@ import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.bukkit.util.PlayerListModeToggleUtil;
 import lombok.Getter;
-import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
+import net.minecraft.server.v1_13_R2.EntityArmorStand;
+import net.minecraft.server.v1_13_R2.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_13_R2.PacketPlayOutSpawnEntityLiving;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_13_R2.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -89,10 +90,10 @@ public class CoreHologram extends PlayerListModeToggleUtil implements eu.mcone.c
         String[] text = data.getText();
         for (final String line : text) {
             final EntityArmorStand entity = new EntityArmorStand(((CraftWorld) loc.getWorld()).getHandle(), loc.getX(), loc.getY() - 1.8, loc.getZ());
-            entity.setCustomName(ChatColor.translateAlternateColorCodes('&', line));
+            entity.setCustomName(CraftChatMessage.fromString(ChatColor.translateAlternateColorCodes('&', line))[0]);
             entity.setCustomNameVisible(true);
             entity.setInvisible(true);
-            entity.setGravity(false);
+            entity.setNoGravity(true);
             this.entitylist.add(entity);
             loc.subtract(0.0, DISTANCE, 0.0);
             ++count;

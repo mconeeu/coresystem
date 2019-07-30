@@ -12,7 +12,6 @@ import com.mojang.authlib.properties.Property;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.npc.data.PlayerNpcData;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
-import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.core.exception.NpcCreateException;
@@ -22,13 +21,13 @@ import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.npc.CoreNPC;
 import eu.mcone.coresystem.bukkit.util.ReflectionManager;
 import lombok.Getter;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_13_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_8_R3.util.CraftChatMessage;
+import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_13_R2.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -118,7 +117,13 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
             for (int i = 0; i < entityData.getEquipment().size() && i < 5; i++) {
                 if (!this.entityData.getEquipment().get(i).equals(entityData.getEquipment().get(i))) {
                     this.entityData.getEquipment().set(i, entityData.getEquipment().get(i));
-                    sendPackets(makeEquipmentPacket(i));
+
+                    for (EnumItemSlot slot : EnumItemSlot.values()) {
+                        if (slot.c() == i) {
+                            sendPackets(makeEquipmentPacket(slot));
+                            break;
+                        }
+                    }
                 }
             }
         }
@@ -154,15 +159,20 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         ReflectionManager.setValue(packets[1], "g", (byte) ((int) (data.getLocation().getPitch() * 256.0F / 360.0F)));
         ReflectionManager.setValue(packets[1], "h", 0);
         DataWatcher watcher = new DataWatcher(null);
-        watcher.a(0, (byte) 0);
-        watcher.a(6, (float) 20);
-        watcher.a(10, (byte) 127);
+        watcher.register(new DataWatcherObject<>(0, DataWatcherRegistry.a), (byte) 0);
+        watcher.register(new DataWatcherObject<>(6, DataWatcherRegistry.c), (float) 20);
+        watcher.register(new DataWatcherObject<>(10, DataWatcherRegistry.a), (byte) 127);
         ReflectionManager.setValue(packets[1], "i", watcher);
 
         packets[2] = makeHeadRotationPacket(data.getLocation().getYaw());
 
         for (int i = 0; i < entityData.getEquipment().size() && i < 5; i++) {
-            packets[i + 3] = makeEquipmentPacket(i);
+            for (EnumItemSlot slot : EnumItemSlot.values()) {
+                if (slot.c() == i) {
+                    packets[i + 3] = makeEquipmentPacket(slot);
+                    break;
+                }
+            }
         }
 
         if (!entityData.isVisibleOnTab()) {
@@ -170,7 +180,7 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         }
 
         if (entityData.isSleeping()) {
-            p.sendBlockChange(bedLocation, Material.BED_BLOCK, (byte) 0);
+            p.sendBlockChange(bedLocation, Material.BLACK_BED, (byte) 0);
 
             if (!entityData.isSleepWithBed()) {
                 data.getLocation().add(0, 0.15, 0);
@@ -196,9 +206,9 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     }
 
     @Override
-    public void setEquipment(EquipmentPosition position, ItemStack item, Player... players) {
-        entityData.getEquipment().set(position.getId(), item);
-        sendPackets(makeEquipmentPacket(position.getId()), players);
+    public void setEquipment(EnumItemSlot slot, ItemStack item, Player... players) {
+        entityData.getEquipment().set(slot.c(), item);
+        sendPackets(makeEquipmentPacket(slot), players);
     }
 
     @Override
@@ -219,7 +229,7 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     @Override
     public void setSleeping(boolean sleepWithBed) {
         for (Player pl : Bukkit.getOnlinePlayers()) {
-            pl.sendBlockChange(bedLocation, Material.BED_BLOCK, (byte) 0);
+            pl.sendBlockChange(bedLocation, Material.BLACK_BED, (byte) 0);
         }
 
         if (!sleepWithBed) {
@@ -276,14 +286,14 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo();
         ReflectionManager.setValue(packet, "a", add ? PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER : PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER);
         ReflectionManager.setValue(packet, "b", new ArrayList<>(Collections.singleton(
-                packet.new PlayerInfoData(profile, 0, WorldSettings.EnumGamemode.SURVIVAL, CraftChatMessage.fromString(entityData.getTablistName())[0])
+                packet.new PlayerInfoData(profile, 0, EnumGamemode.CREATIVE, CraftChatMessage.fromString(entityData.getTablistName())[0])
         )));
 
         return packet;
     }
 
-    private PacketPlayOutEntityEquipment makeEquipmentPacket(int slot) {
-        return entityData.getEquipment().get(slot) != null ? new PacketPlayOutEntityEquipment(entityId, slot, CraftItemStack.asNMSCopy(entityData.getEquipment().get(slot))) : null;
+    private PacketPlayOutEntityEquipment makeEquipmentPacket(EnumItemSlot slot) {
+        return entityData.getEquipment().get(slot.c()) != null ? new PacketPlayOutEntityEquipment(entityId, slot, CraftItemStack.asNMSCopy(entityData.getEquipment().get(slot.c()))) : null;
     }
 
     private Packet<?>[] makeSleepPackets(Location bedLocation) {

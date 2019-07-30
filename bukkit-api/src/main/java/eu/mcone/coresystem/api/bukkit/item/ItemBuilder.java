@@ -5,13 +5,12 @@
 
 package eu.mcone.coresystem.api.bukkit.item;
 
-import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,6 +22,7 @@ public final class ItemBuilder {
     private ItemStack itemStack;
     private ItemMeta itemMeta;
     private List<String> lore;
+    private int durability;
 
     /**
      * create ItemBuilder
@@ -41,18 +41,6 @@ public final class ItemBuilder {
      */
     public ItemBuilder(Material material, int amount) {
         itemStack = new ItemStack(material, amount);
-        itemMeta = itemStack.getItemMeta();
-        lore = new ArrayList<>();
-    }
-
-    /**
-     * create ItemBuilder
-     * @param material material
-     * @param amount amount of items in ItemStack
-     * @param subId sub ID of the material
-     */
-    public ItemBuilder(Material material, int amount, int subId) {
-        itemStack = new ItemStack(material, amount, (short) subId);
         itemMeta = itemStack.getItemMeta();
         lore = new ArrayList<>();
     }
@@ -83,25 +71,17 @@ public final class ItemBuilder {
     }
 
     /**
-     * create ItemBuilder for LeatherArmor item
-     * @param material Material of LeatherArmor item
-     * @param color color of leather item
-     * @return new ItemBuilder
-     */
-    public static ItemBuilder createLeatherArmorItem(Material material, Color color) {
-        ItemBuilder factory = new ItemBuilder(material, 1, (short) 0);
-        ((LeatherArmorMeta) factory.itemMeta).setColor(color);
-
-        return factory;
-    }
-
-    /**
      * change displayname of the item
      * @param displayName displayname
      * @return this
      */
     public ItemBuilder displayName(String displayName) {
         itemMeta.setDisplayName(displayName);
+        return this;
+    }
+
+    public ItemBuilder durability(int durability) {
+        this.durability = durability;
         return this;
     }
 
@@ -196,6 +176,10 @@ public final class ItemBuilder {
     public ItemStack create() {
         if (lore != null && !lore.isEmpty())
             itemMeta.setLore(this.lore);
+
+        if (itemMeta instanceof Damageable) {
+            ((Damageable) itemMeta).setDamage(durability);
+        }
 
         itemStack.setItemMeta(itemMeta);
         return itemStack;

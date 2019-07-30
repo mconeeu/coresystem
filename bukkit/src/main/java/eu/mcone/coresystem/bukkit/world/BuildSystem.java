@@ -106,11 +106,11 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
 
                             if (applyRules(p.getWorld())) {
                                 if ((e.getAction() == Action.PHYSICAL)) {
-                                    if (p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.SOIL)) {
+                                    if (p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.FARMLAND)) {
                                         if (
-                                                (!useBuildPermissionNodes || !p.hasPermission("system.bukkit.build." + p.getWorld().getName().toLowerCase() + ".break." + Material.SOIL.getId()))
+                                                (!useBuildPermissionNodes || !p.hasPermission("system.bukkit.build." + p.getWorld().getName().toLowerCase() + ".break." + Material.FARMLAND.getId()))
                                                         && isNotAllowedBuild(p)
-                                                        && !filteredBlocks.getOrDefault(BuildEvent.BLOCK_BREAK, new ArrayList<>()).contains(Material.SOIL.getId())
+                                                        && !filteredBlocks.getOrDefault(BuildEvent.BLOCK_BREAK, new ArrayList<>()).contains(Material.FARMLAND.getId())
                                         ) {
                                             e.setCancelled(true);
                                             if (notify)
@@ -153,7 +153,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                             if (applyRules(p.getWorld())) {
                                 if (
                                         e.getAction().equals(Action.RIGHT_CLICK_BLOCK)
-                                                || (e.getAction().equals(Action.PHYSICAL) && !p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.SOIL))
+                                                || (e.getAction().equals(Action.PHYSICAL) && !p.getLocation().getBlock().getRelative(BlockFace.DOWN).getType().equals(Material.FARMLAND))
                                 ) {
                                     if (
                                             (!useBuildPermissionNodes || !p.hasPermission("system.bukkit.build." + p.getWorld().getName().toLowerCase() + ".interact." + e.getClickedBlock().getType().getId()))

@@ -21,20 +21,24 @@ class FriendInventory extends CoreInventory {
         super("§8» §f§l" + friend + " §8| §7Aktionen", p, InventorySlot.ROW_4, InventoryOption.FILL_EMPTY_SLOTS);
 
         setItem(InventorySlot.ROW_1_SLOT_5, new Skull(friend, 1).toItemBuilder().displayName("§f§l" + friend).create());
-        setItem(InventorySlot.ROW_3_SLOT_3, new ItemBuilder(Material.ENDER_PEARL, 1, 0).displayName("§7Teleportieren").create(), e -> {
+
+        setItem(InventorySlot.ROW_3_SLOT_3, new ItemBuilder(Material.ENDER_PEARL).displayName("§7Teleportieren").create(), e -> {
             p.closeInventory();
             BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "jump " + friend);
         });
-        setItem(InventorySlot.ROW_3_SLOT_5, new ItemBuilder(Material.CAKE, 1, 0).displayName("§7In §5Party §7einladen").create(), e -> {
+
+        setItem(InventorySlot.ROW_3_SLOT_5, new ItemBuilder(Material.CAKE).displayName("§7In §5Party §7einladen").create(), e -> {
             p.closeInventory();
             BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "party invite " + friend);
         });
-        setItem(InventorySlot.ROW_3_SLOT_7, new ItemBuilder(Material.BARRIER, 1, 0).displayName("§4Freund entfernen").create(), e -> {
+
+        setItem(InventorySlot.ROW_3_SLOT_7, new ItemBuilder(Material.BARRIER).displayName("§4Freund entfernen").create(), e -> {
             p.closeInventory();
             BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "friend remove " + friend);
         });
-        setItem(InventorySlot.ROW_4_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Freundemenü").create(), e -> {
-            p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
+
+        setItem(InventorySlot.ROW_4_SLOT_1, new ItemBuilder(Material.IRON_DOOR).displayName("§7§l↩ Zurück zum Freundemenü").create(), e -> {
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
             new FriendInventory(p, friend).openInventory();
         });
     }

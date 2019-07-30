@@ -21,13 +21,13 @@ public class FeedCMD extends CorePlayerCommand {
         if (args.length == 0) {
             p.setFoodLevel(40);
             BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast nun wieder §avolles Essen§2!");
-            p.playSound(p.getLocation(), Sound.EAT, 1, 1);
+            p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EAT, 1, 1);
         } else if (args.length == 1) {
             Player t = Bukkit.getPlayer(args[0]);
             if (t != null) {
                 t.setFoodLevel(40);
                 BukkitCoreSystem.getInstance().getMessager().send(t, "§2Du hast nun §avolles Essen§2!");
-                t.playSound(p.getLocation(), Sound.EAT, 1, 1);
+                t.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EAT, 1, 1);
             } else {
                 BukkitCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler ist nicht online!");
             }

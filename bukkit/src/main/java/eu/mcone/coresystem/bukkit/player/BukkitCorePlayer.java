@@ -173,7 +173,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
                     }
                 }
 
-                p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
+                p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
                 BukkitCoreSystem.getInstance().getMessager().send(bukkit(), "§2Du bist nun im §aVanish Modus§2!");
             } else {
                 for (Player t : Bukkit.getOnlinePlayers()) {
@@ -185,7 +185,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
                     }
                 }
 
-                p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
+                p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
                 BukkitCoreSystem.getInstance().getMessager().send(bukkit(), "§7Du bist nicht mehr im §fVanish Modus§7!");
             }
 

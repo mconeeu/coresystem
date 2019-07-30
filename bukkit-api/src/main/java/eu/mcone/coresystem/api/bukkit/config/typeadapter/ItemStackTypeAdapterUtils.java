@@ -134,7 +134,7 @@ public class ItemStackTypeAdapterUtils {
 
     @SuppressWarnings("unchecked")
     public static FireworkMeta getFireworkMeta(Map<String, Object> data) {
-        FireworkMeta dummy = (FireworkMeta) new ItemStack(Material.FIREWORK).getItemMeta();
+        FireworkMeta dummy = (FireworkMeta) new ItemStack(Material.FIREWORK_ROCKET).getItemMeta();
         dummy.setPower((Integer) data.get("power"));
 
         List<Map<String, Object>> effects = (List<Map<String, Object>>) data.get("effects");
@@ -242,7 +242,7 @@ public class ItemStackTypeAdapterUtils {
     }
 
     public static SkullMeta getSkullMeta(Map<String, Object> data) {
-        ItemStack dummyItems = new ItemStack(Material.SKULL_ITEM);
+        ItemStack dummyItems = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta dummyMeta = (SkullMeta) dummyItems.getItemMeta();
         if (data.containsKey("owner")) {
             dummyMeta.setOwner((String) data.get("owner"));

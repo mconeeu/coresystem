@@ -5,7 +5,9 @@
 
 package eu.mcone.coresystem.bukkit.inventory.anvil;
 
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_13_R2.BlockPosition;
+import net.minecraft.server.v1_13_R2.ContainerAnvil;
+import net.minecraft.server.v1_13_R2.EntityHuman;
 
 class AnvilContainer extends ContainerAnvil {
 
@@ -14,7 +16,7 @@ class AnvilContainer extends ContainerAnvil {
     }
 
     @Override
-    public boolean a(EntityHuman entityhuman) {
+    public boolean canUse(EntityHuman entityhuman) {
         return true;
     }
 

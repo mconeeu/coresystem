@@ -6,13 +6,7 @@
 package eu.mcone.coresystem.bukkit.util;
 
 import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
-import net.minecraft.server.v1_8_R3.IChatBaseComponent;
-import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerListHeaderFooter;
-import net.minecraft.server.v1_8_R3.PlayerConnection;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-
-import java.lang.reflect.Field;
 
 public class TablistInfo implements CoreTablistInfo {
 
@@ -38,22 +32,8 @@ public class TablistInfo implements CoreTablistInfo {
     public TablistInfo send(Player p) {
         if (header == null) header = "";
         if (footer == null) footer = "";
-        PlayerConnection connection = ((CraftPlayer) p).getHandle().playerConnection;
 
-        IChatBaseComponent head = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + header + "\"}");
-        IChatBaseComponent Foot = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + footer + "\"}");
-
-        PacketPlayOutPlayerListHeaderFooter headerPacket = new PacketPlayOutPlayerListHeaderFooter(head);
-        try {
-            Field field = headerPacket.getClass().getDeclaredField("b");
-            field.setAccessible(true);
-            field.set(headerPacket, Foot);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            connection.sendPacket(headerPacket);
-        }
-
+        p.setPlayerListHeaderFooter(header, footer);
         return this;
     }
 

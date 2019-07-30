@@ -41,35 +41,35 @@ class PartyInventory extends CoreInventory {
 
                     setItem(i, new Skull(data[0], 1).toItemBuilder().displayName("§f§l" + data[0]).lore(lores).create(), e -> {
                         new PartyMemberInventory(p, data[0]).openInventory();
-                        p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+                        p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
                     });
                     i++;
                 }
 
-                setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
-                    p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
+                setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
                     new ProfileInventory(p).openInventory();
+                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
                 });
 
                 if (isPartyLeader)
-                    setItem(InventorySlot.ROW_6_SLOT_5, new ItemBuilder(Material.BARRIER, 1, 0).displayName("§cParty löschen").create(), e -> {
+                    setItem(InventorySlot.ROW_6_SLOT_5, new ItemBuilder(Material.BARRIER).displayName("§cParty löschen").create(), e -> {
                         p.closeInventory();
                         BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "party delete");
                     });
 
-                setItem(InventorySlot.ROW_6_SLOT_9, new ItemBuilder(Material.SLIME_BALL, 1, 0).displayName("§4Party verlassen").create(), e -> {
+                setItem(InventorySlot.ROW_6_SLOT_9, new ItemBuilder(Material.SLIME_BALL).displayName("§4Party verlassen").create(), e -> {
                     p.closeInventory();
                     BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "party leave");
                 });
             } else {
-                setItem(InventorySlot.ROW_3_SLOT_5, new ItemBuilder(Material.CAKE, 1, 0).displayName("§5Party erstellen").create(), e -> {
+                setItem(InventorySlot.ROW_3_SLOT_5, new ItemBuilder(Material.CAKE).displayName("§5Party erstellen").create(), e -> {
                     p.closeInventory();
                     BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "party create");
                 });
 
-                setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
-                    p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
+                setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
                     new ProfileInventory(p).openInventory();
+                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
                 });
             }
         }, "PARTY", "member");

@@ -43,24 +43,24 @@ public class ProfileInventory extends CoreInventory {
                 ).create()
         );
 
-        setItem(InventorySlot.ROW_3_SLOT_2, new ItemBuilder(Material.NETHER_STAR, 1, 0).displayName("§f§lStats").lore("§7§oRufe die deine Spielerstatistiken", "§7§oaus allen MC ONE Spielmodi ab!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), e -> {
+        setItem(InventorySlot.ROW_3_SLOT_2, new ItemBuilder(Material.NETHER_STAR).displayName("§f§lStats").lore("§7§oRufe die deine Spielerstatistiken", "§7§oaus allen MC ONE Spielmodi ab!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), e -> {
             p.performCommand("stats");
-            p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+            p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
         });
 
-        setItem(InventorySlot.ROW_3_SLOT_4, new ItemBuilder(Material.SKULL_ITEM, 1, 3).displayName("§9§lFreunde").lore("§7§oZeige deine Freunde und", "§7§oFreundschaftsanzeigen", "§7§oan!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), e -> {
+        setItem(InventorySlot.ROW_3_SLOT_4, new ItemBuilder(Material.PLAYER_HEAD).displayName("§9§lFreunde").lore("§7§oZeige deine Freunde und", "§7§oFreundschaftsanzeigen", "§7§oan!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), e -> {
             new FriendsInventory(p).openInventory();
-            p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+            p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
         });
 
-        setItem(InventorySlot.ROW_3_SLOT_6, new ItemBuilder(Material.CAKE, 1, 0).displayName("§5§lParty").lore("§7§oZeige infos zu deiner Party", "§7§oan, oder ertselle eine!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), e -> {
+        setItem(InventorySlot.ROW_3_SLOT_6, new ItemBuilder(Material.CAKE).displayName("§5§lParty").lore("§7§oZeige infos zu deiner Party", "§7§oan, oder ertselle eine!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), e -> {
             new PartyInventory(p).openInventory();
-            p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+            p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
         });
 
-        setItem(InventorySlot.ROW_3_SLOT_8, new ItemBuilder(Material.REDSTONE, 1, 0).displayName("§c§lEinstellungen").lore("§7§oVerwalte dein Konto und andere", "§7§oingame Einstellungen", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), e -> {
+        setItem(InventorySlot.ROW_3_SLOT_8, new ItemBuilder(Material.REDSTONE).displayName("§c§lEinstellungen").lore("§7§oVerwalte dein Konto und andere", "§7§oingame Einstellungen", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), e -> {
             new PlayerSettingsInventory(p).openInventory();
-            p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+            p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
         });
 
         for (ProfileInventoryModifier modifier : modifiers) {

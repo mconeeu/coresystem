@@ -16,7 +16,7 @@ import eu.mcone.coresystem.api.core.exception.CoreConfigException;
 import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;

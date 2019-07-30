@@ -97,11 +97,11 @@ public class CoreInventoryListener implements Listener {
                     e.setCancelled(true);
                     event.onClick(e);
                     return true;
-                } else if (itemStack.getType().equals(Material.SKULL_ITEM) && item.getType().equals(Material.SKULL_ITEM)) {
+                } else if (itemStack.getType().equals(Material.PLAYER_HEAD) && item.getType().equals(Material.PLAYER_HEAD)) {
                     SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
                     SkullMeta clickedMeta = (SkullMeta) item.getItemMeta();
 
-                    if (meta.equals(clickedMeta) || meta.hasOwner() ? (meta.getOwner() != null && clickedMeta.getOwner() != null && meta.getOwner().equals(clickedMeta.getOwner()) && meta.getDisplayName().equalsIgnoreCase(clickedMeta.getDisplayName())) : meta.getDisplayName().equalsIgnoreCase(clickedMeta.getDisplayName())) {
+                    if (meta.equals(clickedMeta) || meta.hasOwner() ? (meta.getOwningPlayer() != null && clickedMeta.getOwningPlayer() != null && meta.getOwningPlayer().getUniqueId().equals(clickedMeta.getOwningPlayer().getUniqueId()) && meta.getDisplayName().equals(clickedMeta.getDisplayName())) : meta.getDisplayName().equalsIgnoreCase(clickedMeta.getDisplayName())) {
                         event.onClick(e);
                         return true;
                     }

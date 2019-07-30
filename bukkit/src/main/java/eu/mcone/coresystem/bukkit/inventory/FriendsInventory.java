@@ -28,14 +28,14 @@ class FriendsInventory extends CoreInventory {
                 String[] data = friend.split(":");
                 setItem(i, new Skull(data[1], 1).toItemBuilder().displayName("§f§l" + data[1]).lore(data[2], "", "§8» §f§nRechtsklick§8 | §7§oAktionen").create(), e -> {
                     new FriendInventory(p, data[1]).openInventory();
-                    p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+                    p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
                 });
 
                 i++;
             }
 
-            setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
-                p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
+            setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
+                p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
                 new ProfileInventory(p).openInventory();
             });
         }, "FRIENDS");

@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.api.bukkit.util;
 
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.entity.Player;
 
 public interface CoreActionBar {
@@ -14,7 +15,7 @@ public interface CoreActionBar {
      * @param message message
      * @return this
      */
-    CoreActionBar message(String message);
+    CoreActionBar message(BaseComponent[] message);
 
     /**
      * reset all values
