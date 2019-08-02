@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.mcone.coresystem</groupId>
-    <artifactId>mcone-coresystem</artifactId>
+    <artifactId>mcone-coresystem-1.13.2</artifactId>
     <packaging>pom</packaging>
     <version>10.4.3-SNAPSHOT</version>
 
