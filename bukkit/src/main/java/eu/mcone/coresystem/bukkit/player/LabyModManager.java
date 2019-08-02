@@ -20,19 +20,19 @@ import org.bukkit.entity.Player;
 public class LabyModManager extends LMCUtils<Player> {
 
     public LabyModManager() {
-        Bukkit.getMessenger().registerIncomingPluginChannel(BukkitCoreSystem.getSystem(), "LABYMOD", new LabyModMessageListener(this));
-        Bukkit.getMessenger().registerIncomingPluginChannel(BukkitCoreSystem.getSystem(), "LMC", new LMCListener(this));
+        Bukkit.getMessenger().registerIncomingPluginChannel(BukkitCoreSystem.getSystem(), "mcone:labymod", new LabyModMessageListener(this));
+        Bukkit.getMessenger().registerIncomingPluginChannel(BukkitCoreSystem.getSystem(), "mcone:lmc", new LMCListener(this));
     }
 
     public void disable() {
-        Bukkit.getMessenger().unregisterIncomingPluginChannel(BukkitCoreSystem.getSystem(), "LABYMOD");
-        Bukkit.getMessenger().unregisterIncomingPluginChannel(BukkitCoreSystem.getSystem(), "LMC");
+        Bukkit.getMessenger().unregisterIncomingPluginChannel(BukkitCoreSystem.getSystem(), "mcone:labymod");
+        Bukkit.getMessenger().unregisterIncomingPluginChannel(BukkitCoreSystem.getSystem(), "mcone:lmc");
     }
 
     @Override
     protected void sendLMCMessage(Player player, byte[] message) {
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(
-                new PacketPlayOutCustomPayload(new MinecraftKey("LMC"), new PacketDataSerializer(Unpooled.wrappedBuffer(message)))
+                new PacketPlayOutCustomPayload(new MinecraftKey("lmc"), new PacketDataSerializer(Unpooled.wrappedBuffer(message)))
         );
     }
 

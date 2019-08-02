@@ -210,12 +210,12 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         corePlayers = new HashMap<>();
 
         sendConsoleMessage("§aRegistering BungeeCord Messaging Channel...");
-        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        getServer().getMessenger().registerOutgoingPluginChannel(this, "WDL|CONTROL");
-        getServer().getMessenger().registerIncomingPluginChannel(this, "MC_ONE_RETURN", new ReturnPluginChannelListener());
-        getServer().getMessenger().registerIncomingPluginChannel(this, "MC_ONE_INFO", new InfoPluginChannelListener());
-        getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordReturnPluginChannelListener());
-        getServer().getMessenger().registerIncomingPluginChannel(this, "WDL|INIT", new AntiWorldDownloader());
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "mcone:bungeecord");
+        getServer().getMessenger().registerOutgoingPluginChannel(this, "mcone:wdl|control");
+        getServer().getMessenger().registerIncomingPluginChannel(this, "mcone:return", new ReturnPluginChannelListener());
+        getServer().getMessenger().registerIncomingPluginChannel(this, "mcone:info", new InfoPluginChannelListener());
+        getServer().getMessenger().registerIncomingPluginChannel(this, "mcone:bungeecord", new BungeeCordReturnPluginChannelListener());
+        getServer().getMessenger().registerIncomingPluginChannel(this, "mcone:wdl|init", new AntiWorldDownloader());
 
         sendConsoleMessage("§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
 

@@ -19,7 +19,7 @@ public class LabyModManager extends LMCUtils<ProxiedPlayer> {
 
     @Override
     protected void sendLMCMessage(ProxiedPlayer player, byte[] message) {
-        player.unsafe().sendPacket(new PluginMessage("LMC", message, false));
+        player.unsafe().sendPacket(new PluginMessage("mcone:lmc", message, false));
     }
 
 }

@@ -194,8 +194,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         loadSchedulers();
 
         sendConsoleMessage("§aRegistering Plugin Messaging Channel...");
-        getProxy().registerChannel("MC_ONE_RETURN");
-        getProxy().registerChannel("MC_ONE_INFO");
+        getProxy().registerChannel("mcone:return");
+        getProxy().registerChannel("mcone:info");
 
         sendConsoleMessage("§aVersion: §f" + this.getDescription().getVersion() + "§a enabled!");
     }

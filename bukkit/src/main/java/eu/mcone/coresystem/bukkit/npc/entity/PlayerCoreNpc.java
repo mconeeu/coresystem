@@ -285,9 +285,9 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     private PacketPlayOutPlayerInfo makeTablistPacket(boolean add) {
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo();
         ReflectionManager.setValue(packet, "a", add ? PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER : PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER);
-        ReflectionManager.setValue(packet, "b", new ArrayList<>(Collections.singleton(
-                packet.new PlayerInfoData(profile, 0, EnumGamemode.CREATIVE, CraftChatMessage.fromString(entityData.getTablistName())[0])
-        )));
+//        ReflectionManager.setValue(packet, "b", new ArrayList<>(Collections.singleton(
+//                packet.new PlayerInfoData(profile, 0, EnumGamemode.CREATIVE, CraftChatMessage.fromString(entityData.getTablistName())[0])
+//        )));
 
         return packet;
     }
