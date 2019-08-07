@@ -9,16 +9,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>mcone-coresystem</artifactId>
-        <groupId>eu.mcone.coresystem-1.13.2</groupId>
+        <groupId>eu.mcone.coresystem-1-13-2</groupId>
         <version>10.4.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>core-api</artifactId>
-
-    <properties>
-        <maven.deploy.skip>true</maven.deploy.skip>
-    </properties>
 
     <build>
         <finalName>${project.parent.name}-${project.name}-${project.version}</finalName>
