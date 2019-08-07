@@ -8,8 +8,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>mcone-coresystem-1.13.2</artifactId>
-        <groupId>eu.mcone.coresystem</groupId>
+        <artifactId>mcone-coresystem</artifactId>
+        <groupId>eu.mcone.coresystem-1.13.2</groupId>
         <version>10.4.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -98,13 +98,13 @@
 
     <dependencies>
         <dependency>
-            <groupId>eu.mcone.coresystem</groupId>
+            <groupId>eu.mcone.coresystem-1.13.2</groupId>
             <artifactId>core</artifactId>
             <version>10.4.3-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>eu.mcone.coresystem</groupId>
+            <groupId>eu.mcone.coresystem-1.13.2</groupId>
             <artifactId>bukkit-api</artifactId>
             <version>10.4.3-SNAPSHOT</version>
             <scope>compile</scope>
