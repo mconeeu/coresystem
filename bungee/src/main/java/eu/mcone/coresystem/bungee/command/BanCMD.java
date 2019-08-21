@@ -21,7 +21,7 @@ import java.util.UUID;
 public class BanCMD extends Command implements TabExecutor {
 
     public BanCMD() {
-        super("ban", "system.bungee.ban", "b");
+        super("ban", "system.bungee.ban");
     }
 
     public void execute(final CommandSender sender, final String[] args) {
