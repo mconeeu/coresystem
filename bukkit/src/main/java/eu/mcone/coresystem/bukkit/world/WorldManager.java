@@ -96,7 +96,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                         }
                     } else {
                         if (world != null) {
-                            coreWorlds.add(constructNewCoreWorld(world));
+                            coreWorlds.add(constructNewCoreWorld(world, null, null));
                             BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + world.getName());
                         } else {
                             BukkitCoreSystem.getInstance().sendConsoleMessage("Recognized world " + dir.getName() + " but has no config! Import manually (/world import " + dir.getName() + ")");
@@ -157,7 +157,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                             coreWorlds.add(w);
                         }
                     } else {
-                        coreWorlds.add(constructNewCoreWorld(world));
+                        coreWorlds.add(constructNewCoreWorld(world, null, null));
                     }
 
                     BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + world.getName());
@@ -203,17 +203,17 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
         }
         world.setKeepSpawnInMemory(properties.isKeepSpawnInMemory());
 
-        coreWorlds.add(constructNewCoreWorld(world));
+        coreWorlds.add(constructNewCoreWorld(world, properties.getGenerator(), properties.getGeneratorSettings()));
         return world;
     }
 
-    private BukkitCoreWorld constructNewCoreWorld(World world) {
+    private BukkitCoreWorld constructNewCoreWorld(World world, String generator, String generatorSettings) {
         Location loc = world.getSpawnLocation();
         BukkitCoreWorld w = new BukkitCoreWorld(
                 world.getName(),
                 world.getName(),
-                null,
-                null,
+                generator,
+                generatorSettings,
                 world.getWorldType(),
                 world.getEnvironment(),
                 world.getDifficulty(),
