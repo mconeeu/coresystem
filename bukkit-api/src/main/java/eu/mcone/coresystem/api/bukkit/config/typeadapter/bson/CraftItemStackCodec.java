@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.api.bukkit.config.typeadapter.bson;
 
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.ItemStackTypeAdapterUtils;
+import eu.mcone.coresystem.api.bukkit.config.typeadapter.LegacyItemData;
 import org.bson.BsonReader;
 import org.bson.BsonWriter;
 import org.bson.Document;
@@ -35,11 +36,20 @@ public class CraftItemStackCodec implements Codec<CraftItemStack> {
     public CraftItemStack decode(BsonReader reader, DecoderContext decoderContext) {
         Document document = registry.get(Document.class).decode(reader, decoderContext);
 
-        Material material = Material.getMaterial(document.getString("material"));
+        Material material;
         String name = null;
         Map<Enchantment, Integer> enchants = null;
         List<String> lore = new ArrayList<>();
         int repairPenalty = 0;
+        short durability = document.getInteger("durability").shortValue();
+
+        LegacyItemData legacyItem = LegacyItemData.getLegacyItemData(document.getString("material"));
+        if (legacyItem != null) {
+            material = Material.valueOf(legacyItem.getLegacyMaterial()[0]);
+            durability = (short) legacyItem.getLegacyDurability();
+        } else {
+            material = Material.valueOf(document.getString("material"));
+        }
 
         if (document.containsKey("name")) {
             name = document.getString("name");
@@ -54,7 +64,7 @@ public class CraftItemStackCodec implements Codec<CraftItemStack> {
             repairPenalty = document.getInteger("repairPenalty");
         }
 
-        ItemStack stuff = new ItemStack(material, document.getInteger("amount"), document.getInteger("durability").shortValue());
+        ItemStack stuff = new ItemStack(material, document.getInteger("amount"), durability);
         if ((material == Material.BOOK_AND_QUILL || material == Material.WRITTEN_BOOK) && document.containsKey("book-meta")) {
             BookMeta meta = ItemStackTypeAdapterUtils.getBookMeta(document.get("book-meta", Document.class));
             stuff.setItemMeta(meta);

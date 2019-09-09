@@ -44,6 +44,13 @@ public interface CorePlayer extends GlobalCorePlayer {
     CoreWorld getWorld();
 
     /**
+     * returns the Stats of the current gamemode
+     *
+     * @return StatsAPI object
+     */
+    Stats getStats();
+
+    /**
      * returns the players stats info object for the specific gamemode
      *
      * @param gamemode wished Gamemode

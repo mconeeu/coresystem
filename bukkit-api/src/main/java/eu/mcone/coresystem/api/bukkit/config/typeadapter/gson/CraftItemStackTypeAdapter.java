@@ -8,6 +8,7 @@ package eu.mcone.coresystem.api.bukkit.config.typeadapter.gson;
 import com.google.gson.*;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.ItemStackTypeAdapterUtils;
+import eu.mcone.coresystem.api.bukkit.config.typeadapter.LegacyItemData;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
@@ -25,11 +26,20 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
     public CraftItemStack deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-        Material material = Material.getMaterial(jsonObject.get("material").getAsString());
+        Material material;
         String name = "";
         Map<Enchantment, Integer> enchants = null;
         List<String> lore = new ArrayList<>();
         int repairPenalty = 0;
+        short durability = (short) jsonObject.get("durability").getAsInt();
+
+        LegacyItemData legacyItem = LegacyItemData.getLegacyItemData(jsonObject.get("material").getAsString());
+        if (legacyItem != null) {
+            material = Material.valueOf(legacyItem.getLegacyMaterial()[0]);
+            durability = (short) legacyItem.getLegacyDurability();
+        } else {
+            material = Material.valueOf(jsonObject.get("material").getAsString());
+        }
 
         if (jsonObject.has("name")) {
             name = jsonObject.get("name").getAsString();
@@ -47,7 +57,7 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
             repairPenalty = jsonObject.get("repairPenalty").getAsInt();
         }
 
-        ItemStack stuff = new ItemStack(material, jsonObject.get("amount").getAsInt(), (short) jsonObject.get("durability").getAsInt());
+        ItemStack stuff = new ItemStack(material, jsonObject.get("amount").getAsInt(), durability);
         if ((material == Material.BOOK_AND_QUILL || material == Material.WRITTEN_BOOK) && jsonObject.has("book-meta")) {
             BookMeta meta = ItemStackTypeAdapterUtils.getBookMeta(context.deserialize(jsonObject.get("book-meta"), Map.class));
             stuff.setItemMeta(meta);

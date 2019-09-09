@@ -346,7 +346,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     public CorePlayer getCorePlayer(String name) {
         for (CorePlayer p : corePlayers.values()) {
-            if (p.getName().equals(name)) return p;
+            if (p.getName().equalsIgnoreCase(name)) return p;
         }
         return null;
     }

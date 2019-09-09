@@ -22,7 +22,7 @@ import java.util.Map;
 public class LocationCMD extends CorePlayerCommand {
 
     public LocationCMD() {
-        super("location", "system.bukkit.world.location", "l");
+        super("location", "system.bukkit.world.location", "loc");
     }
 
     @Override

@@ -42,7 +42,7 @@ public class StaticClassCategoryInventory extends CategoryInventory {
         }
     }
 
-    private ItemStack getCurrentCategoryItem() {
+    protected ItemStack getCurrentCategoryItem() {
         ItemStack item = null;
 
         for (Map.Entry<ItemStack, Class<? extends StaticClassCategoryInventory>> itemStackClassEntry : categoryInventories.entrySet()) {
