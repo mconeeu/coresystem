@@ -25,6 +25,12 @@ public interface GlobalCoreSystem {
     MongoDatabase getMongoDB();
 
     /**
+     * returns the mc1stats MongoDB database
+     * @return mc1stats MongoDB database
+     */
+    MongoDatabase getStatsDB();
+
+    /**
      * returns the CoreSystems instance of Gson. Use this for better performance
      * @return gson instance
      */
