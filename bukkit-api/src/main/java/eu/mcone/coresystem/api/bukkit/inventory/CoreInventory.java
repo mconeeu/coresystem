@@ -56,7 +56,6 @@ public class CoreInventory implements ItemEventStore {
      * @param event event, called when player clicks on the item
      */
     public void setItem(int slot, ItemStack item, CoreItemEvent event) {
-        //Item muss hier gesetzt werden da man sonst das Inventory nicht updaten kann!
         items.put(slot, new CoreItemStack(item, event));
         inventory.setItem(slot, item);
     }
@@ -77,10 +76,6 @@ public class CoreInventory implements ItemEventStore {
      */
     public Inventory openInventory() {
         CoreSystem.getInstance().getPluginManager().registerCoreInventory(player, this);
-
-//        for (Map.Entry<Integer, CoreItemStack> entry : items.entrySet()) {
-//            inventory.setItem(entry.getKey(), entry.getValue().getItemStack());
-//        }
 
         player.openInventory(inventory);
         return inventory;

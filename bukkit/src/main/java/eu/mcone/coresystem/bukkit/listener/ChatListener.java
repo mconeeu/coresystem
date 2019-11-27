@@ -6,7 +6,6 @@
 package eu.mcone.coresystem.bukkit.listener;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;

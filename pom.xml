@@ -95,7 +95,7 @@
     <distributionManagement>
         <repository>
             <id>mcone-systems</id>
-            <url>https://repo.mcone.eu/repository/mcone-systems/</url>
+            <url>https://repo.onegaming.group/repository/mcone-systems/</url>
         </repository>
     </distributionManagement>
 
