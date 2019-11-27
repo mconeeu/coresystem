@@ -336,6 +336,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         return database3;
     }
 
+    @Override
+    public MongoDatabase getStatsDB() {
+        return database2;
+    }
+
     public CorePlayer getCorePlayer(Player p) {
         return corePlayers.getOrDefault(p.getUniqueId(), null);
     }
