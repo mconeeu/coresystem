@@ -143,7 +143,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 "                                                         /____/  \n"
         );
 
-        mongoConnection = new MongoConnection("db.mcone.eu", "admin", "Rze8QWN1HenIdeM0lctzfNXtWGNrMl5QR8ECELMT0iPFBEMPtcgq34F6XX9YVm7V", "admin", 27017)
+        mongoConnection = new MongoConnection("db.mcone.eu", "admin", "Ze7OCxrVI30wmJU38TX9UmpoL8RnLPogmV3sIljcD2HQkth86bzr6JRiaDxabdt8", "admin", 27017)
                 .codecRegistry(
                         MongoClientSettings.getDefaultCodecRegistry(),
                         CodecRegistries.fromProviders(
