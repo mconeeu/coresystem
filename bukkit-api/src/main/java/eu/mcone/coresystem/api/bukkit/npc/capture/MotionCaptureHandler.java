@@ -6,13 +6,15 @@ public interface MotionCaptureHandler {
 
     void loadDatabase();
 
-    boolean saveMotionCapture(final String name, final MotionRecorder recorder);
+    boolean saveMotionCapture(final MotionRecorder recorder);
 
     MotionCaptureData getMotionCapture(final String name);
 
     void deleteMotionCapture(final MotionCaptureData data);
 
     void deleteMotionCapture(final String name);
+
+    boolean existsMotionCapture(final String name);
 
     List<MotionCaptureData> getMotionCaptures();
 }

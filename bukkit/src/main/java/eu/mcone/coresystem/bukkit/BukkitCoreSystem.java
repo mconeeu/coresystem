@@ -299,7 +299,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new StatsCMD(),
                 new SpeedCMD(),
                 new VanishCMD(),
-                new ProfileCMD()
+                new ProfileCMD(),
+                new CaptureCMD()
         );
     }
 

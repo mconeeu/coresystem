@@ -1,9 +1,7 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture;
 
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketWrapper;
 import lombok.Getter;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
@@ -20,44 +18,35 @@ public abstract class MotionRecorder implements Serializable, Listener {
     private static final long serialVersionUID = 191955L;
 
     @Getter
-    private int ticks;
+    protected int ticks;
     @Getter
     private final String recorderName;
     @Getter
     private final String world;
     @Getter
-    private long recorded;
+    private final String name;
     @Getter
-    private boolean isStopped = false;
+    protected long recorded;
+    @Getter
+    protected boolean isStopped = false;
 
     protected transient BukkitTask taskID;
     protected transient final Player player;
-    private AtomicInteger savedPackets;
+    protected AtomicInteger savedPackets;
 
     @Getter
-    public HashMap<Integer, List<PacketWrapper>> packets = new HashMap<>();
+    public HashMap<Integer, List<PacketWrapper>> packets;
 
-    public MotionRecorder(final Player player) {
+    public MotionRecorder(final Player player, final String name) {
         this.player = player;
+        this.name = name;
         this.recorderName = player.getName();
         this.world = player.getLocation().getWorld().getName();
         this.savedPackets = new AtomicInteger();
+        packets = new HashMap<>();
     }
 
-    public void record() {
-        recorded = System.currentTimeMillis() / 1000;
-
-        taskID = Bukkit.getScheduler().runTaskTimerAsynchronously(CoreSystem.getInstance(), () -> {
-            CoreSystem.getInstance().createActionBar().message("§2§lAufnahme §8│ §a§l" + savedPackets.get() + " §2packet(s)").send(player);
-            ticks++;
-        }, 1L, 1L);
-
-    }
-
-    public Map<Integer, List<PacketWrapper>> stopRecording() {
-        isStopped = true;
-        return packets;
-    }
+    public abstract void record();
 
     protected void addData(PacketWrapper data) {
         if (this.packets.containsKey(ticks)) {
@@ -70,4 +59,6 @@ public abstract class MotionRecorder implements Serializable, Listener {
 
         savedPackets.getAndIncrement();
     }
+
+    public abstract Map<Integer, List<PacketWrapper>> stopRecording();
 }

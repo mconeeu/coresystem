@@ -2,8 +2,10 @@ package eu.mcone.coresystem.bukkit.npc.capture;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.npc.capture.packets.*;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -17,67 +19,86 @@ import java.util.Map;
 
 public class MotionRecorder extends eu.mcone.coresystem.api.bukkit.npc.capture.MotionRecorder {
 
-    public MotionRecorder(final Player player) {
-        super(player);
+    public MotionRecorder(final Player player, final String name) {
+        super(player, name);
     }
 
     public void record() {
+        recorded = System.currentTimeMillis() / 1000;
+
+        taskID = Bukkit.getScheduler().runTaskTimerAsynchronously(CoreSystem.getInstance(), () -> {
+            CoreSystem.getInstance().createActionBar().message("§2§lAufnahme §8│ §a§l" + savedPackets.get() + " §2packet(s)").send(player);
+            ticks++;
+        }, 1L, 1L);
+
         CoreSystem.getInstance().registerEvents(new Listener() {
-            @EventHandler
+            @EventHandler(priority = EventPriority.HIGHEST)
             public void on(PlayerMoveEvent e) {
-                addData(new EntityMovePacketWrapper(e.getPlayer().getLocation()));
+                if (player.equals(e.getPlayer())) {
+                    addData(new EntityMovePacketWrapper(e.getPlayer().getLocation()));
 
-                if (isStopped()) {
-                    e.getHandlers().unregister(this);
+                    if (isStopped()) {
+                        e.getHandlers().unregister(this);
+                    }
                 }
             }
 
-            @EventHandler
+            @EventHandler(priority = EventPriority.HIGHEST)
             public void on(PlayerItemHeldEvent e) {
-                addData(new EntitySwitchItemPacketWrapper(e.getPlayer().getItemInHand()));
+                if (player.equals(e.getPlayer())) {
+                    addData(new EntitySwitchItemPacketWrapper(e.getPlayer().getItemInHand()));
 
-                if (isStopped()) {
-                    e.getHandlers().unregister(this);
+                    if (isStopped()) {
+                        e.getHandlers().unregister(this);
+                    }
                 }
             }
 
-            @EventHandler
+            @EventHandler(priority = EventPriority.HIGHEST)
             public void on(PlayerInteractEvent e) {
-                if (e.getAction().equals(Action.LEFT_CLICK_AIR) || e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
-                    addData(new EntityClickPacketWrapper());
-                }
+                if (player.equals(e.getPlayer())) {
+                    if (e.getAction().equals(Action.LEFT_CLICK_AIR) || e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
+                        addData(new EntityClickPacketWrapper());
+                    }
 
-                if (isStopped()) {
-                    e.getHandlers().unregister(this);
+                    if (isStopped()) {
+                        e.getHandlers().unregister(this);
+                    }
                 }
             }
 
-            @EventHandler
+            @EventHandler(priority = EventPriority.HIGHEST)
             public void on(EntityDamageEvent e) {
-                addData(new EntityDamagePacketWrapper());
+                if (e.getEntity() instanceof Player) {
+                    if (player.equals(e.getEntity())) {
+                        addData(new EntityDamagePacketWrapper());
 
-                if (isStopped()) {
-                    e.getHandlers().unregister(this);
+                        if (isStopped()) {
+                            e.getHandlers().unregister(this);
+                        }
+                    }
                 }
             }
 
-            @EventHandler
+            @EventHandler(priority = EventPriority.HIGHEST)
             public void on(PlayerToggleSneakEvent e) {
-                if (e.isSneaking()) {
-                    addData(new EntitySneakPacketWrapper(EntityAction.START_SNEAKING));
-                } else {
-                    addData(new EntitySneakPacketWrapper(EntityAction.STOP_SNEAKING));
-                }
+                if (player.equals(e.getPlayer())) {
+                    if (e.isSneaking()) {
+                        addData(new EntitySneakPacketWrapper(EntityAction.START_SNEAKING));
+                    } else {
+                        addData(new EntitySneakPacketWrapper(EntityAction.STOP_SNEAKING));
+                    }
 
-                if (isStopped()) {
-                    e.getHandlers().unregister(this);
+                    if (isStopped()) {
+                        e.getHandlers().unregister(this);
+                    }
                 }
             }
         });
     }
 
-    @Override
     public Map<Integer, List<PacketWrapper>> stopRecording() {
+        isStopped = true;
         taskID.cancel();
         return packets;
     }

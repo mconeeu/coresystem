@@ -35,24 +35,21 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
         }
     }
 
-    public boolean saveMotionCapture(final String name, final MotionRecorder recorder) {
+    public boolean saveMotionCapture(final MotionRecorder recorder) {
         try {
-            if (!motionCaptureDataMap.containsKey(name)) {
-                if (motionCaptureCollection.find(eq("name", name)).first() == null) {
-                    if (!recorder.isStopped()) {
-                        recorder.stopRecording();
-                    }
-
-                    MotionCaptureData data = new MotionCaptureData(name, recorder.getWorld(), recorder.getRecorded(), recorder.getRecorderName(), recorder.getTicks(), recorder.getPackets());
-                    motionCaptureDataMap.put(name, data);
-                    motionCaptureCollection.insertOne(data.createBsonDocument());
-                    return true;
-                } else {
-                    throw new MotionCaptureAlreadyExistsException("The motion capture " + name + " already exists!");
+            if (motionCaptureCollection.find(eq("name", recorder.getName())).first() == null) {
+                if (!recorder.isStopped()) {
+                    recorder.stopRecording();
                 }
+
+                MotionCaptureData data = new MotionCaptureData(recorder.getName(), recorder.getWorld(), recorder.getRecorded(), recorder.getRecorderName(), recorder.getTicks(), recorder.getPackets());
+                motionCaptureDataMap.put(recorder.getName(), data);
+                motionCaptureCollection.insertOne(data.createBsonDocument());
+                return true;
             } else {
-                throw new MotionCaptureAlreadyExistsException("The motion capture " + name + " already exists!");
+                throw new MotionCaptureAlreadyExistsException();
             }
+
         } catch (MotionCaptureAlreadyExistsException e) {
             e.printStackTrace();
             return false;
@@ -61,18 +58,18 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
 
     public MotionCaptureData getMotionCapture(final String name) {
         try {
-            if (motionCaptureDataMap.containsKey(name)) {
-                return motionCaptureDataMap.get(name);
-            } else {
-                Document document = motionCaptureCollection.find(eq("name", name)).first();
+            Document document = motionCaptureCollection.find(eq("name", name)).first();
 
-                if (document != null) {
+            if (document != null) {
+                if (motionCaptureDataMap.containsKey(name)) {
+                    return motionCaptureDataMap.get(name);
+                } else {
                     MotionCaptureData motionCaptureData = new MotionCaptureData(document.getString("name"), document.getString("world"), document.getLong("recorded"), document.getString("creator"), document.getInteger("length"), (Map<Integer, List<PacketWrapper>>) GenericUtils.deserialize(document.get("packets", Binary.class).getData()));
                     motionCaptureDataMap.put(name, motionCaptureData);
                     return motionCaptureData;
-                } else {
-                    throw new MotionCaptureNotFoundException("Cannot found motion capture with the name " + name);
                 }
+            } else {
+                throw new MotionCaptureNotFoundException("Cannot found motion capture with the name " + name);
             }
         } catch (MotionCaptureNotFoundException e) {
             e.printStackTrace();
@@ -87,6 +84,10 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
     public void deleteMotionCapture(final String name) {
         motionCaptureDataMap.remove(name);
         motionCaptureCollection.deleteOne(eq("name", name));
+    }
+
+    public boolean existsMotionCapture(final String name) {
+        return motionCaptureCollection.find(eq("name", name)).first() != null;
     }
 
     public List<MotionCaptureData> getMotionCaptures() {

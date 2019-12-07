@@ -7,6 +7,7 @@ package eu.mcone.coresystem.api.bukkit.npc.entity;
 
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
+import eu.mcone.coresystem.api.bukkit.npc.capture.MotionPlayer;
 import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
@@ -24,6 +25,8 @@ public interface PlayerNpc extends NPC {
      * @return current npcs uuid
      */
     UUID getUuid();
+
+    MotionPlayer getMotionPlayer();
 
     /**
      * Sets a specific item in the NPCs inventory and makes it visible for other players

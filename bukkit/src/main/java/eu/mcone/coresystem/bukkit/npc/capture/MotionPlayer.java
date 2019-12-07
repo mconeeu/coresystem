@@ -7,18 +7,12 @@ import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
 import eu.mcone.coresystem.api.bukkit.npc.capture.packets.*;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
-import lombok.Getter;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.MotionPlayer {
 
-    @Getter
-    public MotionCaptureData data;
-    @Getter
-    private boolean playing;
     public MotionPlayer(final PlayerNpc playerNpc, final MotionCaptureData data) {
         super(playerNpc, data);
     }
@@ -35,9 +29,7 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Mot
                     if (data.getMotionData().containsKey(currentTick.get())) {
                         for (PacketWrapper wrapper : data.getMotionData().get(currentTick.get())) {
                             if (wrapper instanceof EntityMovePacketWrapper) {
-                                for (Player player : Bukkit.getOnlinePlayers()) {
-                                    playerNpc.teleport((((EntityMovePacketWrapper) wrapper).getAsCoreLocation()), player);
-                                }
+                                playerNpc.teleport(((EntityMovePacketWrapper) wrapper).getAsCoreLocation());
                             }
 
                             if (wrapper instanceof EntitySneakPacketWrapper) {

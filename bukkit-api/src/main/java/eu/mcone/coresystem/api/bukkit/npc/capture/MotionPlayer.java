@@ -10,7 +10,7 @@ public abstract class MotionPlayer {
     @Getter
     public MotionCaptureData data;
     @Getter
-    private boolean playing;
+    protected boolean playing = true;
 
     protected PlayerNpc playerNpc;
     protected AtomicInteger currentTick;
@@ -24,9 +24,7 @@ public abstract class MotionPlayer {
         this.data = data;
     }
 
-    public void playMotionCapture() {
-        playing = true;
-    }
+    public abstract void playMotionCapture();
 
     public void stopPlaying() {
         playing = false;
@@ -41,7 +39,7 @@ public abstract class MotionPlayer {
         backward = true;
     }
 
-    public void forword() {
+    public void forward() {
         forward = true;
         backward = false;
     }

@@ -208,15 +208,6 @@ public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeT
         }
 
         return new Packet[]{
-                new PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook(
-                        entityId,
-                        (byte) ((loc.getX() - data.getLocation().getX()) * 32),
-                        (byte) ((loc.getY() - data.getLocation().getX()) * 32),
-                        (byte) ((loc.getZ() - data.getLocation().getX()) * 32),
-                        (byte) (loc.getYaw() * 256F / 360F),
-                        (byte) (loc.getPitch() * 256F / 360F),
-                        false
-                ),
                 new PacketPlayOutEntityTeleport(
                         entityId,
                         (int) (loc.getX() * 32),
