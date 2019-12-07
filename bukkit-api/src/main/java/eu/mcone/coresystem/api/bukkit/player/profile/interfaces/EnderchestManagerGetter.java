@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 public interface EnderchestManagerGetter {
 
     /**
-     * return an Player Instance that gets enderchest data from GameProfile and implements the EnderchestManager class
+     * return an Player Instance that gets enderchest packets from GameProfile and implements the EnderchestManager class
      * @param player Player that enderchest should be managed
      * @return EnderchestManager instance to modify a players enderchest
      */

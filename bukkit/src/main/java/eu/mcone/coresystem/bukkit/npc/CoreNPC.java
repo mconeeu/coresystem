@@ -59,6 +59,7 @@ public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeT
 
     protected abstract void onUpdate(T entityData);
 
+
     public void spawn(Player player) {
         if (spawned.add(player)) {
             _spawn(player);
@@ -157,7 +158,7 @@ public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeT
         return -1;
     }
 
-    protected void sendPackets(Packet<?>... packets) {
+    public void sendPackets(Packet<?>... packets) {
         sendPackets(packets, visiblePlayersList);
     }
 
@@ -188,7 +189,7 @@ public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeT
             if (packet != null) {
                 if (packet instanceof PacketPlayOutPlayerInfo) {
                     if (multipleInfoSend) {
-                        Bukkit.getScheduler().scheduleSyncDelayedTask((Plugin) BukkitCoreSystem.getInstance(), () ->
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(BukkitCoreSystem.getInstance(), () ->
                                 ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet), 50);
                         continue;
                     } else {

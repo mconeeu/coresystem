@@ -85,9 +85,9 @@ public final class Book extends ExtendedItemBuilder<BookMeta> {
 
     /**
      * Sets the specified page in the book. Pages of the book must be contiguous.
-     * The data can be up to 256 characters in length, additional characters are truncated.
+     * The packets can be up to 256 characters in length, additional characters are truncated.
      * @param number the page number to set
-     * @param text the data to set for that page
+     * @param text the packets to set for that page
      * @return this
      */
     public Book setPage(int number, String text) {

@@ -41,15 +41,15 @@ public class CraftItemStackCodec implements Codec<CraftItemStack> {
         Map<Enchantment, Integer> enchants = null;
         List<String> lore = new ArrayList<>();
         int repairPenalty = 0;
-        short durability = document.getInteger("durability").shortValue();
+//        short durability = document.getInteger("durability").shortValue();
 
-        LegacyItemData legacyItem = LegacyItemData.getLegacyItemData(document.getString("material"));
-        if (legacyItem != null) {
-            material = Material.valueOf(legacyItem.getLegacyMaterial()[0]);
-            durability = (short) legacyItem.getLegacyDurability();
-        } else {
+//        LegacyItemData legacyItem = LegacyItemData.getLegacyItemData(document.getString("material"));
+//        if (legacyItem != null) {
+//            material = Material.valueOf(legacyItem.getLegacyMaterial()[0]);
+//            durability = (short) legacyItem.getLegacyDurability();
+//        } else {
             material = Material.valueOf(document.getString("material"));
-        }
+//        }
 
         if (document.containsKey("name")) {
             name = document.getString("name");
@@ -64,7 +64,7 @@ public class CraftItemStackCodec implements Codec<CraftItemStack> {
             repairPenalty = document.getInteger("repairPenalty");
         }
 
-        ItemStack stuff = new ItemStack(material, document.getInteger("amount"), durability);
+        ItemStack stuff = new ItemStack(material, document.getInteger("amount"));
         if ((material == Material.BOOK_AND_QUILL || material == Material.WRITTEN_BOOK) && document.containsKey("book-meta")) {
             BookMeta meta = ItemStackTypeAdapterUtils.getBookMeta(document.get("book-meta", Document.class));
             stuff.setItemMeta(meta);

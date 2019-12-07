@@ -36,7 +36,7 @@ public interface GlobalCorePlayer extends GlobalOfflineCorePlayer {
     boolean isNicked();
 
     /**
-     * returns the unique id and other LabyMod spefific data if player is connected via LabyMod
+     * returns the unique id and other LabyMod spefific packets if player is connected via LabyMod
      * @return LabyModConnection object
      */
     LabyModConnection getLabyModConnection();

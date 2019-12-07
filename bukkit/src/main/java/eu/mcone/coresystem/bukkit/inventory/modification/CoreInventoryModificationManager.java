@@ -58,7 +58,7 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
         this.modifiedInventories = new HashMap<>();
         this.currentlyModifing = new HashMap<>();
 
-        //Collection in the data database for all modified inventories
+        //Collection in the packets database for all modified inventories
         this.userInfoCollection = BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo");
         this.defaultInventoriesCollection = BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bukkitsystem_default_inventories", DefaultInventory.class);
 
@@ -168,7 +168,7 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
                     }
                 }
 
-                //Check if the data in the localDefaultInventory equals to there in the database
+                //Check if the packets in the localDefaultInventory equals to there in the database
                 if (dbDefaultInventory.getItems().size() != proved || modifyInventory.getItems().size() != proved) {
                     CoreSystem.getInstance().sendConsoleMessage("§2Merge all ModifiedInventories with the DefaultInventory " + localDefaultInventory + "...");
                     mergeModifiedInventories(localDefaultInventory, dbDefaultInventory);

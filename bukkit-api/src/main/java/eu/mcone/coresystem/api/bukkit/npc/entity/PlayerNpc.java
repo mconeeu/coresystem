@@ -6,8 +6,11 @@
 package eu.mcone.coresystem.api.bukkit.npc.entity;
 
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
+import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
 import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
+import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -75,5 +78,15 @@ public interface PlayerNpc extends NPC {
      * @param players players which should receive the name add|remove (choose no players to send the update to all players and save this setting in PlayerNpcData & core-config)
      */
     void playLabymodEmote(int emoteId, Player... players);
+
+    void playMotionCapture(final String name);
+
+    void playMotionCapture(final MotionCaptureData data);
+
+    void sneak(boolean isSneaking);
+
+    void block(final boolean block);
+
+    void setItemInHand(final ItemStack item);
 
 }

@@ -5,7 +5,7 @@
 
 package eu.mcone.coresystem.bukkit.player;
 
-import eu.mcone.coresystem.api.bukkit.event.NpcInteractEvent;
+import eu.mcone.coresystem.api.bukkit.event.npc.NpcInteractEvent;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.util.ReflectionManager;
@@ -20,12 +20,12 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class PacketListener extends MessageToMessageDecoder<Packet<?>> {
+public class PacketInListener extends MessageToMessageDecoder<Packet<?>> {
 
     private final Player player;
     private final ChannelPipeline pipeline;
 
-    PacketListener(Player player) {
+    PacketInListener(Player player) {
         this.player = player;
         this.pipeline = ((CraftPlayer) player).getHandle().playerConnection.networkManager.channel.pipeline();
 
@@ -57,5 +57,4 @@ public class PacketListener extends MessageToMessageDecoder<Packet<?>> {
             pipeline.remove(this);
         }
     }
-
 }

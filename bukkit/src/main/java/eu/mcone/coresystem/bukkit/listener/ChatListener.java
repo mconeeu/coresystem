@@ -22,7 +22,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class ChatListener implements Listener {
 
-    @Getter @Setter
+    @Getter
+    @Setter
     private static boolean enabled = true;
     @Getter
     private static int cooldown = 0;
@@ -84,5 +85,4 @@ public class ChatListener implements Listener {
         ChatListener.cooldown = cooldown;
         BukkitCoreSystem.getInstance().getCooldownSystem().setCustomCooldownFor(ChatListener.class, cooldown);
     }
-
 }

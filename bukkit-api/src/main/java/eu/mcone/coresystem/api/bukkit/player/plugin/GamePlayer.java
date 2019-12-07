@@ -35,7 +35,7 @@ public abstract class GamePlayer<P extends GameProfile> {
     protected abstract P loadData();
 
     /**
-     * Use CorePlugin#saveGameProfile(GameProfile) to save a constructed GameProfile (with the data of this object) to database
+     * Use CorePlugin#saveGameProfile(GameProfile) to save a constructed GameProfile (with the packets of this object) to database
      */
     protected abstract void saveData();
     

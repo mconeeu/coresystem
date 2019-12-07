@@ -22,7 +22,7 @@ public interface HologramManager {
 
     /**
      * adds a temporary Hologram to the Server. This Hologram will not be saved in the core-config and stays until server reload|restart or Hologram-Manager reload
-     * @param data hologram data
+     * @param data hologram packets
      * @return new hologram
      */
     Hologram addHologram(HologramData data);
@@ -30,7 +30,7 @@ public interface HologramManager {
     /**
      * adds a temporary Hologram to the Server. This Hologram will not be saved in the core-config and stays until server reload|restart or Hologram-Manager reload
      * use /holo or the core-config.json to add Holograms permanently
-     * @param data npc data
+     * @param data npc packets
      * @param listMode Choose a Visbility mode and the players that should be on the list (i.e. BLACKLIST with no players means that all players can see the NPC)
      * @param players players that should be on the list
      * @return new hologram

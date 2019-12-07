@@ -3,7 +3,7 @@
  * You are not allowed to decompile the code
  */
 
-package eu.mcone.coresystem.api.bukkit.event;
+package eu.mcone.coresystem.api.bukkit.event.npc;
 
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
 import lombok.Getter;

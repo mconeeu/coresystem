@@ -9,7 +9,7 @@ public interface AnvilClickEventHandler {
 
     /**
      * called when a player clicks on an item in the anvil inventory
-     * @param event the event containing all relevant data
+     * @param event the event containing all relevant packets
      */
     void onAnvilClick(AnvilClickEvent event);
 

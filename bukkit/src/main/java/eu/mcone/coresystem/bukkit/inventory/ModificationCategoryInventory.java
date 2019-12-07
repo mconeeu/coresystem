@@ -38,7 +38,7 @@ public class ModificationCategoryInventory extends CategoryInventory {
 
             addItem(new ItemBuilder(Material.CHEST).displayName(inv.getTitle()).lore(
                     modifiedInventory != null
-                            ? "§7§oZuletzt bearbeitet: "+new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date(modifiedInventory.getLastUpdate() * 1000))
+                            ? "§7§oZuletzt bearbeitet: " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date(modifiedInventory.getLastUpdate() * 1000))
                             : "§7§oNoch nie bearbeitet"
             ).create(), e -> api.setCurrentlyModifying(player, inv).openInventory(player));
         }
