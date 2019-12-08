@@ -9,17 +9,21 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
+import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
 import eu.mcone.coresystem.api.bukkit.npc.data.PlayerNpcData;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
+import eu.mcone.coresystem.api.core.exception.MotionCaptureCurrentlyRunningException;
 import eu.mcone.coresystem.api.core.exception.NpcCreateException;
 import eu.mcone.coresystem.api.core.exception.SkinNotFoundException;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.npc.CoreNPC;
+import eu.mcone.coresystem.bukkit.npc.capture.MotionPlayer;
 import eu.mcone.coresystem.bukkit.util.ReflectionManager;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.*;
@@ -45,10 +49,15 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     private SkinInfo skin;
     @Getter
     private GameProfile profile;
+    @Getter
+    private Location location;
+    @Getter
+    private MotionPlayer motionPlayer;
 
     protected PlayerCoreNpc(NpcData data, ListMode visibilityMode, Player[] players) {
         super(PlayerNpcData.class, data, visibilityMode, players);
         this.bedLocation = new Location(data.getLocation().bukkit().getWorld(), 1, 1, 1);
+        this.location = data.getLocation().bukkit();
     }
 
     @Override
@@ -121,6 +130,31 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
                     sendPackets(makeEquipmentPacket(i));
                 }
             }
+        }
+    }
+
+    public void playMotionCapture(final String name) {
+        MotionCaptureData data = CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().getMotionCapture(name);
+        if (data != null) {
+            playMotionCapture(data);
+        }
+    }
+
+    public void playMotionCapture(final MotionCaptureData data) {
+        try {
+            if (motionPlayer != null) {
+                if (motionPlayer.isPlaying()) {
+                    throw new MotionCaptureCurrentlyRunningException();
+                } else {
+                    motionPlayer = new MotionPlayer(this, data);
+                    motionPlayer.playMotionCapture();
+                }
+            } else {
+                motionPlayer = new MotionPlayer(this, data);
+                motionPlayer.playMotionCapture();
+            }
+        } catch (MotionCaptureCurrentlyRunningException e) {
+            e.printStackTrace();
         }
     }
 
@@ -270,6 +304,39 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         for (Player player : send) {
             BukkitCoreSystem.getInstance().getLabyModAPI().sendServerMessage(player, "emote_api", array);
         }
+    }
+
+    public void sneak(boolean sneak) {
+        DataWatcher w = new DataWatcher(null);
+        if (sneak) {
+            w.a(0, (byte) 2);
+        } else {
+            w.a(0, (byte) 0);
+        }
+
+        w.a(1, (short) 0);
+        w.a(8, (byte) 0);
+
+        sendPackets(new PacketPlayOutEntityMetadata(entityId, w, true));
+    }
+
+    //Crashes the client, because float cannot be cast to byte (Minecraft Client error stacktrace)
+    public void block(final boolean block) {
+        DataWatcher w = new DataWatcher(null);
+        w.a(0, (byte) 16);
+        w.a(1, (short) 0);
+
+        if (block) {
+            w.a(6, (byte) 1);
+        } else {
+            w.a(6, (byte) 0);
+        }
+
+        sendPackets(new PacketPlayOutEntityMetadata(entityId, w, true));
+    }
+
+    public void setItemInHand(final ItemStack item) {
+        sendPackets(new PacketPlayOutEntityEquipment(entityId, 0, CraftItemStack.asNMSCopy(item)));
     }
 
     private PacketPlayOutPlayerInfo makeTablistPacket(boolean add) {

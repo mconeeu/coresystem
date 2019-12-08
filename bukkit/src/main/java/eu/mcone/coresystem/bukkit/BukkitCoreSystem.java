@@ -19,6 +19,7 @@ import eu.mcone.coresystem.api.bukkit.event.MoneyChangeEvent;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
+import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
@@ -295,7 +296,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new StatsCMD(),
                 new SpeedCMD(),
                 new VanishCMD(),
-                new ProfileCMD()
+                new ProfileCMD(),
+                new CaptureCMD()
         );
     }
 

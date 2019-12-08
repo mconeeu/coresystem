@@ -27,7 +27,7 @@ public interface PlayerUtils {
 
     /**
      * construct new SkinInfo with in database stored texture
-     * @param databaseName data texture name
+     * @param databaseName packets texture name
      * @return new SkinInfo object
      */
     SkinInfo getSkinFromSkinDatabase(String databaseName) throws SkinNotFoundException;
@@ -62,7 +62,7 @@ public interface PlayerUtils {
 
     /**
      * cunstruct new SkinInfo
-     * @param name data name
+     * @param name packets name
      * @param value mojang-value
      * @param signature mojang-signature
      * @return new SkinInfo object

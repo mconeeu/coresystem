@@ -22,7 +22,7 @@ public interface LabyModAPI<P> {
      * sends a specific message to the LabyMod client that can be read i.e. with a LabyMod AddOn
      * @param player target player
      * @param messageKey message key
-     * @param json message data in JSON format
+     * @param json message packets in JSON format
      */
     void sendServerMessage(P player, String messageKey, JsonElement json);
 

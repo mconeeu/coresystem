@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 public interface HomeManagerGetter {
 
     /**
-     * return an Player Instance that gets home data from GameProfile and implements the HomeManager class
+     * return an Player Instance that gets home packets from GameProfile and implements the HomeManager class
      * @param player Player that homes should be managed
      * @return EnderchestManager instance to modify a players homes
      */

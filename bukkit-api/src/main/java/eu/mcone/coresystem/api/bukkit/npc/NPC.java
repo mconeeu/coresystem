@@ -10,6 +10,7 @@ import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcState;
 import eu.mcone.coresystem.api.bukkit.spawnable.PlayerListModeToggleable;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
+import net.minecraft.server.v1_8_R3.Packet;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -22,8 +23,8 @@ public interface NPC extends PlayerListModeToggleable {
     NpcData getData();
 
     /**
-     * returns the Entity specific data (like <i>skin</i> for PLAYER)
-     * @return Entity specific data
+     * returns the Entity specific packets (like <i>skin</i> for PLAYER)
+     * @return Entity specific packets
      */
     <T extends AbstractNpcData> T getEntityData();
 
@@ -41,7 +42,7 @@ public interface NPC extends PlayerListModeToggleable {
     void changeDisplayname(String displayname, Player... players);
 
     /**
-     * Updates the NPCs data and sends update packets for all changes to visible players dynamically
+     * Updates the NPCs packets and sends update packets for all changes to visible players dynamically
      * @param data new NpcData
      */
     void update(NpcData data);
@@ -80,5 +81,7 @@ public interface NPC extends PlayerListModeToggleable {
      * @param players players which should receive the teleport packet (choose no players to send the update to all players and save it in NpcData & core-config)
      */
     void teleport(CoreLocation location, Player... players);
+
+    void sendPackets(Packet<?>... packets);
 
 }

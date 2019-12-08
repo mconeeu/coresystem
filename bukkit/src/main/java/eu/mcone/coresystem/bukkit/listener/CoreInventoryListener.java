@@ -35,7 +35,7 @@ public class CoreInventoryListener implements Listener {
             Player p = (Player) e.getWhoClicked();
             Inventory inv = e.getClickedInventory();
 
-            if (!e.getSlotType().equals(InventoryType.SlotType.OUTSIDE) && e.getRawSlot() < inv.getSize() && e.getCurrentItem() != null) {
+            if (inv != null && !e.getSlotType().equals(InventoryType.SlotType.OUTSIDE) && e.getRawSlot() < inv.getSize() && e.getCurrentItem() != null) {
                 if (inv.getType().equals(InventoryType.PLAYER)) {
                     if (p.equals(inv.getHolder()) || p.hasPermission("system.bukkit.invsee.modify.other")) {
                         e.setCancelled(false);

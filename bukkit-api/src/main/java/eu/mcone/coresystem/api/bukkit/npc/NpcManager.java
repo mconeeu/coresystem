@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.api.bukkit.npc;
 
+import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureHandler;
 import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import org.bukkit.entity.Player;
@@ -13,6 +14,8 @@ import java.util.Collection;
 
 public interface NpcManager {
 
+    MotionCaptureHandler getMotionCaptureHandler();
+
     /**
      * reloads all NPCs and Data from the core-config
      */
@@ -20,7 +23,7 @@ public interface NpcManager {
 
     /**
      * adds a temporary NPC to the Server. This NPC will not be saved in the core-config and stays until server reload|restart or NPC-Manager reload
-     * @param data npc data
+     * @param data npc packets
      * @return the new Npc
      */
     NPC addNPC(NpcData data);
@@ -28,7 +31,7 @@ public interface NpcManager {
     /**
      * adds a temporary NPC to the Server. This NPC will not be saved in the core-config and stays until server reload|restart or NPC-Manager reload
      * use /npc or the core-config.json to add Holograms permanently
-     * @param data npc data
+     * @param data npc packets
      * @param listMode Choose a Visbility listMode and the players that should be on the list (i.e. BLACKLIST with no players means that all players can see the NPC)
      * @param players players that should be on the list
      * @return the new NPC

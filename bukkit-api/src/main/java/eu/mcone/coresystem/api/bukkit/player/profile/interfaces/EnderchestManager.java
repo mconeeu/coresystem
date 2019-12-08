@@ -9,12 +9,12 @@ import eu.mcone.coresystem.api.bukkit.player.profile.PlayerInventoryProfile;
 import org.bukkit.inventory.Inventory;
 
 /**
- * Implement this Inventory into yout Player class that gets enderchest data from GameProfileClass
+ * Implement this Inventory into yout Player class that gets enderchest packets from GameProfileClass
  */
 public interface EnderchestManager<P extends PlayerInventoryProfile> {
 
     /**
-     * return here the Enderchest inventory stored in your Player class that gets enderchest data from GameProfileClass
+     * return here the Enderchest inventory stored in your Player class that gets enderchest packets from GameProfileClass
      * @return Playerbound Enderchest Inventory
      */
     Inventory getEnderchest();

@@ -141,8 +141,8 @@ public interface Stats {
     double getKD();
 
     /**
-     * returns all data
-     * @return data as int array
+     * returns all packets
+     * @return packets as int array
      */
     int[] getData();
 

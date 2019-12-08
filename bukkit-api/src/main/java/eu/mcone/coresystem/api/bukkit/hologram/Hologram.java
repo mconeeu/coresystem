@@ -10,13 +10,13 @@ import eu.mcone.coresystem.api.bukkit.spawnable.PlayerListModeToggleable;
 public interface Hologram extends PlayerListModeToggleable {
 
     /**
-     * returns the Holograms config data
+     * returns the Holograms config packets
      * @return HologramData config
      */
     HologramData getData();
 
     /**
-     * Updates the Holograms data and sends update packets for all changes to visible players dynamically
+     * Updates the Holograms packets and sends update packets for all changes to visible players dynamically
      * @param data new NpcData
      */
     void update(HologramData data);

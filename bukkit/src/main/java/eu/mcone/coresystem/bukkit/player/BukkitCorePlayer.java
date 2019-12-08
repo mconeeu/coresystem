@@ -51,7 +51,8 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     private SkinInfo skin;
     @Getter
     private boolean vanished;
-    private PacketListener packetListener;
+    private PacketInListener packetInListener;
+    private PacketOutListener packetOutListener;
     @Getter
     private PermissionAttachment permissionAttachment;
 
@@ -201,7 +202,9 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     }
 
     public void registerPacketListener(Player p) {
-        this.packetListener = new PacketListener(p);
+        this.packetInListener = new PacketInListener(p);
+        this.packetOutListener = new PacketOutListener(p);
+
     }
 
     public void unregisterAttachment() {
@@ -212,7 +215,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
         scoreboard.unregister();
         BukkitCoreSystem.getSystem().getAfkManager().unregisterPlayer(uuid);
         BukkitCoreSystem.getSystem().getCorePlayers().remove(uuid);
-        packetListener.remove();
+        packetInListener.remove();
 
         BukkitCoreSystem.getInstance().sendConsoleMessage("Unloaded Player " + name);
     }

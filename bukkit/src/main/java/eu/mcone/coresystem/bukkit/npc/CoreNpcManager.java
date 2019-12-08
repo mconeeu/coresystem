@@ -8,7 +8,7 @@ package eu.mcone.coresystem.bukkit.npc;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.event.NpcManagerReloadedEvent;
+import eu.mcone.coresystem.api.bukkit.event.npc.NpcManagerReloadedEvent;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
@@ -19,6 +19,7 @@ import eu.mcone.coresystem.api.core.exception.NpcCreateException;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.NpcCMD;
 import eu.mcone.coresystem.bukkit.listener.NpcListener;
+import eu.mcone.coresystem.bukkit.npc.capture.MotionCaptureHandler;
 import eu.mcone.coresystem.bukkit.world.BukkitCoreWorld;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -36,9 +37,15 @@ public class CoreNpcManager implements NpcManager {
     @Getter
     private Set<CoreNPC<?>> npcSet;
 
+    @Getter
+    private MotionCaptureHandler motionCaptureHandler;
+
     public CoreNpcManager(BukkitCoreSystem instance) {
         instance.registerEvents(new NpcListener(instance, this));
         instance.registerCommands(new NpcCMD(this));
+
+        motionCaptureHandler = new MotionCaptureHandler();
+        motionCaptureHandler.loadDatabase();
 
         reload();
     }

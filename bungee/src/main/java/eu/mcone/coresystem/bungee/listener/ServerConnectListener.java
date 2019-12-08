@@ -37,7 +37,7 @@ public class ServerConnectListener implements Listener {
                         return;
                     }
 
-                    //Save data
+                    //Save packets
                     int max = result.getPlayers().getMax();
                     int current = result.getPlayers().getOnline();
                     int free = max - current;

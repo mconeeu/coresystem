@@ -10,7 +10,7 @@ import org.bukkit.Location;
 import java.util.Map;
 
 /**
- * Implement this Inventory into yout Player class that gets home data from GameProfileClass
+ * Implement this Inventory into yout Player class that gets home packets from GameProfileClass
  */
 public interface HomeManager {
 

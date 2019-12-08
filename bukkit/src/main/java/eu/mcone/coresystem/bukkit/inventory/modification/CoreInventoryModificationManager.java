@@ -10,7 +10,6 @@ import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.ItemStackCodecProvider;
 import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreItemStack;
 import eu.mcone.coresystem.api.bukkit.inventory.modification.InventoryModificationManager;
@@ -23,7 +22,6 @@ import eu.mcone.coresystem.bukkit.listener.InventoryModificationListener;
 import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import org.bson.Document;
-import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -45,6 +43,7 @@ import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 public class CoreInventoryModificationManager implements InventoryModificationManager {
 
+    //Collection in the packets database for all modified inventories
     private static final MongoCollection<Document> userInfoCollection = BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo");
     private static final MongoCollection<DefaultInventory> defaultInventoriesCollection = BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).withCodecRegistry(
             fromRegistries(getDefaultCodecRegistry(), fromProviders(new ItemStackCodecProvider(), PojoCodecProvider.builder().automatic(true).build()))
@@ -170,7 +169,7 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
                     }
                 }
 
-                //Check if the data in the localDefaultInventory equals to there in the database
+                //Check if the packets in the localDefaultInventory equals to there in the database
                 if (dbDefaultInventory.getItems().size() != proved || modifyInventory.getItems().size() != proved) {
                     CoreSystem.getInstance().sendConsoleMessage("§2Merge all ModifiedInventories with the DefaultInventory " + localDefaultInventory + "...");
                     mergeModifiedInventories(localDefaultInventory, dbDefaultInventory);

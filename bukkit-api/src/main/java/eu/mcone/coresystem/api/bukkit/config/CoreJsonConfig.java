@@ -102,7 +102,7 @@ public class CoreJsonConfig<T> {
     }
 
     /**
-     * reloads the json data from file
+     * reloads the json packets from file
      * Attention! this overrides all existing changes on the CoreJsonConfig#getJson() object
      * @throws CoreConfigException thrown if an IOException occurs
      */

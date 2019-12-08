@@ -9,15 +9,19 @@ import com.google.gson.JsonSyntaxException;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
+import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
+import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.npc.CoreNpcManager;
+import eu.mcone.coresystem.bukkit.npc.capture.MotionRecorder;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
+import org.bukkit.Sound;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
@@ -90,6 +94,8 @@ public class NpcCMD extends CorePlayerCommand {
             api.addNPCAndSave(EntityType.valueOf(args[1]), args[2], line.toString().replaceAll("&", "§"), p.getLocation());
             BukkitCoreSystem.getInstance().getMessager().send(p, "§2NPC §f" + args[1] + "§2 erfolgreich hinzugefügt!");
             return true;
+        } else if (args.length == 4) {
+
         } else if (args.length == 3) {
             if (args[0].equalsIgnoreCase("updateData")) {
                 CoreWorld w = cp.getWorld();
@@ -206,14 +212,13 @@ public class NpcCMD extends CorePlayerCommand {
                 "\n§c/npc add <entity-type> <name> <display-name> §4oder " +
                 "\n§c/npc update <name> <display-name> §4oder " +
                 "\n§c/npc updateData <name> <{} JSON-Data> §4oder " +
-                "\n§c/npc animation <name> <animation> §4oder" +
                 "\n§c/npc list [world-name] §4oder " +
                 "\n§c/npc tp [world-name] <name> §4oder " +
                 "\n§c/npc remove <name> §4oder " +
+                "\n§c/npc animation <name> <animation> §4oder" +
                 "\n§c/npc reload §4oder "
         );
 
         return true;
     }
-
 }
