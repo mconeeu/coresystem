@@ -35,49 +35,47 @@ public class CoreInventoryListener implements Listener {
             Player p = (Player) e.getWhoClicked();
             Inventory inv = e.getClickedInventory();
 
-            if (e.getRawSlot() < inv.getSize()) {
-                if (e.getCurrentItem() != null && !e.getSlotType().equals(InventoryType.SlotType.OUTSIDE)) {
-                    if (inv.getType().equals(InventoryType.PLAYER)) {
-                        if (p.equals(inv.getHolder()) || p.hasPermission("system.bukkit.invsee.modify.other")) {
-                            e.setCancelled(false);
-                        } else {
-                            e.setCancelled(true);
-                            BukkitCoreSystem.getSystem().getMessager().send(p, "§4Du hast keine Berechtigung um andere Inventare zu modifizieren!");
-                        }
-                    } else if (inv.getType().equals(InventoryType.ENDER_CHEST) || inv.getTitle().equals(PlayerInventoryProfile.ENDERCHEST_TITLE)) {
-                        if (p.hasPermission("system.bukkit.ecsee.modify.other")) {
-                            e.setCancelled(false);
-                        } else {
-                            e.setCancelled(true);
-                            BukkitCoreSystem.getSystem().getMessager().send(p, "§4Du hast keine Berechtigung um andere Enderchests zu modifizieren!");
-                        }
-                    } else if (inv.getType().equals(InventoryType.ANVIL)) {
-                        for (AnvilInventory anvilInv : BukkitCoreSystem.getSystem().getPluginManager().getCoreAnvilInventories()) {
-                            Inventory inventory = anvilInv.getPlayersInventory(p);
-
-                            if (inv.equals(inventory)) {
-                                e.setCancelled(true);
-
-                                ItemStack i = e.getCurrentItem();
-                                String name = "";
-
-                                if (i.hasItemMeta() && i.getItemMeta().hasDisplayName()) {
-                                    name = i.getItemMeta().getDisplayName();
-                                }
-
-                                AnvilClickEvent event = new AnvilClickEvent(p, e, inventory, AnvilSlot.bySlot(e.getRawSlot()), name);
-                                anvilInv.getHandler().onAnvilClick(event);
-                                return;
-                            }
-                        }
+            if (!e.getSlotType().equals(InventoryType.SlotType.OUTSIDE) && e.getRawSlot() < inv.getSize() && e.getCurrentItem() != null) {
+                if (inv.getType().equals(InventoryType.PLAYER)) {
+                    if (p.equals(inv.getHolder()) || p.hasPermission("system.bukkit.invsee.modify.other")) {
+                        e.setCancelled(false);
                     } else {
-                        CoreInventory coreInv = BukkitCoreSystem.getSystem().getPluginManager().getCurrentCoreInventory(p);
+                        e.setCancelled(true);
+                        BukkitCoreSystem.getSystem().getMessager().send(p, "§4Du hast keine Berechtigung um andere Inventare zu modifizieren!");
+                    }
+                } else if (inv.getType().equals(InventoryType.ENDER_CHEST) || inv.getTitle().equals(PlayerInventoryProfile.ENDERCHEST_TITLE)) {
+                    if (p.hasPermission("system.bukkit.ecsee.modify.other")) {
+                        e.setCancelled(false);
+                    } else {
+                        e.setCancelled(true);
+                        BukkitCoreSystem.getSystem().getMessager().send(p, "§4Du hast keine Berechtigung um andere Enderchests zu modifizieren!");
+                    }
+                } else if (inv.getType().equals(InventoryType.ANVIL)) {
+                    for (AnvilInventory anvilInv : BukkitCoreSystem.getSystem().getPluginManager().getCoreAnvilInventories()) {
+                        Inventory inventory = anvilInv.getPlayersInventory(p);
 
-                        if (coreInv != null) {
-                            if (coreInv.getInventory().equals(inv)) {
-                                e.setCancelled(true);
-                                fireEvent(coreInv, e);
+                        if (inv.equals(inventory)) {
+                            e.setCancelled(true);
+
+                            ItemStack i = e.getCurrentItem();
+                            String name = "";
+
+                            if (i.hasItemMeta() && i.getItemMeta().hasDisplayName()) {
+                                name = i.getItemMeta().getDisplayName();
                             }
+
+                            AnvilClickEvent event = new AnvilClickEvent(p, e, inventory, AnvilSlot.bySlot(e.getRawSlot()), name);
+                            anvilInv.getHandler().onAnvilClick(event);
+                            return;
+                        }
+                    }
+                } else {
+                    CoreInventory coreInv = BukkitCoreSystem.getSystem().getPluginManager().getCurrentCoreInventory(p);
+
+                    if (coreInv != null) {
+                        if (coreInv.getInventory().equals(inv)) {
+                            e.setCancelled(true);
+                            fireEvent(coreInv, e);
                         }
                     }
                 }

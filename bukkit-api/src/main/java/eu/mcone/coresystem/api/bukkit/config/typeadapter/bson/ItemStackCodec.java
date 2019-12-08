@@ -24,16 +24,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class CraftItemStackCodec implements Codec<CraftItemStack> {
+public class ItemStackCodec implements Codec<ItemStack> {
 
     private final CodecRegistry registry;
 
-    public CraftItemStackCodec(CodecRegistry registry) {
+    public ItemStackCodec(CodecRegistry registry) {
         this.registry = registry;
     }
 
     @Override
-    public CraftItemStack decode(BsonReader reader, DecoderContext decoderContext) {
+    public ItemStack decode(BsonReader reader, DecoderContext decoderContext) {
         Document document = registry.get(Document.class).decode(reader, decoderContext);
 
         Material material;
@@ -106,7 +106,7 @@ public class CraftItemStackCodec implements Codec<CraftItemStack> {
     }
 
     @Override
-    public void encode(BsonWriter writer, CraftItemStack itemStack, EncoderContext encoderContext) {
+    public void encode(BsonWriter writer, ItemStack itemStack, EncoderContext encoderContext) {
         Document document = new Document();
         if (itemStack == null) {
             return;
@@ -114,7 +114,7 @@ public class CraftItemStackCodec implements Codec<CraftItemStack> {
 
         boolean hasMeta = itemStack.hasItemMeta();
         String name = null, enchants = null;
-        String[] lore = null;
+        List<String> lore = null;
         int repairPenalty = 0;
         Material material = itemStack.getType();
         Map<String, Object> bookMeta = null, armorMeta = null, skullMeta = null, fwMeta = null;
@@ -137,7 +137,7 @@ public class CraftItemStackCodec implements Codec<CraftItemStack> {
                 name = meta.getDisplayName();
             }
             if (meta.hasLore()) {
-                lore = meta.getLore().toArray(new String[]{});
+                lore = meta.getLore();
             }
             if (meta.hasEnchants())
                 enchants = ItemStackTypeAdapterUtils.serializeEnchantments(meta.getEnchants());
@@ -181,8 +181,8 @@ public class CraftItemStackCodec implements Codec<CraftItemStack> {
     }
 
     @Override
-    public Class<CraftItemStack> getEncoderClass() {
-        return CraftItemStack.class;
+    public Class<ItemStack> getEncoderClass() {
+        return ItemStack.class;
     }
 
 }

@@ -10,6 +10,7 @@ import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.ItemStackCodecProvider;
 import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreItemStack;
 import eu.mcone.coresystem.api.bukkit.inventory.modification.InventoryModificationManager;
@@ -22,6 +23,7 @@ import eu.mcone.coresystem.bukkit.listener.InventoryModificationListener;
 import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import org.bson.Document;
+import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -33,13 +35,20 @@ import org.bukkit.util.io.BukkitObjectOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 
+import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.*;
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
+import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 public class CoreInventoryModificationManager implements InventoryModificationManager {
+
+    private static final MongoCollection<Document> userInfoCollection = BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo");
+    private static final MongoCollection<DefaultInventory> defaultInventoriesCollection = BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).withCodecRegistry(
+            fromRegistries(getDefaultCodecRegistry(), fromProviders(new ItemStackCodecProvider(), PojoCodecProvider.builder().automatic(true).build()))
+    ).getCollection("bukkitsystem_default_inventories", DefaultInventory.class);
 
     @Getter
     private final Gamemode gamemode;
@@ -48,19 +57,12 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
     private final Map<UUID, List<ModifiedInventory>> modifiedInventories;
     private final Map<Player, ModifyInventory> currentlyModifing;
 
-    private final MongoCollection<Document> userInfoCollection;
-    private final MongoCollection<DefaultInventory> defaultInventoriesCollection;
-
     public CoreInventoryModificationManager(final CorePlugin plugin) {
         this.gamemode = plugin.getGamemode();
 
         this.modifyInventories = new HashSet<>();
         this.modifiedInventories = new HashMap<>();
         this.currentlyModifing = new HashMap<>();
-
-        //Collection in the data database for all modified inventories
-        this.userInfoCollection = BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo");
-        this.defaultInventoriesCollection = BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bukkitsystem_default_inventories", DefaultInventory.class);
 
         //Load all default Inventories where the specified gamemode
         plugin.registerEvents(new InventoryModificationListener(this));

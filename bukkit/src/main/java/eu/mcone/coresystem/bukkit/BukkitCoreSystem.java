@@ -13,8 +13,6 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.CraftItemStackCodecProvider;
-import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.LocationCodecProvider;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.gson.CraftItemStackTypeAdapter;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.gson.LocationTypeAdapter;
 import eu.mcone.coresystem.api.bukkit.event.MoneyChangeEvent;
@@ -66,6 +64,7 @@ import net.minecraft.server.v1_8_R3.PacketPlayOutCustomPayload;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -147,10 +146,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 .codecRegistry(
                         MongoClientSettings.getDefaultCodecRegistry(),
                         CodecRegistries.fromProviders(
-                                new CraftItemStackCodecProvider(),
-                                new LocationCodecProvider(),
                                 new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY),
-                                PojoCodecProvider.builder().automatic(true).build()
+                                PojoCodecProvider.builder().conventions(Collections.singletonList(Conventions.ANNOTATION_CONVENTION)).automatic(true).build()
                         )
                 )
                 .connect();
