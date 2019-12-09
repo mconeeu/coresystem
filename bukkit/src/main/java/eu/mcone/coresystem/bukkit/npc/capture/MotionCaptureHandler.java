@@ -2,19 +2,22 @@ package eu.mcone.coresystem.bukkit.npc.capture;
 
 import com.mongodb.client.MongoCollection;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationStateChangeEvent;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionRecorder;
 import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketWrapper;
+import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.core.exception.MotionCaptureAlreadyExistsException;
 import eu.mcone.coresystem.api.core.exception.MotionCaptureNotFoundException;
 import eu.mcone.coresystem.api.core.util.GenericUtils;
+import lombok.Getter;
 import org.bson.Document;
 import org.bson.types.Binary;
+import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -23,9 +26,13 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
     private HashMap<String, MotionCaptureData> motionCaptureDataMap;
     private MongoCollection<Document> motionCaptureCollection;
 
+    @Getter
+    private final MotionCaptureScheduler motionCaptureScheduler;
+
     public MotionCaptureHandler() {
         motionCaptureDataMap = new HashMap<>();
         motionCaptureCollection = CoreSystem.getInstance().getMongoDB().getCollection("motion_capture");
+        motionCaptureScheduler = new MotionCaptureScheduler();
     }
 
     public void loadDatabase() {
@@ -93,5 +100,52 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
 
     public List<MotionCaptureData> getMotionCaptures() {
         return new ArrayList<>(motionCaptureDataMap.values());
+    }
+
+    public class MotionCaptureScheduler implements Listener {
+        private final HashMap<String, PlayerNpc> npcs;
+
+        public MotionCaptureScheduler() {
+            npcs = new HashMap<>();
+            CoreSystem.getInstance().registerEvents(this);
+        }
+
+        public void addNpc(final PlayerNpc playerNpc) {
+            npcs.put(playerNpc.getData().getName(), playerNpc);
+        }
+
+        public void addNpc(final PlayerNpc playerNpc, final MotionCaptureData data) {
+            playerNpc.playMotionCapture(data);
+            npcs.put(playerNpc.getData().getName(), playerNpc);
+        }
+
+        @EventHandler
+        public void on(NpcAnimationStateChangeEvent e) {
+            PlayerNpc playerNpc = e.getNpc();
+            if (Bukkit.getOnlinePlayers().size() != 0) {
+                if (e.getState().equals(NpcAnimationStateChangeEvent.NpcAnimationState.END)) {
+                    if (npcs.containsKey(playerNpc.getData().getName())) {
+                        playerNpc.getMotionPlayer().restart();
+                    }
+                }
+            }
+        }
+
+        public boolean removeNpc(final PlayerNpc npc) {
+            return removeNpc(npc.getData().getName());
+        }
+
+        public boolean removeNpc(final String name) {
+            if (npcs.containsKey(name)) {
+                return false;
+            } else {
+                npcs.remove(name);
+                return true;
+            }
+        }
+
+        public List<PlayerNpc> getNpcs() {
+            return new ArrayList<>(npcs.values());
+        }
     }
 }

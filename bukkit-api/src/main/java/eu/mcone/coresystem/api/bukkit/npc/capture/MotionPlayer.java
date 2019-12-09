@@ -27,6 +27,14 @@ public abstract class MotionPlayer {
 
     public abstract void playMotionCapture();
 
+    public void restart() {
+        if (playing) {
+            currentTick = new AtomicInteger(0);
+        } else {
+            playMotionCapture();
+        }
+    }
+
     public void stopPlaying() {
         playing = false;
     }

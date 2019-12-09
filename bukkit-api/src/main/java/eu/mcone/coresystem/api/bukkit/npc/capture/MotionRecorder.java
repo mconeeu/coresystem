@@ -2,7 +2,6 @@ package eu.mcone.coresystem.api.bukkit.npc.capture;
 
 import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketWrapper;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
