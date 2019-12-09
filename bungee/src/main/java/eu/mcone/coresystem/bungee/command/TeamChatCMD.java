@@ -37,7 +37,7 @@ public class TeamChatCMD extends Command {
                                 BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.teamchat")
                                         .replaceAll(
                                                 "%Playername%",
-                                                BungeeCoreSystem.getInstance().getCorePlayer(player).getMainGroup().getPrefix() + player.getDisplayName()
+                                                BungeeCoreSystem.getInstance().getCorePlayer(p).getMainGroup().getPrefix() + p.getDisplayName()
                                         ) + message.toString()
                         );
                     }

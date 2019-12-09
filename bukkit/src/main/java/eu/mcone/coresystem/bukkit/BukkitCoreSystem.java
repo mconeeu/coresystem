@@ -13,13 +13,14 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.ItemStackCodecProvider;
+import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.LocationCodecProvider;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.gson.CraftItemStackTypeAdapter;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.gson.LocationTypeAdapter;
 import eu.mcone.coresystem.api.bukkit.event.MoneyChangeEvent;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
-import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
@@ -147,6 +148,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 .codecRegistry(
                         MongoClientSettings.getDefaultCodecRegistry(),
                         CodecRegistries.fromProviders(
+                                new ItemStackCodecProvider(),
+                                new LocationCodecProvider(),
                                 new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY),
                                 PojoCodecProvider.builder().conventions(Collections.singletonList(Conventions.ANNOTATION_CONVENTION)).automatic(true).build()
                         )
