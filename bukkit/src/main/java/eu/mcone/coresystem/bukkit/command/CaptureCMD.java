@@ -27,20 +27,7 @@ public class CaptureCMD extends CorePlayerCommand {
     public boolean onPlayerCommand(Player p, String[] args) {
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(p.getUniqueId());
 
-        if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("list"))) {
-            List<MotionCaptureData> dataList = CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().getMotionCaptures();
-            if (dataList.size() != 0) {
-                CoreSystem.getInstance().getMessager().send(p, "§2Es sind folgende Aufnahmen verfügbar...");
-
-                for (MotionCaptureData data : dataList) {
-                    CoreSystem.getInstance().getMessager().send(p, "§2Name: §a§l" + data.getName() + " §2Länge: §a§l" + data.getLength() + " §2Aufgenommen von: §a§l" + data.getCreator());
-                }
-            } else {
-                CoreSystem.getInstance().getMessager().send(p, "§cEs sind momentan keine Aufnahmen verfügbar!");
-            }
-
-            return true;
-        } else if (args.length == 3) {
+        if (args.length == 3) {
             if (args[0].equalsIgnoreCase("play")) {
                 String captureName = args[1];
                 String npcName = args[2];
@@ -96,25 +83,6 @@ public class CaptureCMD extends CorePlayerCommand {
                     }
                 } else {
                     CoreSystem.getInstance().getMessager().send(p, "§cDu bist bereits in einer Aufnahme, speichere diese mit /npc capture start <name>");
-                }
-
-                return true;
-            } else if (args[0].equalsIgnoreCase("save")) {
-                if (capture) {
-                    if (motionRecorder != null) {
-                        motionRecorder.stopRecording();
-                        CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().saveMotionCapture(motionRecorder);
-                        capture = false;
-                        CoreSystem.getInstance().getMessager().send(p, "§2Die Aufnahme wurde erfolgreich unter dem Namen §a" + motionRecorder.getName() + " §2gespeichert!");
-                        p.playSound(p.getLocation(), Sound.ANVIL_USE, 1, 1);
-                        return true;
-                    } else {
-                        CoreSystem.getInstance().getMessager().send(p, "§cDu musst eine Aufnahme beginnen um diese speichern zu können!");
-                        p.playSound(p.getLocation(), Sound.ANVIL_BREAK, 1, 1);
-                        return false;
-                    }
-                } else {
-                    CoreSystem.getInstance().getMessager().send(p, "§cDu musst eine Aufnahme beginnen um diese speichern zu können!");
                 }
 
                 return true;
@@ -239,12 +207,46 @@ public class CaptureCMD extends CorePlayerCommand {
 
                 return true;
             }
+        } else if (args.length == 1) {
+            if (args[0].equalsIgnoreCase("list")) {
+                List<MotionCaptureData> dataList = CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().getMotionCaptures();
+                if (dataList.size() != 0) {
+                    CoreSystem.getInstance().getMessager().send(p, "§2Es sind folgende Aufnahmen verfügbar...");
+
+                    for (MotionCaptureData data : dataList) {
+                        CoreSystem.getInstance().getMessager().send(p, "§2Name: §a§l" + data.getName() + " §2Länge: §a§l" + data.getLength() + " §2Aufgenommen von: §a§l" + data.getCreator());
+                    }
+                } else {
+                    CoreSystem.getInstance().getMessager().send(p, "§cEs sind momentan keine Aufnahmen verfügbar!");
+                }
+
+                return true;
+            } else if (args[0].equalsIgnoreCase("save")) {
+                if (capture) {
+                    if (motionRecorder != null) {
+                        motionRecorder.stopRecording();
+                        CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().saveMotionCapture(motionRecorder);
+                        capture = false;
+                        CoreSystem.getInstance().getMessager().send(p, "§2Die Aufnahme wurde erfolgreich unter dem Namen §a" + motionRecorder.getName() + " §2gespeichert!");
+                        p.playSound(p.getLocation(), Sound.ANVIL_USE, 1, 1);
+                        return true;
+                    } else {
+                        CoreSystem.getInstance().getMessager().send(p, "§cDu musst eine Aufnahme beginnen um diese speichern zu können!");
+                        p.playSound(p.getLocation(), Sound.ANVIL_BREAK, 1, 1);
+                        return false;
+                    }
+                } else {
+                    CoreSystem.getInstance().getMessager().send(p, "§cDu musst eine Aufnahme beginnen um diese speichern zu können!");
+                }
+
+                return true;
+            }
         }
 
         BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: " +
                 "\n§c/capture play <name> <npc> §4oder " +
                 "\n§c/capture record <name>" +
-                "\n§c/capture save <name> §4oder " +
+                "\n§c/capture save §4oder " +
                 "\n§c/capture delete <name> §4oder " +
                 "\n§c/capture start <NPC> §4oder " +
                 "\n§c/capture stop <NPC> §4oder " +

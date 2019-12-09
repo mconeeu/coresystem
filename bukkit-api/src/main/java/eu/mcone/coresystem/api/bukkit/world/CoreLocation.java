@@ -10,8 +10,10 @@ import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
-public final class CoreLocation {
+public final class CoreLocation implements Serializable {
 
     private transient Location bukkit;
 

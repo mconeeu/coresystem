@@ -71,7 +71,7 @@ public class CoreNpcManager implements NpcManager {
     }
 
     public void addNPCAndSave(EntityType entity, String name, String displayname, Location location) {
-        NPC npc = addNPC(new NpcData(entity, name, displayname, new eu.mcone.coresystem.api.bukkit.world.CoreLocation(location), new JsonObject()));
+        NPC npc = addNPC(new NpcData(entity, name, displayname, new eu.mcone.coresystem.api.bukkit.world.CoreLocation(location), null, new JsonObject()));
 
         BukkitCoreWorld world = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(location.getWorld());
         world.getNpcData().add(npc.getData());
@@ -87,7 +87,7 @@ public class CoreNpcManager implements NpcManager {
     public NPC addNPC(NpcData data, ListMode listMode, Player... players) {
         for (CoreNPC<?> npc : npcSet) {
             if (npc.getData().getLocation().getWorld().equals(data.getLocation().getWorld()) && npc.getData().getName().equalsIgnoreCase(data.getName())) {
-                throw new NpcCreateException("Could not create NPC +"+data.getName()+": NPC with that name already exists in this world!");
+                throw new NpcCreateException("Could not create NPC +" + data.getName() + ": NPC with that name already exists in this world!");
             }
         }
 
@@ -103,7 +103,7 @@ public class CoreNpcManager implements NpcManager {
             npcSet.add(npc);
             return npc;
         } else {
-            throw new NpcCreateException("Could not create NPC +"+data.getName()+": EntityType "+data.getType()+" does not belong to any NPC type.");
+            throw new NpcCreateException("Could not create NPC +" + data.getName() + ": EntityType " + data.getType() + " does not belong to any NPC type.");
         }
     }
 
@@ -113,6 +113,7 @@ public class CoreNpcManager implements NpcManager {
                 npc.getData().getName(),
                 displayname,
                 new CoreLocation(location),
+                null,
                 npc.getData().getEntityData()
         ));
         BukkitCoreSystem.getSystem().getWorldManager().getWorld(location.getWorld()).save();
@@ -124,6 +125,7 @@ public class CoreNpcManager implements NpcManager {
                 npc.getData().getName(),
                 npc.getData().getDisplayname(),
                 npc.getData().getLocation(),
+                null,
                 data
         ));
         BukkitCoreSystem.getSystem().getWorldManager().getWorld(npc.getData().getLocation().getWorld()).save();

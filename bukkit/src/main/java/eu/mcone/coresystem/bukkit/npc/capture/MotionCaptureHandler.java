@@ -33,6 +33,7 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
             motionCaptureDataMap.put(document.getString("name"), new MotionCaptureData(document.getString("name"), document.getString("world"), document.getLong("recorded"), document.getString("creator"), document.getInteger("length"), (Map<Integer, List<PacketWrapper>>) GenericUtils.deserialize(document.get("packets", Binary.class).getData())));
             CoreSystem.getInstance().sendConsoleMessage("§aLoad motion capture " + document.getString("name"));
         }
+
     }
 
     public boolean saveMotionCapture(final MotionRecorder recorder) {
@@ -49,7 +50,6 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
             } else {
                 throw new MotionCaptureAlreadyExistsException();
             }
-
         } catch (MotionCaptureAlreadyExistsException e) {
             e.printStackTrace();
             return false;
@@ -71,6 +71,7 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
             } else {
                 throw new MotionCaptureNotFoundException("Cannot found motion capture with the name " + name);
             }
+
         } catch (MotionCaptureNotFoundException e) {
             e.printStackTrace();
             return null;

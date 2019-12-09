@@ -2,6 +2,7 @@ package eu.mcone.coresystem.api.bukkit.npc.capture;
 
 import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketWrapper;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitTask;
@@ -13,25 +14,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class MotionRecorder implements Serializable, Listener {
+public abstract class MotionRecorder implements Listener, Serializable {
 
     private static final long serialVersionUID = 191955L;
 
     @Getter
     protected int ticks;
     @Getter
-    private final String recorderName;
+    private String recorderName;
     @Getter
-    private final String world;
+    private String world;
     @Getter
-    private final String name;
+    private String name;
     @Getter
     protected long recorded;
     @Getter
     protected boolean isStopped = false;
 
     protected transient BukkitTask taskID;
-    protected transient final Player player;
+    protected transient Player player;
     protected AtomicInteger savedPackets;
 
     @Getter

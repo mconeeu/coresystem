@@ -2,6 +2,7 @@ package eu.mcone.coresystem.api.bukkit.npc.capture;
 
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import lombok.Getter;
+import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.concurrent.atomic.AtomicInteger;

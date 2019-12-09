@@ -105,8 +105,14 @@ public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeT
     @Override
     public boolean canBeSeenBy(Player player) {
         if (player.getLocation().getWorld().equals(data.getLocation().bukkit().getWorld())) {
-            return player.getLocation().distanceSquared(data.getLocation().bukkit())
-                    < (Bukkit.spigot().getConfig().getInt("world-settings.default.entity-tracking-range.players", 48) * 24);
+            if (data.getTempLocation() != null && data.getTempLocation() != data.getLocation()) {
+                System.out.println("temp");
+                return player.getLocation().distanceSquared(data.getTempLocation().bukkit())
+                        < (Bukkit.spigot().getConfig().getInt("world-settings.default.entity-tracking-range.players", 48) * 24);
+            } else {
+                return player.getLocation().distanceSquared(data.getLocation().bukkit())
+                        < (Bukkit.spigot().getConfig().getInt("world-settings.default.entity-tracking-range.players", 48) * 24);
+            }
         } else {
             return false;
         }

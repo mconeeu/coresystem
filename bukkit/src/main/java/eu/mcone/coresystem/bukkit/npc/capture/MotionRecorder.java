@@ -2,7 +2,10 @@ package eu.mcone.coresystem.bukkit.npc.capture;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.npc.capture.packets.*;
+import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,6 +16,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.material.Button;
+import org.bukkit.material.Door;
 
 import java.util.List;
 import java.util.Map;
@@ -57,7 +62,17 @@ public class MotionRecorder extends eu.mcone.coresystem.api.bukkit.npc.capture.M
             @EventHandler(priority = EventPriority.HIGHEST)
             public void on(PlayerInteractEvent e) {
                 if (player.equals(e.getPlayer())) {
-                    if (e.getAction().equals(Action.LEFT_CLICK_AIR) || e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
+                    if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+                        if (e.getClickedBlock().getType().equals(Material.STONE_BUTTON) || e.getClickedBlock().getType().equals(Material.STONE_BUTTON)) {
+                            BlockState blockState = e.getClickedBlock().getState();
+                            addData(new EntityButtonInteractPacketWrapper(new CoreLocation(e.getClickedBlock().getLocation()), ((Button) blockState.getData()).isPowered()));
+                            addData(new EntityClickPacketWrapper());
+                        } else if (e.getClickedBlock().getType().toString().contains("DOOR")) {
+                            BlockState blockState = e.getClickedBlock().getState();
+                            addData(new EntityOpenDoorPacketWrapper(new CoreLocation(e.getClickedBlock().getLocation()), ((Door) blockState.getData()).isOpen()));
+                            addData(new EntityClickPacketWrapper());
+                        }
+                    } else if (e.getAction().equals(Action.LEFT_CLICK_AIR) || e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
                         addData(new EntityClickPacketWrapper());
                     }
 
