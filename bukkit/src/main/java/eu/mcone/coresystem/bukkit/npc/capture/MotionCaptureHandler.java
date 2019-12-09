@@ -102,7 +102,7 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
         return new ArrayList<>(motionCaptureDataMap.values());
     }
 
-    public class MotionCaptureScheduler implements Listener {
+    public class MotionCaptureScheduler implements Listener, eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureHandler.MotionCaptureScheduler {
         private final HashMap<String, PlayerNpc> npcs;
 
         public MotionCaptureScheduler() {
