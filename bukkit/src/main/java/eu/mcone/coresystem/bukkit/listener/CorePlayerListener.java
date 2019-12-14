@@ -6,8 +6,11 @@
 package eu.mcone.coresystem.bukkit.listener;
 
 import com.mojang.authlib.properties.Property;
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.event.CorePlayerLoadedEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
+import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.player.BukkitCorePlayer;
@@ -24,6 +27,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.lang.reflect.Field;
@@ -33,6 +38,9 @@ import java.util.UUID;
 
 public class CorePlayerListener implements Listener {
 
+    public final static CoreActionBar LOADING_MSG = CoreSystem.getInstance().createActionBar().message("§7§oDeine Daten werden geladen...");
+    public final static CoreActionBar LOADING_SUCCESS_MSG = CoreSystem.getInstance().createActionBar().message("§2§oDeine Daten wurden geladen!");
+
     public static final Map<UUID, BukkitTask> teleports = new HashMap<>();
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -41,16 +49,56 @@ public class CorePlayerListener implements Listener {
         setCorePermissibleBase(p);
 
         Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
-        new BukkitCorePlayer(BukkitCoreSystem.getInstance(), e.getAddress(), new SkinInfo(p.getName(), textures.getValue(), textures.getSignature(), SkinInfo.SkinType.PLAYER), p);
+        new BukkitCorePlayer(
+                BukkitCoreSystem.getInstance(),
+                e.getAddress(),
+                new SkinInfo(p.getName(), textures.getValue(), textures.getSignature(), SkinInfo.SkinType.PLAYER),
+                p
+        );
+
         p.setDisplayName(p.getName());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW)
     public void onJoin(PlayerJoinEvent e) {
-        Player bp = e.getPlayer();
-        BukkitCorePlayer p = (BukkitCorePlayer) BukkitCoreSystem.getSystem().getCorePlayer(bp);
-
         e.setJoinMessage(null);
+        loadCorePlayer(e.getPlayer(), CorePlayerLoadedEvent.Reason.JOIN);
+    }
+
+    public void loadCorePlayer(Player p, CorePlayerLoadedEvent.Reason loadReason) {
+        LOADING_MSG.send(p);
+        p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 0));
+
+        if (loadReason.equals(CorePlayerLoadedEvent.Reason.JOIN)) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player != p) {
+                    player.hidePlayer(p);
+                    p.hidePlayer(player);
+                }
+            }
+        }
+
+        CorePlayerLoadedEvent e = new CorePlayerLoadedEvent(loadReason, BukkitCoreSystem.getInstance().getCorePlayer(p), p);
+        Bukkit.getPluginManager().callEvent(e);
+
+        if (!e.isHidden()) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player != p) {
+                    player.showPlayer(p);
+                    p.showPlayer(player);
+                }
+            }
+        }
+
+        LOADING_SUCCESS_MSG.send(p);
+        p.getActivePotionEffects().clear();
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onCorePlayerLoaded(CorePlayerLoadedEvent e) {
+        BukkitCorePlayer p = (BukkitCorePlayer) e.getPlayer();
+        Player bp = e.getBukkitPlayer();
+
         p.setScoreboard(new MainScoreboard());
         p.registerPacketListener(bp);
         ((NickManager) BukkitCoreSystem.getInstance().getNickManager()).setNicks(bp);

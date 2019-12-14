@@ -29,10 +29,10 @@ public abstract class CategoryInventory extends CoreInventory {
 
     private static final int[] CATEGORY_SLOTS = new int[]{InventorySlot.ROW_1_SLOT_1, InventorySlot.ROW_2_SLOT_1, InventorySlot.ROW_3_SLOT_1, InventorySlot.ROW_4_SLOT_1, InventorySlot.ROW_5_SLOT_1, InventorySlot.ROW_6_SLOT_1};
 
-    public static final ItemStack UP_ITEM = Skull.fromUrl("http://textures.minecraft.net/texture/a156b31cbf8f774547dc3f9713a770ecc5c727d967cb0093f26546b920457387", 1).toItemBuilder().displayName("§f§lNach Oben").create();
-    public static final ItemStack DOWN_ITEM = Skull.fromUrl("http://textures.minecraft.net/texture/fe3d755cecbb13a39e8e9354823a9a02a01dce0aca68ffd42e3ea9a9d29e2df2", 1).toItemBuilder().displayName("§f§lNach Unten").create();
-    public static final ItemStack LEFT_ITEM = Skull.fromUrl("http://textures.minecraft.net/texture/3ebf907494a935e955bfcadab81beafb90fb9be49c7026ba97d798d5f1a23", 1).toItemBuilder().displayName("§7Vorherige Seite").create();
-    public static final ItemStack RIGHT_ITEM = Skull.fromUrl("http://textures.minecraft.net/texture/1b6f1a25b6bc199946472aedb370522584ff6f4e83221e5946bd2e41b5ca13b", 1).toItemBuilder().displayName("§7Nächste Seite").create();
+    public static final ItemStack UP_ITEM = Skull.fromUrl("http://textures.minecraft.net/texture/a156b31cbf8f774547dc3f9713a770ecc5c727d967cb0093f26546b920457387", 1).toItemBuilder().displayName("§f§lNach Oben").lore("", "§8» §f§nLinksklick§8 | §7§oMehr Anzeigen").create();
+    public static final ItemStack DOWN_ITEM = Skull.fromUrl("http://textures.minecraft.net/texture/fe3d755cecbb13a39e8e9354823a9a02a01dce0aca68ffd42e3ea9a9d29e2df2", 1).toItemBuilder().displayName("§f§lNach Unten").lore("", "§8» §f§nLinksklick§8 | §7§oMehr Anzeigen").create();
+    public static final ItemStack LEFT_ITEM = Skull.fromUrl("http://textures.minecraft.net/texture/3ebf907494a935e955bfcadab81beafb90fb9be49c7026ba97d798d5f1a23", 1).toItemBuilder().displayName("§7Vorherige Seite").lore("", "§8» §f§nLinksklick§8 | §7§oMehr Anzeigen").create();
+    public static final ItemStack RIGHT_ITEM = Skull.fromUrl("http://textures.minecraft.net/texture/1b6f1a25b6bc199946472aedb370522584ff6f4e83221e5946bd2e41b5ca13b", 1).toItemBuilder().displayName("§7Nächste Seite").lore("", "§8» §f§nLinksklick§8 | §7§oMehr Anzeigen").create();
 
     private final List<ItemStack> categories;
     private final List<CategoryInvItem> categoryInvItems;

@@ -19,7 +19,7 @@ public class ProfileCMD extends CorePlayerCommand {
     @Override
     public boolean onPlayerCommand(Player p, String[] args) {
         if (args.length == 0) {
-            new ProfileInventory(p).openInventory();
+            new ProfileInventory(p);
             p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
         }
 

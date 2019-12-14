@@ -364,7 +364,7 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
 
     @Override
     public void openGamemodeModificationInventory(final Player player) {
-        new ModificationGamemodeInventory(this, player).openInventory();
+        new ModificationGamemodeInventory(this, player);
     }
 
     @Override
@@ -374,7 +374,7 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
 
     @Override
     public void openCategoryModificationInventory(final Player player, final Gamemode gamemode, String category) {
-        new ModificationCategoryInventory(this, player, gamemode, category).openInventory();
+        new ModificationCategoryInventory(this, player, gamemode, category);
     }
 
     @Override

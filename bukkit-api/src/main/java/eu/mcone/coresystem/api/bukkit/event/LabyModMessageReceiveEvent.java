@@ -6,22 +6,22 @@
 package eu.mcone.coresystem.api.bukkit.event;
 
 import com.google.gson.JsonElement;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-@AllArgsConstructor
 @Getter
+@RequiredArgsConstructor
 public final class LabyModMessageReceiveEvent extends Event {
 
     @Getter
     private final static HandlerList handlerList = new HandlerList();
 
-    private Player player;
-    private String messageKey;
-    private JsonElement jsonElement;
+    private final Player player;
+    private final String messageKey;
+    private final JsonElement jsonElement;
 
     @Override
     public HandlerList getHandlers() {

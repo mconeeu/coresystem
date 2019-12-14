@@ -6,21 +6,21 @@
 package eu.mcone.coresystem.api.bukkit.event;
 
 import eu.mcone.coresystem.api.core.labymod.LabyModConnection;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-@AllArgsConstructor
 @Getter
+@RequiredArgsConstructor
 public final class LabyModPlayerJoinEvent extends Event {
 
     @Getter
     private final static HandlerList handlerList = new HandlerList();
 
-    private Player player;
-    private LabyModConnection connection;
+    private final Player player;
+    private final LabyModConnection connection;
 
     @Override
     public HandlerList getHandlers() {

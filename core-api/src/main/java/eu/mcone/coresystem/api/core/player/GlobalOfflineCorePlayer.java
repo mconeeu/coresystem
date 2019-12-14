@@ -90,6 +90,12 @@ public interface GlobalOfflineCorePlayer {
     int getEmeralds();
 
     /**
+     * returns the emeralds formatted with points
+     * @return emeralds amount formatted with points (e.g. #.###.###)
+     */
+    String getFormattedEmeralds();
+
+    /**
      * sets the given emerald amount
      * @param coins amount
      */

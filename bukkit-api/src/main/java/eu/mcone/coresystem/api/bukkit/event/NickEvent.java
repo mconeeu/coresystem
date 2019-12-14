@@ -7,12 +7,14 @@ package eu.mcone.coresystem.api.bukkit.event;
 
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 @Getter
+@RequiredArgsConstructor
 public final class NickEvent extends Event implements Cancellable {
 
     @Getter
@@ -21,12 +23,7 @@ public final class NickEvent extends Event implements Cancellable {
     private final CorePlayer player;
     private final boolean skinChange;
     @Setter
-    private boolean cancelled = false;
-
-    public NickEvent(CorePlayer p, boolean skinChange) {
-        this.player = p;
-        this.skinChange = skinChange;
-    }
+    private boolean cancelled;
 
     public HandlerList getHandlers() {
         return handlerList;

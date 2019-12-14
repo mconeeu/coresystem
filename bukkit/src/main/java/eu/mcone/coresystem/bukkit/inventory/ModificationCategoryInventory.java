@@ -42,6 +42,8 @@ public class ModificationCategoryInventory extends CategoryInventory {
                             : "§7§oNoch nie bearbeitet"
             ).create(), e -> api.setCurrentlyModifying(player, inv).openInventory(player));
         }
+
+        openInventory();
     }
 
     public ModificationCategoryInventory(CoreInventoryModificationManager api, Player player, Gamemode gamemode) {

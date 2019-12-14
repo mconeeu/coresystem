@@ -6,10 +6,12 @@
 package eu.mcone.coresystem.bukkit.world;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.event.BuildModeChangeEvent;
 import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.BuildCMD;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -21,6 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -41,7 +44,8 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
             EntityType.MINECART_TNT,
             EntityType.MINECART_HOPPER,
             EntityType.MINECART_MOB_SPAWNER,
-            EntityType.ENDER_CRYSTAL
+            EntityType.ENDER_CRYSTAL,
+            EntityType.ARMOR_STAND
     ));
 
     private Map<UUID, GameMode> allowedPlayers;
@@ -75,6 +79,27 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                                     e.setCancelled(true);
                                     if (notify)
                                         BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst hier nicht abbauen!");
+                                }
+                            }
+                        }
+
+                        @EventHandler
+                        public void on(EntityDamageByEntityEvent e) {
+                            if (e.getDamager() instanceof Player) {
+                                Player p = (Player) e.getDamager();
+
+                                if (applyRules(p.getWorld())) {
+                                    if (RELEVANT_ENTITY_TYPES.contains(e.getEntity().getType())) {
+                                        if (
+                                                (!useBuildPermissionNodes || !p.hasPermission("system.bukkit.build." + p.getWorld().getName().toLowerCase() + ".break." + e.getEntity().getType().getTypeId()))
+                                                        && isNotAllowedBuild(p)
+                                                        && !filteredBlocks.getOrDefault(BuildEvent.BLOCK_BREAK, new ArrayList<>()).contains((int) e.getEntity().getType().getTypeId())
+                                        ) {
+                                            e.setCancelled(true);
+                                            if (notify)
+                                                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst hier nicht abbauen!");
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -214,10 +239,12 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
             p.setGameMode(allowedPlayers.get(p.getUniqueId()));
             allowedPlayers.remove(p.getUniqueId());
             BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du kannst nun nicht mehr bauen!");
+            Bukkit.getPluginManager().callEvent(new BuildModeChangeEvent(p, false));
         } else {
             allowedPlayers.put(p.getUniqueId(), p.getGameMode());
             p.setGameMode(GameMode.CREATIVE);
             BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du kannst nun bauen!");
+            Bukkit.getPluginManager().callEvent(new BuildModeChangeEvent(p, true));
         }
     }
 

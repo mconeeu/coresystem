@@ -144,6 +144,8 @@ public interface CoreWorld {
      */
     void setLoadOnStartup(boolean load);
 
+    Location getBlockLocation(String name);
+
     /**
      * set spawn location
      * @param location location
@@ -190,6 +192,12 @@ public interface CoreWorld {
     Map<String, CoreLocation> getLocations();
 
     /**
+     * get all saved location
+     * @return Collection of all BlockLocations
+     */
+    Map<String, CoreBlockLocation> getBlockLocations();
+
+    /**
      * add location to the internal world storage
      * @param name location name
      * @param location Location object
@@ -197,12 +205,16 @@ public interface CoreWorld {
      */
     CoreWorld setLocation(String name, Location location);
 
+    CoreWorld setBlockLocation(String name, Location loc);
+
     /**
      * remove location from the internal world storage
      * @param name location name
      * @return this
      */
     CoreWorld removeLocation(String name);
+
+    CoreWorld removeBlockLocation(String name);
 
     /**
      * returns all NPC that are registered for this world

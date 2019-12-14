@@ -14,15 +14,14 @@ import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.core.exception.NpcCreateException;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.bukkit.util.ReflectionManager;
 import eu.mcone.coresystem.bukkit.util.PlayerListModeToggleUtil;
+import eu.mcone.coresystem.bukkit.util.ReflectionManager;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
@@ -106,7 +105,6 @@ public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeT
     public boolean canBeSeenBy(Player player) {
         if (player.getLocation().getWorld().equals(data.getLocation().bukkit().getWorld())) {
             if (data.getTempLocation() != null && data.getTempLocation() != data.getLocation()) {
-                System.out.println("temp");
                 return player.getLocation().distanceSquared(data.getTempLocation().bukkit())
                         < (Bukkit.spigot().getConfig().getInt("world-settings.default.entity-tracking-range.players", 48) * 24);
             } else {

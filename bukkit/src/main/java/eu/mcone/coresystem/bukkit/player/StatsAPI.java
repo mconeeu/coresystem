@@ -66,7 +66,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.Stats {
 
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
 			collection.updateOne(eq("uuid", uuid.toString()), set("kill", kill));
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), gamemode));
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(gamemode, instance.getCorePlayer(uuid)));
 		});
 	}
 
@@ -75,7 +75,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.Stats {
 
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
 			collection.updateOne(eq("uuid", uuid.toString()), set("death", death));
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), gamemode));
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(gamemode, instance.getCorePlayer(uuid)));
 		});
 	}
 
@@ -84,7 +84,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.Stats {
 
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
 			collection.updateOne(eq("uuid", uuid.toString()), set("win", win));
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), gamemode));
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(gamemode, instance.getCorePlayer(uuid)));
 		});
 	}
 
@@ -93,7 +93,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.Stats {
 
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
 			collection.updateOne(eq("uuid", uuid.toString()), set("lose", lose));
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), gamemode));
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(gamemode, instance.getCorePlayer(uuid)));
 		});
 	}
 
@@ -102,7 +102,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.Stats {
 
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
 			collection.updateOne(eq("uuid", uuid.toString()), set("goal", goal));
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), gamemode));
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(gamemode, instance.getCorePlayer(uuid)));
 		});
     }
 
@@ -112,7 +112,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.Stats {
 
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
 			collection.updateOne(eq("uuid", uuid.toString()), inc("kill", kill));
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), gamemode));
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(gamemode, instance.getCorePlayer(uuid)));
 		});
 	}
 
@@ -121,7 +121,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.Stats {
 
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
 			collection.updateOne(eq("uuid", uuid.toString()), inc("death", death));
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), gamemode));
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(gamemode, instance.getCorePlayer(uuid)));
 		});
 	}
 
@@ -130,7 +130,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.Stats {
 
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
 			collection.updateOne(eq("uuid", uuid.toString()), inc("win", win));
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), gamemode));
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(gamemode, instance.getCorePlayer(uuid)));
 		});
 	}
 
@@ -139,7 +139,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.Stats {
 
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
 			collection.updateOne(eq("uuid", uuid.toString()), inc("lose", lose));
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), gamemode));
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(gamemode, instance.getCorePlayer(uuid)));
 		});
 	}
 
@@ -148,7 +148,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.Stats {
 
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
 			collection.updateOne(eq("uuid", uuid.toString()), inc("goal", goal));
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), gamemode));
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(gamemode, instance.getCorePlayer(uuid)));
 		});
     }
 
@@ -158,7 +158,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.Stats {
 
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
 			collection.updateOne(eq("uuid", uuid.toString()), inc("kill", -kill));
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), gamemode));
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(gamemode, instance.getCorePlayer(uuid)));
 		});
 	}
 
@@ -167,7 +167,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.Stats {
 
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
 			collection.updateOne(eq("uuid", uuid.toString()), inc("death", -death));
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), gamemode));
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(gamemode, instance.getCorePlayer(uuid)));
 		});
 	}
 
@@ -176,7 +176,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.Stats {
 
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
 			collection.updateOne(eq("uuid", uuid.toString()), inc("win", -win));
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), gamemode));
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(gamemode, instance.getCorePlayer(uuid)));
 		});
 	}
 
@@ -185,7 +185,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.Stats {
 
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
 			collection.updateOne(eq("uuid", uuid.toString()), inc("lose", -lose));
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), gamemode));
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(gamemode, instance.getCorePlayer(uuid)));
 		});
 	}
 
@@ -194,7 +194,7 @@ public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.Stats {
 
 		Bukkit.getScheduler().runTaskAsynchronously(instance, () -> {
 			collection.updateOne(eq("uuid", uuid.toString()), inc("goal", -goal));
-			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(instance.getCorePlayer(uuid), gamemode));
+			Bukkit.getPluginManager().callEvent(new StatsChangeEvent(gamemode, instance.getCorePlayer(uuid)));
 		});
 	}
 

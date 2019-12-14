@@ -31,7 +31,7 @@ class PlayerSettingsInventory extends CoreInventory {
                 e -> {
                     cp.getSettings().setEnableFriendRequests(!cp.getSettings().isEnableFriendRequests());
                     cp.updateSettings();
-                    new PlayerSettingsInventory(p).openInventory();
+                    new PlayerSettingsInventory(p);
                 }
         );
 
@@ -50,7 +50,7 @@ class PlayerSettingsInventory extends CoreInventory {
             }
 
             cp.updateSettings();
-            new PlayerSettingsInventory(p).openInventory();
+            new PlayerSettingsInventory(p);
         });
 
         if (p.hasPermission("system.bungee.nick")) {
@@ -61,7 +61,7 @@ class PlayerSettingsInventory extends CoreInventory {
                     e -> {
                         cp.getSettings().setAutoNick(!cp.getSettings().isAutoNick());
                         cp.updateSettings();
-                        new PlayerSettingsInventory(p).openInventory();
+                        new PlayerSettingsInventory(p);
                     }
             );
         }
@@ -81,7 +81,7 @@ class PlayerSettingsInventory extends CoreInventory {
             }
 
             cp.updateSettings();
-            new PlayerSettingsInventory(p).openInventory();
+            new PlayerSettingsInventory(p);
         });
 
         setItem(InventorySlot.ROW_2_SLOT_7, new ItemBuilder(Material.CAKE).displayName("§f§lPartyanfragenanfragen erhalten").create());
@@ -99,13 +99,15 @@ class PlayerSettingsInventory extends CoreInventory {
             }
 
             cp.updateSettings();
-            new PlayerSettingsInventory(p).openInventory();
+            new PlayerSettingsInventory(p);
         });
 
         setItem(InventorySlot.ROW_4_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
-            new ProfileInventory(p).openInventory();
+            new ProfileInventory(p);
             p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
         });
+
+        openInventory();
     }
 
     private ItemBuilder getSenderItem(PlayerSettings.Sender sender) {

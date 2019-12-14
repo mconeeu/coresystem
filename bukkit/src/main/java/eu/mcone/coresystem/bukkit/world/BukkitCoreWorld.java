@@ -11,6 +11,7 @@ import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
+import eu.mcone.coresystem.api.bukkit.world.CoreBlockLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.RuntimeCoreException;
@@ -47,6 +48,7 @@ public class BukkitCoreWorld implements CoreWorld {
     private int[] spawnLocation = new int[]{0, 0, 0};
 
     private Map<String, CoreLocation> locations = new HashMap<>();
+    private Map<String, CoreBlockLocation> blockLocations = new HashMap<>();
     private List<NpcData> npcData = new ArrayList<>();
     private List<HologramData> hologramData = new ArrayList<>();
 
@@ -89,6 +91,11 @@ public class BukkitCoreWorld implements CoreWorld {
     }
 
     @Override
+    public Location getBlockLocation(String name) {
+        return blockLocations.containsKey(name) ? blockLocations.get(name).bukkit() : null;
+    }
+
+    @Override
     public void setSpawnLocation(Location loc) {
         this.spawnLocation = new int[]{(int) loc.getX(), (int) loc.getY(), (int) loc.getZ()};
         bukkit().setSpawnLocation(spawnLocation[0], spawnLocation[1], spawnLocation[2]);
@@ -103,8 +110,20 @@ public class BukkitCoreWorld implements CoreWorld {
     }
 
     @Override
+    public BukkitCoreWorld setBlockLocation(String name, Location loc) {
+        blockLocations.put(name, new CoreBlockLocation(loc));
+        return this;
+    }
+
+    @Override
     public CoreWorld removeLocation(String name) {
         locations.remove(name);
+        return this;
+    }
+
+    @Override
+    public CoreWorld removeBlockLocation(String name) {
+        blockLocations.remove(name);
         return this;
     }
 

@@ -35,8 +35,10 @@ class FriendInventory extends CoreInventory {
         });
         setItem(InventorySlot.ROW_4_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Freundemenü").create(), e -> {
             p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
-            new FriendInventory(p, friend).openInventory();
+            new FriendsInventory(p);
         });
+
+        openInventory();
     }
 
 }

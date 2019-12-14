@@ -7,12 +7,14 @@ package eu.mcone.coresystem.api.bukkit.event;
 
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 @Getter
+@RequiredArgsConstructor
 public final class UnnickEvent extends Event implements Cancellable {
 
     @Getter
@@ -22,11 +24,6 @@ public final class UnnickEvent extends Event implements Cancellable {
     private final boolean skinBypassed;
     @Setter
     private boolean cancelled;
-
-    public UnnickEvent(CorePlayer p, boolean skinBypassed) {
-        this.player = p;
-        this.skinBypassed = skinBypassed;
-    }
 
     @Override
     public HandlerList getHandlers() {

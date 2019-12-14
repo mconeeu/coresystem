@@ -216,6 +216,11 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     }
 
     @Override
+    public String getFormattedEmeralds() {
+        return NUMBERFORMAT.format(emeralds);
+    }
+
+    @Override
     public void setEmeralds(int coins) {
         if (coins < 0) {
             throw new RuntimeCoreException("Cannot set negative coin amount!");
@@ -259,6 +264,10 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
 
     public void setCoinsAmount(int amount) {
         this.coins = amount;
+    }
+
+    public void setEmeraldsAmount(int amount) {
+        this.emeralds = amount;
     }
 
 }

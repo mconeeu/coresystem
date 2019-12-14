@@ -42,7 +42,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
         this.worldCMD = new WorldCMD();
 
         instance.getPluginManager().registerCoreCommand(worldCMD, CoreSystem.getInstance());
-        instance.getPluginManager().registerCoreCommand(new LocationCMD(), CoreSystem.getInstance());
+        instance.getPluginManager().registerCoreCommand(new LocationCMD(instance), CoreSystem.getInstance());
 
         reload();
     }
@@ -227,6 +227,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                 world.getMonsterSpawnLimit() > 0,
                 world.getKeepSpawnInMemory(),
                 new int[]{(int) loc.getX(), (int) loc.getY(), (int) loc.getZ()},
+                Collections.emptyMap(),
                 Collections.emptyMap(),
                 Collections.emptyList(),
                 Collections.emptyList(),

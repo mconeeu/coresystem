@@ -5,18 +5,18 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
+import eu.mcone.coresystem.api.bukkit.event.CorePlayerLoadedEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
 
 public class VanishListener implements Listener {
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-        Player p = e.getPlayer();
+    public void onJoin(CorePlayerLoadedEvent e) {
+        Player p = e.getBukkitPlayer();
 
         if (!p.hasPermission("system.bukkit.vanish.see")) {
             for (CorePlayer t : BukkitCoreSystem.getSystem().getOnlineCorePlayers()) {

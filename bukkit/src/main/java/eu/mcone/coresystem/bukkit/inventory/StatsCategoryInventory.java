@@ -28,9 +28,11 @@ class StatsCategoryInventory extends CoreInventory {
         );
 
         setItem(InventorySlot.ROW_3_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Stats Menü").create(), e -> {
-            new StatsInventory(p).openInventory();
+            new StatsInventory(p);
             p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
         });
+
+        openInventory();
     }
 
 }

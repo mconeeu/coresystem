@@ -17,6 +17,7 @@ import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.ItemStackCodecProv
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.LocationCodecProvider;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.gson.CraftItemStackTypeAdapter;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.gson.LocationTypeAdapter;
+import eu.mcone.coresystem.api.bukkit.event.CorePlayerLoadedEvent;
 import eu.mcone.coresystem.api.bukkit.event.MoneyChangeEvent;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
@@ -25,7 +26,6 @@ import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
-import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
 import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
 import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
@@ -74,6 +74,8 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
@@ -217,31 +219,34 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordReturnPluginChannelListener());
         getServer().getMessenger().registerIncomingPluginChannel(this, "WDL|INIT", new AntiWorldDownloader());
 
-        sendConsoleMessage("§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
-
         for (Player p : Bukkit.getOnlinePlayers()) {
             CorePlayerListener.setCorePermissibleBase(p);
-            Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
 
-            BukkitCorePlayer bukkitCorePlayer = new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(
-                    this,
-                    p.getAddress().getAddress(),
-                    new SkinInfo(
-                            p.getName(),
-                            textures.getValue(),
-                            textures.getSignature(),
-                            SkinInfo.SkinType.PLAYER
-                    ),
-                    p
-            );
+            getServer().getScheduler().runTask(this, () -> {
+                CorePlayerListener.LOADING_MSG.send(p);
+                p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 0));
 
-            bukkitCorePlayer.registerPacketListener(p);
-            corePlayers.put(p.getUniqueId(), bukkitCorePlayer);
+                Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
+                getServer().getPluginManager().callEvent(new CorePlayerLoadedEvent(CorePlayerLoadedEvent.Reason.RELOAD, new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(
+                        this,
+                        p.getAddress().getAddress(),
+                        new SkinInfo(
+                                p.getName(),
+                                textures.getValue(),
+                                textures.getSignature(),
+                                SkinInfo.SkinType.PLAYER
+                        ),
+                        p
+                ), p));
 
-            channelHandler.createSetRequest(p, "UNNICK");
+                channelHandler.createSetRequest(p, "UNNICK");
+
+                CorePlayerListener.LOADING_SUCCESS_MSG.send(p);
+                p.getActivePotionEffects().clear();
+            });
         }
 
-        for (CorePlayer p : getOnlineCorePlayers()) p.setScoreboard(new MainScoreboard());
+        sendConsoleMessage("§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
     }
 
     @Override
@@ -300,7 +305,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new SpeedCMD(),
                 new VanishCMD(),
                 new ProfileCMD(),
-                new CaptureCMD()
+                new CaptureCMD(),
+                new VanishChatCMD()
         );
     }
 

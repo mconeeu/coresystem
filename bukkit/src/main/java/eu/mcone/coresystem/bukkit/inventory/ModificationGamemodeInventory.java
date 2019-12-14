@@ -33,6 +33,8 @@ public class ModificationGamemodeInventory extends CoreInventory {
             );
             i += 2;
         }
+
+        openInventory();
     }
 
 }

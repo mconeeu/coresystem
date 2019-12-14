@@ -38,7 +38,7 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
     public void loadDatabase() {
         for (Document document : motionCaptureCollection.find()) {
             motionCaptureDataMap.put(document.getString("name"), new MotionCaptureData(document.getString("name"), document.getString("world"), document.getLong("recorded"), document.getString("creator"), document.getInteger("length"), (Map<Integer, List<PacketWrapper>>) GenericUtils.deserialize(document.get("packets", Binary.class).getData())));
-            CoreSystem.getInstance().sendConsoleMessage("§aLoad motion capture " + document.getString("name"));
+            CoreSystem.getInstance().sendConsoleMessage("§2Load motion capture " + document.getString("name"));
         }
 
     }

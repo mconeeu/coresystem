@@ -8,10 +8,12 @@ package eu.mcone.coresystem.api.bukkit.event;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 @Getter
+@RequiredArgsConstructor
 public final class PlayerSettingsChangeEvent extends Event {
 
     @Getter
@@ -19,11 +21,6 @@ public final class PlayerSettingsChangeEvent extends Event {
 
     private final CorePlayer player;
     private final PlayerSettings settings;
-
-    public PlayerSettingsChangeEvent(CorePlayer player, PlayerSettings settings) {
-        this.player = player;
-        this.settings = settings;
-    }
 
     public HandlerList getHandlers() {
         return handlerList;

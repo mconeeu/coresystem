@@ -34,8 +34,10 @@ class PartyMemberInventory extends CoreInventory {
 
         setItem(InventorySlot.ROW_4_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Partymenü").create(), e -> {
             p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
-            new PartyInventory(p).openInventory();
+            new PartyInventory(p);
         });
+
+        openInventory();
     }
 
 }

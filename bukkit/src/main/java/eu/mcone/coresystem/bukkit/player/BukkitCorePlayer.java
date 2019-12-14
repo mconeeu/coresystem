@@ -204,7 +204,6 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     public void registerPacketListener(Player p) {
         this.packetInListener = new PacketInListener(p);
         this.packetOutListener = new PacketOutListener(p);
-
     }
 
     public void unregisterAttachment() {

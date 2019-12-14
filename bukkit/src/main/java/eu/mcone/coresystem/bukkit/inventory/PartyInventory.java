@@ -40,7 +40,7 @@ class PartyInventory extends CoreInventory {
                         lores.addAll(Arrays.asList("", "§8» §f§nRechtsklick§8 | §7§oAktionen"));
 
                     setItem(i, new Skull(data[0], 1).toItemBuilder().displayName("§f§l" + data[0]).lore(lores).create(), e -> {
-                        new PartyMemberInventory(p, data[0]).openInventory();
+                        new PartyMemberInventory(p, data[0]);
                         p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
                     });
                     i++;
@@ -48,7 +48,7 @@ class PartyInventory extends CoreInventory {
 
                 setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
                     p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
-                    new ProfileInventory(p).openInventory();
+                    new ProfileInventory(p);
                 });
 
                 if (isPartyLeader)
@@ -69,9 +69,11 @@ class PartyInventory extends CoreInventory {
 
                 setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
                     p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
-                    new ProfileInventory(p).openInventory();
+                    new ProfileInventory(p);
                 });
             }
+
+            openInventory();
         }, "PARTY", "member");
     }
 

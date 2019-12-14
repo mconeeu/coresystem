@@ -11,6 +11,7 @@ import eu.mcone.coresystem.api.bungee.event.MoneyChangeEvent;
 import eu.mcone.coresystem.api.bungee.event.PermissionChangeEvent;
 import eu.mcone.coresystem.api.bungee.event.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
+import eu.mcone.coresystem.api.core.player.Currency;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.bots.teamspeak.TeamspeakVerifier;
@@ -92,7 +93,7 @@ public class CorePlayerUpdateListener implements Listener {
     @EventHandler
     public void onMoneyChange(MoneyChangeEvent e) {
         CorePlayer p = e.getPlayer();
-        CoreSystem.getInstance().getChannelHandler().createInfoRequest(p.bungee(), "MONEY", String.valueOf(p.getCoins()), e.getCurrency().toString());
+        CoreSystem.getInstance().getChannelHandler().createInfoRequest(p.bungee(), "EVENT", "MoneyChangeEvent", e.getCurrency().toString(), String.valueOf(e.getCurrency().equals(Currency.COINS) ? p.getCoins() : p.getEmeralds()));
     }
 
     @EventHandler

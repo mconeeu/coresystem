@@ -7,20 +7,18 @@ package eu.mcone.coresystem.api.bukkit.event;
 
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 @Getter
+@RequiredArgsConstructor
 public final class HologramManagerReloadedEvent extends Event {
 
     @Getter
     private static final HandlerList handlerList = new HandlerList();
 
     private final HologramManager holoManager;
-
-    public HologramManagerReloadedEvent(HologramManager holoManager) {
-        this.holoManager = holoManager;
-    }
 
     public HandlerList getHandlers() {
         return handlerList;

@@ -40,16 +40,18 @@ public class InfoPluginChannelListener implements PluginMessageListener {
 
                     if (cp != null) {
                         if (event.equals("MoneyChangeEvent")) {
-                            Bukkit.getPluginManager().callEvent(new MoneyChangeEvent(cp, Currency.valueOf(data.split(";")[0])));
+                            Currency currency = Currency.valueOf(data);
+                            int amount = Integer.parseInt(in.readUTF());
+
+                            switch (currency) {
+                                case COINS: ((GlobalOfflineCorePlayer) cp).setCoinsAmount(amount); break;
+                                case EMERALDS: ((GlobalOfflineCorePlayer) cp).setEmeraldsAmount(amount); break;
+                            }
+                            Bukkit.getPluginManager().callEvent(new MoneyChangeEvent(cp, currency));
                         } else if (event.equals("PermissionChangeEvent")) {
                             Bukkit.getPluginManager().callEvent(new PermissionChangeEvent(cp, data.split(";")));
                         }
                     }
-                    break;
-                }
-                case "MONEY": {
-                    ((GlobalOfflineCorePlayer) cp).setCoinsAmount(Integer.valueOf(in.readUTF()));
-                    Bukkit.getPluginManager().callEvent(new MoneyChangeEvent(cp, Currency.valueOf(in.readUTF())));
                     break;
                 }
                 case "NICK": {

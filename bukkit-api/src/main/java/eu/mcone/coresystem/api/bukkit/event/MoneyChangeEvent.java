@@ -8,10 +8,12 @@ package eu.mcone.coresystem.api.bukkit.event;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Currency;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 @Getter
+@RequiredArgsConstructor
 public final class MoneyChangeEvent extends Event {
 
     @Getter
@@ -19,11 +21,6 @@ public final class MoneyChangeEvent extends Event {
 
     private final CorePlayer player;
     private final Currency currency;
-
-    public MoneyChangeEvent(CorePlayer p, Currency currency) {
-        this.player = p;
-        this.currency = currency;
-    }
 
     public HandlerList getHandlers() {
         return handlerList;

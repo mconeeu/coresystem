@@ -5,24 +5,22 @@
 
 package eu.mcone.coresystem.api.bukkit.event;
 
-import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 @Getter
 @RequiredArgsConstructor
-public final class StatsChangeEvent extends Event {
+public final class BuildModeChangeEvent extends Event {
 
     @Getter
     private static final HandlerList handlerList = new HandlerList();
 
-    private final Gamemode gamemode;
-    private final CorePlayer player;
+    private final Player player;
+    private final boolean canBuild;
 
-    @Override
     public HandlerList getHandlers() {
         return handlerList;
     }
