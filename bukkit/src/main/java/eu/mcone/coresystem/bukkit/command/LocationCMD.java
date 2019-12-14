@@ -123,7 +123,7 @@ public class LocationCMD extends CorePlayerCommand {
 
                 return true;
             } else if (args[0].equalsIgnoreCase("remove")) {
-                CoreWorld w = BukkitCoreSystem.getInstance().getWorldManager().getWorld(args[1]);
+                CoreWorld w = BukkitCoreSystem.getSystem().getCorePlayer(p).getWorld();
 
                 if (w.getLocations().containsKey(args[1])) {
                     w.removeLocation(args[1]).save();
@@ -134,7 +134,7 @@ public class LocationCMD extends CorePlayerCommand {
 
                 return true;
             } else if (args[0].equalsIgnoreCase("removeblock")) {
-                CoreWorld w = BukkitCoreSystem.getInstance().getWorldManager().getWorld(args[1]);
+                CoreWorld w = BukkitCoreSystem.getSystem().getCorePlayer(p).getWorld();
 
                 if (w.getBlockLocations().containsKey(args[1])) {
                     w.removeBlockLocation(args[1]).save();

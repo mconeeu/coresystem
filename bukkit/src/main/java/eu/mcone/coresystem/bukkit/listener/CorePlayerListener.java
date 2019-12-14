@@ -78,20 +78,22 @@ public class CorePlayerListener implements Listener {
             }
         }
 
-        CorePlayerLoadedEvent e = new CorePlayerLoadedEvent(loadReason, BukkitCoreSystem.getInstance().getCorePlayer(p), p);
-        Bukkit.getPluginManager().callEvent(e);
+        Bukkit.getScheduler().runTask(BukkitCoreSystem.getSystem(), () -> {
+            CorePlayerLoadedEvent e = new CorePlayerLoadedEvent(loadReason, BukkitCoreSystem.getInstance().getCorePlayer(p), p);
+            Bukkit.getPluginManager().callEvent(e);
 
-        if (!e.isHidden()) {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                if (player != p) {
-                    player.showPlayer(p);
-                    p.showPlayer(player);
+            if (!e.isHidden()) {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    if (player != p) {
+                        player.showPlayer(p);
+                        p.showPlayer(player);
+                    }
                 }
             }
-        }
 
-        LOADING_SUCCESS_MSG.send(p);
-        p.getActivePotionEffects().clear();
+            LOADING_SUCCESS_MSG.send(p);
+            p.getActivePotionEffects().clear();
+        });
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

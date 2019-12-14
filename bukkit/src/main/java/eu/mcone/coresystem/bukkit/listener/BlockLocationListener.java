@@ -38,8 +38,8 @@ public class BlockLocationListener implements Listener {
             if (entry.world.bukkit().equals(p.getWorld())) {
                 entry.world.setBlockLocation(entry.name, e.getClickedBlock().getLocation()).save();
                 BukkitCoreSystem.getInstance().getMessager().send(p,
-                        "§2Die Location wurde erfolgreich für den geklickten Block " +
-                                "mit dem Material §a"+e.getClickedBlock().getType().toString()+"§2 abgespeichert"
+                        "§2Die Location §a"+entry.name+"§2 wurde erfolgreich für den geklickten Block " +
+                                "mit dem Material §f"+e.getClickedBlock().getType().toString()+"§2 abgespeichert"
                 );
             } else {
                 BukkitCoreSystem.getSystem().getMessager().send(p,

@@ -9,7 +9,7 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-public class CoreBlockLocation {
+public final class CoreBlockLocation {
 
     private transient Location bukkit;
 
@@ -41,4 +41,13 @@ public class CoreBlockLocation {
         this.z -= z;
     }
 
+    @Override
+    public String toString() {
+        return "CoreBlockLocation{" +
+                "world='" + world + '\'' +
+                ", x=" + x +
+                ", y=" + y +
+                ", z=" + z +
+                '}';
+    }
 }

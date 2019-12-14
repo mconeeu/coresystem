@@ -60,6 +60,13 @@ public final class CoreLocation implements Serializable {
 
     @Override
     public String toString() {
-        return "Corelocation(world="+world+", x="+Math.round(x)+", y="+Math.round(y)+", z="+Math.round(z)+", yaw="+Math.round(yaw)+", pitch="+Math.round(pitch)+")";
+        return "CoreLocation{" +
+                "world='" + world + '\'' +
+                ", x=" + x +
+                ", y=" + y +
+                ", z=" + z +
+                ", yaw=" + yaw +
+                ", pitch=" + pitch +
+                '}';
     }
 }

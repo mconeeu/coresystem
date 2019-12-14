@@ -15,4 +15,14 @@ public final class WorldProperties {
 
     private boolean autoSave, pvp, allowAnimals, allowMonsters, keepSpawnInMemory;
 
+    @Override
+    public String toString() {
+        return "WorldProperties{" +
+                "autoSave=" + autoSave +
+                ", pvp=" + pvp +
+                ", allowAnimals=" + allowAnimals +
+                ", allowMonsters=" + allowMonsters +
+                ", keepSpawnInMemory=" + keepSpawnInMemory +
+                '}';
+    }
 }

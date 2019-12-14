@@ -74,4 +74,23 @@ public final class WorldCreateProperties {
         f.setAccessible(false);
     }
 
+    @Override
+    public String toString() {
+        return "WorldCreateProperties{" +
+                "seed=" + seed +
+                ", worldType=" + worldType +
+                ", environment=" + environment +
+                ", generator='" + generator + '\'' +
+                ", generatorSettings='" + generatorSettings + '\'' +
+                ", generateStructures=" + generateStructures +
+                ", autoSave=" + autoSave +
+                ", pvp=" + pvp +
+                ", allowAnimals=" + allowAnimals +
+                ", allowMonsters=" + allowMonsters +
+                ", spawnAnimals=" + spawnAnimals +
+                ", spawnMonsters=" + spawnMonsters +
+                ", keepSpawnInMemory=" + keepSpawnInMemory +
+                ", difficulty=" + difficulty +
+                '}';
+    }
 }
