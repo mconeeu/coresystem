@@ -1,17 +1,24 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture.packets;
 
 import lombok.Getter;
+import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.io.Serializable;
 
-public abstract class PacketWrapper implements Serializable  {
+@BsonDiscriminator
+@Getter
+public abstract class PacketWrapper {
 
-    private static final long serialVersionUID = 191935L;
-
-    @Getter
-    private final PacketType packetType;
-    @Getter
+    private PacketType packetType;
     private EntityAction entityAction;
+
+    @BsonCreator
+    public PacketWrapper(@BsonProperty("packetType") final PacketType packetType, @BsonProperty("entityAction") final EntityAction entityAction) {
+        this.packetType = packetType;
+        this.entityAction = entityAction;
+    }
 
     public PacketWrapper(final PacketType packetType) {
         this.packetType = packetType;

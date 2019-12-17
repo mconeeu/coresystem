@@ -35,7 +35,7 @@ public abstract class MotionRecorder implements Listener, Serializable {
     protected AtomicInteger savedPackets;
 
     @Getter
-    public HashMap<Integer, List<PacketWrapper>> packets;
+    public HashMap<String, List<PacketWrapper>> packets;
 
     public MotionRecorder(final Player player, final String name) {
         this.player = player;
@@ -49,10 +49,11 @@ public abstract class MotionRecorder implements Listener, Serializable {
     public abstract void record();
 
     protected void addData(PacketWrapper data) {
-        if (this.packets.containsKey(ticks)) {
-            this.packets.get(ticks).add(data);
+        String tick = String.valueOf(ticks);
+        if (this.packets.containsKey(tick)) {
+            this.packets.get(tick).add(data);
         } else {
-            this.packets.put(ticks, new ArrayList<PacketWrapper>() {{
+            this.packets.put(tick, new ArrayList<PacketWrapper>() {{
                 add(data);
             }});
         }
@@ -60,5 +61,5 @@ public abstract class MotionRecorder implements Listener, Serializable {
         savedPackets.getAndIncrement();
     }
 
-    public abstract Map<Integer, List<PacketWrapper>> stopRecording();
+    public abstract Map<String, List<PacketWrapper>> stopRecording();
 }

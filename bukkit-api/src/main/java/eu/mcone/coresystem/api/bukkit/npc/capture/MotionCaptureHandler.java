@@ -23,6 +23,8 @@ public interface MotionCaptureHandler {
     List<MotionCaptureData> getMotionCaptures();
 
     interface MotionCaptureScheduler {
+        void addNpcs(final PlayerNpc... playerNpcs);
+
         void addNpc(final PlayerNpc playerNpc);
 
         void addNpc(final PlayerNpc playerNpc, final MotionCaptureData data);

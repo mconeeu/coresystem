@@ -65,11 +65,11 @@ public class MotionRecorder extends eu.mcone.coresystem.api.bukkit.npc.capture.M
                     if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
                         if (e.getClickedBlock().getType().equals(Material.STONE_BUTTON) || e.getClickedBlock().getType().equals(Material.STONE_BUTTON)) {
                             BlockState blockState = e.getClickedBlock().getState();
-                            addData(new EntityButtonInteractPacketWrapper(new CoreLocation(e.getClickedBlock().getLocation()), ((Button) blockState.getData()).isPowered()));
+                            addData(new EntityButtonInteractPacketWrapper(e.getClickedBlock().getLocation(), ((Button) blockState.getData()).isPowered()));
                             addData(new EntityClickPacketWrapper());
                         } else if (e.getClickedBlock().getType().toString().contains("DOOR")) {
                             BlockState blockState = e.getClickedBlock().getState();
-                            addData(new EntityOpenDoorPacketWrapper(new CoreLocation(e.getClickedBlock().getLocation()), ((Door) blockState.getData()).isOpen()));
+                            addData(new EntityOpenDoorPacketWrapper(e.getClickedBlock().getLocation(), ((Door) blockState.getData()).isOpen()));
                             addData(new EntityClickPacketWrapper());
                         }
                     } else if (e.getAction().equals(Action.LEFT_CLICK_AIR) || e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
@@ -112,7 +112,7 @@ public class MotionRecorder extends eu.mcone.coresystem.api.bukkit.npc.capture.M
         });
     }
 
-    public Map<Integer, List<PacketWrapper>> stopRecording() {
+    public Map<String, List<PacketWrapper>> stopRecording() {
         isStopped = true;
         taskID.cancel();
         return packets;
