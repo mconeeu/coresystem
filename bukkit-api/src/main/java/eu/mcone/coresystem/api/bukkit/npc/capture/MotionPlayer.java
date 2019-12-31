@@ -31,6 +31,7 @@ public abstract class MotionPlayer {
         if (playing) {
             currentTick = new AtomicInteger(0);
         } else {
+            playing = true;
             playMotionCapture();
         }
     }

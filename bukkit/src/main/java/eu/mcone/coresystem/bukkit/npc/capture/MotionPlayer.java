@@ -30,9 +30,11 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Mot
         Bukkit.getPluginManager().callEvent(new NpcAnimationStateChangeEvent(playerNpc, NpcAnimationStateChangeEvent.NpcAnimationState.START));
         playingTask = Bukkit.getScheduler().runTaskTimerAsynchronously(CoreSystem.getInstance(), () -> {
             if (playing) {
+                String tick = String.valueOf(currentTick.get());
+
                 if (packetsCount.get() < data.getMotionData().size() - 1) {
-                    if (data.getMotionData().containsKey(currentTick.get())) {
-                        for (PacketWrapper wrapper : data.getMotionData().get(currentTick.get())) {
+                    if (data.getMotionData().containsKey(tick)) {
+                        for (PacketWrapper wrapper : data.getMotionData().get(tick)) {
                             if (wrapper instanceof EntityMovePacketWrapper) {
                                 playerNpc.getData().setTempLocation(((EntityMovePacketWrapper) wrapper).getAsCoreLocation());
                                 playerNpc.teleport(((EntityMovePacketWrapper) wrapper).getAsCoreLocation());
@@ -48,7 +50,7 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Mot
                             }
 
                             if (wrapper instanceof EntitySwitchItemPacketWrapper) {
-                                playerNpc.setItemInHand(((EntitySwitchItemPacketWrapper) wrapper).getItemStack());
+                                playerNpc.setItemInHand(((EntitySwitchItemPacketWrapper) wrapper).buildItemStack());
                             }
 
                             if (wrapper instanceof EntityClickPacketWrapper) {
@@ -58,7 +60,7 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Mot
                             if (wrapper instanceof EntityButtonInteractPacketWrapper) {
                                 BlockStateDirection FACING = BlockStateDirection.of("facing");
                                 EntityButtonInteractPacketWrapper packet = (EntityButtonInteractPacketWrapper) wrapper;
-                                Location location = packet.getBlockLocation().bukkit();
+                                Location location = packet.getAsCoreLocation().bukkit();
                                 WorldServer world = ((CraftWorld) location.getWorld()).getHandle();
                                 BlockPosition blockposition = new BlockPosition(location.getX(), location.getY(), location.getZ());
                                 IBlockData iblockdata = world.getType(blockposition);
@@ -67,7 +69,7 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Mot
                                 block.interact(((CraftWorld) location.getWorld()).getHandle(), blockposition, iblockdata, null, iblockdata.get(FACING), (float) location.getX(), (float) location.getY(), (float) location.getZ());
                             } else if (wrapper instanceof EntityOpenDoorPacketWrapper) {
                                 EntityOpenDoorPacketWrapper packet = (EntityOpenDoorPacketWrapper) wrapper;
-                                Location location = packet.getBlockLocation().bukkit();
+                                Location location = packet.getAsCoreLocation().bukkit();
                                 BlockPosition blockposition = new BlockPosition(location.getX(), location.getY(), location.getZ());
                                 WorldServer world = ((CraftWorld) location.getWorld()).getHandle();
                                 IBlockData iblockdata = world.getType(blockposition);
@@ -83,7 +85,7 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Mot
                                 world.b(blockposition1, blockposition);
                                 world.a(iblockdata.get(OPEN) ? 1003 : 1006, blockposition, 0);
 
-                                if (packet.openDoor()) {
+                                if (packet.isDoorOpen()) {
                                     location.getWorld().playSound(location, Sound.DOOR_OPEN, 1, 1);
                                 } else {
                                     location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
@@ -110,9 +112,9 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Mot
                         this.currentTick.getAndDecrement();
                     }
                 } else {
-                    Bukkit.getPluginManager().callEvent(new NpcAnimationStateChangeEvent(playerNpc, NpcAnimationStateChangeEvent.NpcAnimationState.END));
                     playing = false;
                     playingTask.cancel();
+                    Bukkit.getPluginManager().callEvent(new NpcAnimationStateChangeEvent(playerNpc, NpcAnimationStateChangeEvent.NpcAnimationState.END));
                 }
             }
         }, 1L, 1L);

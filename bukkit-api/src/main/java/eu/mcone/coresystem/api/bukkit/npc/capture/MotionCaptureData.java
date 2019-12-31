@@ -3,14 +3,18 @@ package eu.mcone.coresystem.api.bukkit.npc.capture;
 import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketWrapper;
 import eu.mcone.coresystem.api.core.util.GenericUtils;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.bson.Document;
+import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 @Getter
-public class MotionCaptureData implements Serializable {
+@BsonDiscriminator
+public class MotionCaptureData {
 
     @Getter
     private String name;
@@ -23,8 +27,9 @@ public class MotionCaptureData implements Serializable {
     @Getter
     private int length;
     @Getter
-    private Map<Integer, List<PacketWrapper>> motionData;
+    private Map<String, List<PacketWrapper>> motionData;
 
+    public MotionCaptureData() {}
 
     public MotionCaptureData(final String name, final MotionRecorder motionRecorder) {
         this.name = name;
@@ -35,7 +40,9 @@ public class MotionCaptureData implements Serializable {
         this.motionData = motionRecorder.getPackets();
     }
 
-    public MotionCaptureData(final String name, final String worldName, final long recorded, final String creator, final int length, final Map<Integer, List<PacketWrapper>> motionData) {
+    @BsonCreator
+    public MotionCaptureData(@BsonProperty("name") final String name, @BsonProperty("world") final String worldName, @BsonProperty("recorded") final long recorded,
+                             @BsonProperty("creator") final String creator, @BsonProperty("length") final int length, @BsonProperty("motionData") final Map<String, List<PacketWrapper>> motionData) {
         this.name = name;
         this.world = worldName;
         this.recorded = recorded;

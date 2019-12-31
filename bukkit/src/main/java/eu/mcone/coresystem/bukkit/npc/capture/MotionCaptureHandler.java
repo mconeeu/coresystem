@@ -5,42 +5,46 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationStateChangeEvent;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionRecorder;
-import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketWrapper;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.core.exception.MotionCaptureAlreadyExistsException;
+import eu.mcone.coresystem.api.core.exception.MotionCaptureNotDefinedException;
 import eu.mcone.coresystem.api.core.exception.MotionCaptureNotFoundException;
-import eu.mcone.coresystem.api.core.util.GenericUtils;
 import lombok.Getter;
-import org.bson.Document;
-import org.bson.types.Binary;
+import org.bson.codecs.pojo.Conventions;
+import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
+import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static com.mongodb.client.model.Filters.eq;
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
+import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureHandler {
 
     private HashMap<String, MotionCaptureData> motionCaptureDataMap;
-    private MongoCollection<Document> motionCaptureCollection;
+    private MongoCollection<MotionCaptureData> motionCaptureCollection;
 
     @Getter
     private final MotionCaptureScheduler motionCaptureScheduler;
 
     public MotionCaptureHandler() {
         motionCaptureDataMap = new HashMap<>();
-        motionCaptureCollection = CoreSystem.getInstance().getMongoDB().getCollection("motion_capture");
+        motionCaptureCollection = CoreSystem.getInstance().getMongoDB().withCodecRegistry(
+                fromRegistries(getDefaultCodecRegistry(), fromProviders(PojoCodecProvider.builder().conventions(Conventions.DEFAULT_CONVENTIONS).automatic(true).build()))
+        ).getCollection("motion_capture1", MotionCaptureData.class);
         motionCaptureScheduler = new MotionCaptureScheduler();
     }
 
     public void loadDatabase() {
-        for (Document document : motionCaptureCollection.find()) {
-            motionCaptureDataMap.put(document.getString("name"), new MotionCaptureData(document.getString("name"), document.getString("world"), document.getLong("recorded"), document.getString("creator"), document.getInteger("length"), (Map<Integer, List<PacketWrapper>>) GenericUtils.deserialize(document.get("packets", Binary.class).getData())));
-            CoreSystem.getInstance().sendConsoleMessage("§2Load motion capture " + document.getString("name"));
+        for (MotionCaptureData data : motionCaptureCollection.find()) {
+            motionCaptureDataMap.put(data.getName(), data);
         }
-
     }
 
     public boolean saveMotionCapture(final MotionRecorder recorder) {
@@ -50,9 +54,8 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
                     recorder.stopRecording();
                 }
 
-                MotionCaptureData data = new MotionCaptureData(recorder.getName(), recorder.getWorld(), recorder.getRecorded(), recorder.getRecorderName(), recorder.getTicks(), recorder.getPackets());
-                motionCaptureDataMap.put(recorder.getName(), data);
-                motionCaptureCollection.insertOne(data.createBsonDocument());
+                motionCaptureCollection.insertOne(new MotionCaptureData(recorder.getName(), recorder.getWorld(), recorder.getRecorded(), recorder.getRecorderName(), recorder.getPackets().size(), recorder.getPackets()));
+
                 return true;
             } else {
                 throw new MotionCaptureAlreadyExistsException();
@@ -65,15 +68,14 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
 
     public MotionCaptureData getMotionCapture(final String name) {
         try {
-            Document document = motionCaptureCollection.find(eq("name", name)).first();
+            MotionCaptureData data = motionCaptureCollection.find(eq("name", name)).first();
 
-            if (document != null) {
+            if (data != null) {
                 if (motionCaptureDataMap.containsKey(name)) {
                     return motionCaptureDataMap.get(name);
                 } else {
-                    MotionCaptureData motionCaptureData = new MotionCaptureData(document.getString("name"), document.getString("world"), document.getLong("recorded"), document.getString("creator"), document.getInteger("length"), (Map<Integer, List<PacketWrapper>>) GenericUtils.deserialize(document.get("packets", Binary.class).getData()));
-                    motionCaptureDataMap.put(name, motionCaptureData);
-                    return motionCaptureData;
+                    motionCaptureDataMap.put(name, data);
+                    return data;
                 }
             } else {
                 throw new MotionCaptureNotFoundException("Cannot found motion capture with the name " + name);
@@ -110,8 +112,22 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
             CoreSystem.getInstance().registerEvents(this);
         }
 
+        public void addNpcs(final PlayerNpc... playerNpcs) {
+            for (PlayerNpc playernpc : playerNpcs) {
+                addNpc(playernpc);
+            }
+        }
+
         public void addNpc(final PlayerNpc playerNpc) {
-            npcs.put(playerNpc.getData().getName(), playerNpc);
+            try {
+                if (playerNpc.getMotionPlayer() != null) {
+                    npcs.put(playerNpc.getData().getName(), playerNpc);
+                } else {
+                    throw new MotionCaptureNotDefinedException("NPC: " + playerNpc.getData().getName());
+                }
+            } catch (MotionCaptureNotDefinedException e) {
+                e.printStackTrace();
+            }
         }
 
         public void addNpc(final PlayerNpc playerNpc, final MotionCaptureData data) {
