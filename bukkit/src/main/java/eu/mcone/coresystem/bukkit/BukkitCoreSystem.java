@@ -220,12 +220,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         getServer().getMessenger().registerIncomingPluginChannel(this, "WDL|INIT", new AntiWorldDownloader());
 
         for (Player p : Bukkit.getOnlinePlayers()) {
+            CorePlayerListener.LOADING_MSG.send(p);
+            p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 0));
             CorePlayerListener.setCorePermissibleBase(p);
 
             getServer().getScheduler().runTask(this, () -> {
-                CorePlayerListener.LOADING_MSG.send(p);
-                p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 0));
-
                 Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
                 getServer().getPluginManager().callEvent(new CorePlayerLoadedEvent(CorePlayerLoadedEvent.Reason.RELOAD, new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(
                         this,
@@ -242,7 +241,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 channelHandler.createSetRequest(p, "UNNICK");
 
                 CorePlayerListener.LOADING_SUCCESS_MSG.send(p);
-                p.getActivePotionEffects().clear();
+                p.removePotionEffect(PotionEffectType.BLINDNESS);
             });
         }
 

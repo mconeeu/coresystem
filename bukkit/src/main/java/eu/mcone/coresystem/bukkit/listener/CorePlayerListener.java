@@ -92,7 +92,7 @@ public class CorePlayerListener implements Listener {
             }
 
             LOADING_SUCCESS_MSG.send(p);
-            p.getActivePotionEffects().clear();
+            p.removePotionEffect(PotionEffectType.BLINDNESS);
         });
     }
 
