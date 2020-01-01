@@ -69,7 +69,7 @@ public class ProxyPingListener implements Listener {
             version.setName("§4Alte Minecraft-Version!");
 
             players.setSample(PLAYER_INFOS_OUTDATED);
-        } else if (con.getVersion() > 47) {
+        } else if (con.getVersion() > 575) {
             ping.setDescriptionComponent(new TextComponent(TextComponent.fromLegacyText(
                     BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.ping.outdated", Language.GERMAN)
             )));
@@ -105,7 +105,7 @@ public class ProxyPingListener implements Listener {
         }
 
         String hostName = con.getVirtualHost().getHostName();
-        if (!hostName.contains("mcone.eu")) {
+        if (!hostName.endsWith("mcone.eu")) {
             version.setName("§4Unsichere Adresse!");
             version.setProtocol(2);
 

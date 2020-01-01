@@ -32,7 +32,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     final static String CONFIG_NAME = "core-config.json";
 
     private final static String CONFIG_VERSION_KEY = "configVersion";
-    private final static int LATEST_CONFIG_VERSION = 3;
+    private final static int LATEST_CONFIG_VERSION = 4;
 
     private WorldCMD worldCMD;
     List<BukkitCoreWorld> coreWorlds;
@@ -287,6 +287,20 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                 if (json.getAsJsonObject().has("allowMonsters")) {
                     json.getAsJsonObject().addProperty("spawnMonsters", json.getAsJsonObject().get("allowMonsters").getAsBoolean());
                     json.getAsJsonObject().addProperty("allowMonsters", true);
+                }
+            }
+            case 3: {
+                CoreSystem.getInstance().sendConsoleMessage("§7Updating Config from version 3 to 4...");
+
+                //Updating PlayerNpcData
+                for (JsonElement e : json.getAsJsonObject().get("npcData").getAsJsonArray()) {
+                    if (e.getAsJsonObject().get("type").getAsString().equals("PLAYER")) {
+                        JsonObject entityData = e.getAsJsonObject().get("entityData").getAsJsonObject();
+
+                        if (entityData.has("equipment")) {
+                            entityData.add("equipment", new JsonObject());
+                        }
+                    }
                 }
             }
         }
