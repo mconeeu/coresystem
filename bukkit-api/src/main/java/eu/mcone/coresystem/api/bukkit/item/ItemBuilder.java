@@ -5,13 +5,11 @@
 
 package eu.mcone.coresystem.api.bukkit.item;
 
-import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,30 +43,6 @@ public final class ItemBuilder {
         lore = new ArrayList<>();
     }
 
-    /**
-     * create ItemBuilder
-     * @param material material
-     * @param amount amount of items in ItemStack
-     * @param subId sub ID of the material
-     */
-    public ItemBuilder(Material material, int amount, int subId) {
-        itemStack = new ItemStack(material, amount, (short) subId);
-        itemMeta = itemStack.getItemMeta();
-        lore = new ArrayList<>();
-    }
-
-    /**
-     * create ItemBuilder with short sub ID
-     * @param material material
-     * @param amount amount of items in ItemStack
-     * @param subId sub ID of the material
-     */
-    public ItemBuilder(Material material, int amount, short subId) {
-        itemStack = new ItemStack(material, amount, subId);
-        itemMeta = itemStack.getItemMeta();
-        lore = new ArrayList<>();
-    }
-
     private ItemBuilder(ItemStack itemStack) {
         this.itemStack = itemStack;
         this.itemMeta = itemStack.getItemMeta();
@@ -80,19 +54,6 @@ public final class ItemBuilder {
         } else {
             return new ItemBuilder(itemStack.clone());
         }
-    }
-
-    /**
-     * create ItemBuilder for LeatherArmor item
-     * @param material Material of LeatherArmor item
-     * @param color color of leather item
-     * @return new ItemBuilder
-     */
-    public static ItemBuilder createLeatherArmorItem(Material material, Color color) {
-        ItemBuilder factory = new ItemBuilder(material, 1, (short) 0);
-        ((LeatherArmorMeta) factory.itemMeta).setColor(color);
-
-        return factory;
     }
 
     /**
@@ -174,7 +135,7 @@ public final class ItemBuilder {
      * @return this
      */
     public ItemBuilder unbreakable(boolean unbreakable) {
-        itemMeta.spigot().setUnbreakable(unbreakable);
+        itemMeta.setUnbreakable(unbreakable);
         return this;
     }
 

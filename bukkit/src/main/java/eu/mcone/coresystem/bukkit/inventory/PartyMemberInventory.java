@@ -22,18 +22,18 @@ class PartyMemberInventory extends CoreInventory {
 
         setItem(InventorySlot.ROW_1_SLOT_5, new Skull(member, 1).toItemBuilder().displayName("§f§l" + member).create());
 
-        setItem(InventorySlot.ROW_3_SLOT_4, new ItemBuilder(Material.NETHER_STAR, 1, 0).displayName("§7Zum §ePartyleader§7 promoten").create(), e -> {
+        setItem(InventorySlot.ROW_3_SLOT_4, new ItemBuilder(Material.NETHER_STAR, 1).displayName("§7Zum §ePartyleader§7 promoten").create(), e -> {
             BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "party promote " + member);
             p.closeInventory();
         });
 
-        setItem(InventorySlot.ROW_3_SLOT_6, new ItemBuilder(Material.BARRIER, 1, 0).displayName("§4Aus der Party kicken").create(), e -> {
+        setItem(InventorySlot.ROW_3_SLOT_6, new ItemBuilder(Material.BARRIER, 1).displayName("§4Aus der Party kicken").create(), e -> {
             BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "party kick " + member);
             p.closeInventory();
         });
 
-        setItem(InventorySlot.ROW_4_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Partymenü").create(), e -> {
-            p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
+        setItem(InventorySlot.ROW_4_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1).displayName("§7§l↩ Zurück zum Partymenü").create(), e -> {
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
             new PartyInventory(p);
         });
 

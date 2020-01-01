@@ -22,7 +22,7 @@ public class HealCMD extends CorePlayerCommand {
             p.setHealth(p.getMaxHealth());
             p.setFoodLevel(20);
             BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast nun wieder §avolles Leben§3!");
-            p.playSound(p.getLocation(), Sound.EAT, 1, 1);
+            p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EAT, 1, 1);
             p.setFireTicks(1);
         } else if (args.length == 1) {
             Player t = Bukkit.getPlayer(args[0]);
@@ -30,7 +30,7 @@ public class HealCMD extends CorePlayerCommand {
                 t.setHealth(20.0D);
                 t.setFoodLevel(20);
                 BukkitCoreSystem.getInstance().getMessager().send(t, "§2Du hast nun §avolles Leben§3!");
-                t.playSound(p.getLocation(), Sound.EAT, 1, 1);
+                t.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EAT, 1, 1);
                 t.setFireTicks(1);
             } else {
                 BukkitCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler ist nicht online!");

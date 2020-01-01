@@ -2,7 +2,7 @@ package eu.mcone.coresystem.bukkit.npc.capture;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.npc.capture.packets.*;
-import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
@@ -32,7 +32,7 @@ public class MotionRecorder extends eu.mcone.coresystem.api.bukkit.npc.capture.M
         recorded = System.currentTimeMillis() / 1000;
 
         taskID = Bukkit.getScheduler().runTaskTimerAsynchronously(CoreSystem.getInstance(), () -> {
-            CoreSystem.getInstance().createActionBar().message("§2§lAufnahme §8│ §a§l" + savedPackets.get() + " §2packet(s)").send(player);
+            CoreSystem.getInstance().createActionBar().message(TextComponent.fromLegacyText("§2§lAufnahme §8│ §a§l" + savedPackets.get() + " §2packet(s)")).send(player);
             ticks++;
         }, 1L, 1L);
 

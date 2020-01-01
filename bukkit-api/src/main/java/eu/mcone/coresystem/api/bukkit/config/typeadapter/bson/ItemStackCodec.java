@@ -6,7 +6,6 @@
 package eu.mcone.coresystem.api.bukkit.config.typeadapter.bson;
 
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.ItemStackTypeAdapterUtils;
-import eu.mcone.coresystem.api.bukkit.config.typeadapter.LegacyItemData;
 import org.bson.BsonReader;
 import org.bson.BsonWriter;
 import org.bson.Document;
@@ -15,7 +14,7 @@ import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
@@ -36,20 +35,11 @@ public class ItemStackCodec implements Codec<ItemStack> {
     public ItemStack decode(BsonReader reader, DecoderContext decoderContext) {
         Document document = registry.get(Document.class).decode(reader, decoderContext);
 
-        Material material;
+        Material material = Material.valueOf(document.getString("material"));
         String name = null;
         Map<Enchantment, Integer> enchants = null;
         List<String> lore = new ArrayList<>();
-        int repairPenalty = 0;
-//        short durability = document.getInteger("durability").shortValue();
-
-//        LegacyItemData legacyItem = LegacyItemData.getLegacyItemData(document.getString("material"));
-//        if (legacyItem != null) {
-//            material = Material.valueOf(legacyItem.getLegacyMaterial()[0]);
-//            durability = (short) legacyItem.getLegacyDurability();
-//        } else {
-            material = Material.valueOf(document.getString("material"));
-//        }
+        short durability = document.getInteger("durability").shortValue();
 
         if (document.containsKey("name")) {
             name = document.getString("name");
@@ -60,12 +50,9 @@ public class ItemStackCodec implements Codec<ItemStack> {
         if (document.containsKey("lore")) {
             lore = document.getList("lore", String.class);
         }
-        if (document.containsKey("repairPenalty")) {
-            repairPenalty = document.getInteger("repairPenalty");
-        }
 
         ItemStack stuff = new ItemStack(material, document.getInteger("amount"));
-        if ((material == Material.BOOK_AND_QUILL || material == Material.WRITTEN_BOOK) && document.containsKey("book-meta")) {
+        if ((material == Material.WRITABLE_BOOK || material == Material.WRITTEN_BOOK) && document.containsKey("book-meta")) {
             BookMeta meta = ItemStackTypeAdapterUtils.getBookMeta(document.get("book-meta", Document.class));
             stuff.setItemMeta(meta);
         } else if (material == Material.ENCHANTED_BOOK && document.containsKey("book-meta")) {
@@ -74,10 +61,10 @@ public class ItemStackCodec implements Codec<ItemStack> {
         } else if (ItemStackTypeAdapterUtils.isLeatherArmor(material) && document.containsKey("armor-meta")) {
             LeatherArmorMeta meta = ItemStackTypeAdapterUtils.getLeatherArmorMeta(document.get("armor-meta", Document.class));
             stuff.setItemMeta(meta);
-        } else if (material == Material.SKULL_ITEM && document.containsKey("skull-meta")) {
+        } else if ((material == Material.PLAYER_HEAD || material == Material.PLAYER_WALL_HEAD) && document.containsKey("skull-meta")) {
             SkullMeta meta = ItemStackTypeAdapterUtils.getSkullMeta(document.get("skull-meta", Document.class));
             stuff.setItemMeta(meta);
-        } else if (material == Material.FIREWORK && document.containsKey("firework-meta")) {
+        } else if (material == Material.FIREWORK_ROCKET && document.containsKey("firework-meta")) {
             FireworkMeta meta = ItemStackTypeAdapterUtils.getFireworkMeta(document.get("firework-meta", Document.class));
             stuff.setItemMeta(meta);
         }
@@ -92,9 +79,9 @@ public class ItemStackCodec implements Codec<ItemStack> {
             stuff.setItemMeta(meta);
         }
 
-        if (repairPenalty != 0) {
+        if (durability != 0) {
             Repairable rep = (Repairable) meta;
-            rep.setRepairCost(repairPenalty);
+            rep.setRepairCost(durability);
             stuff.setItemMeta((ItemMeta) rep);
         }
 
@@ -119,15 +106,15 @@ public class ItemStackCodec implements Codec<ItemStack> {
         Material material = itemStack.getType();
         Map<String, Object> bookMeta = null, armorMeta = null, skullMeta = null, fwMeta = null;
 
-        if (material == Material.BOOK_AND_QUILL || material == Material.WRITTEN_BOOK) {
+        if (material == Material.WRITABLE_BOOK || material == Material.WRITTEN_BOOK) {
             bookMeta = ItemStackTypeAdapterUtils.serializeBookMeta((BookMeta) itemStack.getItemMeta());
         } else if (material == Material.ENCHANTED_BOOK) {
             bookMeta = ItemStackTypeAdapterUtils.serializeEnchantedBookMeta((EnchantmentStorageMeta) itemStack.getItemMeta());
         } else if (ItemStackTypeAdapterUtils.isLeatherArmor(material)) {
             armorMeta = ItemStackTypeAdapterUtils.serializeArmor((LeatherArmorMeta) itemStack.getItemMeta());
-        } else if (material == Material.SKULL_ITEM) {
+        } else if (material == Material.PLAYER_HEAD || material == Material.PLAYER_WALL_HEAD) {
             skullMeta = ItemStackTypeAdapterUtils.serializeSkull((SkullMeta) itemStack.getItemMeta());
-        } else if (material == Material.FIREWORK) {
+        } else if (material == Material.FIREWORK_ROCKET) {
             fwMeta = ItemStackTypeAdapterUtils.serializeFireworkMeta((FireworkMeta) itemStack.getItemMeta());
         }
 

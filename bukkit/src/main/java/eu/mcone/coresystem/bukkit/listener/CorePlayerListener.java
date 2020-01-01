@@ -16,9 +16,11 @@ import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.player.BukkitCorePlayer;
 import eu.mcone.coresystem.bukkit.player.CorePermissibleBase;
 import eu.mcone.coresystem.bukkit.player.NickManager;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftHumanEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -38,8 +40,8 @@ import java.util.UUID;
 
 public class CorePlayerListener implements Listener {
 
-    public final static CoreActionBar LOADING_MSG = CoreSystem.getInstance().createActionBar().message("§7§oDeine Daten werden geladen...");
-    public final static CoreActionBar LOADING_SUCCESS_MSG = CoreSystem.getInstance().createActionBar().message("§2§oDeine Daten wurden geladen!");
+    public final static CoreActionBar LOADING_MSG = CoreSystem.getInstance().createActionBar().message(new ComponentBuilder("Deine Daten werden geladen...").color(ChatColor.GRAY).italic(true).create());
+    public final static CoreActionBar LOADING_SUCCESS_MSG = CoreSystem.getInstance().createActionBar().message(new ComponentBuilder("Deine Daten wurden geladen!").color(ChatColor.DARK_GREEN).italic(true).create());
 
     public static final Map<UUID, BukkitTask> teleports = new HashMap<>();
 

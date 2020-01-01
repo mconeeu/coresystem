@@ -9,13 +9,15 @@ import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.bukkit.util.PlayerListModeToggleUtil;
 import lombok.Getter;
-import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
-import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;
+import net.minecraft.server.v1_15_R1.EntityArmorStand;
+import net.minecraft.server.v1_15_R1.PacketPlayOutEntityDestroy;
+import net.minecraft.server.v1_15_R1.PacketPlayOutEntityMetadata;
+import net.minecraft.server.v1_15_R1.PacketPlayOutSpawnEntityLiving;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_15_R1.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -41,8 +43,8 @@ public class CoreHologram extends PlayerListModeToggleUtil implements eu.mcone.c
     public void spawn(final Player p) {
         if (p.getWorld().equals(data.getLocation().bukkit().getWorld())) {
             for (final EntityArmorStand armor : this.entitylist) {
-                final PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(armor);
-                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutSpawnEntityLiving(armor));
+                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityMetadata(armor.getId(), armor.getDataWatcher(), false));
             }
         }
     }
@@ -51,8 +53,7 @@ public class CoreHologram extends PlayerListModeToggleUtil implements eu.mcone.c
     public void despawn(final Player p) {
         if (p.getWorld().equals(data.getLocation().bukkit().getWorld())) {
             for (final EntityArmorStand armor : this.entitylist) {
-                final PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(armor.getId());
-                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
+                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityDestroy(armor.getId()));
             }
         }
     }
@@ -89,10 +90,10 @@ public class CoreHologram extends PlayerListModeToggleUtil implements eu.mcone.c
         String[] text = data.getText();
         for (final String line : text) {
             final EntityArmorStand entity = new EntityArmorStand(((CraftWorld) loc.getWorld()).getHandle(), loc.getX(), loc.getY() - 1.8, loc.getZ());
-            entity.setCustomName(ChatColor.translateAlternateColorCodes('&', line));
+            entity.setCustomName(CraftChatMessage.fromString(ChatColor.translateAlternateColorCodes('&', line))[0]);
             entity.setCustomNameVisible(true);
             entity.setInvisible(true);
-            entity.setGravity(false);
+            entity.setNoGravity(true);
             this.entitylist.add(entity);
             loc.subtract(0.0, DISTANCE, 0.0);
             ++count;

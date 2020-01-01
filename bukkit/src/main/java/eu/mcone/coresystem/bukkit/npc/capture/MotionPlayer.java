@@ -1,20 +1,8 @@
 package eu.mcone.coresystem.bukkit.npc.capture;
 
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationProgressEvent;
-import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationStateChangeEvent;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
-import eu.mcone.coresystem.api.bukkit.npc.capture.packets.*;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
-import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
-import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.MotionPlayer {
 
@@ -23,7 +11,7 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Mot
     }
 
     public void playMotionCapture() {
-        currentTick = new AtomicInteger(0);
+        /*currentTick = new AtomicInteger(0);
         AtomicInteger packetsCount = new AtomicInteger(0);
         AtomicInteger currentProgress = new AtomicInteger(0);
 
@@ -117,15 +105,22 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Mot
                     Bukkit.getPluginManager().callEvent(new NpcAnimationStateChangeEvent(playerNpc, NpcAnimationStateChangeEvent.NpcAnimationState.END));
                 }
             }
-        }, 1L, 1L);
+        }, 1L, 1L);*/
     }
 
     private int getPressDuration(final Location blockLocation) {
-        if (blockLocation.getBlock().getType() == Material.STONE_BUTTON)
-            return 20;
-        else if (blockLocation.getBlock().getType() == Material.WOOD_BUTTON)
-            return 30;
-
-        return 0;
+        switch (blockLocation.getBlock().getType()) {
+            case BIRCH_BUTTON:
+            case ACACIA_BUTTON:
+            case DARK_OAK_BUTTON:
+            case JUNGLE_BUTTON:
+            case OAK_BUTTON:
+            case SPRUCE_BUTTON:
+                return 30;
+            case STONE_BUTTON:
+                return 20;
+            default:
+                return 0;
+        }
     }
 }

@@ -24,10 +24,10 @@ class PlayerSettingsInventory extends CoreInventory {
         super("§8» §c§lEinstellungen", p, InventorySlot.ROW_4, InventoryOption.FILL_EMPTY_SLOTS);
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(p);
 
-        setItem(InventorySlot.ROW_2_SLOT_3, new ItemBuilder(Material.SKULL_ITEM, 1, 3).displayName("§f§lErhalte Freundschaftsanfragen").create());
+        setItem(InventorySlot.ROW_2_SLOT_3, new ItemBuilder(Material.PLAYER_HEAD, 1).displayName("§f§lErhalte Freundschaftsanfragen").create());
         setItem(InventorySlot.ROW_3_SLOT_3, cp.getSettings().isEnableFriendRequests() ?
-                        new ItemBuilder(Material.INK_SACK, 1, 10).displayName("§a§lAktiviert").lore("§7§oKlicke zum akzeptieren von", "§7§oFreundschaftsanfragen").create() :
-                        new ItemBuilder(Material.INK_SACK, 1, 1).displayName("§c§lDeaktiviert").lore("§7§oKlicke zum ablehnen von", "§7§oFreundschaftsanfragen").create(),
+                        new ItemBuilder(Material.LIME_DYE).displayName("§a§lAktiviert").lore("§7§oKlicke zum akzeptieren von", "§7§oFreundschaftsanfragen").create() :
+                        new ItemBuilder(Material.RED_DYE).displayName("§c§lDeaktiviert").lore("§7§oKlicke zum ablehnen von", "§7§oFreundschaftsanfragen").create(),
                 e -> {
                     cp.getSettings().setEnableFriendRequests(!cp.getSettings().isEnableFriendRequests());
                     cp.updateSettings();
@@ -56,8 +56,8 @@ class PlayerSettingsInventory extends CoreInventory {
         if (p.hasPermission("system.bungee.nick")) {
             setItem(InventorySlot.ROW_2_SLOT_5, new ItemBuilder(Material.NAME_TAG).displayName("§f§lAutomatisch Nicken").create());
             setItem(InventorySlot.ROW_3_SLOT_5, cp.getSettings().isAutoNick() ?
-                            new ItemBuilder(Material.INK_SACK, 1, 10).displayName("§a§lAktiviert").lore("§7§oKlicke, um nicht mehr automatisch", "§7§ogenickt zu werden").create() :
-                            new ItemBuilder(Material.INK_SACK, 1, 1).displayName("§c§lDeaktiviert").lore("§7§oKlicke, um automatisch genickt", "§7§ozu werden").create(),
+                            new ItemBuilder(Material.LIME_DYE).displayName("§a§lAktiviert").lore("§7§oKlicke, um nicht mehr automatisch", "§7§ogenickt zu werden").create() :
+                            new ItemBuilder(Material.RED_DYE).displayName("§c§lDeaktiviert").lore("§7§oKlicke, um automatisch genickt", "§7§ozu werden").create(),
                     e -> {
                         cp.getSettings().setAutoNick(!cp.getSettings().isAutoNick());
                         cp.updateSettings();
@@ -102,9 +102,9 @@ class PlayerSettingsInventory extends CoreInventory {
             new PlayerSettingsInventory(p);
         });
 
-        setItem(InventorySlot.ROW_4_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
+        setItem(InventorySlot.ROW_4_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
             new ProfileInventory(p);
-            p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
+            p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
         });
 
         openInventory();
@@ -113,13 +113,13 @@ class PlayerSettingsInventory extends CoreInventory {
     private ItemBuilder getSenderItem(PlayerSettings.Sender sender) {
         switch (sender) {
             case ALL:
-                return new ItemBuilder(Material.INK_SACK, 1, 10).displayName("§a§lVon Jedem");
+                return new ItemBuilder(Material.LIME_DYE).displayName("§a§lVon Jedem");
             case FRIENDS:
-                return new ItemBuilder(Material.INK_SACK, 1, 14).displayName("§e§lVon Freunden");
+                return new ItemBuilder(Material.ORANGE_DYE).displayName("§e§lVon Freunden");
             case NOBODY:
-                return new ItemBuilder(Material.INK_SACK, 1, 1).displayName("§c§lVon Niemandem");
+                return new ItemBuilder(Material.RED_DYE).displayName("§c§lVon Niemandem");
             default:
-                return new ItemBuilder(Material.INK_SACK);
+                return new ItemBuilder(Material.GRAY_DYE);
         }
     }
 

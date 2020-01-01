@@ -7,6 +7,7 @@ package eu.mcone.coresystem.api.bukkit.scoreboard;
 
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
+import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.Team;
 
 public final class MainScoreboard extends CoreScoreboard {
@@ -15,6 +16,7 @@ public final class MainScoreboard extends CoreScoreboard {
     public Team modifyTeam(CorePlayer owner, CorePlayer p, Team t) {
         Group g = p.isNicked() ? Group.SPIELER : p.getMainGroup();
         t.setPrefix(g.getPrefix());
+        t.setColor(ChatColor.GRAY);
 
         if (p.isVanished()) {
             t.setSuffix(" §3§lⓋ");

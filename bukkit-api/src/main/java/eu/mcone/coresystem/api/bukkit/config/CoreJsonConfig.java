@@ -14,15 +14,16 @@ import eu.mcone.coresystem.api.bukkit.config.typeadapter.gson.CraftItemStackType
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.gson.LocationTypeAdapter;
 import eu.mcone.coresystem.api.core.exception.CoreConfigException;
 import lombok.Getter;
-import org.apache.commons.io.FileUtils;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.libs.org.apache.commons.io.FileUtils;
+import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 
 public class CoreJsonConfig<T> {
@@ -90,7 +91,7 @@ public class CoreJsonConfig<T> {
         try {
             if (!file.exists()) {
                 this.file.createNewFile();
-                FileUtils.writeStringToFile(file, "{}");
+                FileUtils.writeStringToFile(file, "{}", StandardCharsets.UTF_8);
             }
 
             reloadFile();

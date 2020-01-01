@@ -20,7 +20,7 @@ public class ChannelHandler implements eu.mcone.coresystem.api.bungee.util.Chann
             out.writeUTF(w);
         }
 
-        server.getInfo().sendData("MC_ONE_RETURN", out.toByteArray());
+        server.getInfo().sendData("mcone:return", out.toByteArray());
     }
 
     @Override
@@ -31,7 +31,7 @@ public class ChannelHandler implements eu.mcone.coresystem.api.bungee.util.Chann
             out.writeUTF(w);
         }
 
-        player.getServer().getInfo().sendData("MC_ONE_INFO", out.toByteArray());
+        player.getServer().getInfo().sendData("mcone:info", out.toByteArray());
     }
 
     @Override

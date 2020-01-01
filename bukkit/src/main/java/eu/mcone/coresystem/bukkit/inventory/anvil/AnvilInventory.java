@@ -10,10 +10,11 @@ import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilSlot;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import lombok.Getter;
-import net.minecraft.server.v1_8_R3.ChatMessage;
-import net.minecraft.server.v1_8_R3.EntityPlayer;
-import net.minecraft.server.v1_8_R3.PacketPlayOutOpenWindow;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import net.minecraft.server.v1_15_R1.ChatMessage;
+import net.minecraft.server.v1_15_R1.Containers;
+import net.minecraft.server.v1_15_R1.EntityPlayer;
+import net.minecraft.server.v1_15_R1.PacketPlayOutOpenWindow;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -25,11 +26,14 @@ import java.util.Map;
 public class AnvilInventory implements CoreAnvilInventory {
 
     @Getter
-    private AnvilClickEventHandler handler;
-    private Map<AnvilSlot, ItemStack> items;
-    private Map<Player, Inventory> inventories;
+    private final String title;
+    @Getter
+    private final AnvilClickEventHandler handler;
+    private final Map<AnvilSlot, ItemStack> items;
+    private final Map<Player, Inventory> inventories;
 
-    public AnvilInventory(AnvilClickEventHandler handler) {
+    public AnvilInventory(String title, AnvilClickEventHandler handler) {
+        this.title = title;
         this.handler = handler;
         this.items = new HashMap<>();
         this.inventories = new HashMap<>();
@@ -46,18 +50,15 @@ public class AnvilInventory implements CoreAnvilInventory {
     @Override
     public Inventory open(Player player) {
         EntityPlayer p = ((CraftPlayer) player).getHandle();
-        AnvilContainer container = new AnvilContainer(p);
+        AnvilContainer container = new AnvilContainer(player, title);
         Inventory inventory = container.getBukkitView().getTopInventory();
 
         for (AnvilSlot slot : items.keySet()) {
             inventory.setItem(slot.getSlot(), items.get(slot));
         }
 
-        int c = p.nextContainerCounter();
-
-        p.playerConnection.sendPacket(new PacketPlayOutOpenWindow(c, "minecraft:anvil", new ChatMessage("Repairing"), 0));
+        p.playerConnection.sendPacket(new PacketPlayOutOpenWindow(container.getContainerId(), Containers.ANVIL, new ChatMessage(title)));
         p.activeContainer = container;
-        p.activeContainer.windowId = c;
         p.activeContainer.addSlotListener(p);
 
         inventories.put(player, inventory);
@@ -66,14 +67,6 @@ public class AnvilInventory implements CoreAnvilInventory {
 
     public Inventory getPlayersInventory(Player player) {
         return inventories.getOrDefault(player, null);
-    }
-
-    @Override
-    public AnvilInventory destroy() {
-        this.handler = null;
-        this.items = null;
-
-        return this;
     }
 
 }

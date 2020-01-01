@@ -18,10 +18,10 @@ import eu.mcone.coresystem.bukkit.inventory.modification.CoreInventoryModificati
 import eu.mcone.coresystem.core.util.CoreCooldownSystem;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
-import org.bukkit.material.Command;
 import org.bukkit.plugin.SimplePluginManager;
 
 import java.lang.reflect.Field;

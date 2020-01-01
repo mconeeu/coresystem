@@ -56,8 +56,7 @@ public class GiveCMD extends CoreCommand {
 
     private static Material resolveItem(String arg) {
         try {
-            int id = Integer.parseInt(arg);
-            return Material.getMaterial(id);
+            return Material.getMaterial(arg);
         } catch (NumberFormatException ignored) {
             return Material.getMaterial(arg.toUpperCase());
         }

@@ -40,12 +40,12 @@ public class GamemodeCMD extends CoreCommand {
                     p.setAllowFlight(true);
                 } else {
                     BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/gm §4oder §c/gamemode <Gamemode>");
-                    p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
+                    p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
                     return true;
                 }
 
                 BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast deinen Spielmodus auf §f" + p.getGameMode() + " §2gesetzt!");
-                p.playSound(p.getLocation(), Sound.BLAZE_HIT, 1, 1);
+                p.playSound(p.getLocation(), Sound.ENTITY_BLAZE_HURT, 1, 1);
             } else {
                 CoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.consolesender");
             }
@@ -72,10 +72,10 @@ public class GamemodeCMD extends CoreCommand {
 
                 BukkitCoreSystem.getInstance().getMessager().send(t, "§7Dein Spielmodus wurde auf §f" + t.getGameMode() + " §7gesetzt.");
                 BukkitCoreSystem.getInstance().getMessager().send(sender, "§2Du hast den Spielmodus von §f" + t.getName() + " §2auf §a" + t.getGameMode() + "§2 gesetzt.");
-                t.playSound(t.getLocation(), Sound.BLAZE_HIT, 1, 1);
+                t.playSound(t.getLocation(), Sound.ENTITY_BLAZE_HURT, 1, 1);
 
                 if (sender instanceof Player) {
-                    ((Player) sender).playSound(((Player) sender).getLocation(), Sound.BLAZE_HIT, 1, 1);
+                    ((Player) sender).playSound(((Player) sender).getLocation(), Sound.ENTITY_BLAZE_HURT, 1, 1);
                 }
             } catch (NullPointerException d) {
                 BukkitCoreSystem.getInstance().getMessager().send(sender, "§4Dieser Spieler ist nicht Online oder existiert nicht!");

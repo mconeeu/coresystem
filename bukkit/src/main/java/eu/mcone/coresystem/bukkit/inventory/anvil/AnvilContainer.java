@@ -5,17 +5,27 @@
 
 package eu.mcone.coresystem.bukkit.inventory.anvil;
 
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_15_R1.*;
+import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 
 class AnvilContainer extends ContainerAnvil {
 
-    AnvilContainer(EntityHuman entity) {
-        super(entity.inventory, entity.world, new BlockPosition(0, 0, 0), entity);
+    AnvilContainer(Player player, String title) {
+        super(((CraftPlayer) player).getHandle().nextContainerCounter(), ((CraftPlayer) player).getHandle().inventory, ContainerAccess.at(((CraftWorld) player.getWorld()).getHandle(), new BlockPosition(0, 0, 0)));
+        this.checkReachable = false;
+        setTitle(new ChatMessage(title));
     }
 
     @Override
-    public boolean a(EntityHuman entityhuman) {
-        return true;
+    public void e() {
+        super.e();
+        this.levelCost.set(0);
+    }
+
+    public int getContainerId() {
+        return windowId;
     }
 
 }

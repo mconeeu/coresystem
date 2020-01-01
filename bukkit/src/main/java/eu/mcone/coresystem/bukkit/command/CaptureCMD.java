@@ -228,11 +228,11 @@ public class CaptureCMD extends CorePlayerCommand {
                         CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().saveMotionCapture(motionRecorder);
                         capture = false;
                         CoreSystem.getInstance().getMessager().send(p, "§2Die Aufnahme wurde erfolgreich unter dem Namen §a" + motionRecorder.getName() + " §2gespeichert!");
-                        p.playSound(p.getLocation(), Sound.ANVIL_USE, 1, 1);
+                        p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_USE, 1, 1);
                         return true;
                     } else {
                         CoreSystem.getInstance().getMessager().send(p, "§cDu musst eine Aufnahme beginnen um diese speichern zu können!");
-                        p.playSound(p.getLocation(), Sound.ANVIL_BREAK, 1, 1);
+                        p.playSound(p.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1, 1);
                         return false;
                     }
                 } else {

@@ -26,10 +26,4 @@ public interface CoreAnvilInventory {
      */
     Inventory open(Player player);
 
-    /**
-     * destroys the Inventory with the AnvilClickEventHandler
-     * @return returns the destroyed anvil inventory
-     */
-    CoreAnvilInventory destroy();
-
 }

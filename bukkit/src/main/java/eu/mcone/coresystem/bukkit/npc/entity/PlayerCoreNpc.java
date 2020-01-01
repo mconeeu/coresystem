@@ -5,8 +5,6 @@
 
 package eu.mcone.coresystem.bukkit.npc.entity;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
@@ -14,8 +12,6 @@ import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
 import eu.mcone.coresystem.api.bukkit.npc.data.PlayerNpcData;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
-import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
-import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.core.exception.MotionCaptureCurrentlyRunningException;
 import eu.mcone.coresystem.api.core.exception.NpcCreateException;
@@ -26,13 +22,11 @@ import eu.mcone.coresystem.bukkit.npc.CoreNPC;
 import eu.mcone.coresystem.bukkit.npc.capture.MotionPlayer;
 import eu.mcone.coresystem.bukkit.util.ReflectionManager;
 import lombok.Getter;
-import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.Bukkit;
+import net.minecraft.server.v1_15_R1.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_8_R3.util.CraftChatMessage;
+import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_15_R1.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -41,7 +35,6 @@ import java.util.*;
 public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
 
     private static final Random UUID_RANDOM = new Random();
-    private final Location bedLocation;
 
     @Getter
     private UUID uuid;
@@ -53,16 +46,18 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     private Location location;
     @Getter
     private MotionPlayer motionPlayer;
+    private Map<Integer, DataWatcher.Item<?>> options;
 
     protected PlayerCoreNpc(NpcData data, ListMode visibilityMode, Player[] players) {
         super(PlayerNpcData.class, data, visibilityMode, players);
-        this.bedLocation = new Location(data.getLocation().bukkit().getWorld(), 1, 1, 1);
         this.location = data.getLocation().bukkit();
     }
 
     @Override
     protected void onCreate() {
         this.uuid = new UUID(UUID_RANDOM.nextLong(), 0);
+        this.options = new HashMap<>();
+        this.options.put(16, new DataWatcher.Item<>(new DataWatcherObject<>(16, DataWatcherRegistry.a), (byte) 0xFF));
 
         try {
             switch (entityData.getSkinType()) {
@@ -124,11 +119,10 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         }
 
         if (!this.entityData.getEquipment().equals(entityData.getEquipment())) {
-            for (int i = 0; i < entityData.getEquipment().size() && i < 5; i++) {
-                if (!this.entityData.getEquipment().get(i).equals(entityData.getEquipment().get(i))) {
-                    this.entityData.getEquipment().set(i, entityData.getEquipment().get(i));
-                    sendPackets(makeEquipmentPacket(i));
-                }
+            this.entityData.setEquipment(new HashMap<>(entityData.getEquipment()));
+
+            for (Map.Entry<EnumItemSlot, ItemStack> equipment : entityData.getEquipment().entrySet()) {
+                sendPackets(makeEquipmentPacket(equipment.getKey(), equipment.getValue()));
             }
         }
     }
@@ -171,52 +165,42 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     @SuppressWarnings("deprecation")
     @Override
     protected void _spawn(Player p) {
-        int size = entityData.isVisibleOnTab() ? 8 : 9;
-        size += entityData.isSleeping() ? 4 : 0;
-
+        int size = entityData.isVisibleOnTab() ? 10 : 11;
+        int i = -1;
         Packet<?>[] packets = new Packet[size];
 
-        packets[0] = makeTablistPacket(true);
-
-        packets[1] = new PacketPlayOutNamedEntitySpawn();
-        ReflectionManager.setValue(packets[1], "a", entityId);
-        ReflectionManager.setValue(packets[1], "b", profile.getId());
-        ReflectionManager.setValue(packets[1], "c", MathHelper.floor(data.getLocation().getX() * 32.0D));
-        ReflectionManager.setValue(packets[1], "d", MathHelper.floor(data.getLocation().getY() * 32.0D));
-        ReflectionManager.setValue(packets[1], "e", MathHelper.floor(data.getLocation().getZ() * 32.0D));
-        ReflectionManager.setValue(packets[1], "f", (byte) ((int) (data.getLocation().getYaw() * 256.0F / 360.0F)));
-        ReflectionManager.setValue(packets[1], "g", (byte) ((int) (data.getLocation().getPitch() * 256.0F / 360.0F)));
-        ReflectionManager.setValue(packets[1], "h", 0);
-        DataWatcher watcher = new DataWatcher(null);
-        watcher.a(0, (byte) 0);
-        watcher.a(6, (float) 20);
-        watcher.a(10, (byte) 127);
-        ReflectionManager.setValue(packets[1], "i", watcher);
-
-        packets[2] = makeHeadRotationPacket(data.getLocation().getYaw());
-
-        for (int i = 0; i < entityData.getEquipment().size() && i < 5; i++) {
-            packets[i + 3] = makeEquipmentPacket(i);
-        }
-
-        if (!entityData.isVisibleOnTab()) {
-            packets[8] = makeTablistPacket(false);
-        }
-
         if (entityData.isSleeping()) {
-            p.sendBlockChange(bedLocation, Material.BED_BLOCK, (byte) 0);
+            this.options.put(6, new DataWatcher.Item<>(new DataWatcherObject<>(6, DataWatcherRegistry.s), EntityPose.SLEEPING));
 
             if (!entityData.isSleepWithBed()) {
                 data.getLocation().add(0, 0.15, 0);
             }
-
-            Packet<?>[] sleepPackets = makeSleepPackets(bedLocation);
-            packets[9] = sleepPackets[0];
-            packets[10] = sleepPackets[1];
-            packets[11] = sleepPackets[2];
-            packets[12] = sleepPackets[3];
         }
 
+        packets[++i] = makeTablistPacket(true);
+
+        packets[++i] = new PacketPlayOutNamedEntitySpawn();
+        ReflectionManager.setValue(packets[i], "a", entityId);
+        ReflectionManager.setValue(packets[i], "b", profile.getId());
+        ReflectionManager.setValue(packets[i], "c", data.getLocation().getX());
+        ReflectionManager.setValue(packets[i], "d", data.getLocation().getY());
+        ReflectionManager.setValue(packets[i], "e", data.getLocation().getZ());
+        ReflectionManager.setValue(packets[i], "f", (byte) ((int) (data.getLocation().getYaw() * 256.0F / 360.0F)));
+        ReflectionManager.setValue(packets[i], "g", (byte) ((int) (data.getLocation().getPitch() * 256.0F / 360.0F)));
+
+        packets[++i] = makeMetadataPacket();
+
+        packets[++i] = makeHeadRotationPacket(data.getLocation().getYaw());
+
+        for (Map.Entry<EnumItemSlot, ItemStack> equipment : entityData.getEquipment().entrySet()) {
+            packets[++i] = makeEquipmentPacket(equipment.getKey(), equipment.getValue());
+        }
+
+        if (!entityData.isVisibleOnTab()) {
+            packets[++i] = makeTablistPacket(false);
+        }
+
+        System.out.println(Arrays.toString(packets));
         sendPackets(p, packets);
     }
 
@@ -230,9 +214,9 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     }
 
     @Override
-    public void setEquipment(EquipmentPosition position, ItemStack item, Player... players) {
-        entityData.getEquipment().set(position.getId(), item);
-        sendPackets(makeEquipmentPacket(position.getId()), players);
+    public void setEquipment(EnumItemSlot slot, ItemStack item, Player... players) {
+        entityData.getEquipment().put(slot, item);
+        sendPackets(makeEquipmentPacket(slot, item), players);
     }
 
     @Override
@@ -249,28 +233,27 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void setSleeping(boolean sleepWithBed) {
-        for (Player pl : Bukkit.getOnlinePlayers()) {
-            pl.sendBlockChange(bedLocation, Material.BED_BLOCK, (byte) 0);
-        }
-
         if (!sleepWithBed) {
             data.getLocation().add(0, 0.15, 0);
         }
 
-        sendPackets(makeSleepPackets(bedLocation));
+        this.options.put(6, new DataWatcher.Item<>(new DataWatcherObject<>(6, DataWatcherRegistry.s), EntityPose.SLEEPING));
+
+        Packet<?>[] tpPackets = makeTeleportPackets(data.getLocation());
+        sendPackets(makeMetadataPacket(), tpPackets[0], tpPackets[1]);
     }
 
     @Override
     public void setAwake() {
-        sendAnimation(NpcAnimation.LEAVE_BED);
-
         if (!entityData.isSleepWithBed()) {
             data.getLocation().subtract(0, 0.15, 0);
         }
-        teleport(data.getLocation());
+
+        this.options.put(6, new DataWatcher.Item<>(new DataWatcherObject<>(6, DataWatcherRegistry.s), EntityPose.STANDING));
+        Packet<?>[] tpPackets = makeTeleportPackets(data.getLocation());
+        sendPackets(makeMetadataPacket(), tpPackets[0], tpPackets[1]);
     }
 
     @Override
@@ -291,7 +274,7 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         }
     }
 
-    @Override
+    /*@Override
     public void playLabymodEmote(int emoteId, Player... players) {
         JsonArray array = new JsonArray();
 
@@ -304,70 +287,34 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         for (Player player : send) {
             BukkitCoreSystem.getInstance().getLabyModAPI().sendServerMessage(player, "emote_api", array);
         }
-    }
+    }*/
 
-    public void sneak(boolean sneak) {
-        DataWatcher w = new DataWatcher(null);
-        if (sneak) {
-            w.a(0, (byte) 2);
-        } else {
-            w.a(0, (byte) 0);
-        }
-
-        w.a(1, (short) 0);
-        w.a(8, (byte) 0);
-
-        sendPackets(new PacketPlayOutEntityMetadata(entityId, w, true));
-    }
-
-    //Crashes the client, because float cannot be cast to byte (Minecraft Client error stacktrace)
-    public void block(final boolean block) {
-        DataWatcher w = new DataWatcher(null);
-        w.a(0, (byte) 16);
-        w.a(1, (short) 0);
-
-        if (block) {
-            w.a(6, (byte) 1);
-        } else {
-            w.a(6, (byte) 0);
-        }
-
-        sendPackets(new PacketPlayOutEntityMetadata(entityId, w, true));
-    }
-
-    public void setItemInHand(final ItemStack item) {
-        sendPackets(new PacketPlayOutEntityEquipment(entityId, 0, CraftItemStack.asNMSCopy(item)));
+    @Override
+    public void sneak(boolean sneak, Player... players) {
+        this.options.put(6, new DataWatcher.Item<>(new DataWatcherObject<>(6, DataWatcherRegistry.s), sneak ? EntityPose.CROUCHING : EntityPose.STANDING));
+        sendPackets(makeMetadataPacket(), players);
     }
 
     private PacketPlayOutPlayerInfo makeTablistPacket(boolean add) {
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo();
         ReflectionManager.setValue(packet, "a", add ? PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER : PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER);
         ReflectionManager.setValue(packet, "b", new ArrayList<>(Collections.singleton(
-                packet.new PlayerInfoData(profile, 0, WorldSettings.EnumGamemode.SURVIVAL, CraftChatMessage.fromString(entityData.getTablistName())[0])
+                packet.new PlayerInfoData(profile, 0, EnumGamemode.SURVIVAL, CraftChatMessage.fromString(entityData.getTablistName())[0])
         )));
 
         return packet;
     }
 
-    private PacketPlayOutEntityEquipment makeEquipmentPacket(int slot) {
-        return entityData.getEquipment().get(slot) != null ? new PacketPlayOutEntityEquipment(entityId, slot, CraftItemStack.asNMSCopy(entityData.getEquipment().get(slot))) : null;
+    private PacketPlayOutEntityEquipment makeEquipmentPacket(EnumItemSlot slot, ItemStack item) {
+        return new PacketPlayOutEntityEquipment(entityId, slot, CraftItemStack.asNMSCopy(item));
     }
 
-    private Packet<?>[] makeSleepPackets(Location bedLocation) {
-        BlockPosition block = new BlockPosition(bedLocation.getBlockX(), bedLocation.getBlockY(), bedLocation.getBlockZ());
+    private PacketPlayOutEntityMetadata makeMetadataPacket() {
+        PacketPlayOutEntityMetadata packet = new PacketPlayOutEntityMetadata();
+        ReflectionManager.setValue(packet, "a", entityId);
+        ReflectionManager.setValue(packet, "b", new ArrayList<>(this.options.values()));
 
-        PacketPlayOutBed bedPacket = new PacketPlayOutBed();
-        ReflectionManager.setValue(bedPacket, "a", entityId);
-        ReflectionManager.setValue(bedPacket, "b", block);
-
-        Packet<?>[] tpPackets = makeTeleportPackets(data.getLocation());
-
-        return new Packet[]{
-                bedPacket,
-                tpPackets[0],
-                tpPackets[1],
-                tpPackets[2]
-        };
+        return packet;
     }
 
     private GameProfile makeGameProfile(UUID uuid, String name, SkinInfo skin) {

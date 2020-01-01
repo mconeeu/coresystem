@@ -12,7 +12,7 @@ import org.bukkit.Material;
 
 public enum Gamemode {
 
-    BEDWARS("BW", "Bedwars", ChatColor.RED, Material.BED),
+    BEDWARS("BW", "Bedwars", ChatColor.RED, Material.RED_BED),
     SKYPVP("SP", "SkyPvP", ChatColor.BLUE, Material.DIAMOND_SWORD),
     KNOCKIT("KI", "KnockIT", ChatColor.DARK_GREEN, Material.STICK),
     MINEWAR("MW", "Minewar", ChatColor.LIGHT_PURPLE, Material.DIRT),

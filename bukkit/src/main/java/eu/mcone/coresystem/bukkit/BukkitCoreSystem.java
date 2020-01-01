@@ -56,13 +56,10 @@ import eu.mcone.coresystem.core.util.CoreCooldownSystem;
 import eu.mcone.coresystem.core.util.MoneyUtil;
 import eu.mcone.networkmanager.core.api.database.Database;
 import eu.mcone.networkmanager.core.database.MongoConnection;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.server.v1_8_R3.MinecraftServer;
-import net.minecraft.server.v1_8_R3.PacketDataSerializer;
-import net.minecraft.server.v1_8_R3.PacketPlayOutCustomPayload;
+import net.minecraft.server.v1_15_R1.EnumHand;
+import net.minecraft.server.v1_15_R1.PacketPlayOutOpenBook;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
@@ -70,8 +67,8 @@ import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -201,7 +198,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         afkManager = new CoreAfkManager();
 
         sendConsoleMessage("§aLoading Permissions & Groups...");
-        permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), database1);
+        System.out.println("name: "+getServer().getName());
+        permissionManager = new PermissionManager(getServer().getName(), database1);
 
         sendConsoleMessage("§aStarting NickManager...");
         nickManager = new NickManager(this);
@@ -213,11 +211,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         sendConsoleMessage("§aRegistering BungeeCord Messaging Channel...");
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        getServer().getMessenger().registerOutgoingPluginChannel(this, "WDL|CONTROL");
-        getServer().getMessenger().registerIncomingPluginChannel(this, "MC_ONE_RETURN", new ReturnPluginChannelListener());
-        getServer().getMessenger().registerIncomingPluginChannel(this, "MC_ONE_INFO", new InfoPluginChannelListener());
+        //getServer().getMessenger().registerOutgoingPluginChannel(this, "WDL|CONTROL");
+        getServer().getMessenger().registerIncomingPluginChannel(this, "mcone:return", new ReturnPluginChannelListener());
+        getServer().getMessenger().registerIncomingPluginChannel(this, "mcone:info", new InfoPluginChannelListener());
         getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordReturnPluginChannelListener());
-        getServer().getMessenger().registerIncomingPluginChannel(this, "WDL|INIT", new AntiWorldDownloader());
+        //getServer().getMessenger().registerIncomingPluginChannel(this, "WDL|INIT", new AntiWorldDownloader());
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             CorePlayerListener.LOADING_MSG.send(p);
@@ -394,8 +392,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public CoreAnvilInventory createAnvilInventory(AnvilClickEventHandler handler) {
-        return new AnvilInventory(handler);
+    public CoreAnvilInventory createAnvilInventory(String title, AnvilClickEventHandler handler) {
+        return new AnvilInventory(title, handler);
     }
 
     @Override
@@ -404,12 +402,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         ItemStack old = player.getInventory().getItem(slot);
         player.getInventory().setItem(slot, book);
 
-        ByteBuf buf = Unpooled.buffer(256);
-        buf.setByte(0, (byte) 0);
-        buf.writerIndex(1);
-
-        PacketPlayOutCustomPayload packet = new PacketPlayOutCustomPayload("MC|BOpen", new PacketDataSerializer(buf));
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(new PacketPlayOutOpenBook(EnumHand.MAIN_HAND));
         player.getInventory().setItem(slot, old);
     }
 

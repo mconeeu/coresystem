@@ -104,17 +104,17 @@ public abstract class CategoryInventory extends CoreInventory {
         setItem(InventorySlot.ROW_6_SLOT_5, LEFT_ITEM, e -> {
             if (itemPage >= 2) {
                 openInventory(itemPage-1);
-                player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+                player.playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
             } else {
-                player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
             }
         });
         setItem(InventorySlot.ROW_6_SLOT_6, RIGHT_ITEM, e -> {
             if (itemPage < itemPages) {
                 openInventory(itemPage+1);
-                player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+                player.playSound(player.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
             } else {
-                player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
+                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
             }
         });
 

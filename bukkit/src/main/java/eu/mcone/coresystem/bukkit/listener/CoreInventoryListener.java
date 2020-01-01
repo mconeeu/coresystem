@@ -43,7 +43,7 @@ public class CoreInventoryListener implements Listener {
                         e.setCancelled(true);
                         BukkitCoreSystem.getSystem().getMessager().send(p, "§4Du hast keine Berechtigung um andere Inventare zu modifizieren!");
                     }
-                } else if (inv.getType().equals(InventoryType.ENDER_CHEST) || inv.getTitle().equals(PlayerInventoryProfile.ENDERCHEST_TITLE)) {
+                } else if (inv.getType().equals(InventoryType.ENDER_CHEST) || e.getView().getTitle().equals(PlayerInventoryProfile.ENDERCHEST_TITLE)) {
                     if (p.hasPermission("system.bukkit.ecsee.modify.other")) {
                         e.setCancelled(false);
                     } else {
@@ -95,11 +95,11 @@ public class CoreInventoryListener implements Listener {
                     e.setCancelled(true);
                     event.onClick(e);
                     return true;
-                } else if (itemStack.getType().equals(Material.SKULL_ITEM) && item.getType().equals(Material.SKULL_ITEM)) {
+                } else if (itemStack.getType().equals(Material.PLAYER_HEAD) && item.getType().equals(Material.PLAYER_HEAD)) {
                     SkullMeta meta = (SkullMeta) itemStack.getItemMeta();
                     SkullMeta clickedMeta = (SkullMeta) item.getItemMeta();
 
-                    if (meta.equals(clickedMeta) || meta.hasOwner() ? (meta.getOwner() != null && clickedMeta.getOwner() != null && meta.getOwner().equals(clickedMeta.getOwner()) && meta.getDisplayName().equalsIgnoreCase(clickedMeta.getDisplayName())) : meta.getDisplayName().equalsIgnoreCase(clickedMeta.getDisplayName())) {
+                    if (meta.equals(clickedMeta) || meta.hasOwner() ? (meta.getOwner() != null && clickedMeta.getOwningPlayer() != null && meta.getOwningPlayer().getName().equals(clickedMeta.getOwningPlayer().getName()) && meta.getDisplayName().equalsIgnoreCase(clickedMeta.getDisplayName())) : meta.getDisplayName().equalsIgnoreCase(clickedMeta.getDisplayName())) {
                         event.onClick(e);
                         return true;
                     }

@@ -1,5 +1,6 @@
 name: MCONE-BukkitCoreSystem
 version: ${project.version}
+api-version: '1.13'
 authors: [Domink Lippl, Rufus Maiwald]
 softdepend: [MCONE-CloudPlugin]
 main: eu.mcone.coresystem.bukkit.BukkitCoreSystem

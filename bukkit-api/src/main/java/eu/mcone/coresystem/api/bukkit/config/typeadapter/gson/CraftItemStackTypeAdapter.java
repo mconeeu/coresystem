@@ -8,9 +8,8 @@ package eu.mcone.coresystem.api.bukkit.config.typeadapter.gson;
 import com.google.gson.*;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.ItemStackTypeAdapterUtils;
-import eu.mcone.coresystem.api.bukkit.config.typeadapter.LegacyItemData;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
@@ -26,20 +25,12 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
     public CraftItemStack deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-        Material material;
+        Material material = Material.getMaterial(jsonObject.get("material").getAsString());
         String name = "";
         Map<Enchantment, Integer> enchants = null;
         List<String> lore = new ArrayList<>();
         int repairPenalty = 0;
         short durability = (short) jsonObject.get("durability").getAsInt();
-
-        LegacyItemData legacyItem = LegacyItemData.getLegacyItemData(jsonObject.get("material").getAsString());
-        if (legacyItem != null) {
-            material = Material.valueOf(legacyItem.getLegacyMaterial()[0]);
-            durability = (short) legacyItem.getLegacyDurability();
-        } else {
-            material = Material.valueOf(jsonObject.get("material").getAsString());
-        }
 
         if (jsonObject.has("name")) {
             name = jsonObject.get("name").getAsString();
@@ -58,7 +49,7 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
         }
 
         ItemStack stuff = new ItemStack(material, jsonObject.get("amount").getAsInt(), durability);
-        if ((material == Material.BOOK_AND_QUILL || material == Material.WRITTEN_BOOK) && jsonObject.has("book-meta")) {
+        if ((material == Material.WRITABLE_BOOK || material == Material.WRITTEN_BOOK) && jsonObject.has("book-meta")) {
             BookMeta meta = ItemStackTypeAdapterUtils.getBookMeta(context.deserialize(jsonObject.get("book-meta"), Map.class));
             stuff.setItemMeta(meta);
         } else if (material == Material.ENCHANTED_BOOK && jsonObject.has("book-meta")) {
@@ -67,10 +58,10 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
         } else if (ItemStackTypeAdapterUtils.isLeatherArmor(material) && jsonObject.has("armor-meta")) {
             LeatherArmorMeta meta = ItemStackTypeAdapterUtils.getLeatherArmorMeta(context.deserialize(jsonObject.get("armor-meta"), Map.class));
             stuff.setItemMeta(meta);
-        } else if (material == Material.SKULL_ITEM && jsonObject.has("skull-meta")) {
+        } else if ((material == Material.PLAYER_HEAD || material == Material.PLAYER_WALL_HEAD) && jsonObject.has("skull-meta")) {
             SkullMeta meta = ItemStackTypeAdapterUtils.getSkullMeta(context.deserialize(jsonObject.get("skull-meta"), Map.class));
             stuff.setItemMeta(meta);
-        } else if (material == Material.FIREWORK && jsonObject.has("firework-meta")) {
+        } else if (material == Material.FIREWORK_ROCKET && jsonObject.has("firework-meta")) {
             FireworkMeta meta = ItemStackTypeAdapterUtils.getFireworkMeta(context.deserialize(jsonObject.get("firework-meta"), Map.class));
             stuff.setItemMeta(meta);
         }
@@ -110,15 +101,15 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
         Material material = itemStack.getType();
         Map<String, Object> bookMeta = null, armorMeta = null, skullMeta = null, fwMeta = null;
 
-        if (material == Material.BOOK_AND_QUILL || material == Material.WRITTEN_BOOK) {
+        if (material == Material.WRITABLE_BOOK || material == Material.WRITTEN_BOOK) {
             bookMeta = ItemStackTypeAdapterUtils.serializeBookMeta((BookMeta) itemStack.getItemMeta());
         } else if (material == Material.ENCHANTED_BOOK) {
             bookMeta = ItemStackTypeAdapterUtils.serializeEnchantedBookMeta((EnchantmentStorageMeta) itemStack.getItemMeta());
         } else if (ItemStackTypeAdapterUtils.isLeatherArmor(material)) {
             armorMeta = ItemStackTypeAdapterUtils.serializeArmor((LeatherArmorMeta) itemStack.getItemMeta());
-        } else if (material == Material.SKULL_ITEM) {
+        } else if (material == Material.PLAYER_HEAD || material == Material.PLAYER_WALL_HEAD) {
             skullMeta = ItemStackTypeAdapterUtils.serializeSkull((SkullMeta) itemStack.getItemMeta());
-        } else if (material == Material.FIREWORK) {
+        } else if (material == Material.FIREWORK_ROCKET) {
             fwMeta = ItemStackTypeAdapterUtils.serializeFireworkMeta((FireworkMeta) itemStack.getItemMeta());
         }
 

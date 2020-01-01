@@ -35,7 +35,7 @@ public class EnderchestListener implements Listener {
 
     @EventHandler
     public void onInventoryClose(InventoryCloseEvent e) {
-        if (e.getInventory().getTitle().equals("§8Deine Enderkiste")) {
+        if (e.getView().getTitle().equals("§8Deine Enderkiste")) {
             apiGetter.getEnderchestManager((Player) e.getPlayer()).updateEnderchest(e.getInventory());
         }
     }

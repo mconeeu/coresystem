@@ -10,9 +10,9 @@ import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.util.Zip;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.networkmanager.core.api.database.Database;
-import org.apache.commons.io.IOUtils;
 import org.bson.Document;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.libs.org.apache.commons.io.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;

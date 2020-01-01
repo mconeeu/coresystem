@@ -17,19 +17,35 @@ import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.util.PlayerListModeToggleUtil;
 import eu.mcone.coresystem.bukkit.util.ReflectionManager;
 import lombok.Getter;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_15_R1.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeToggleUtil implements NPC {
 
+    private static final AtomicInteger ENTITY_COUNT;
     private final Set<Player> spawned;
+
+    static {
+        AtomicInteger entityCount = null;
+
+        try {
+            Field f = Entity.class.getDeclaredField("entityCount");
+            f.setAccessible(true);
+            entityCount = (AtomicInteger) f.get(null);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        } finally {
+            ENTITY_COUNT = entityCount;
+        }
+    }
 
     @Getter
     protected NpcData data;
@@ -150,16 +166,7 @@ public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeT
     }
 
     private static synchronized int getNextEntityId() {
-        try {
-            Field field = Entity.class.getDeclaredField("entityCount");
-            field.setAccessible(true);
-            int id = field.getInt(null);
-            field.set(null, id + 1);
-            return id;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return -1;
+        return ENTITY_COUNT.incrementAndGet();
     }
 
     public void sendPackets(Packet<?>... packets) {
@@ -211,18 +218,16 @@ public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeT
             throw new IllegalArgumentException("Locations are not in the same world.");
         }
 
-        return new Packet[]{
-                new PacketPlayOutEntityTeleport(
-                        entityId,
-                        (int) (loc.getX() * 32),
-                        (int) (loc.getY() * 32),
-                        (int) (loc.getZ() * 32),
-                        (byte) (loc.getYaw() * 256F / 360F),
-                        (byte) (loc.getPitch() * 256F / 360F),
-                        false
-                ),
-                makeHeadRotationPacket(loc.getYaw())
-        };
+        PacketPlayOutEntityTeleport teleportPacket = new PacketPlayOutEntityTeleport();
+        ReflectionManager.setValue(teleportPacket, "a", entityId);
+        ReflectionManager.setValue(teleportPacket, "b", loc.getX());
+        ReflectionManager.setValue(teleportPacket, "c", loc.getY());
+        ReflectionManager.setValue(teleportPacket, "d", loc.getZ());
+        ReflectionManager.setValue(teleportPacket, "e", (byte) (loc.getYaw() * 256F / 360F));
+        ReflectionManager.setValue(teleportPacket, "f", (byte) (loc.getPitch() * 256F / 360F));
+        ReflectionManager.setValue(teleportPacket, "g", false);
+
+        return new Packet[]{teleportPacket, makeHeadRotationPacket(loc.getYaw())};
     }
 
     protected PacketPlayOutEntityHeadRotation makeHeadRotationPacket(float yaw) {

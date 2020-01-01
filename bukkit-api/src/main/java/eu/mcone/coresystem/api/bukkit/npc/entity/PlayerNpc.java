@@ -8,10 +8,8 @@ package eu.mcone.coresystem.api.bukkit.npc.entity;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionPlayer;
-import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
-import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
-import org.bukkit.Location;
+import net.minecraft.server.v1_15_R1.EnumItemSlot;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -35,7 +33,7 @@ public interface PlayerNpc extends NPC {
      * @param item item
      * @param players players which should receive the item update (choose no players to send the update to all players and save the item in PlayerNpcData & core-config)
      */
-    void setEquipment(EquipmentPosition position, ItemStack item, Player... players);
+    void setEquipment(EnumItemSlot position, ItemStack item, Player... players);
 
     /**
      * Sends a packet to update the skin (if specific players are chosen, this update is temporary and will not be saved permanently to NpcData)
@@ -80,16 +78,14 @@ public interface PlayerNpc extends NPC {
      * @param emoteId LabyMod Emote ID
      * @param players players which should receive the name add|remove (choose no players to send the update to all players and save this setting in PlayerNpcData & core-config)
      */
-    void playLabymodEmote(int emoteId, Player... players);
+    /*void playLabymodEmote(int emoteId, Player... players);*/
 
     void playMotionCapture(final String name);
 
     void playMotionCapture(final MotionCaptureData data);
 
-    void sneak(boolean isSneaking);
+    /*void block(final boolean block);*/
 
-    void block(final boolean block);
-
-    void setItemInHand(final ItemStack item);
+    void sneak(boolean sneak, Player... players);
 
 }

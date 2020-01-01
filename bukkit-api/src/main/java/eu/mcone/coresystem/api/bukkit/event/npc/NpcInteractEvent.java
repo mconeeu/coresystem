@@ -7,7 +7,7 @@ package eu.mcone.coresystem.api.bukkit.event.npc;
 
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import lombok.Getter;
-import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
+import net.minecraft.server.v1_15_R1.PacketPlayInUseEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;

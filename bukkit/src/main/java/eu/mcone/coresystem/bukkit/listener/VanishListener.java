@@ -21,7 +21,7 @@ public class VanishListener implements Listener {
         if (!p.hasPermission("system.bukkit.vanish.see")) {
             for (CorePlayer t : BukkitCoreSystem.getSystem().getOnlineCorePlayers()) {
                 if (t.isVanished()) {
-                    p.hidePlayer(t.bukkit());
+                    p.hidePlayer(BukkitCoreSystem.getSystem(), t.bukkit());
                 }
             }
         }

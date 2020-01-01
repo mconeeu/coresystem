@@ -9,7 +9,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>mcone-coresystem</artifactId>
-        <groupId>eu.mcone.coresystem</groupId>
+        <groupId>eu.mcone.coresystem-1-15-1</groupId>
         <version>10.5.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -65,7 +65,7 @@
                         <option>-dontnote</option>
                         <option>-keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,LocalVariable*Table,*Annotation*,Synthetic,EnclosingMethod,EventHandler,Override</option>
                         <option>-keepclassmembers class ** { @net.md_5.bungee.event.EventHandler *; }</option>
-                        <option>-keep class eu.mcone.coresystem.api.** { *; }</option>
+                        <option>-keep class eu.mcone.coresystem-1-15-1.api.** { *; }</option>
                         <option>-keep class ** extends net.md_5.bungee.api.plugin.Plugin { public void onEnable(); public void onDisable(); }</option>
                         <option>-keep class org.mariadb.jdbc.** { *; }</option>
                         <option>-keep class net.labymod.** { *; }</option>
@@ -106,7 +106,7 @@
     <dependencies>
         <!-- MCONE Depen's  -->
         <dependency>
-            <groupId>eu.mcone.coresystem</groupId>
+            <groupId>eu.mcone.coresystem-1-15-1</groupId>
             <artifactId>core</artifactId>
             <version>10.5.3-SNAPSHOT</version>
             <scope>compile</scope>
@@ -118,7 +118,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>eu.mcone.coresystem</groupId>
+            <groupId>eu.mcone.coresystem-1-15-1</groupId>
             <artifactId>bungee-api</artifactId>
             <version>10.5.3-SNAPSHOT</version>
             <scope>compile</scope>

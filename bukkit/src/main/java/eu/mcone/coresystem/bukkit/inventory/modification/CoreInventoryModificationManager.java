@@ -334,10 +334,10 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
             }
 
             saveModifications(player.getUniqueId());
-            player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             CoreSystem.getInstance().getMessager().send(player, "§2Du hast das Inventar " + modifyInventory.getName() + " §2erfolgreich modifiziert!");
         } else {
-            throw new RuntimeCoreException("No modifyInventory for inventory " + modifiedInventory.getName() + " registered!");
+            throw new RuntimeCoreException("No modifyInventory for inventory " + modifyInventory.getName() + " registered!");
         }
     }
 

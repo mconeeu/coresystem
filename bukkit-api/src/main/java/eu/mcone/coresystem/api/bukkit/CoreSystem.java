@@ -167,10 +167,11 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     /**
      * creates a new AnvilInventory
      * it can be set for more than one player using the open(Player) method
+     * @param title Inventory title
      * @param handler ClickHandler
      * @return new AnvilInventory
      */
-    public abstract CoreAnvilInventory createAnvilInventory(AnvilClickEventHandler handler);
+    public abstract CoreAnvilInventory createAnvilInventory(String title, AnvilClickEventHandler handler);
 
     /**
      * creates an CorePlayer object for an offline or online player

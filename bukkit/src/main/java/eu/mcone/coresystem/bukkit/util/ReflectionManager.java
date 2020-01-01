@@ -5,8 +5,8 @@
 
 package eu.mcone.coresystem.bukkit.util;
 
-import net.minecraft.server.v1_8_R3.EntityPlayer;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import net.minecraft.server.v1_15_R1.EntityPlayer;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;

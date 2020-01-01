@@ -6,16 +6,16 @@
 package eu.mcone.coresystem.bukkit.util;
 
 import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
-import net.minecraft.server.v1_8_R3.IChatBaseComponent;
-import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 
 public class ActionBar implements CoreActionBar {
 
-    private String message;
+    private BaseComponent[] message;
 
-    public ActionBar message(String message) {
+    public ActionBar message(BaseComponent[] message) {
         this.message = message;
         return this;
     }
@@ -27,14 +27,7 @@ public class ActionBar implements CoreActionBar {
     }
 
     public ActionBar send(Player p) {
-        if (message != null) {
-            PacketPlayOutChat packet = new PacketPlayOutChat(
-                    IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + message + "\"}"), (byte) 2
-            );
-
-            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
-        }
-
+        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, message);
         return this;
     }
 

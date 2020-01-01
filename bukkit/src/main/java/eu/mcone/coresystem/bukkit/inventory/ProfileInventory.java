@@ -28,7 +28,7 @@ public class ProfileInventory extends CoreInventory {
     private static List<ProfileInventoryModifier> modifiers = new ArrayList<>();
 
     public ProfileInventory(Player p) {
-        super("§8» §3§l" + p.getName() + "'s Profil", p, (size > 0) ? size : InventorySlot.ROW_4, InventoryOption.FILL_EMPTY_SLOTS);
+        super("§8» §3§l" + p.getName() + "'"+ (!p.getName().endsWith("s") && !p.getName().endsWith("S") ? "s" : "") +" Profil", p, (size > 0) ? size : InventorySlot.ROW_4, InventoryOption.FILL_EMPTY_SLOTS);
 
         CorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(p);
         double onlinetime = Math.floor(((double) cp.getOnlinetime() / 60 / 60) * 100) / 100;
@@ -44,24 +44,24 @@ public class ProfileInventory extends CoreInventory {
                 ).create()
         );
 
-        setItem(InventorySlot.ROW_3_SLOT_2, new ItemBuilder(Material.NETHER_STAR, 1, 0).displayName("§f§lStats").lore("§7§oRufe die deine Spielerstatistiken", "§7§oaus allen MC ONE Spielmodi ab!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), e -> {
+        setItem(InventorySlot.ROW_3_SLOT_2, new ItemBuilder(Material.NETHER_STAR, 1).displayName("§f§lStats").lore("§7§oRufe die deine Spielerstatistiken", "§7§oaus allen MC ONE Spielmodi ab!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), e -> {
             p.performCommand("stats");
-            p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+            p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
         });
 
-        setItem(InventorySlot.ROW_3_SLOT_4, new ItemBuilder(Material.SKULL_ITEM, 1, 3).displayName("§9§lFreunde").lore("§7§oZeige deine Freunde und", "§7§oFreundschaftsanzeigen", "§7§oan!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), e -> {
+        setItem(InventorySlot.ROW_3_SLOT_4, new ItemBuilder(Material.PLAYER_HEAD, 1).displayName("§9§lFreunde").lore("§7§oZeige deine Freunde und", "§7§oFreundschaftsanzeigen", "§7§oan!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), e -> {
             new FriendsInventory(p);
-            p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+            p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
         });
 
-        setItem(InventorySlot.ROW_3_SLOT_6, new ItemBuilder(Material.CAKE, 1, 0).displayName("§5§lParty").lore("§7§oZeige infos zu deiner Party", "§7§oan, oder ertselle eine!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), e -> {
+        setItem(InventorySlot.ROW_3_SLOT_6, new ItemBuilder(Material.CAKE, 1).displayName("§5§lParty").lore("§7§oZeige infos zu deiner Party", "§7§oan, oder ertselle eine!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), e -> {
             new PartyInventory(p);
-            p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+            p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
         });
 
-        setItem(InventorySlot.ROW_3_SLOT_8, new ItemBuilder(Material.REDSTONE, 1, 0).displayName("§c§lEinstellungen").lore("§7§oVerwalte dein Konto und andere", "§7§oingame Einstellungen", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), e -> {
+        setItem(InventorySlot.ROW_3_SLOT_8, new ItemBuilder(Material.REDSTONE, 1).displayName("§c§lEinstellungen").lore("§7§oVerwalte dein Konto und andere", "§7§oingame Einstellungen", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), e -> {
             new PlayerSettingsInventory(p);
-            p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+            p.playSound(p.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
         });
 
         for (ProfileInventoryModifier modifier : modifiers) {

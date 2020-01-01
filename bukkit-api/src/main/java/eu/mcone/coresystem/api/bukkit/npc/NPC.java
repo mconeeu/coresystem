@@ -10,7 +10,7 @@ import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcState;
 import eu.mcone.coresystem.api.bukkit.spawnable.PlayerListModeToggleable;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
-import net.minecraft.server.v1_8_R3.Packet;
+import net.minecraft.server.v1_15_R1.Packet;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
