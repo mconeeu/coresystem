@@ -5,12 +5,13 @@
 
 package eu.mcone.coresystem.api.bukkit.npc.data;
 
+import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import lombok.*;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,6 +27,6 @@ public class PlayerNpcData extends AbstractNpcData {
     @Builder.Default
     private boolean visibleOnTab = false, sleeping = false, sleepWithBed = false;
     @Builder.Default
-    private List<ItemStack> equipment = new ArrayList<>();
+    private Map<EquipmentPosition, ItemStack> equipment = new HashMap<>();
 
 }

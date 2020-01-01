@@ -86,7 +86,7 @@ public class PluginMessageListener implements Listener {
                         out.add(result.toString());
                     }
 
-                    CoreSystem.getInstance().getChannelHandler().createReturnRequest(p.getServer(), uuid, (String[]) out.toArray(new String[0]));
+                    CoreSystem.getInstance().getChannelHandler().createReturnRequest(p.getServer(), uuid, out.toArray(new String[0]));
                 } else if (mainChannel.equals("MC_ONE_SET")) {
                     String subch = in.readUTF();
 
