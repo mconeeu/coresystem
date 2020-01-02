@@ -20,11 +20,11 @@ public class EntityMovePacketWrapper extends PacketWrapper {
     private String worldName;
 
     public EntityMovePacketWrapper() {
-        super(PacketType.POSITION);
+        super(PacketType.ENTITY, EntityAction.MOVE);
     }
 
     public EntityMovePacketWrapper(final Location location) {
-        super(PacketType.POSITION);
+        super(PacketType.ENTITY, EntityAction.MOVE);
 
         x = location.getX();
         y = location.getY();
@@ -38,7 +38,7 @@ public class EntityMovePacketWrapper extends PacketWrapper {
     @BsonCreator
     public EntityMovePacketWrapper(@BsonProperty("x") final double x, @BsonProperty("y") final double y, @BsonProperty("z") final double z,
                                    @BsonProperty("yaw") final float yaw, @BsonProperty("pitch") final float pitch, @BsonProperty("worldName") final String worldName) {
-        super(PacketType.POSITION);
+        super(PacketType.ENTITY, EntityAction.MOVE);
 
         this.x = x;
         this.y = y;

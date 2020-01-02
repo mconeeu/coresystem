@@ -1,8 +1,9 @@
 package eu.mcone.coresystem.bukkit.npc.capture;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.npc.capture.SimpleRecorder;
 import eu.mcone.coresystem.api.bukkit.npc.capture.packets.*;
-import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
@@ -19,15 +20,38 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.material.Button;
 import org.bukkit.material.Door;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class MotionRecorder extends eu.mcone.coresystem.api.bukkit.npc.capture.MotionRecorder {
+public class MotionRecorder extends SimpleRecorder implements Listener, eu.mcone.coresystem.api.bukkit.npc.capture.MotionRecorder {
+
+    @Getter
+    private String recorderName;
+    @Getter
+    private String world;
+    @Getter
+    private String name;
+    @Getter
+    protected long recorded;
+
+    @Getter
+    public HashMap<String, List<PacketWrapper>> packets;
+
+    private Player player;
 
     public MotionRecorder(final Player player, final String name) {
-        super(player, name);
+        this.player = player;
+        this.name = name;
+        this.recorderName = player.getName();
+        this.world = player.getLocation().getWorld().getName();
+        this.savedPackets = new AtomicInteger();
+        packets = new HashMap<>();
     }
 
+    @Override
     public void record() {
         recorded = System.currentTimeMillis() / 1000;
 
@@ -110,6 +134,19 @@ public class MotionRecorder extends eu.mcone.coresystem.api.bukkit.npc.capture.M
                 }
             }
         });
+    }
+
+    protected void addData(PacketWrapper data) {
+        String tick = String.valueOf(ticks);
+        if (this.packets.containsKey(tick)) {
+            this.packets.get(tick).add(data);
+        } else {
+            this.packets.put(tick, new ArrayList<PacketWrapper>() {{
+                add(data);
+            }});
+        }
+
+        savedPackets.getAndIncrement();
     }
 
     public Map<String, List<PacketWrapper>> stopRecording() {

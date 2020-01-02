@@ -7,6 +7,9 @@ package eu.mcone.coresystem.api.bukkit.config.typeadapter;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonPrimitive;
+import lombok.Getter;
+import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
@@ -112,6 +115,10 @@ public class ItemStackTypeAdapterUtils {
         StringBuilder serialized = new StringBuilder();
         for (Enchantment e : enchantments.keySet()) {
             serialized.append(e.getName()).append(":").append(enchantments.get(e)).append(";");
+        }
+
+        if (serialized.toString().length() == 0) {
+            serialized.append("EMPTY");
         }
 
         return serialized.toString();
@@ -249,5 +256,4 @@ public class ItemStackTypeAdapterUtils {
         }
         return dummyMeta;
     }
-
 }

@@ -4,9 +4,11 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationProgressEvent;
 import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationStateChangeEvent;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
+import eu.mcone.coresystem.api.bukkit.npc.capture.SimplePlayer;
 import eu.mcone.coresystem.api.bukkit.npc.capture.packets.*;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
+import lombok.Getter;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -16,13 +18,19 @@ import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.MotionPlayer {
+public class MotionPlayer extends SimplePlayer implements eu.mcone.coresystem.api.bukkit.npc.capture.MotionPlayer {
+    @Getter
+    public MotionCaptureData data;
+
+    protected PlayerNpc playerNpc;
 
     public MotionPlayer(final PlayerNpc playerNpc, final MotionCaptureData data) {
-        super(playerNpc, data);
+        this.playerNpc = playerNpc;
+        this.data = data;
     }
 
-    public void playMotionCapture() {
+    @Override
+    public void play() {
         currentTick = new AtomicInteger(0);
         AtomicInteger packetsCount = new AtomicInteger(0);
         AtomicInteger currentProgress = new AtomicInteger(0);
@@ -50,7 +58,7 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Mot
                             }
 
                             if (wrapper instanceof EntitySwitchItemPacketWrapper) {
-                                playerNpc.setItemInHand(((EntitySwitchItemPacketWrapper) wrapper).buildItemStack());
+                                playerNpc.setItemInHand(((EntitySwitchItemPacketWrapper) wrapper).constructItemStack());
                             }
 
                             if (wrapper instanceof EntityClickPacketWrapper) {
@@ -121,7 +129,7 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Mot
     }
 
     private int getPressDuration(final Location blockLocation) {
-        if (blockLocation.getBlock().getType() == Material.STONE_BUTTON)
+        if (blockLocation.getBlock().getType() == org.bukkit.Material.STONE_BUTTON)
             return 20;
         else if (blockLocation.getBlock().getType() == Material.WOOD_BUTTON)
             return 30;

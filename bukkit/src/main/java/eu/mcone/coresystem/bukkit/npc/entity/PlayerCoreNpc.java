@@ -147,11 +147,11 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
                     throw new MotionCaptureCurrentlyRunningException();
                 } else {
                     motionPlayer = new MotionPlayer(this, data);
-                    motionPlayer.playMotionCapture();
+                    motionPlayer.play();
                 }
             } else {
                 motionPlayer = new MotionPlayer(this, data);
-                motionPlayer.playMotionCapture();
+                motionPlayer.play();
             }
         } catch (MotionCaptureCurrentlyRunningException e) {
             e.printStackTrace();
@@ -337,6 +337,18 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
 
     public void setItemInHand(final ItemStack item) {
         sendPackets(new PacketPlayOutEntityEquipment(entityId, 0, CraftItemStack.asNMSCopy(item)));
+    }
+
+    //TODO: Check if this works (Code snipped: https://dev-tek.de/forum/thread/328-packetplayoutentityeffect/)
+    public void addPotionEffect(MobEffect effect) {
+        PacketPlayOutEntityEffect packet = new PacketPlayOutEntityEffect();
+        ReflectionManager.setValue(packet, "a", entityId);
+        ReflectionManager.setValue(packet, "b", (byte) effect.getEffectId());
+        ReflectionManager.setValue(packet, "c", (short) effect.getDuration());
+        ReflectionManager.setValue(packet, "d", (byte) effect.getAmplifier());
+//                plugin.reflect.setPrivateField(packet, "e", hide);
+        sendPackets(packet);
+
     }
 
     private PacketPlayOutPlayerInfo makeTablistPacket(boolean add) {

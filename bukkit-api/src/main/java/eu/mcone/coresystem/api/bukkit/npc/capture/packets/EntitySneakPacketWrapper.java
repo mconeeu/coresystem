@@ -8,11 +8,11 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 public class EntitySneakPacketWrapper extends PacketWrapper {
 
     public EntitySneakPacketWrapper() {
-        super(PacketType.ENTITY_ACTION);
+        super(PacketType.ENTITY, EntityAction.START_SNEAKING);
     }
 
     public EntitySneakPacketWrapper(final EntityAction entityAction) {
-        super(PacketType.ENTITY_ACTION, entityAction);
+        super(PacketType.ENTITY, entityAction);
     }
 
     @BsonCreator

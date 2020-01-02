@@ -1,65 +1,24 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture;
 
-import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
-import lombok.Getter;
-import org.bukkit.Location;
-import org.bukkit.scheduler.BukkitTask;
+public interface MotionPlayer {
 
-import java.util.concurrent.atomic.AtomicInteger;
+    MotionCaptureData getData();
 
-public abstract class MotionPlayer {
-    @Getter
-    public MotionCaptureData data;
-    @Getter
-    protected boolean playing = true;
+    boolean isPlaying();
 
-    protected PlayerNpc playerNpc;
-    protected AtomicInteger currentTick;
-    protected boolean forward = true;
-    protected boolean backward = false;
+    void play();
 
-    protected BukkitTask playingTask;
+    void restart();
 
-    public MotionPlayer(final PlayerNpc playerNpc, final MotionCaptureData data) {
-        this.playerNpc = playerNpc;
-        this.data = data;
-    }
+    void stopPlaying();
 
-    public abstract void playMotionCapture();
+    void startPlaying();
 
-    public void restart() {
-        if (playing) {
-            currentTick = new AtomicInteger(0);
-        } else {
-            playing = true;
-            playMotionCapture();
-        }
-    }
+    void backward();
 
-    public void stopPlaying() {
-        playing = false;
-    }
+    void forward();
 
-    public void startPlaying() {
-        playing = true;
-    }
+    void stop();
 
-    public void backward() {
-        forward = false;
-        backward = true;
-    }
-
-    public void forward() {
-        forward = true;
-        backward = false;
-    }
-
-    public void stop() {
-        playing = false;
-        playingTask.cancel();
-    }
-
-    public int getCurrentTick() {
-        return currentTick.get();
-    }
+    int getCurrentTick();
 }
