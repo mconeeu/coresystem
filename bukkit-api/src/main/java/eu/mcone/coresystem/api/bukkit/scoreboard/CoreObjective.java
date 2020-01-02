@@ -77,7 +77,10 @@ public abstract class CoreObjective {
     /**
      * method to unregister all created Teams
      */
-    public abstract void unregister();
+    public void unregister() {
+        objective.unregister();
+    };
+
 
     /**
      * get the bukkit Scoreboard object
