@@ -40,7 +40,4 @@ public abstract class CoreBelowNameObjective extends CoreObjective {
 
     protected abstract int getPlayerScore(CorePlayer owner, CorePlayer target);
 
-    @Override
-    public void unregister() {}
-
 }
