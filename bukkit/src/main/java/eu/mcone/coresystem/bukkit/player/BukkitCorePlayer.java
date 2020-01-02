@@ -56,33 +56,21 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     @Getter
     private PermissionAttachment permissionAttachment;
 
-//    public BukkitCorePlayer(CoreSystem instance, InetAddress address, SkinInfo skinInfo, Player p) {
-//        super(instance, address, p.getUniqueId(), p.getName());
-//        this.stats = new HashMap<>();
-//        this.skin = skinInfo;
-//        this.vanished = false;
-//
-//        updatePermissionAttachment(p);
-//
-//        instance.runAsync(() -> ((BukkitCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(
-//                eq("uuid", this.uuid.toString()),
-//                combine(
-//                        set("texture_value", skinInfo.getValue()),
-//                        set("texture_signature", skinInfo.getSignature())
-//                )
-//        ));
-//
-//        ((BukkitCoreSystem) instance).getCorePlayers().put(uuid, this);
-//        BukkitCoreSystem.getInstance().sendConsoleMessage("Loaded Player " + name + "!");
-//    }
-
-    public BukkitCorePlayer(CoreSystem instance, InetAddress address, Player p) {
+    public BukkitCorePlayer(CoreSystem instance, InetAddress address, SkinInfo skinInfo, Player p) {
         super(instance, address, p.getUniqueId(), p.getName());
         this.stats = new HashMap<>();
-
+        this.skin = skinInfo;
         this.vanished = false;
 
         updatePermissionAttachment(p);
+
+        instance.runAsync(() -> ((BukkitCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(
+                eq("uuid", this.uuid.toString()),
+                combine(
+                        set("texture_value", skinInfo.getValue()),
+                        set("texture_signature", skinInfo.getSignature())
+                )
+        ));
 
         ((BukkitCoreSystem) instance).getCorePlayers().put(uuid, this);
         BukkitCoreSystem.getInstance().sendConsoleMessage("Loaded Player " + name + "!");

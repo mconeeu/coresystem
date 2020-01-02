@@ -48,17 +48,11 @@ public class CorePlayerListener implements Listener {
         Player p = e.getPlayer();
         setCorePermissibleBase(p);
 
-//        Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
-//        new BukkitCorePlayer(
-//                BukkitCoreSystem.getInstance(),
-//                e.getAddress(),
-//                new SkinInfo(p.getName(), textures.getValue(), textures.getSignature(), SkinInfo.SkinType.PLAYER),
-//                p
-//        );
-
+        Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
         new BukkitCorePlayer(
                 BukkitCoreSystem.getInstance(),
                 e.getAddress(),
+                new SkinInfo(p.getName(), textures.getValue(), textures.getSignature(), SkinInfo.SkinType.PLAYER),
                 p
         );
 

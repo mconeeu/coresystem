@@ -226,18 +226,17 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
             getServer().getScheduler().runTask(this, () -> {
                 Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
-                //Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
-//                getServer().getPluginManager().callEvent(new CorePlayerLoadedEvent(CorePlayerLoadedEvent.Reason.RELOAD, new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(
-//                        this,
-//                        p.getAddress().getAddress(),
-//                        new SkinInfo(
-//                                p.getName(),
-//                                textures.getValue(),
-//                                textures.getSignature(),
-//                                SkinInfo.SkinType.PLAYER
-//                        ),
-//                        p
-//                ), p));
+                getServer().getPluginManager().callEvent(new CorePlayerLoadedEvent(CorePlayerLoadedEvent.Reason.RELOAD, new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(
+                        this,
+                        p.getAddress().getAddress(),
+                        new SkinInfo(
+                                p.getName(),
+                                textures.getValue(),
+                                textures.getSignature(),
+                                SkinInfo.SkinType.PLAYER
+                        ),
+                        p
+                ), p));
 
                 channelHandler.createSetRequest(p, "UNNICK");
 

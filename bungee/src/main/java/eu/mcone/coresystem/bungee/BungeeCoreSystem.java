@@ -171,24 +171,23 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aInitializing LabyModManager...");
         labyModAPI = new LabyModManager(this);
 
-//        if (!Boolean.valueOf(System.getProperty("DisableTsQuery"))) {
-//            sendConsoleMessage("§aLoading TeamSpeakQuery...");
-//            teamspeakVerifier = new TeamspeakVerifier();
-//        } else {
-//            sendConsoleMessage("§cTeamSpeakQuery disabled by JVM Argument");
-//        }
+        if (!Boolean.parseBoolean(System.getProperty("DisableTsQuery"))) {
+            sendConsoleMessage("§aLoading TeamSpeakQuery...");
+            teamspeakVerifier = new TeamspeakVerifier();
+        } else {
+            sendConsoleMessage("§cTeamSpeakQuery disabled by JVM Argument");
+        }
 
-
-//        if (!Boolean.valueOf(System.getProperty("DisableDiscordQuery"))) {
-//            sendConsoleMessage("§aLoading DiscordQuery...");
-//            try {
-//                discordControlBot = new DiscordControlBot();
-//            } catch (LoginException e) {
-//                e.printStackTrace();
-//            }
-//        } else {
-//            sendConsoleMessage("§cDiscordQuery disabled by JVM Argument");
-//        }
+        if (!Boolean.parseBoolean(System.getProperty("DisableDiscordQuery"))) {
+            sendConsoleMessage("§aLoading DiscordQuery...");
+            try {
+                discordControlBot = new DiscordControlBot();
+            } catch (LoginException e) {
+                e.printStackTrace();
+            }
+        } else {
+            sendConsoleMessage("§cDiscordQuery disabled by JVM Argument");
+        }
 
         sendConsoleMessage("§aLoading Nicksystem...");
         nickManager = new NickManager(this);
