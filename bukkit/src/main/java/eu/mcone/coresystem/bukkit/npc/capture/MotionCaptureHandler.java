@@ -55,7 +55,6 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
                 }
 
                 motionCaptureCollection.insertOne(new MotionCaptureData(recorder.getName(), recorder.getWorld(), recorder.getRecorded(), recorder.getRecorderName(), recorder.getPackets().size(), recorder.getPackets()));
-
                 return true;
             } else {
                 throw new MotionCaptureAlreadyExistsException();
@@ -104,7 +103,7 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
         return new ArrayList<>(motionCaptureDataMap.values());
     }
 
-    public class MotionCaptureScheduler implements Listener, eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureHandler.MotionCaptureScheduler {
+    public static class MotionCaptureScheduler implements Listener, eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureHandler.MotionCaptureScheduler {
         private final HashMap<String, PlayerNpc> npcs;
 
         public MotionCaptureScheduler() {

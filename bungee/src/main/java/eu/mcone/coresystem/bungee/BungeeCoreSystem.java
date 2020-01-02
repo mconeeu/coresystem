@@ -31,6 +31,7 @@ import eu.mcone.coresystem.bungee.utils.ChannelHandler;
 import eu.mcone.coresystem.bungee.player.LabyModManager;
 import eu.mcone.coresystem.bungee.utils.bots.discord.DiscordControlBot;
 import eu.mcone.coresystem.bungee.utils.bots.teamspeak.TeamspeakVerifier;
+import eu.mcone.coresystem.bungee.utils.replay.ReplayServerSessionHandler;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
@@ -86,6 +87,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private DiscordControlBot discordControlBot = null;
     @Getter
     private ChannelHandler channelHandler;
+    @Getter
+    private ReplayServerSessionHandler serverSessionHandler;
     @Getter
     private PlayerUtils playerUtils;
     @Getter
@@ -143,6 +146,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             put("maintenance", false);
             put("betaKeySystem", false);
         }});
+
+        serverSessionHandler = new ReplayServerSessionHandler();
         playerUtils = new PlayerUtils(this);
         moneyUtil = new MoneyUtil(this, database) {
             @Override
@@ -166,15 +171,14 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aInitializing LabyModManager...");
         labyModAPI = new LabyModManager(this);
 
-        if (!Boolean.valueOf(System.getProperty("DisableTsQuery"))) {
+        if (!Boolean.parseBoolean(System.getProperty("DisableTsQuery"))) {
             sendConsoleMessage("§aLoading TeamSpeakQuery...");
             teamspeakVerifier = new TeamspeakVerifier();
         } else {
             sendConsoleMessage("§cTeamSpeakQuery disabled by JVM Argument");
         }
 
-
-        if (!Boolean.valueOf(System.getProperty("DisableDiscordQuery"))) {
+        if (!Boolean.parseBoolean(System.getProperty("DisableDiscordQuery"))) {
             sendConsoleMessage("§aLoading DiscordQuery...");
             try {
                 discordControlBot = new DiscordControlBot();
@@ -195,6 +199,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         sendConsoleMessage("§aRegistering Plugin Messaging Channel...");
         getProxy().registerChannel("MC_ONE_RETURN");
+
         getProxy().registerChannel("MC_ONE_INFO");
 
         sendConsoleMessage("§aVersion: §f" + this.getDescription().getVersion() + "§a enabled!");

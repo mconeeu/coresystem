@@ -6,7 +6,6 @@
 package eu.mcone.coresystem.api.bukkit.npc;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.npc.data.AbstractNpcData;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
@@ -24,7 +23,6 @@ public final class NpcData {
     private EntityType type;
     private String name, displayname;
     private CoreLocation location;
-    private CoreLocation tempLocation;
     private JsonElement entityData;
 
     /**
@@ -40,7 +38,6 @@ public final class NpcData {
         this.name = name;
         this.displayname = displayname;
         this.location = location;
-        this.tempLocation = location;
         this.entityData = CoreSystem.getInstance().getGson().toJsonTree(entityData, entityData.getClass());
     }
 
@@ -48,7 +45,6 @@ public final class NpcData {
         this.type = data.type;
         this.name = data.name;
         this.location = data.location;
-        this.tempLocation = location;
         this.entityData = data.entityData;
     }
 

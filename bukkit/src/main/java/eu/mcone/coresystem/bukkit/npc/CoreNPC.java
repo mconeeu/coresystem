@@ -18,6 +18,7 @@ import eu.mcone.coresystem.bukkit.util.PlayerListModeToggleUtil;
 import eu.mcone.coresystem.bukkit.util.ReflectionManager;
 import lombok.Getter;
 import net.minecraft.server.v1_15_R1.*;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
@@ -53,6 +54,8 @@ public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeT
     protected final int entityId;
     @Getter
     protected T entityData;
+    @Getter @Setter
+    protected Location location;
 
     protected CoreNPC(Class<T> dataClass, NpcData data, ListMode listMode, Player... players) {
         this.spawned = new HashSet<>();
@@ -61,6 +64,7 @@ public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeT
         this.entityId = getNextEntityId();
         this.entityData = BukkitCoreSystem.getInstance().getGson().fromJson(data.getEntityData(), dataClass);
         this.data.setEntityData(BukkitCoreSystem.getInstance().getGson().toJsonTree(entityData));
+        this.location = data.getLocation().bukkit();
 
         onCreate();
         togglePlayerVisibility(listMode, players);
@@ -119,17 +123,9 @@ public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeT
 
     @Override
     public boolean canBeSeenBy(Player player) {
-        if (player.getLocation().getWorld().equals(data.getLocation().bukkit().getWorld())) {
-            if (data.getTempLocation() != null && data.getTempLocation() != data.getLocation()) {
-                return player.getLocation().distanceSquared(data.getTempLocation().bukkit())
-                        < (Bukkit.spigot().getConfig().getInt("world-settings.default.entity-tracking-range.players", 48) * 24);
-            } else {
-                return player.getLocation().distanceSquared(data.getLocation().bukkit())
-                        < (Bukkit.spigot().getConfig().getInt("world-settings.default.entity-tracking-range.players", 48) * 24);
-            }
-        } else {
-            return false;
-        }
+        return player.getLocation().getWorld().equals(location.getWorld())
+                && (player.getLocation().distanceSquared(location)
+                < (Bukkit.spigot().getConfig().getInt("world-settings.default.entity-tracking-range.players", 48) * 24));
     }
 
     @Override

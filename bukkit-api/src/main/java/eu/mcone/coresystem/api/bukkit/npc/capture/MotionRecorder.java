@@ -1,65 +1,29 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture;
 
 import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketWrapper;
-import lombok.Getter;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
-import org.bukkit.scheduler.BukkitTask;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class MotionRecorder implements Listener, Serializable {
+public interface MotionRecorder {
 
-    private static final long serialVersionUID = 191955L;
+    String getRecorderName();
 
-    @Getter
-    protected int ticks;
-    @Getter
-    private String recorderName;
-    @Getter
-    private String world;
-    @Getter
-    private String name;
-    @Getter
-    protected long recorded;
-    @Getter
-    protected boolean isStopped = false;
+    String getWorld();
 
-    protected transient BukkitTask taskID;
-    protected transient Player player;
-    protected AtomicInteger savedPackets;
+    String getName();
 
-    @Getter
-    public HashMap<String, List<PacketWrapper>> packets;
+    long getRecorded();
 
-    public MotionRecorder(final Player player, final String name) {
-        this.player = player;
-        this.name = name;
-        this.recorderName = player.getName();
-        this.world = player.getLocation().getWorld().getName();
-        this.savedPackets = new AtomicInteger();
-        packets = new HashMap<>();
-    }
+    void record();
 
-    public abstract void record();
+    int getTicks();
 
-    protected void addData(PacketWrapper data) {
-        String tick = String.valueOf(ticks);
-        if (this.packets.containsKey(tick)) {
-            this.packets.get(tick).add(data);
-        } else {
-            this.packets.put(tick, new ArrayList<PacketWrapper>() {{
-                add(data);
-            }});
-        }
+    boolean isStopped();
 
-        savedPackets.getAndIncrement();
-    }
+    HashMap<String, List<PacketWrapper>> getPackets();
 
-    public abstract Map<String, List<PacketWrapper>> stopRecording();
+    Map<String, List<PacketWrapper>> stopRecording();
+
 }

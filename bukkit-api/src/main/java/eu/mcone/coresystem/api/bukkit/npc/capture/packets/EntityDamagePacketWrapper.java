@@ -8,11 +8,11 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 public class EntityDamagePacketWrapper extends PacketWrapper {
 
     public EntityDamagePacketWrapper() {
-        super(PacketType.ENTITY_DAMAGE);
+        super(PacketType.ENTITY, EntityAction.TAKE_DAMAGE);
     }
 
     @BsonCreator
-    public EntityDamagePacketWrapper(@BsonProperty("packetType") final PacketType packetType) {
-        super(packetType);
+    public EntityDamagePacketWrapper(@BsonProperty("entityAction") final EntityAction entityAction) {
+        super(PacketType.ENTITY, entityAction);
     }
 }

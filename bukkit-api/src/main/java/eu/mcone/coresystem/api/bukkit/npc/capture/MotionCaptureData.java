@@ -3,7 +3,6 @@ package eu.mcone.coresystem.api.bukkit.npc.capture;
 import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketWrapper;
 import eu.mcone.coresystem.api.core.util.GenericUtils;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.bson.Document;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
@@ -49,9 +48,5 @@ public class MotionCaptureData {
         this.creator = creator;
         this.length = length;
         this.motionData = motionData;
-    }
-
-    public Document createBsonDocument() {
-        return new Document("name", name).append("world", world).append("recorded", recorded).append("creator", creator).append("length", length).append("packets", GenericUtils.serialize(motionData));
     }
 }

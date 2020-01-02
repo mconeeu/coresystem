@@ -1,11 +1,10 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture.packets;
 
-import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import lombok.Getter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
-import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 @BsonDiscriminator
@@ -20,11 +19,11 @@ public class EntityMovePacketWrapper extends PacketWrapper {
     private String worldName;
 
     public EntityMovePacketWrapper() {
-        super(PacketType.POSITION);
+        super(PacketType.ENTITY, EntityAction.MOVE);
     }
 
     public EntityMovePacketWrapper(final Location location) {
-        super(PacketType.POSITION);
+        super(PacketType.ENTITY, EntityAction.MOVE);
 
         x = location.getX();
         y = location.getY();
@@ -38,7 +37,7 @@ public class EntityMovePacketWrapper extends PacketWrapper {
     @BsonCreator
     public EntityMovePacketWrapper(@BsonProperty("x") final double x, @BsonProperty("y") final double y, @BsonProperty("z") final double z,
                                    @BsonProperty("yaw") final float yaw, @BsonProperty("pitch") final float pitch, @BsonProperty("worldName") final String worldName) {
-        super(PacketType.POSITION);
+        super(PacketType.ENTITY, EntityAction.MOVE);
 
         this.x = x;
         this.y = y;
@@ -48,8 +47,8 @@ public class EntityMovePacketWrapper extends PacketWrapper {
         this.worldName = worldName;
     }
 
-    @BsonIgnore
-    public CoreLocation getAsCoreLocation() {
-        return new CoreLocation(worldName, x, y, z, yaw, pitch);
+    public Location calculateLocation() {
+        return new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
     }
+
 }

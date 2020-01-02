@@ -58,8 +58,6 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     @Getter
     @Setter
     protected PlayerSettings settings;
-//    @Getter
-//    protected Map<String, Modif> modifiedInventories;
 
     GlobalOfflineCorePlayer(final GlobalCoreSystem instance, UUID uuid, String name, boolean online) {
         this.instance = instance;
@@ -135,7 +133,6 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
                             .append("player_settings", settings)
                             .append("state", online ? PlayerState.ONLINE.getId() : PlayerState.OFFLINE.getId())
                             .append("online_time", onlinetime)
-//                            .append("modifiedInventories", new HashMap<>())
                     );
         });
     }
@@ -151,7 +148,6 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         this.state = online ? PlayerState.ONLINE : PlayerState.getPlayerStateById(entry.getInteger("state"));
         this.onlinetime = entry.getLong("online_time");
         this.settings = ((CoreModuleCoreSystem) instance).getGson().fromJson(entry.get("player_settings", Document.class).toJson(), PlayerSettings.class);
-//        this.modifiedInventories = entry.get("modified_inventories", new HashMap<>());
     }
 
     @Override

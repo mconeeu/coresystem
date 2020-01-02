@@ -8,11 +8,11 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 public class EntityClickPacketWrapper extends PacketWrapper {
 
     public EntityClickPacketWrapper() {
-        super(EntityAction.CLICK);
+        super(PacketType.ENTITY, EntityAction.INTERACT);
     }
 
     @BsonCreator
     public EntityClickPacketWrapper(@BsonProperty("entityAction") final EntityAction entityAction) {
-        super(entityAction);
+        super(PacketType.ENTITY, entityAction);
     }
 }

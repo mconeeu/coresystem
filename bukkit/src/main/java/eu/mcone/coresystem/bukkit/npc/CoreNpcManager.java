@@ -9,10 +9,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.npc.NpcManagerReloadedEvent;
-import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
-import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
+import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
+import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.NpcCreateException;
@@ -71,7 +71,7 @@ public class CoreNpcManager implements NpcManager {
     }
 
     public void addNPCAndSave(EntityType entity, String name, String displayname, Location location) {
-        NPC npc = addNPC(new NpcData(entity, name, displayname, new eu.mcone.coresystem.api.bukkit.world.CoreLocation(location), null, new JsonObject()));
+        NPC npc = addNPC(new NpcData(entity, name, displayname, new eu.mcone.coresystem.api.bukkit.world.CoreLocation(location), new JsonObject()));
 
         BukkitCoreWorld world = (BukkitCoreWorld) CoreSystem.getInstance().getWorldManager().getWorld(location.getWorld());
         world.getNpcData().add(npc.getData());
@@ -113,7 +113,6 @@ public class CoreNpcManager implements NpcManager {
                 npc.getData().getName(),
                 displayname,
                 new CoreLocation(location),
-                null,
                 npc.getData().getEntityData()
         ));
         BukkitCoreSystem.getSystem().getWorldManager().getWorld(location.getWorld()).save();
@@ -125,7 +124,6 @@ public class CoreNpcManager implements NpcManager {
                 npc.getData().getName(),
                 npc.getData().getDisplayname(),
                 npc.getData().getLocation(),
-                null,
                 data
         ));
         BukkitCoreSystem.getSystem().getWorldManager().getWorld(npc.getData().getLocation().getWorld()).save();

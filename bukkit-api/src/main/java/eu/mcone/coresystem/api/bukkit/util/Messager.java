@@ -6,10 +6,15 @@
 package eu.mcone.coresystem.api.bukkit.util;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.event.BroadcastMessageEvent;
+import eu.mcone.coresystem.api.bukkit.event.BuildModeChangeEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.translation.Language;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -24,7 +29,8 @@ public final class Messager {
 
     /**
      * send message with prefix to player
-     * @param player player
+     *
+     * @param player  player
      * @param message message
      */
     public void send(final Player player, final String message) {
@@ -33,7 +39,8 @@ public final class Messager {
 
     /**
      * send TextComponent with prefix to player
-     * @param player player
+     *
+     * @param player        player
      * @param textComponent text component
      */
     public void send(final Player player, final TextComponent textComponent) {
@@ -44,7 +51,8 @@ public final class Messager {
 
     /**
      * send message with prefix to command sender
-     * @param sender command sender
+     *
+     * @param sender  command sender
      * @param message message
      */
     public void send(final CommandSender sender, final String message) {
@@ -53,7 +61,8 @@ public final class Messager {
 
     /**
      * send Translation with prefix to player
-     * @param player player
+     *
+     * @param player      player
      * @param translation translation name/key
      */
     public void sendTransl(final Player player, String... translation) {
@@ -67,7 +76,8 @@ public final class Messager {
 
     /**
      * send Translation with prefix to command sender
-     * @param sender command sender
+     *
+     * @param sender      command sender
      * @param translation translation name/key
      */
     public void sendTransl(final CommandSender sender, String... translation) {
@@ -80,7 +90,8 @@ public final class Messager {
 
     /**
      * send Translation with prefix to player
-     * @param player player
+     *
+     * @param player      player
      * @param translation translation name/key
      */
     public void sendSimpleTransl(final Player player, String... translation) {
@@ -94,7 +105,8 @@ public final class Messager {
 
     /**
      * send message to player
-     * @param player player
+     *
+     * @param player  player
      * @param message message
      */
     public void sendSimple(final Player player, final String message) {
@@ -103,7 +115,8 @@ public final class Messager {
 
     /**
      * send TextComponent to player
-     * @param player player
+     *
+     * @param player        player
      * @param textComponent text component
      */
     public void sendSimple(final Player player, final TextComponent textComponent) {
@@ -112,11 +125,54 @@ public final class Messager {
 
     /**
      * send message to command sender
-     * @param sender command sender
+     *
+     * @param sender  command sender
      * @param message message
      */
     public void sendSimple(final CommandSender sender, final String message) {
         sender.sendMessage(message);
+    }
+
+    public Broadcast broadcast(final String message, final Broadcast.BroadcastMessageTyp messageTyp) {
+        Broadcast broadcast = new Broadcast(message, messageTyp).send();
+        Bukkit.getPluginManager().callEvent(new BroadcastMessageEvent(broadcast));
+        return broadcast.send();
+    }
+
+    public Broadcast broadcast(final String message) {
+        Broadcast broadcast = new Broadcast(message, Broadcast.BroadcastMessageTyp.INFO_MESSAGE).send();
+        Bukkit.getPluginManager().callEvent(new BroadcastMessageEvent(broadcast));
+        return broadcast.send();
+    }
+
+
+    @Getter
+    public static class Broadcast {
+        private final String message;
+        private BroadcastMessageTyp messageTyp;
+
+        public Broadcast(final String message) {
+            this.message = message;
+            send();
+        }
+
+        @BsonCreator
+        Broadcast(@BsonProperty("message") final String message, @BsonProperty("message") final BroadcastMessageTyp messageTyp) {
+            this.message = message;
+            this.messageTyp = messageTyp;
+        }
+
+        public Broadcast send() {
+            Bukkit.broadcastMessage(message);
+            return this;
+        }
+
+        public enum BroadcastMessageTyp {
+            INFO_MESSAGE,
+            KILL_MESSAGE,
+            DEATH_MESSAGE,
+            GOAL_MESSAGE
+        }
     }
 
 }

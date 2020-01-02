@@ -294,6 +294,11 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
 
                 //Updating PlayerNpcData
                 for (JsonElement e : json.getAsJsonObject().get("npcData").getAsJsonArray()) {
+                    //Remove tempLocations
+                    if (e.getAsJsonObject().has("tempLocation")) {
+                        e.getAsJsonObject().remove("tempLocation");
+                    }
+
                     if (e.getAsJsonObject().get("type").getAsString().equals("PLAYER")) {
                         JsonObject entityData = e.getAsJsonObject().get("entityData").getAsJsonObject();
 

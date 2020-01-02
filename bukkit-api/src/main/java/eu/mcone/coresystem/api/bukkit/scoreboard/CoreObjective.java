@@ -79,7 +79,7 @@ public abstract class CoreObjective {
      */
     public void unregister() {
         objective.unregister();
-    };
+    }
 
     /**
      * get the bukkit Scoreboard object

@@ -1,11 +1,10 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture.packets;
 
-import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import lombok.Getter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
-import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 @BsonDiscriminator
@@ -21,11 +20,11 @@ public class EntityButtonInteractPacketWrapper extends PacketWrapper {
     private boolean pressed;
 
     public EntityButtonInteractPacketWrapper() {
-        super(PacketType.ENTITY_ACTION);
+        super(PacketType.ENTITY, EntityAction.INTERACT);
     }
 
     public EntityButtonInteractPacketWrapper(final Location location, final boolean pressed) {
-        super(PacketType.ENTITY_ACTION);
+        super(PacketType.ENTITY, EntityAction.INTERACT);
 
         x = location.getX();
         y = location.getY();
@@ -40,7 +39,7 @@ public class EntityButtonInteractPacketWrapper extends PacketWrapper {
     @BsonCreator
     public EntityButtonInteractPacketWrapper(@BsonProperty("x") final double x, @BsonProperty("y") final double y, @BsonProperty("z") final double z, @BsonProperty("yaw") final float yaw,
                                        @BsonProperty("pitch") final float pitch, @BsonProperty("worldName") final String worldName, @BsonProperty("pressed") final boolean pressed) {
-        super(PacketType.ENTITY_ACTION);
+        super(PacketType.ENTITY, EntityAction.INTERACT);
 
         this.x = x;
         this.y = y;
@@ -51,8 +50,8 @@ public class EntityButtonInteractPacketWrapper extends PacketWrapper {
         this.pressed = pressed;
     }
 
-    @BsonIgnore
-    public CoreLocation getAsCoreLocation() {
-        return new CoreLocation(worldName, x, y, z, yaw, pitch);
+    public Location calculateLocation() {
+        return new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
     }
+
 }
