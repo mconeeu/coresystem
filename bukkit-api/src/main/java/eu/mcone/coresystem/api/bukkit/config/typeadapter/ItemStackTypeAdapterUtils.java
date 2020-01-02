@@ -126,7 +126,7 @@ public class ItemStackTypeAdapterUtils {
 
     public static Map<Enchantment, Integer> getEnchantments(String serializedEnchants) {
         HashMap<Enchantment, Integer> enchantments = new HashMap<>();
-        if (serializedEnchants.isEmpty()) {
+        if (serializedEnchants.isEmpty() || serializedEnchants.equalsIgnoreCase("EMPTY")) {
             return enchantments;
         }
 
