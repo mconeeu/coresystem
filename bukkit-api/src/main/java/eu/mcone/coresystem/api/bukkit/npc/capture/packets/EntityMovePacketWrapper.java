@@ -1,11 +1,10 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture.packets;
 
-import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import lombok.Getter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
-import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.codecs.pojo.annotations.BsonProperty;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 @BsonDiscriminator
@@ -48,8 +47,8 @@ public class EntityMovePacketWrapper extends PacketWrapper {
         this.worldName = worldName;
     }
 
-    @BsonIgnore
-    public CoreLocation getAsCoreLocation() {
-        return new CoreLocation(worldName, x, y, z, yaw, pitch);
+    public Location calculateLocation() {
+        return new Location(Bukkit.getWorld(worldName), x, y, z, yaw, pitch);
     }
+
 }

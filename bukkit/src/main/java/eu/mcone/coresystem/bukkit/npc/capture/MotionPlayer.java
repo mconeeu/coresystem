@@ -7,8 +7,10 @@ import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
 import eu.mcone.coresystem.api.bukkit.npc.capture.SimplePlayer;
 import eu.mcone.coresystem.api.bukkit.npc.capture.packets.*;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
+import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import lombok.Getter;
+import eu.mcone.coresystem.bukkit.npc.entity.PlayerCoreNpc;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -44,8 +46,8 @@ public class MotionPlayer extends SimplePlayer implements eu.mcone.coresystem.ap
                     if (data.getMotionData().containsKey(tick)) {
                         for (PacketWrapper wrapper : data.getMotionData().get(tick)) {
                             if (wrapper instanceof EntityMovePacketWrapper) {
-                                playerNpc.getData().setTempLocation(((EntityMovePacketWrapper) wrapper).getAsCoreLocation());
-                                playerNpc.teleport(((EntityMovePacketWrapper) wrapper).getAsCoreLocation());
+                                ((PlayerCoreNpc) playerNpc).setLocation(((EntityMovePacketWrapper) wrapper).calculateLocation());
+                                playerNpc.teleport(((EntityMovePacketWrapper) wrapper).calculateLocation());
                             }
 
                             if (wrapper instanceof EntitySneakPacketWrapper) {
@@ -58,7 +60,7 @@ public class MotionPlayer extends SimplePlayer implements eu.mcone.coresystem.ap
                             }
 
                             if (wrapper instanceof EntitySwitchItemPacketWrapper) {
-                                playerNpc.setItemInHand(((EntitySwitchItemPacketWrapper) wrapper).constructItemStack());
+                                playerNpc.setEquipment(EquipmentPosition.HAND, ((EntitySwitchItemPacketWrapper) wrapper).constructItemStack());
                             }
 
                             if (wrapper instanceof EntityClickPacketWrapper) {
@@ -68,7 +70,7 @@ public class MotionPlayer extends SimplePlayer implements eu.mcone.coresystem.ap
                             if (wrapper instanceof EntityButtonInteractPacketWrapper) {
                                 BlockStateDirection FACING = BlockStateDirection.of("facing");
                                 EntityButtonInteractPacketWrapper packet = (EntityButtonInteractPacketWrapper) wrapper;
-                                Location location = packet.getAsCoreLocation().bukkit();
+                                Location location = packet.calculateLocation();
                                 WorldServer world = ((CraftWorld) location.getWorld()).getHandle();
                                 BlockPosition blockposition = new BlockPosition(location.getX(), location.getY(), location.getZ());
                                 IBlockData iblockdata = world.getType(blockposition);
@@ -77,7 +79,7 @@ public class MotionPlayer extends SimplePlayer implements eu.mcone.coresystem.ap
                                 block.interact(((CraftWorld) location.getWorld()).getHandle(), blockposition, iblockdata, null, iblockdata.get(FACING), (float) location.getX(), (float) location.getY(), (float) location.getZ());
                             } else if (wrapper instanceof EntityOpenDoorPacketWrapper) {
                                 EntityOpenDoorPacketWrapper packet = (EntityOpenDoorPacketWrapper) wrapper;
-                                Location location = packet.getAsCoreLocation().bukkit();
+                                Location location = packet.calculateLocation();
                                 BlockPosition blockposition = new BlockPosition(location.getX(), location.getY(), location.getZ());
                                 WorldServer world = ((CraftWorld) location.getWorld()).getHandle();
                                 IBlockData iblockdata = world.getType(blockposition);
@@ -129,7 +131,7 @@ public class MotionPlayer extends SimplePlayer implements eu.mcone.coresystem.ap
     }
 
     private int getPressDuration(final Location blockLocation) {
-        if (blockLocation.getBlock().getType() == org.bukkit.Material.STONE_BUTTON)
+        if (blockLocation.getBlock().getType() == Material.STONE_BUTTON)
             return 20;
         else if (blockLocation.getBlock().getType() == Material.WOOD_BUTTON)
             return 30;

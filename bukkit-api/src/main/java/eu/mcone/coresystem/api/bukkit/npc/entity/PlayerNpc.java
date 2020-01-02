@@ -19,10 +19,8 @@ import java.util.UUID;
 public interface PlayerNpc extends NPC {
 
     /**
-     * M
      * returns the current UUID of the NPC
      * they UUID may change when changing name or skin of the NPC
-     *
      * @return current npcs uuid
      */
     UUID getUuid();
@@ -94,12 +92,11 @@ public interface PlayerNpc extends NPC {
 
     void playMotionCapture(final MotionCaptureData data);
 
-    void sneak(boolean isSneaking);
+    void sneak(boolean sneak, Player... players);
 
-    void block(final boolean block);
+    //Crashes the client, because float cannot be cast to byte (Minecraft Client error stacktrace)
+    void block(boolean block, Player... players);
 
-    void setItemInHand(final ItemStack item);
-
-    void addPotionEffect(MobEffect effect);
+    void addPotionEffect(MobEffect effect, Player... players);
 
 }

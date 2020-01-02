@@ -17,6 +17,7 @@ import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
+import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.core.exception.MotionCaptureCurrentlyRunningException;
 import eu.mcone.coresystem.api.core.exception.NpcCreateException;
 import eu.mcone.coresystem.api.core.exception.SkinNotFoundException;
@@ -50,19 +51,19 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     @Getter
     private GameProfile profile;
     @Getter
-    private Location location;
-    @Getter
     private MotionPlayer motionPlayer;
+    private DataWatcher dataWatcher;
 
     protected PlayerCoreNpc(NpcData data, ListMode visibilityMode, Player[] players) {
         super(PlayerNpcData.class, data, visibilityMode, players);
-        this.bedLocation = new Location(data.getLocation().bukkit().getWorld(), 1, 1, 1);
-        this.location = data.getLocation().bukkit();
+        this.bedLocation = new Location(location.getWorld(), 1, 1, 1);
     }
 
     @Override
     protected void onCreate() {
         this.uuid = new UUID(UUID_RANDOM.nextLong(), 0);
+        this.dataWatcher = new DataWatcher(null);
+        this.dataWatcher.a(10, (byte) 127);
 
         try {
             switch (entityData.getSkinType()) {
@@ -175,7 +176,7 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         int i = -1;
 
         if (entityData.isSleeping() && !entityData.isSleepWithBed()) {
-            data.getLocation().add(0, 0.15, 0);
+            location.add(0, 0.15, 0);
         }
 
         Packet<?>[] packets = new Packet[size];
@@ -185,19 +186,15 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         packets[++i] = new PacketPlayOutNamedEntitySpawn();
         ReflectionManager.setValue(packets[i], "a", entityId);
         ReflectionManager.setValue(packets[i], "b", profile.getId());
-        ReflectionManager.setValue(packets[i], "c", MathHelper.floor(data.getLocation().getX() * 32.0D));
-        ReflectionManager.setValue(packets[i], "d", MathHelper.floor(data.getLocation().getY() * 32.0D));
-        ReflectionManager.setValue(packets[i], "e", MathHelper.floor(data.getLocation().getZ() * 32.0D));
-        ReflectionManager.setValue(packets[i], "f", (byte) ((int) (data.getLocation().getYaw() * 256.0F / 360.0F)));
-        ReflectionManager.setValue(packets[i], "g", (byte) ((int) (data.getLocation().getPitch() * 256.0F / 360.0F)));
+        ReflectionManager.setValue(packets[i], "c", MathHelper.floor(location.getX() * 32.0D));
+        ReflectionManager.setValue(packets[i], "d", MathHelper.floor(location.getY() * 32.0D));
+        ReflectionManager.setValue(packets[i], "e", MathHelper.floor(location.getZ() * 32.0D));
+        ReflectionManager.setValue(packets[i], "f", (byte) ((int) (location.getYaw() * 256.0F / 360.0F)));
+        ReflectionManager.setValue(packets[i], "g", (byte) ((int) (location.getPitch() * 256.0F / 360.0F)));
         ReflectionManager.setValue(packets[i], "h", 0);
-        DataWatcher watcher = new DataWatcher(null);
-        watcher.a(0, (byte) 0);
-        watcher.a(6, (float) 20);
-        watcher.a(10, (byte) 127);
-        ReflectionManager.setValue(packets[i], "i", watcher);
+        ReflectionManager.setValue(packets[i], "i", dataWatcher);
 
-        packets[++i] = makeHeadRotationPacket(data.getLocation().getYaw());
+        packets[++i] = makeHeadRotationPacket(location.getYaw());
 
         for (Map.Entry<EquipmentPosition, ItemStack> equipment : entityData.getEquipment().entrySet()) {
             packets[++i] = makeEquipmentPacket(equipment.getKey(), equipment.getValue());
@@ -258,7 +255,7 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         }
 
         if (!sleepWithBed) {
-            data.getLocation().add(0, 0.15, 0);
+            location.add(0, 0.15, 0);
         }
 
         sendPackets(makeSleepPackets(bedLocation));
@@ -269,9 +266,9 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         sendAnimation(NpcAnimation.LEAVE_BED);
 
         if (!entityData.isSleepWithBed()) {
-            data.getLocation().subtract(0, 0.15, 0);
+            location.subtract(0, 0.15, 0);
         }
-        teleport(data.getLocation());
+        teleport(location);
     }
 
     @Override
@@ -307,49 +304,44 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         }
     }
 
-    public void sneak(boolean sneak) {
-        DataWatcher w = new DataWatcher(null);
+    @Override
+    public void sneak(boolean sneak, Player... players) {
         if (sneak) {
-            w.a(0, (byte) 2);
+            dataWatcher.a(0, (byte) 2);
         } else {
-            w.a(0, (byte) 0);
+            dataWatcher.a(0, (byte) 0);
         }
 
-        w.a(1, (short) 0);
-        w.a(8, (byte) 0);
+        dataWatcher.a(1, (short) 0);
+        dataWatcher.a(8, (byte) 0);
 
-        sendPackets(new PacketPlayOutEntityMetadata(entityId, w, true));
+        sendPackets(makeMetadataPacket(), players);
     }
 
     //Crashes the client, because float cannot be cast to byte (Minecraft Client error stacktrace)
-    public void block(final boolean block) {
-        DataWatcher w = new DataWatcher(null);
-        w.a(0, (byte) 16);
-        w.a(1, (short) 0);
+    @Override
+    public void block(boolean block, Player... players) {
+        dataWatcher.a(0, (byte) 16);
+        dataWatcher.a(1, (short) 0);
 
         if (block) {
-            w.a(6, (byte) 1);
+            dataWatcher.a(6, (byte) 1);
         } else {
-            w.a(6, (byte) 0);
+            dataWatcher.a(6, (byte) 0);
         }
 
-        sendPackets(new PacketPlayOutEntityMetadata(entityId, w, true));
-    }
-
-    public void setItemInHand(final ItemStack item) {
-        sendPackets(new PacketPlayOutEntityEquipment(entityId, 0, CraftItemStack.asNMSCopy(item)));
+        sendPackets(makeMetadataPacket(), players);
     }
 
     //TODO: Check if this works (Code snipped: https://dev-tek.de/forum/thread/328-packetplayoutentityeffect/)
-    public void addPotionEffect(MobEffect effect) {
+    public void addPotionEffect(MobEffect effect, Player... players) {
         PacketPlayOutEntityEffect packet = new PacketPlayOutEntityEffect();
         ReflectionManager.setValue(packet, "a", entityId);
         ReflectionManager.setValue(packet, "b", (byte) effect.getEffectId());
         ReflectionManager.setValue(packet, "c", (short) effect.getDuration());
         ReflectionManager.setValue(packet, "d", (byte) effect.getAmplifier());
 //                plugin.reflect.setPrivateField(packet, "e", hide);
-        sendPackets(packet);
-
+        sendPackets(packet, players);
     }
 
     private PacketPlayOutPlayerInfo makeTablistPacket(boolean add) {
@@ -373,13 +365,17 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         ReflectionManager.setValue(bedPacket, "a", entityId);
         ReflectionManager.setValue(bedPacket, "b", block);
 
-        Packet<?>[] tpPackets = makeTeleportPackets(data.getLocation());
+        Packet<?>[] tpPackets = makeTeleportPackets(new CoreLocation(location));
 
         return new Packet[]{
                 bedPacket,
                 tpPackets[0],
                 tpPackets[1]
         };
+    }
+
+    private PacketPlayOutEntityMetadata makeMetadataPacket() {
+        return new PacketPlayOutEntityMetadata(entityId, dataWatcher, true);
     }
 
     private GameProfile makeGameProfile(UUID uuid, String name, SkinInfo skin) {
