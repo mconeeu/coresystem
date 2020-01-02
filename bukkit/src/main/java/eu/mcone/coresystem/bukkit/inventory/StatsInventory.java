@@ -41,6 +41,8 @@ public class StatsInventory extends CoreInventory {
             new ProfileInventory(p);
             p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
         });
+
+        openInventory();
     }
 
 }

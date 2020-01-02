@@ -214,18 +214,18 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aRegistering BungeeCord Messaging Channel...");
         getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         getServer().getMessenger().registerOutgoingPluginChannel(this, "WDL|CONTROL");
-        getServer().getMessenger().registerIncomingPluginChannel(this, "MC_ONE_RETURN", new ReturnPluginChannelListener());
-        getServer().getMessenger().registerIncomingPluginChannel(this, "MC_ONE_INFO", new InfoPluginChannelListener());
+        getServer().getMessenger().registerIncomingPluginChannel(this, "mcone:return", new ReturnPluginChannelListener());
+        getServer().getMessenger().registerIncomingPluginChannel(this, "mcone:info", new InfoPluginChannelListener());
         getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordReturnPluginChannelListener());
         getServer().getMessenger().registerIncomingPluginChannel(this, "WDL|INIT", new AntiWorldDownloader());
 
         for (Player p : Bukkit.getOnlinePlayers()) {
+            CorePlayerListener.LOADING_MSG.send(p);
+            p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 0));
             CorePlayerListener.setCorePermissibleBase(p);
 
             getServer().getScheduler().runTask(this, () -> {
-                CorePlayerListener.LOADING_MSG.send(p);
-                p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 0));
-
+                Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
                 //Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
 //                getServer().getPluginManager().callEvent(new CorePlayerLoadedEvent(CorePlayerLoadedEvent.Reason.RELOAD, new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(
 //                        this,
@@ -239,16 +239,10 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 //                        p
 //                ), p));
 
-                getServer().getPluginManager().callEvent(new CorePlayerLoadedEvent(CorePlayerLoadedEvent.Reason.RELOAD, new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(
-                        this,
-                        p.getAddress().getAddress(),
-                        p
-                ), p));
-
                 channelHandler.createSetRequest(p, "UNNICK");
 
                 CorePlayerListener.LOADING_SUCCESS_MSG.send(p);
-                p.getActivePotionEffects().clear();
+                p.removePotionEffect(PotionEffectType.BLINDNESS);
             });
         }
 

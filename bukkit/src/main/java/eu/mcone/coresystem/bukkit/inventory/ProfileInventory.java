@@ -28,7 +28,7 @@ public class ProfileInventory extends CoreInventory {
     private static List<ProfileInventoryModifier> modifiers = new ArrayList<>();
 
     public ProfileInventory(Player p) {
-        super("§8» §3§l" + p.getName() + "'s Profil", p, (size > 0) ? size : InventorySlot.ROW_4, InventoryOption.FILL_EMPTY_SLOTS);
+        super("§8» §3§l" + p.getName() + "'"+ (!p.getName().endsWith("s") && !p.getName().endsWith("S") ? "s" : "") +" Profil", p, (size > 0) ? size : InventorySlot.ROW_4, InventoryOption.FILL_EMPTY_SLOTS);
 
         CorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(p);
         double onlinetime = Math.floor(((double) cp.getOnlinetime() / 60 / 60) * 100) / 100;

@@ -48,36 +48,34 @@ public class CoreAfkManager implements AfkManager {
     private void check() {
         Collection<? extends Player> online = Bukkit.getOnlinePlayers();
 
-        Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
-            for (Player p : online) {
-                if (locations.getOrDefault(p.getUniqueId(), new Location(p.getWorld(), 0, 0, 0)).equals(p.getLocation())) {
-                    players.put(p.getUniqueId(), players.getOrDefault(p.getUniqueId(), 0L) + 1);
-                } else {
-                    players.put(p.getUniqueId(), 0L);
-                }
-
-                long i = players.get(p.getUniqueId());
-                if (afkPlayers.contains(p.getUniqueId())) {
-                    if (i<150) {
-                        afkPlayers.remove(p.getUniqueId());
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du bist nun nicht mehr AFK!");
-                        ((GlobalCorePlayer) BukkitCoreSystem.getInstance().getCorePlayer(p)).setState(PlayerState.ONLINE);
-
-                        Bukkit.getPluginManager().callEvent(new AfkEvent(p, PlayerState.ONLINE));
-                    }
-                } else {
-                    if (i>150) {
-                        afkPlayers.add(p.getUniqueId());
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du bist nun AFK!");
-                        ((GlobalCorePlayer) BukkitCoreSystem.getInstance().getCorePlayer(p)).setState(PlayerState.AFK);
-
-                        Bukkit.getPluginManager().callEvent(new AfkEvent(p, PlayerState.AFK));
-                    }
-                }
-
-                locations.put(p.getUniqueId(), p.getLocation());
+        for (Player p : online) {
+            if (locations.getOrDefault(p.getUniqueId(), new Location(p.getWorld(), 0, 0, 0)).equals(p.getLocation())) {
+                players.put(p.getUniqueId(), players.getOrDefault(p.getUniqueId(), 0L) + 1);
+            } else {
+                players.put(p.getUniqueId(), 0L);
             }
-        });
+
+            long i = players.get(p.getUniqueId());
+            if (afkPlayers.contains(p.getUniqueId())) {
+                if (i<150) {
+                    afkPlayers.remove(p.getUniqueId());
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du bist nun nicht mehr AFK!");
+                    ((GlobalCorePlayer) BukkitCoreSystem.getInstance().getCorePlayer(p)).setState(PlayerState.ONLINE);
+
+                    Bukkit.getScheduler().runTask(BukkitCoreSystem.getSystem(), () -> Bukkit.getPluginManager().callEvent(new AfkEvent(p, PlayerState.ONLINE)));
+                }
+            } else {
+                if (i>150) {
+                    afkPlayers.add(p.getUniqueId());
+                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du bist nun AFK!");
+                    ((GlobalCorePlayer) BukkitCoreSystem.getInstance().getCorePlayer(p)).setState(PlayerState.AFK);
+
+                    Bukkit.getScheduler().runTask(BukkitCoreSystem.getSystem(), () -> Bukkit.getPluginManager().callEvent(new AfkEvent(p, PlayerState.AFK)));
+                }
+            }
+
+            locations.put(p.getUniqueId(), p.getLocation());
+        }
     }
 
     void unregisterPlayer(UUID uuid) {

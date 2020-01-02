@@ -124,11 +124,10 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         }
 
         if (!this.entityData.getEquipment().equals(entityData.getEquipment())) {
-            for (int i = 0; i < entityData.getEquipment().size() && i < 5; i++) {
-                if (!this.entityData.getEquipment().get(i).equals(entityData.getEquipment().get(i))) {
-                    this.entityData.getEquipment().set(i, entityData.getEquipment().get(i));
-                    sendPackets(makeEquipmentPacket(i));
-                }
+            this.entityData.setEquipment(new HashMap<>(entityData.getEquipment()));
+
+            for (Map.Entry<EquipmentPosition, ItemStack> equipment : entityData.getEquipment().entrySet()) {
+                sendPackets(makeEquipmentPacket(equipment.getKey(), equipment.getValue()));
             }
         }
     }
@@ -172,49 +171,51 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     @Override
     protected void _spawn(Player p) {
         int size = entityData.isVisibleOnTab() ? 8 : 9;
-        size += entityData.isSleeping() ? 4 : 0;
+        size += entityData.isSleeping() ? 1 : 0;
+        int i = -1;
+
+        if (entityData.isSleeping() && !entityData.isSleepWithBed()) {
+            data.getLocation().add(0, 0.15, 0);
+        }
 
         Packet<?>[] packets = new Packet[size];
 
-        packets[0] = makeTablistPacket(true);
+        packets[++i] = makeTablistPacket(true);
 
-        packets[1] = new PacketPlayOutNamedEntitySpawn();
-        ReflectionManager.setValue(packets[1], "a", entityId);
-        ReflectionManager.setValue(packets[1], "b", profile.getId());
-        ReflectionManager.setValue(packets[1], "c", MathHelper.floor(data.getLocation().getX() * 32.0D));
-        ReflectionManager.setValue(packets[1], "d", MathHelper.floor(data.getLocation().getY() * 32.0D));
-        ReflectionManager.setValue(packets[1], "e", MathHelper.floor(data.getLocation().getZ() * 32.0D));
-        ReflectionManager.setValue(packets[1], "f", (byte) ((int) (data.getLocation().getYaw() * 256.0F / 360.0F)));
-        ReflectionManager.setValue(packets[1], "g", (byte) ((int) (data.getLocation().getPitch() * 256.0F / 360.0F)));
-        ReflectionManager.setValue(packets[1], "h", 0);
+        packets[++i] = new PacketPlayOutNamedEntitySpawn();
+        ReflectionManager.setValue(packets[i], "a", entityId);
+        ReflectionManager.setValue(packets[i], "b", profile.getId());
+        ReflectionManager.setValue(packets[i], "c", MathHelper.floor(data.getLocation().getX() * 32.0D));
+        ReflectionManager.setValue(packets[i], "d", MathHelper.floor(data.getLocation().getY() * 32.0D));
+        ReflectionManager.setValue(packets[i], "e", MathHelper.floor(data.getLocation().getZ() * 32.0D));
+        ReflectionManager.setValue(packets[i], "f", (byte) ((int) (data.getLocation().getYaw() * 256.0F / 360.0F)));
+        ReflectionManager.setValue(packets[i], "g", (byte) ((int) (data.getLocation().getPitch() * 256.0F / 360.0F)));
+        ReflectionManager.setValue(packets[i], "h", 0);
         DataWatcher watcher = new DataWatcher(null);
         watcher.a(0, (byte) 0);
         watcher.a(6, (float) 20);
         watcher.a(10, (byte) 127);
-        ReflectionManager.setValue(packets[1], "i", watcher);
+        ReflectionManager.setValue(packets[i], "i", watcher);
 
-        packets[2] = makeHeadRotationPacket(data.getLocation().getYaw());
+        packets[++i] = makeHeadRotationPacket(data.getLocation().getYaw());
 
-        for (int i = 0; i < entityData.getEquipment().size() && i < 5; i++) {
-            packets[i + 3] = makeEquipmentPacket(i);
+        for (Map.Entry<EquipmentPosition, ItemStack> equipment : entityData.getEquipment().entrySet()) {
+            packets[++i] = makeEquipmentPacket(equipment.getKey(), equipment.getValue());
         }
 
         if (!entityData.isVisibleOnTab()) {
-            packets[8] = makeTablistPacket(false);
+            packets[++i] = makeTablistPacket(false);
         }
 
         if (entityData.isSleeping()) {
             p.sendBlockChange(bedLocation, Material.BED_BLOCK, (byte) 0);
+            BlockPosition block = new BlockPosition(bedLocation.getBlockX(), bedLocation.getBlockY(), bedLocation.getBlockZ());
 
-            if (!entityData.isSleepWithBed()) {
-                data.getLocation().add(0, 0.15, 0);
-            }
+            PacketPlayOutBed bedPacket = new PacketPlayOutBed();
+            ReflectionManager.setValue(bedPacket, "a", entityId);
+            ReflectionManager.setValue(bedPacket, "b", block);
 
-            Packet<?>[] sleepPackets = makeSleepPackets(bedLocation);
-            packets[9] = sleepPackets[0];
-            packets[10] = sleepPackets[1];
-            packets[11] = sleepPackets[2];
-            packets[12] = sleepPackets[3];
+            packets[++i] = bedPacket;
         }
 
         sendPackets(p, packets);
@@ -231,8 +232,8 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
 
     @Override
     public void setEquipment(EquipmentPosition position, ItemStack item, Player... players) {
-        entityData.getEquipment().set(position.getId(), item);
-        sendPackets(makeEquipmentPacket(position.getId()), players);
+        entityData.getEquipment().put(position, item);
+        sendPackets(makeEquipmentPacket(position, item), players);
     }
 
     @Override
@@ -361,8 +362,8 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         return packet;
     }
 
-    private PacketPlayOutEntityEquipment makeEquipmentPacket(int slot) {
-        return entityData.getEquipment().get(slot) != null ? new PacketPlayOutEntityEquipment(entityId, slot, CraftItemStack.asNMSCopy(entityData.getEquipment().get(slot))) : null;
+    private PacketPlayOutEntityEquipment makeEquipmentPacket(EquipmentPosition slot, ItemStack itemStack) {
+        return new PacketPlayOutEntityEquipment(entityId, slot.getId(), CraftItemStack.asNMSCopy(itemStack));
     }
 
     private Packet<?>[] makeSleepPackets(Location bedLocation) {
@@ -377,8 +378,7 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         return new Packet[]{
                 bedPacket,
                 tpPackets[0],
-                tpPackets[1],
-                tpPackets[2]
+                tpPackets[1]
         };
     }
 
