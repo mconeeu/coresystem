@@ -141,11 +141,11 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
                     throw new MotionCaptureCurrentlyRunningException();
                 } else {
                     motionPlayer = new MotionPlayer(this, data);
-                    motionPlayer.playMotionCapture();
+                    motionPlayer.play();
                 }
             } else {
                 motionPlayer = new MotionPlayer(this, data);
-                motionPlayer.playMotionCapture();
+                motionPlayer.play();
             }
         } catch (MotionCaptureCurrentlyRunningException e) {
             e.printStackTrace();

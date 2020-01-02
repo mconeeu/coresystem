@@ -1,24 +1,10 @@
 package eu.mcone.coresystem.bukkit.npc.capture;
 
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationProgressEvent;
-import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationStateChangeEvent;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
 import eu.mcone.coresystem.api.bukkit.npc.capture.SimplePlayer;
-import eu.mcone.coresystem.api.bukkit.npc.capture.packets.*;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
-import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
-import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import lombok.Getter;
-import eu.mcone.coresystem.bukkit.npc.entity.PlayerCoreNpc;
-import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class MotionPlayer extends SimplePlayer implements eu.mcone.coresystem.api.bukkit.npc.capture.MotionPlayer {
     @Getter
