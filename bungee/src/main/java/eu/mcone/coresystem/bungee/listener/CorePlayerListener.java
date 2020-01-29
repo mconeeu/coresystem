@@ -5,10 +5,12 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
+import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.ban.BanManager;
+import eu.mcone.coresystem.bungee.command.RegisterCMD;
 import eu.mcone.coresystem.bungee.friend.Party;
 import eu.mcone.coresystem.bungee.player.BungeeCorePlayer;
 import eu.mcone.networkmanager.core.api.database.Database;
@@ -27,6 +29,25 @@ public class CorePlayerListener implements Listener {
 
     @EventHandler
     public void onLogin(LoginEvent e) {
+        if (e.getConnection().getVirtualHost().getHostName().equals("register.onegaming.group") || e.getConnection().getVirtualHost().getHostName().equals("register.mcone.eu")) {
+            e.setCancelled(true);
+
+            try {
+                e.setCancelReason(new TextComponent(TextComponent.fromLegacyText("§f§lOneGaming ID" +
+                        "\n§7Danke, dass du dir eine OneGaming ID erstellst!" +
+                        "\n§r" +
+                        "\n§7Dein Register-Code lautet: §c§l" + RegisterCMD.createAndGetNewCode(e.getConnection().getUniqueId()) +
+                        "\n§7§oDu kannst ihn nun auf §f§oid.onegaming.group/register/minecraft§7§o eingeben!"
+                )));
+            } catch (CoreException ingored) {
+                e.setCancelReason(new TextComponent(TextComponent.fromLegacyText("§f§lOneGaming ID§8 | §7Registrieren" +
+                        "\n§r" +
+                        "\n§4§oDu hast bereits eine OneGaming ID mit diesem Minecraft Account erstellt!"
+                )));
+            }
+            return;
+        }
+
         for (ProxiedPlayer online : ProxyServer.getInstance().getPlayers()) {
             if (online.getName().equalsIgnoreCase(e.getConnection().getName())) {
                 e.setCancelled(true);
@@ -88,7 +109,7 @@ public class CorePlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onDisconnect(PlayerDisconnectEvent e){
+    public void onDisconnect(PlayerDisconnectEvent e) {
         final ProxiedPlayer p = e.getPlayer();
         final BungeeCorePlayer cp = (BungeeCorePlayer) BungeeCoreSystem.getInstance().getCorePlayer(p);
 
