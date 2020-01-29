@@ -66,8 +66,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private Map<String, CorePlugin> plugins;
 
     private MongoConnection mongoConnection;
-    @Getter
-    private MongoDatabase database;
 
     @Getter
     private TranslationManager translationManager;
@@ -138,18 +136,17 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                         )
                 )
                 .connect();
-        database = mongoConnection.getDatabase(Database.SYSTEM);
 
         cooldownSystem = new CoreCooldownSystem();
         channelHandler = new ChannelHandler();
-        preferences = new PreferencesManager(database, new HashMap<String, Object>() {{
+        preferences = new PreferencesManager(getMongoDB(), new HashMap<String, Object>() {{
             put("maintenance", false);
             put("betaKeySystem", false);
         }});
 
         serverSessionHandler = new ReplayServerSessionHandler();
         playerUtils = new PlayerUtils(this);
-        moneyUtil = new MoneyUtil(this, database) {
+        moneyUtil = new MoneyUtil(this, getMongoDB()) {
             @Override
             protected void fireEvent(GlobalCorePlayer player, Currency currency) {
                 getProxy().getPluginManager().callEvent(new MoneyChangeEvent((CorePlayer) player, currency));
@@ -160,13 +157,13 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
 
         sendConsoleMessage("§aLoading Translations...");
-        translationManager = new TranslationManager(database, this);
+        translationManager = new TranslationManager(getMongoDB(), this);
 
         sendConsoleMessage("§aLoading Permissions & Groups...");
-        permissionManager = new PermissionManager("Proxy", database);
+        permissionManager = new PermissionManager("Proxy", getMongoDB());
 
         sendConsoleMessage("§aLoading FriendSystem...");
-        friendSystem = new FriendSystem(database);
+        friendSystem = new FriendSystem(getMongoDB());
 
         sendConsoleMessage("§aInitializing LabyModManager...");
         labyModAPI = new LabyModManager(this);
@@ -222,7 +219,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         registerCommands(
                 new PingCMD(),
                 new TeamChatCMD(),
-                new PermsCMD(database),
+                new PermsCMD(getMongoDB()),
                 new BanCMD(),
                 new WhoisCMD(),
                 new RestartCMD(),
@@ -287,7 +284,9 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     public MongoDatabase getMongoDB(Database database) {
         switch (database) {
             case SYSTEM:
-                return this.database;
+                return this.mongoConnection.getDatabase(Database.SYSTEM);
+            case ONEGAMING:
+                return this.mongoConnection.getDatabase(Database.ONEGAMING);
             default:
                 return null;
         }
@@ -295,7 +294,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public MongoDatabase getMongoDB() {
-        return database;
+        return this.mongoConnection.getDatabase(Database.SYSTEM);
     }
 
     public CorePlayer getCorePlayer(ProxiedPlayer p) {

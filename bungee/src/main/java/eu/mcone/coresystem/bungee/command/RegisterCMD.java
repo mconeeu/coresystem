@@ -5,16 +5,30 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.UpdateOptions;
+import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.networkmanager.core.api.database.Database;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import org.bson.Document;
 
+import java.util.Random;
+import java.util.UUID;
+
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.set;
 
 public class RegisterCMD extends Command {
+
+    public static final Random REGISTER_RANDOM = new Random();
+    public static final MongoCollection<Document> MINECRAFT_REGISTER_CODE_COLLECTION = BungeeCoreSystem.getSystem().getMongoDB(Database.ONEGAMING).getCollection("minecraft_register_codes");
 
     public RegisterCMD() {
         super("register", null);
@@ -27,32 +41,41 @@ public class RegisterCMD extends Command {
             if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId()))
                 return;
 
-            Document entry = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("uuid", p.getUniqueId().toString())).first();
-            if (entry != null) {
-                if (entry.getString("password") != null) {
-                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du hast dich bereits registriert!");
-                } else {
-                    /*BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).select("SELECT `id`, `uuid` FROM `website_account_token` WHERE `uuid`= '" + p.getUniqueId().toString() + "' AND `type`='register'", rs -> {
-                        String token = new Random(16).nextString();
-
-                        try {
-                            if (rs.next()) {
-                                BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).update("UPDATE `website_account_token` SET `timestamp` = '" + System.currentTimeMillis() / 1000 + "', `token` = '" + token + "' WHERE `id`=" + rs.getInt("id"));
-                                BungeeCoreSystem.getInstance().getMessager().send(p, "§2Du kannst dich nun auf §fhttps://www.mcone.eu/register.php?token=" + token + " §2registrieren!");
-                            } else {
-                                BungeeCoreSystem.getSystem().getMySQL(MySQLDatabase.SYSTEM).update("INSERT INTO `website_account_token` (`uuid`, `token`, `timestamp`, `type`) VALUES ('" + p.getUniqueId().toString() + "', '" + token + "', '" + System.currentTimeMillis() / 1000 + "', 'register')");
-                                BungeeCoreSystem.getInstance().getMessager().send(p, "§2Du kannst dich nun auf §fhttps://www.mcone.eu/register.php?token=" + token + " §2registrieren!");
-                            }
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        }
-                    });*/
-                }
+            try {
+                String code = createAndGetNewCode(p.getUniqueId());
+                BungeeCoreSystem.getInstance().getMessager().send(p,
+                        new ComponentBuilder("Danke, dass du eine OneGaming ID erstellst!\nDein Register Code lautet: ")
+                                .color(ChatColor.GRAY)
+                                .append(code)
+                                .color(ChatColor.RED).bold(true)
+                                .append("Klicke ")
+                                .color(ChatColor.GRAY)
+                                .append("hier")
+                                .color(ChatColor.WHITE).bold(true)
+                                .event(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://id.onegaming.group/register/minecraft"))
+                                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7§oKlicke zum öffnen").create()))
+                                .create()
+                );
+            } catch (CoreException ingored) {
+                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du hast dich bereits registriert!");
             }
         } else {
             BungeeCoreSystem.getInstance().getMessager().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
+    }
 
+    public static String createAndGetNewCode(UUID uuid) throws CoreException {
+        if (BungeeCoreSystem.getSystem().getMongoDB(Database.ONEGAMING).getCollection("users").find(eq("minecraft_uuid", uuid.toString())).first() == null) {
+            String code;
+            do {
+                code = String.format("%04d", REGISTER_RANDOM.nextInt(10000));
+            } while (MINECRAFT_REGISTER_CODE_COLLECTION.find(eq("code", code)).first() != null);
+
+            MINECRAFT_REGISTER_CODE_COLLECTION.updateOne(eq("uuid", uuid.toString()), set("code", code), new UpdateOptions().upsert(true));
+            return code;
+        } else {
+            throw new CoreException("Cannot register user with uuid "+uuid+". OneGaming ID already exists!");
+        }
     }
 
 }
