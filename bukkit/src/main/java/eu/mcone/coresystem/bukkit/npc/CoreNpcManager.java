@@ -87,7 +87,7 @@ public class CoreNpcManager implements NpcManager {
     public NPC addNPC(NpcData data, ListMode listMode, Player... players) {
         for (CoreNPC<?> npc : npcSet) {
             if (npc.getData().getLocation().getWorld().equals(data.getLocation().getWorld()) && npc.getData().getName().equalsIgnoreCase(data.getName())) {
-                throw new NpcCreateException("Could not create NPC +" + data.getName() + ": NPC with that name already exists in this world!");
+                throw new NpcCreateException("Could not create NPC +" + data.getName() + ": NPC with that name already exists in the world" + npc.getData().getLocation().getWorld() + "!");
             }
         }
 
