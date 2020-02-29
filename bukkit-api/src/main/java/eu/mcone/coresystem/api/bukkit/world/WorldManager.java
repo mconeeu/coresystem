@@ -53,6 +53,27 @@ public interface WorldManager {
     World createWorld(String name, WorldCreateProperties properties) throws IllegalArgumentException;
 
     /**
+     * Downloads the world with the specified name from the database and imports it
+     * @param name World name
+     * @return boolean
+     */
+    boolean download(final String name);
+
+    /**
+     * Uploads the world as byte array in the database
+     * @param world CoreWorld
+     * @return boolean
+     */
+    boolean upload(final CoreWorld world);
+
+    /**
+     * Checks if the world with the specified name exists in the database
+     * @param name WorldName
+     * @return boolean
+     */
+    boolean existsWorldInDatabase(final String name);
+
+    /**
      * reloads all world configs
      */
     void reload();

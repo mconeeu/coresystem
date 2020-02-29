@@ -306,6 +306,7 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
 
     @Override
     public void sneak(boolean sneak, Player... players) {
+        dataWatcher = new DataWatcher(null);
         if (sneak) {
             dataWatcher.a(0, (byte) 2);
         } else {
@@ -331,6 +332,10 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         }
 
         sendPackets(makeMetadataPacket(), players);
+    }
+
+    public void setItemInHand(final ItemStack item, final Player... players) {
+        sendPackets(new PacketPlayOutEntityEquipment(entityId, 0, CraftItemStack.asNMSCopy(item)), players);
     }
 
     //TODO: Check if this works (Code snipped: https://dev-tek.de/forum/thread/328-packetplayoutentityeffect/)

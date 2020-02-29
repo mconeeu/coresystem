@@ -15,5 +15,7 @@ public enum EntityAction {
     TAKE_DAMAGE,
     STATS,
     CHAT,
-    MOVE
+    MOVE,
+    SPAWN,
+    DESTROY
 }

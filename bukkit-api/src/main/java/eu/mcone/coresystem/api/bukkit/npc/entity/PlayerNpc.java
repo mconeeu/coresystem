@@ -97,6 +97,8 @@ public interface PlayerNpc extends NPC {
     //Crashes the client, because float cannot be cast to byte (Minecraft Client error stacktrace)
     void block(boolean block, Player... players);
 
-    void addPotionEffect(MobEffect effect, Player... players);
+    void setItemInHand(final ItemStack item, final Player... players);
+
+    void addPotionEffect(MobEffect effect, final Player... players);
 
 }

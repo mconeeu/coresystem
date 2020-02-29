@@ -90,7 +90,12 @@ public class CoreJsonConfig<T> {
         try {
             if (!file.exists()) {
                 this.file.createNewFile();
-                FileUtils.writeStringToFile(file, "{}");
+                try {
+                    updateConfig(tClass.newInstance());
+                } catch (InstantiationException | IllegalAccessException e) {
+                    e.printStackTrace();
+//                    FileUtils.writeStringToFile(file, "{}");
+                }
             }
 
             reloadFile();

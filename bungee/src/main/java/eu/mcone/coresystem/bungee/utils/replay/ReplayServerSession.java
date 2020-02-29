@@ -8,9 +8,10 @@ import net.md_5.bungee.api.connection.Server;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ServerSession {
+public class ReplayServerSession {
 
-    private long registerd;
+    private long registered;
+    private String replayID;
     private Server server;
     private String gamemode;
 

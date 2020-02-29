@@ -4,6 +4,7 @@ import eu.mcone.coresystem.api.bukkit.config.typeadapter.ItemStackTypeAdapterUti
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import lombok.Getter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bukkit.Material;
@@ -13,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Map;
 
 @Getter
+@BsonDiscriminator
 public class EntityItemPacketWrapperTemplate extends PacketWrapper {
 
     private Material material;

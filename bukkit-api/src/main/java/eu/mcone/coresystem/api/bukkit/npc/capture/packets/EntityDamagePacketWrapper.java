@@ -12,7 +12,7 @@ public class EntityDamagePacketWrapper extends PacketWrapper {
     }
 
     @BsonCreator
-    public EntityDamagePacketWrapper(@BsonProperty("entityAction") final EntityAction entityAction) {
+    public EntityDamagePacketWrapper(@BsonProperty("entityAction") EntityAction entityAction) {
         super(PacketType.ENTITY, entityAction);
     }
 }

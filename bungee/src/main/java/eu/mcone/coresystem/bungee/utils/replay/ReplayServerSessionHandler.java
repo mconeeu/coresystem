@@ -6,21 +6,29 @@ import java.util.HashMap;
 
 public class ReplayServerSessionHandler {
 
-    private HashMap<String, ServerSession> replayServerSessions;
+    private HashMap<String, ReplayServerSession> replayServerSessions;
 
     public ReplayServerSessionHandler() {
         replayServerSessions = new HashMap<>();
     }
 
-    public void registerReplayServer(final Server server, final String gamemode) {
-        replayServerSessions.put(server.getInfo().getName(), new ServerSession(System.currentTimeMillis() / 1000, server, gamemode));
+    public void addReplayServer(final ReplayServerSession session) {
+        replayServerSessions.put(session.getServer().getInfo().getName(), session);
+    }
+
+    public void registerReplayServer(final String replayID, final Server server, final String gamemode) {
+        replayServerSessions.put(server.getInfo().getName(), new ReplayServerSession(System.currentTimeMillis() / 1000, replayID, server, gamemode));
     }
 
     public void unRegisterServer(final Server server) {
         replayServerSessions.remove(server.getInfo().getName());
     }
 
-    public boolean useReplaySystem(final Server server) {
+    public String getReplayID(final Server server) {
+        return replayServerSessions.get(server.getInfo().getName()).getReplayID();
+    }
+
+    public boolean hasReplayID(final Server server) {
         return replayServerSessions.containsKey(server.getInfo().getName());
     }
 }

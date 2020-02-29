@@ -5,7 +5,6 @@ public enum WorldAction {
     BREAK_BLOCK,
     SET_BLOCK,
     PLAY_SOUND,
-    PLAY_EFFECT,
-    SPAWN_ENTITY
+    PLAY_EFFECT
 
 }
