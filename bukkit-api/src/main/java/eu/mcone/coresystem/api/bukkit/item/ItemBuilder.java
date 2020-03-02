@@ -13,10 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class ItemBuilder {
 
@@ -131,7 +128,11 @@ public final class ItemBuilder {
      * @return this
      */
     public ItemBuilder addLore(String lore) {
-        this.lore.add(lore);
+        if (this.lore != null) {
+            this.lore.add(lore);
+        } else {
+            this.lore = new ArrayList<>(Collections.singleton(lore));
+        }
         return this;
     }
 

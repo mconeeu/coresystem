@@ -54,7 +54,7 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     private MotionPlayer motionPlayer;
     private DataWatcher dataWatcher;
 
-    protected PlayerCoreNpc(NpcData data, ListMode visibilityMode, Player[] players) {
+    public PlayerCoreNpc(NpcData data, ListMode visibilityMode, Player[] players) {
         super(PlayerNpcData.class, data, visibilityMode, players);
         this.bedLocation = new Location(location.getWorld(), 1, 1, 1);
     }

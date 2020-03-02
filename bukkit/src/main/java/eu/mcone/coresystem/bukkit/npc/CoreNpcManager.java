@@ -103,7 +103,7 @@ public class CoreNpcManager implements NpcManager {
             npcSet.add(npc);
             return npc;
         } else {
-            throw new NpcCreateException("Could not create NPC +" + data.getName() + ": EntityType " + data.getType() + " does not belong to any NPC type.");
+            throw new NpcCreateException("Could not create NPC " + data.getName() + ": EntityType " + data.getType() + " does not belong to any NPC type.");
         }
     }
 

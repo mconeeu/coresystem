@@ -94,7 +94,7 @@ public class CoreJsonConfig<T> {
                     updateConfig(tClass.newInstance());
                 } catch (InstantiationException | IllegalAccessException e) {
                     e.printStackTrace();
-//                    FileUtils.writeStringToFile(file, "{}");
+                    FileUtils.writeStringToFile(file, "{}");
                 }
             }
 

@@ -32,8 +32,6 @@ public enum NpcType {
     public <T extends CoreNPC<?>> T construct(NpcData data, ListMode visibilityMode, Player... players) {
         try {
             Constructor<?> constructor = npcClass.getDeclaredConstructor(NpcData.class, ListMode.class, Player[].class);
-            constructor.setAccessible(true);
-
             return (T) constructor.newInstance(data, visibilityMode, players);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();

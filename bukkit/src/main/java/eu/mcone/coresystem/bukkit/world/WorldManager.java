@@ -9,7 +9,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
 import com.mongodb.client.MongoCollection;
-import eu.mcone.cloud.core.server.CloudWorld;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.npc.data.PlayerNpcData;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
@@ -24,7 +23,10 @@ import eu.mcone.networkmanager.core.api.database.Database;
 import org.apache.commons.io.IOUtils;
 import org.bson.Document;
 import org.bson.types.Binary;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.entity.EntityType;
 
 import java.io.*;
@@ -43,7 +45,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     final static String CONFIG_NAME = "core-config.json";
 
     private final static String CONFIG_VERSION_KEY = "configVersion";
-    private final static int LATEST_CONFIG_VERSION = 4;
+    final static int LATEST_CONFIG_VERSION = 4;
 
     private WorldCMD worldCMD;
     List<BukkitCoreWorld> coreWorlds;
@@ -329,7 +331,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
 
     @Override
     public boolean existsWorldInDatabase(final String name) {
-        return worldCollection.find(eq("name", name)).first() != null;
+        return worldCollection.find(eq("name", name)).projection(include("build")).first() != null;
     }
 
     private BukkitCoreWorld constructNewCoreWorld(World world, String generator, String generatorSettings) {

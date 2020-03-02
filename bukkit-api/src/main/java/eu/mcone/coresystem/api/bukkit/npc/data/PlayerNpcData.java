@@ -16,17 +16,24 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter @Setter
-@Builder
-@ToString
 public class PlayerNpcData extends AbstractNpcData {
 
-    @Builder.Default
     private String skinName = "MHF_Question", tablistName = "";
-    @Builder.Default
     private SkinInfo.SkinType skinType = SkinInfo.SkinType.PLAYER;
-    @Builder.Default
     private boolean visibleOnTab = false, sleeping = false, sleepWithBed = false;
-    @Builder.Default
     private Map<EquipmentPosition, ItemStack> equipment = new HashMap<>();
+
+    @Override
+    public String toString() {
+        return "PlayerNpcData{" +
+                "skinName='" + skinName + '\'' +
+                ", tablistName='" + tablistName + '\'' +
+                ", skinType=" + skinType +
+                ", visibleOnTab=" + visibleOnTab +
+                ", sleeping=" + sleeping +
+                ", sleepWithBed=" + sleepWithBed +
+                ", equipment=" + equipment +
+                '}';
+    }
 
 }
