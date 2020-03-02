@@ -6,7 +6,6 @@
 package eu.mcone.coresystem.api.bukkit.config.typeadapter.bson;
 
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.ItemStackTypeAdapterUtils;
-import eu.mcone.coresystem.api.bukkit.config.typeadapter.LegacyItemData;
 import org.bson.BsonReader;
 import org.bson.BsonWriter;
 import org.bson.Document;
@@ -165,16 +164,16 @@ public class ItemStackCodec implements Codec<ItemStack> {
             document.append("repairPenalty", repairPenalty);
         }
         if (bookMeta != null && bookMeta.size() > 0) {
-            document.append("book-meta", Document.parse(bookMeta.toString()));
+            document.append("book-meta", bookMeta);
         }
         if (armorMeta != null && armorMeta.size() > 0) {
-            document.append("armor-meta", Document.parse(armorMeta.toString()));
+            document.append("armor-meta", armorMeta);
         }
         if (skullMeta != null && skullMeta.size() > 0) {
-            document.append("skull-meta", Document.parse(skullMeta.toString()));
+            document.append("skull-meta", skullMeta);
         }
         if (fwMeta != null && fwMeta.size() > 0) {
-            document.append("firework-meta", Document.parse(fwMeta.toString()));
+            document.append("firework-meta", fwMeta);
         }
 
         registry.get(Document.class).encode(writer, document, encoderContext);
