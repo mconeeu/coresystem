@@ -12,13 +12,12 @@ import eu.mcone.coresystem.api.bukkit.config.typeadapter.LegacyItemData;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>, JsonDeserializer<CraftItemStack> {
 
@@ -30,6 +29,7 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
         String name = "";
         Map<Enchantment, Integer> enchants = null;
         List<String> lore = new ArrayList<>();
+        Set<ItemFlag> itemFlags = new HashSet<>();
         int repairPenalty = 0;
         short durability = (short) jsonObject.get("durability").getAsInt();
 
@@ -51,6 +51,11 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
             JsonArray array = jsonObject.getAsJsonArray("lore");
             for (int j = 0; j < array.size(); j++) {
                 lore.add(array.get(j).getAsString());
+            }
+        }
+        if (jsonObject.has("itemFlags")) {
+            for (JsonElement flag : jsonObject.get("itemFlags").getAsJsonArray()) {
+                itemFlags.add(ItemFlag.valueOf(flag.getAsString()));
             }
         }
         if (jsonObject.has("repairPenalty")) {
@@ -76,11 +81,19 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
         }
 
         ItemMeta meta = stuff.getItemMeta();
-        if (name != null) {
-            meta.setDisplayName(name);
+        if (meta != null) {
+            if (name != null) {
+                meta.setDisplayName(name);
+            }
+            meta.setLore(lore);
+            if (jsonObject.has("unbreakable")) {
+                meta.spigot().setUnbreakable(jsonObject.get("unbreakable").getAsBoolean());
+            }
+            if (itemFlags.size() > 0) {
+                meta.addItemFlags(itemFlags.toArray(new ItemFlag[0]));
+            }
+            stuff.setItemMeta(meta);
         }
-        meta.setLore(lore);
-        stuff.setItemMeta(meta);
 
         if (repairPenalty != 0) {
             Repairable rep = (Repairable) meta;
@@ -103,9 +116,10 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
             return null;
         }
 
-        boolean hasMeta = itemStack.hasItemMeta();
+        boolean hasMeta = itemStack.hasItemMeta(), unbreakable = false;
         String name = null, enchants = null;
         String[] lore = null;
+        Set<ItemFlag> itemFlags = null;
         int repairPenalty = 0;
         Material material = itemStack.getType();
         Map<String, Object> bookMeta = null, armorMeta = null, skullMeta = null, fwMeta = null;
@@ -124,6 +138,8 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
 
         if (hasMeta) {
             ItemMeta meta = itemStack.getItemMeta();
+            unbreakable = meta.spigot().isUnbreakable();
+            itemFlags = meta.getItemFlags();
             if (meta.hasDisplayName()) {
                 name = meta.getDisplayName();
             }
@@ -158,6 +174,15 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
         }
         if (repairPenalty != 0) {
             values.addProperty("repairPenalty", repairPenalty);
+        }
+        if (unbreakable) {
+            values.addProperty("unbreakable", true);
+        }
+        if (itemFlags != null && itemFlags.size() > 0) {
+            JsonArray flags = new JsonArray();
+            itemFlags.forEach(flag -> flags.add(new JsonPrimitive(flag.toString())));
+
+            values.add("itemFlags", flags);
         }
         if (bookMeta != null && bookMeta.size() > 0) {
             values.add("book-meta", gson.toJsonTree(bookMeta));

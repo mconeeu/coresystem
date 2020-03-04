@@ -102,7 +102,6 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
             Document entry = database.getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
 
             if (entry != null) {
-                System.out.println("USE MC1 DATABASE");
                 uuidCache.put(entry.getString("name"), uuid);
                 return constructSkinInfo(entry.getString("name"), entry.getString("texture_value"), entry.getString("texture_signature"));
             } else {

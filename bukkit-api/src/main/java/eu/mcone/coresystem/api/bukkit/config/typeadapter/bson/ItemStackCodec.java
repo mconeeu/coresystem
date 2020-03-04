@@ -16,12 +16,11 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ItemStackCodec implements Codec<ItemStack> {
 
@@ -39,6 +38,7 @@ public class ItemStackCodec implements Codec<ItemStack> {
         String name = null;
         Map<Enchantment, Integer> enchants = null;
         List<String> lore = new ArrayList<>();
+        Set<ItemFlag> itemFlags = new HashSet<>();
         int repairPenalty = 0;
 //        short durability = document.getInteger("durability").shortValue();
 
@@ -58,6 +58,11 @@ public class ItemStackCodec implements Codec<ItemStack> {
         }
         if (document.containsKey("lore")) {
             lore = document.getList("lore", String.class);
+        }
+        if (document.containsKey("itemFlags")) {
+            for (String flag : document.getList("itemFlags", String.class)) {
+                itemFlags.add(ItemFlag.valueOf(flag));
+            }
         }
         if (document.containsKey("repairPenalty")) {
             repairPenalty = document.getInteger("repairPenalty");
@@ -82,12 +87,17 @@ public class ItemStackCodec implements Codec<ItemStack> {
         }
 
         ItemMeta meta = stuff.getItemMeta();
-
         if (meta != null) {
             if (name != null) {
                 meta.setDisplayName(name);
             }
             meta.setLore(lore);
+            if (document.containsKey("unbreakable")) {
+                meta.spigot().setUnbreakable(document.getBoolean("unbreakable"));
+            }
+            if (itemFlags.size() > 0) {
+                meta.addItemFlags(itemFlags.toArray(new ItemFlag[0]));
+            }
             stuff.setItemMeta(meta);
         }
 
@@ -111,9 +121,10 @@ public class ItemStackCodec implements Codec<ItemStack> {
             return;
         }
 
-        boolean hasMeta = itemStack.hasItemMeta();
+        boolean hasMeta = itemStack.hasItemMeta(), unbreakable = false;
         String name = null, enchants = null;
         List<String> lore = null;
+        Set<ItemFlag> itemFlags = null;
         int repairPenalty = 0;
         Material material = itemStack.getType();
         Map<String, Object> bookMeta = null, armorMeta = null, skullMeta = null, fwMeta = null;
@@ -138,6 +149,8 @@ public class ItemStackCodec implements Codec<ItemStack> {
             if (meta.hasLore()) {
                 lore = meta.getLore();
             }
+            unbreakable = meta.spigot().isUnbreakable();
+            itemFlags = meta.getItemFlags();
             if (meta.hasEnchants())
                 enchants = ItemStackTypeAdapterUtils.serializeEnchantments(meta.getEnchants());
             if (meta instanceof Repairable) {
@@ -162,6 +175,15 @@ public class ItemStackCodec implements Codec<ItemStack> {
         }
         if (repairPenalty != 0) {
             document.append("repairPenalty", repairPenalty);
+        }
+        if (unbreakable) {
+            document.append("unbreakable", true);
+        }
+        if (itemFlags != null && itemFlags.size() > 0) {
+            List<String> flags = new ArrayList<>();
+            itemFlags.forEach(flag -> flags.add(flag.toString()));
+
+            document.append("itemFlags", flags);
         }
         if (bookMeta != null && bookMeta.size() > 0) {
             document.append("book-meta", bookMeta);
