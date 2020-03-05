@@ -13,10 +13,15 @@ import eu.mcone.coresystem.api.core.translation.Language;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public final class Messager {
 
@@ -133,36 +138,70 @@ public final class Messager {
         sender.sendMessage(message);
     }
 
-    public Broadcast broadcast(final String message, final Broadcast.BroadcastMessageTyp messageTyp) {
-        Broadcast broadcast = new Broadcast(message, messageTyp).send();
-        Bukkit.getPluginManager().callEvent(new BroadcastMessageEvent(broadcast));
-        return broadcast.send();
-    }
-
     public Broadcast broadcast(final String message) {
-        Broadcast broadcast = new Broadcast(message, Broadcast.BroadcastMessageTyp.INFO_MESSAGE).send();
+        return this.broadcast(Broadcast.BroadcastMessageTyp.INFO_MESSAGE, message, new Player[]{});
+    }
+
+    public Broadcast broadcast(final Broadcast.BroadcastMessageTyp typ, final String message) {
+        return this.broadcast(typ, message, new Player[]{});
+    }
+
+    public Broadcast broadcast(final Broadcast.BroadcastMessageTyp messageTyp, final String message, final Player... players) {
+        Broadcast broadcast = new Broadcast(messageTyp, message, players).send();
         Bukkit.getPluginManager().callEvent(new BroadcastMessageEvent(broadcast));
         return broadcast.send();
     }
-
 
     @Getter
     public static class Broadcast {
-        private final String message;
         private BroadcastMessageTyp messageTyp;
+        @BsonIgnore
+        private transient final String message;
+        private List<UUID> players;
 
         public Broadcast(final String message) {
+            this.messageTyp = BroadcastMessageTyp.INFO_MESSAGE;
             this.message = message;
+            this.players = new ArrayList<>();
+            send();
+        }
+
+        public Broadcast(final BroadcastMessageTyp typ, final String message) {
+            this.messageTyp = typ;
+            this.message = message;
+            this.players = new ArrayList<>();
+            send();
+        }
+
+        public Broadcast(final BroadcastMessageTyp typ, final String message, final Player... players) {
+            this.messageTyp = typ;
+            this.message = message;
+            this.players = new ArrayList<>();
+
+            for (Player player : players) {
+                this.players.add(player.getUniqueId());
+            }
+
             send();
         }
 
         @BsonCreator
-        Broadcast(@BsonProperty("message") final String message, @BsonProperty("message") final BroadcastMessageTyp messageTyp) {
+        public Broadcast(@BsonProperty("message") final BroadcastMessageTyp messageTyp, @BsonProperty("message") final String message, @BsonProperty("players") List<UUID> players) {
             this.message = message;
+            this.players = players;
             this.messageTyp = messageTyp;
         }
 
         public Broadcast send() {
+            //Format message
+            if (this.players.size() > 0) {
+                for (int i = 0; i < this.players.size(); i++) {
+                    if (message.contains("{" + i + "}")) {
+                        message.replace("{" + i + "}", Bukkit.getPlayer(this.players.get(i)).getName());
+                    }
+                }
+            }
+
             Bukkit.broadcastMessage(message);
             return this;
         }

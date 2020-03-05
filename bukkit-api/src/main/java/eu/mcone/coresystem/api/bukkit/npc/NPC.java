@@ -35,6 +35,12 @@ public interface NPC extends PlayerListModeToggleable {
     int getEntityId();
 
     /**
+     * returns the live Location of the NPC
+     * @return location
+     */
+    Location getLocation();
+
+    /**
      * Updates the displayname of the entity (if specific players are chosen, this update is temporary and will not be saved permanently to NpcData)
      * @param displayname displayname (must not be longer than 16 chars, including color code chars)
      * @param players players which should receive the displayname update (choose no players to send the update to all players and save it in NpcData & core-config)

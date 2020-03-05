@@ -48,12 +48,14 @@ public class RegisterCMD extends Command {
                                 .color(ChatColor.GRAY)
                                 .append(code)
                                 .color(ChatColor.RED).bold(true)
-                                .append("Klicke ")
-                                .color(ChatColor.GRAY)
+                                .append(" \nKlicke ")
+                                .color(ChatColor.GRAY).bold(false)
                                 .append("hier")
                                 .color(ChatColor.WHITE).bold(true)
                                 .event(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://id.onegaming.group/register/minecraft"))
                                 .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7§oKlicke zum öffnen").create()))
+                                .append(", um deine Registrerung abzuschlißen.")
+                                .color(ChatColor.GRAY).bold(false)
                                 .create()
                 );
             } catch (CoreException ingored) {

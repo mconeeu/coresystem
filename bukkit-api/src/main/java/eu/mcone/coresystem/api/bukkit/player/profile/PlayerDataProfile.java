@@ -21,6 +21,7 @@ public class PlayerDataProfile extends GameProfile {
 
     @Getter
     private static World gameProfileWorld = Bukkit.getWorlds().get(0);
+    private static boolean preventTeleport = false;
 
     private boolean flying;
     private String world;
@@ -60,7 +61,9 @@ public class PlayerDataProfile extends GameProfile {
     }
 
     public void doSetData(Player p) {
-        p.teleport(location);
+        if (!preventTeleport) {
+            p.teleport(location);
+        }
         p.setFlying(flying);
         p.setLevel(level);
         p.setFoodLevel(foodLevel);
@@ -70,6 +73,10 @@ public class PlayerDataProfile extends GameProfile {
 
     public static void doSetGameProfileWorld(World world) {
         gameProfileWorld = world;
+    }
+
+    public static void preventTeleport(boolean prevent) {
+        preventTeleport = prevent;
     }
 
 }

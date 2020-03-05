@@ -1,9 +1,16 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture;
 
 import lombok.Getter;
+import lombok.Setter;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public abstract class SimplePlayer {
     @Getter
@@ -15,6 +22,10 @@ public abstract class SimplePlayer {
 
     protected BukkitTask playingTask;
 
+    @Getter@Setter
+    protected double speed = 1;
+
+    protected HashSet<Player> watcher = new HashSet<>();
 
     public abstract void play();
 
@@ -48,6 +59,26 @@ public abstract class SimplePlayer {
     public void stop() {
         playing = false;
         playingTask.cancel();
+    }
+
+    public void addWatcher(final Player player) {
+        watcher.add(player);
+    }
+
+    public void addWatcher(final Player... players) {
+        watcher.addAll(Arrays.asList(players));
+    }
+
+    public void removeWatcher(final Player player) {
+        watcher.remove(player);
+    }
+
+    public void removeWatcher(final Player... players) {
+        watcher.removeAll(Arrays.asList(players));
+    }
+
+    public Collection<Player> getWatchers() {
+        return new ArrayList<>(watcher);
     }
 
     public int getCurrentTick() {

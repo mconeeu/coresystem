@@ -5,10 +5,14 @@
 
 package eu.mcone.coresystem.api.core.player;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 
-@AllArgsConstructor
+@NoArgsConstructor
+@BsonDiscriminator
 public class SkinInfo {
 
     public enum SkinType {
@@ -20,4 +24,12 @@ public class SkinInfo {
     @Getter
     private SkinType type;
 
+    @BsonCreator
+    public SkinInfo(@BsonProperty("name") String name, @BsonProperty("value") String value,
+                    @BsonProperty("signature") String signature, @BsonProperty("typ") SkinType typ) {
+        this.name = name;
+        this.value = value;
+        this.signature = signature;
+        this.type = typ;
+    }
 }

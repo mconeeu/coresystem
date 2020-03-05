@@ -22,4 +22,13 @@ public enum EquipmentPosition {
         this.id = id;
     }
 
+    public static EquipmentPosition getPosition(final int id) {
+        for (EquipmentPosition position : values()) {
+            if (position.getId() == id) {
+                return position;
+            }
+        }
+
+        return null;
+    }
 }

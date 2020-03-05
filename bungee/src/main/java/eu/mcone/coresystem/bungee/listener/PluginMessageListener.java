@@ -11,8 +11,10 @@ import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.friend.Party;
+import eu.mcone.coresystem.bungee.utils.replay.ReplayServerSession;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.Connection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
@@ -110,12 +112,20 @@ public class PluginMessageListener implements Listener {
                                 CoreSystem.getInstance().getGson().fromJson(in.readUTF(), PlayerSettings.class)
                         ));
                     }
-                } else if (mainChannel.equalsIgnoreCase("MC_ONE_REGISTER")) {
-                    Server server = (Server) e.getReceiver();
+                } else if (mainChannel.equalsIgnoreCase("MC_ONE_REPLAY")) {
                     String subch = in.readUTF();
+                    Server server = p.getServer();
 
-                    if (subch.equalsIgnoreCase("REPLAY")) {
-                        BungeeCoreSystem.getSystem().getServerSessionHandler().registerReplayServer(server, in.readUTF());
+                    System.out.println("DEBUG");
+
+                    if (subch.equalsIgnoreCase("REGISTER")) {
+                        System.out.println("REGISTERED");
+                        BungeeCoreSystem.getSystem().getServerSessionHandler().registerReplayServer(in.readUTF(), server, in.readUTF());
+                    } else if (subch.equalsIgnoreCase("UNREGISTER")) {
+                        System.out.println("Unregister");
+                        BungeeCoreSystem.getSystem().getServerSessionHandler().unRegisterServer(server);
+                    } else {
+                        System.out.println("DEBUG-1");
                     }
                 }
             } catch (IOException e1) {

@@ -52,7 +52,7 @@ public class BukkitCoreWorld implements CoreWorld {
     private List<NpcData> npcData = new ArrayList<>();
     private List<HologramData> hologramData = new ArrayList<>();
 
-    private int configVersion = 0;
+    private int configVersion = WorldManager.LATEST_CONFIG_VERSION;
 
     @Override
     public World bukkit() {

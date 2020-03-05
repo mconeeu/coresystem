@@ -103,11 +103,13 @@ public class PlayerInventoryProfile extends PlayerDataProfile {
         super.doSetData(p);
 
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(p);
+        p.getInventory().clear();
+        p.getInventory().setArmorContents(null);
 
         PlayerInventory inv = p.getInventory();
         ItemStack[] armor = new ItemStack[4];
         for (Map.Entry<String, ItemStack> item : items.entrySet()) {
-            int i = Integer.valueOf(item.getKey());
+            int i = Integer.parseInt(item.getKey());
 
             if (i < 36) {
                 inv.setItem(i, item.getValue());

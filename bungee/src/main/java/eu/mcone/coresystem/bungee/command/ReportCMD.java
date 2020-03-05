@@ -5,8 +5,6 @@
 
 package eu.mcone.coresystem.bungee.command;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import eu.mcone.coresystem.bungee.report.ReportReason;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -27,12 +25,6 @@ public class ReportCMD extends Command {
     }
 
     public void execute(CommandSender sender, String[] args) {
-        ProxiedPlayer player = (ProxiedPlayer) sender;
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF(player.getUniqueId().toString());
-
-        player.getServer().sendData("MC_ONE_REPLAY", out.toByteArray());
-
         /*if (sender instanceof ProxiedPlayer) {
             final ProxiedPlayer p = (ProxiedPlayer) sender;
             if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId()))

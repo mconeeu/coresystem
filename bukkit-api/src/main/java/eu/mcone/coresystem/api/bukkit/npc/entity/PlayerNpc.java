@@ -84,8 +84,12 @@ public interface PlayerNpc extends NPC {
 
     void playMotionCapture(final MotionCaptureData data);
 
+    void sneak(boolean sneak, Player... players);
+
     /*void block(final boolean block);*/
 
-    void sneak(boolean sneak, Player... players);
+    void setItemInHand(final ItemStack item, final Player... players);
+
+    void addPotionEffect(MobEffect effect, final Player... players);
 
 }

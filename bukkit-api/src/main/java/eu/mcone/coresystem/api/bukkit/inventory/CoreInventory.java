@@ -20,7 +20,9 @@ import java.util.Map;
 
 public class CoreInventory implements ItemEventStore {
 
-    public static final ItemStack PLACEHOLDER_ITEM = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE, 1).displayName("§8//§oMCONE§8//").create();
+    public static final String PLACEHOLDER_ITEM_DISPLAYNAME = "§8//§oMCONE§8//";
+    public static final ItemStack PLACEHOLDER_ITEM = new ItemBuilder(Material.GRAY_STAINED_GLASS_PANE, 1).displayName(PLACEHOLDER_ITEM_DISPLAYNAME).create();
+    public static final ItemStack BACK_ITEM = new ItemBuilder(Material.IRON_DOOR, 1).displayName("§7§l↩ Zurück").create();
 
     @Getter
     protected final Player player;

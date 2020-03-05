@@ -16,12 +16,11 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ItemStackCodec implements Codec<ItemStack> {
 
@@ -39,6 +38,7 @@ public class ItemStackCodec implements Codec<ItemStack> {
         String name = null;
         Map<Enchantment, Integer> enchants = null;
         List<String> lore = new ArrayList<>();
+        Set<ItemFlag> itemFlags = new HashSet<>();
         short durability = document.getInteger("durability").shortValue();
 
         if (document.containsKey("name")) {
@@ -49,6 +49,11 @@ public class ItemStackCodec implements Codec<ItemStack> {
         }
         if (document.containsKey("lore")) {
             lore = document.getList("lore", String.class);
+        }
+        if (document.containsKey("itemFlags")) {
+            for (String flag : document.getList("itemFlags", String.class)) {
+                itemFlags.add(ItemFlag.valueOf(flag));
+            }
         }
 
         ItemStack stuff = new ItemStack(material, document.getInteger("amount"));
@@ -70,12 +75,17 @@ public class ItemStackCodec implements Codec<ItemStack> {
         }
 
         ItemMeta meta = stuff.getItemMeta();
-
         if (meta != null) {
             if (name != null) {
                 meta.setDisplayName(name);
             }
             meta.setLore(lore);
+            if (document.containsKey("unbreakable")) {
+                meta.setUnbreakable(document.getBoolean("unbreakable"));
+            }
+            if (itemFlags.size() > 0) {
+                meta.addItemFlags(itemFlags.toArray(new ItemFlag[0]));
+            }
             stuff.setItemMeta(meta);
         }
 
@@ -99,9 +109,10 @@ public class ItemStackCodec implements Codec<ItemStack> {
             return;
         }
 
-        boolean hasMeta = itemStack.hasItemMeta();
+        boolean hasMeta = itemStack.hasItemMeta(), unbreakable = false;
         String name = null, enchants = null;
         List<String> lore = null;
+        Set<ItemFlag> itemFlags = null;
         int repairPenalty = 0;
         Material material = itemStack.getType();
         Map<String, Object> bookMeta = null, armorMeta = null, skullMeta = null, fwMeta = null;
@@ -126,6 +137,8 @@ public class ItemStackCodec implements Codec<ItemStack> {
             if (meta.hasLore()) {
                 lore = meta.getLore();
             }
+            unbreakable = meta.isUnbreakable();
+            itemFlags = meta.getItemFlags();
             if (meta.hasEnchants())
                 enchants = ItemStackTypeAdapterUtils.serializeEnchantments(meta.getEnchants());
             if (meta instanceof Repairable) {
@@ -151,17 +164,26 @@ public class ItemStackCodec implements Codec<ItemStack> {
         if (repairPenalty != 0) {
             document.append("repairPenalty", repairPenalty);
         }
+        if (unbreakable) {
+            document.append("unbreakable", true);
+        }
+        if (itemFlags != null && itemFlags.size() > 0) {
+            List<String> flags = new ArrayList<>();
+            itemFlags.forEach(flag -> flags.add(flag.toString()));
+
+            document.append("itemFlags", flags);
+        }
         if (bookMeta != null && bookMeta.size() > 0) {
-            document.append("book-meta", Document.parse(bookMeta.toString()));
+            document.append("book-meta", bookMeta);
         }
         if (armorMeta != null && armorMeta.size() > 0) {
-            document.append("armor-meta", Document.parse(armorMeta.toString()));
+            document.append("armor-meta", armorMeta);
         }
         if (skullMeta != null && skullMeta.size() > 0) {
-            document.append("skull-meta", Document.parse(skullMeta.toString()));
+            document.append("skull-meta", skullMeta);
         }
         if (fwMeta != null && fwMeta.size() > 0) {
-            document.append("firework-meta", Document.parse(fwMeta.toString()));
+            document.append("firework-meta", fwMeta);
         }
 
         registry.get(Document.class).encode(writer, document, encoderContext);

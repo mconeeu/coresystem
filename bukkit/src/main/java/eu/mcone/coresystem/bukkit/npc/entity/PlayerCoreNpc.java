@@ -43,14 +43,11 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     @Getter
     private GameProfile profile;
     @Getter
-    private Location location;
-    @Getter
     private MotionPlayer motionPlayer;
     private Map<Integer, DataWatcher.Item<?>> options;
 
-    protected PlayerCoreNpc(NpcData data, ListMode visibilityMode, Player[] players) {
+    public PlayerCoreNpc(NpcData data, ListMode visibilityMode, Player[] players) {
         super(PlayerNpcData.class, data, visibilityMode, players);
-        this.location = data.getLocation().bukkit();
     }
 
     @Override

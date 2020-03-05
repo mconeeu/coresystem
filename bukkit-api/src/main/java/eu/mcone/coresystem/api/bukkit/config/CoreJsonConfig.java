@@ -91,7 +91,12 @@ public class CoreJsonConfig<T> {
         try {
             if (!file.exists()) {
                 this.file.createNewFile();
-                FileUtils.writeStringToFile(file, "{}", StandardCharsets.UTF_8);
+                try {
+                    updateConfig(tClass.newInstance());
+                } catch (InstantiationException | IllegalAccessException e) {
+                    e.printStackTrace();
+                    FileUtils.writeStringToFile(file, "{}", StandardCharsets.UTF_8);
+                }
             }
 
             reloadFile();

@@ -25,6 +25,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
@@ -152,6 +153,23 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                     instance.getServer().getPluginManager().registerEvents(new Listener() {
                         @EventHandler
                         public void on(BlockPlaceEvent e) {
+                            Player p = e.getPlayer();
+
+                            if (applyRules(p.getWorld())) {
+                                if (
+                                        (!useBuildPermissionNodes || !p.hasPermission("system.bukkit.build." + p.getWorld().getName().toLowerCase() + ".place." + e.getBlock().getType().getId()))
+                                                && isNotAllowedBuild(p)
+                                                && !filteredBlocks.getOrDefault(BuildEvent.BLOCK_PLACE, new ArrayList<>()).contains(e.getBlock().getType().getId())
+                                ) {
+                                    e.setCancelled(true);
+                                    if (notify)
+                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst hier nicht bauen!");
+                                }
+                            }
+                        }
+
+                        @EventHandler
+                        public void on(HangingPlaceEvent e) {
                             Player p = e.getPlayer();
 
                             if (applyRules(p.getWorld())) {
