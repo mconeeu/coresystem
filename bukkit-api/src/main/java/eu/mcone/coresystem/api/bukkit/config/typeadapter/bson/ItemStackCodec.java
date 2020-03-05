@@ -98,13 +98,11 @@ public class ItemStackCodec implements Codec<ItemStack> {
             if (itemFlags.size() > 0) {
                 meta.addItemFlags(itemFlags.toArray(new ItemFlag[0]));
             }
+            if (repairPenalty != 0) {
+                Repairable rep = (Repairable) meta;
+                rep.setRepairCost(repairPenalty);
+            }
             stuff.setItemMeta(meta);
-        }
-
-        if (repairPenalty != 0) {
-            Repairable rep = (Repairable) meta;
-            rep.setRepairCost(repairPenalty);
-            stuff.setItemMeta((ItemMeta) rep);
         }
 
         if (enchants != null) {
@@ -121,7 +119,8 @@ public class ItemStackCodec implements Codec<ItemStack> {
             return;
         }
 
-        boolean hasMeta = itemStack.hasItemMeta(), unbreakable = false;
+        ItemMeta meta = itemStack.getItemMeta();
+        boolean unbreakable = false;
         String name = null, enchants = null;
         List<String> lore = null;
         Set<ItemFlag> itemFlags = null;
@@ -129,20 +128,19 @@ public class ItemStackCodec implements Codec<ItemStack> {
         Material material = itemStack.getType();
         Map<String, Object> bookMeta = null, armorMeta = null, skullMeta = null, fwMeta = null;
 
-        if (material == Material.BOOK_AND_QUILL || material == Material.WRITTEN_BOOK) {
-            bookMeta = ItemStackTypeAdapterUtils.serializeBookMeta((BookMeta) itemStack.getItemMeta());
-        } else if (material == Material.ENCHANTED_BOOK) {
-            bookMeta = ItemStackTypeAdapterUtils.serializeEnchantedBookMeta((EnchantmentStorageMeta) itemStack.getItemMeta());
-        } else if (ItemStackTypeAdapterUtils.isLeatherArmor(material)) {
-            armorMeta = ItemStackTypeAdapterUtils.serializeArmor((LeatherArmorMeta) itemStack.getItemMeta());
-        } else if (material == Material.SKULL_ITEM) {
-            skullMeta = ItemStackTypeAdapterUtils.serializeSkull((SkullMeta) itemStack.getItemMeta());
-        } else if (material == Material.FIREWORK) {
-            fwMeta = ItemStackTypeAdapterUtils.serializeFireworkMeta((FireworkMeta) itemStack.getItemMeta());
-        }
+        if (meta != null) {
+            if (material == Material.BOOK_AND_QUILL || material == Material.WRITTEN_BOOK) {
+                bookMeta = ItemStackTypeAdapterUtils.serializeBookMeta((BookMeta) meta);
+            } else if (material == Material.ENCHANTED_BOOK) {
+                bookMeta = ItemStackTypeAdapterUtils.serializeEnchantedBookMeta((EnchantmentStorageMeta) meta);
+            } else if (ItemStackTypeAdapterUtils.isLeatherArmor(material)) {
+                armorMeta = ItemStackTypeAdapterUtils.serializeArmor((LeatherArmorMeta) meta);
+            } else if (material == Material.SKULL_ITEM) {
+                skullMeta = ItemStackTypeAdapterUtils.serializeSkull((SkullMeta) meta);
+            } else if (material == Material.FIREWORK) {
+                fwMeta = ItemStackTypeAdapterUtils.serializeFireworkMeta((FireworkMeta) meta);
+            }
 
-        if (hasMeta) {
-            ItemMeta meta = itemStack.getItemMeta();
             if (meta.hasDisplayName()) {
                 name = meta.getDisplayName();
             }

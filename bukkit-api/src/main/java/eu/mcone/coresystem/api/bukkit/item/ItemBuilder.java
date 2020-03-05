@@ -69,6 +69,10 @@ public final class ItemBuilder {
     private ItemBuilder(ItemStack itemStack) {
         this.itemStack = itemStack;
         this.itemMeta = itemStack.getItemMeta();
+
+        if (itemMeta != null) {
+            this.lore = itemMeta.getLore();
+        }
     }
 
     public static ItemBuilder wrap(ItemStack itemStack) {
