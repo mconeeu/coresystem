@@ -1,25 +1,10 @@
 package eu.mcone.coresystem.bukkit.npc.capture;
 
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationProgressEvent;
-import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationStateChangeEvent;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
 import eu.mcone.coresystem.api.bukkit.npc.capture.SimplePlayer;
-import eu.mcone.coresystem.api.bukkit.npc.capture.packets.*;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
-import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
-import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import lombok.Getter;
-import eu.mcone.coresystem.bukkit.npc.entity.PlayerCoreNpc;
-import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.entity.Player;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class MotionPlayer extends SimplePlayer implements eu.mcone.coresystem.api.bukkit.npc.capture.MotionPlayer {
     @Getter
@@ -34,7 +19,7 @@ public class MotionPlayer extends SimplePlayer implements eu.mcone.coresystem.ap
 
     @Override
     public void play() {
-        currentTick = new AtomicInteger(0);
+        /*currentTick = new AtomicInteger(0);
         AtomicInteger packetsCount = new AtomicInteger(0);
         AtomicInteger currentProgress = new AtomicInteger(0);
 
@@ -128,14 +113,14 @@ public class MotionPlayer extends SimplePlayer implements eu.mcone.coresystem.ap
                     Bukkit.getPluginManager().callEvent(new NpcAnimationStateChangeEvent(playerNpc, NpcAnimationStateChangeEvent.NpcAnimationState.END));
                 }
             }
-        }, 1L, 1L);
+        }, 1L, 1L);*/
     }
 
     private int getPressDuration(final Location blockLocation) {
-        if (blockLocation.getBlock().getType() == Material.STONE_BUTTON)
-            return 20;
-        else if (blockLocation.getBlock().getType() == Material.WOOD_BUTTON)
-            return 30;
+//        if (blockLocation.getBlock().getType() == Material.STONE_BUTTON)
+//            return 20;
+//        else if (blockLocation.getBlock().getType() == Material.WOOD_BUTTON)
+//            return 30;
 
         return 0;
     }

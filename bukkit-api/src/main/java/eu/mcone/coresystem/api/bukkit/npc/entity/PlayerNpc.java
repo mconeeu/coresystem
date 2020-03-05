@@ -10,6 +10,7 @@ import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionPlayer;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import net.minecraft.server.v1_15_R1.EnumItemSlot;
+import net.minecraft.server.v1_15_R1.MobEffect;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -87,8 +88,6 @@ public interface PlayerNpc extends NPC {
     void sneak(boolean sneak, Player... players);
 
     /*void block(final boolean block);*/
-
-    void setItemInHand(final ItemStack item, final Player... players);
 
     void addPotionEffect(MobEffect effect, final Player... players);
 

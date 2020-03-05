@@ -24,7 +24,6 @@ import eu.mcone.coresystem.bukkit.util.ReflectionManager;
 import lombok.Getter;
 import net.minecraft.server.v1_15_R1.*;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_15_R1.util.CraftChatMessage;
 import org.bukkit.entity.Player;
@@ -290,6 +289,11 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     public void sneak(boolean sneak, Player... players) {
         this.options.put(6, new DataWatcher.Item<>(new DataWatcherObject<>(6, DataWatcherRegistry.s), sneak ? EntityPose.CROUCHING : EntityPose.STANDING));
         sendPackets(makeMetadataPacket(), players);
+    }
+
+    @Override
+    public void addPotionEffect(MobEffect effect, Player... players) {
+        sendPackets(new PacketPlayOutEntityEffect(entityId, effect), players);
     }
 
     private PacketPlayOutPlayerInfo makeTablistPacket(boolean add) {

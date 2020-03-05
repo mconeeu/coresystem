@@ -29,7 +29,6 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
         Map<Enchantment, Integer> enchants = null;
         List<String> lore = new ArrayList<>();
         Set<ItemFlag> itemFlags = new HashSet<>();
-        int repairPenalty = 0;
         short durability = (short) jsonObject.get("durability").getAsInt();
 
         if (jsonObject.has("name")) {
@@ -49,11 +48,8 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
                 itemFlags.add(ItemFlag.valueOf(flag.getAsString()));
             }
         }
-        if (jsonObject.has("repairPenalty")) {
-            repairPenalty = jsonObject.get("repairPenalty").getAsInt();
-        }
 
-        ItemStack stuff = new ItemStack(material, jsonObject.get("amount").getAsInt(), durability);
+        ItemStack stuff = new ItemStack(material, jsonObject.get("amount").getAsInt());
         if ((material == Material.WRITABLE_BOOK || material == Material.WRITTEN_BOOK) && jsonObject.has("book-meta")) {
             BookMeta meta = ItemStackTypeAdapterUtils.getBookMeta(context.deserialize(jsonObject.get("book-meta"), Map.class));
             stuff.setItemMeta(meta);
@@ -78,18 +74,17 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
             }
             meta.setLore(lore);
             if (jsonObject.has("unbreakable")) {
-                meta.spigot().setUnbreakable(jsonObject.get("unbreakable").getAsBoolean());
+                meta.setUnbreakable(jsonObject.get("unbreakable").getAsBoolean());
             }
             if (itemFlags.size() > 0) {
                 meta.addItemFlags(itemFlags.toArray(new ItemFlag[0]));
             }
-            stuff.setItemMeta(meta);
-        }
+            if (durability != 0) {
+                Repairable rep = (Repairable) meta;
+                rep.setRepairCost(durability);
+            }
 
-        if (repairPenalty != 0) {
-            Repairable rep = (Repairable) meta;
-            rep.setRepairCost(repairPenalty);
-            stuff.setItemMeta((ItemMeta) rep);
+            stuff.setItemMeta(meta);
         }
 
         if (enchants != null) {
@@ -107,7 +102,8 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
             return null;
         }
 
-        boolean hasMeta = itemStack.hasItemMeta(), unbreakable = false;
+        ItemMeta meta = itemStack.getItemMeta();
+        boolean unbreakable = false;
         String name = null, enchants = null;
         String[] lore = null;
         Set<ItemFlag> itemFlags = null;
@@ -115,27 +111,26 @@ public class CraftItemStackTypeAdapter implements JsonSerializer<CraftItemStack>
         Material material = itemStack.getType();
         Map<String, Object> bookMeta = null, armorMeta = null, skullMeta = null, fwMeta = null;
 
-        if (material == Material.WRITABLE_BOOK || material == Material.WRITTEN_BOOK) {
-            bookMeta = ItemStackTypeAdapterUtils.serializeBookMeta((BookMeta) itemStack.getItemMeta());
-        } else if (material == Material.ENCHANTED_BOOK) {
-            bookMeta = ItemStackTypeAdapterUtils.serializeEnchantedBookMeta((EnchantmentStorageMeta) itemStack.getItemMeta());
-        } else if (ItemStackTypeAdapterUtils.isLeatherArmor(material)) {
-            armorMeta = ItemStackTypeAdapterUtils.serializeArmor((LeatherArmorMeta) itemStack.getItemMeta());
-        } else if (material == Material.PLAYER_HEAD || material == Material.PLAYER_WALL_HEAD) {
-            skullMeta = ItemStackTypeAdapterUtils.serializeSkull((SkullMeta) itemStack.getItemMeta());
-        } else if (material == Material.FIREWORK_ROCKET) {
-            fwMeta = ItemStackTypeAdapterUtils.serializeFireworkMeta((FireworkMeta) itemStack.getItemMeta());
-        }
+        if (meta != null) {
+            if (material == Material.WRITABLE_BOOK || material == Material.WRITTEN_BOOK) {
+                bookMeta = ItemStackTypeAdapterUtils.serializeBookMeta((BookMeta) meta);
+            } else if (material == Material.ENCHANTED_BOOK) {
+                bookMeta = ItemStackTypeAdapterUtils.serializeEnchantedBookMeta((EnchantmentStorageMeta) meta);
+            } else if (ItemStackTypeAdapterUtils.isLeatherArmor(material)) {
+                armorMeta = ItemStackTypeAdapterUtils.serializeArmor((LeatherArmorMeta) meta);
+            } else if (material == Material.PLAYER_HEAD || material == Material.PLAYER_WALL_HEAD) {
+                skullMeta = ItemStackTypeAdapterUtils.serializeSkull((SkullMeta) meta);
+            } else if (material == Material.FIREWORK_ROCKET) {
+                fwMeta = ItemStackTypeAdapterUtils.serializeFireworkMeta((FireworkMeta) meta);
+            }
 
-        if (hasMeta) {
-            ItemMeta meta = itemStack.getItemMeta();
-            unbreakable = meta.spigot().isUnbreakable();
+            unbreakable = meta.isUnbreakable();
             itemFlags = meta.getItemFlags();
             if (meta.hasDisplayName()) {
                 name = meta.getDisplayName();
             }
             if (meta.hasLore()) {
-                lore = meta.getLore().toArray(new String[]{});
+                lore = meta.getLore().toArray(new String[0]);
             }
             if (meta.hasEnchants())
                 enchants = ItemStackTypeAdapterUtils.serializeEnchantments(meta.getEnchants());
