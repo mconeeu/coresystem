@@ -158,7 +158,6 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     protected void _spawn(Player p) {
         int size = entityData.isVisibleOnTab() ? 10 : 11;

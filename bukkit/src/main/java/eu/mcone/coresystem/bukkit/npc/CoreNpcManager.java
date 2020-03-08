@@ -44,8 +44,8 @@ public class CoreNpcManager implements NpcManager {
         instance.registerEvents(new NpcListener(instance, this));
         instance.registerCommands(new NpcCMD(this));
 
-        motionCaptureHandler = new MotionCaptureHandler();
-        motionCaptureHandler.loadDatabase();
+//        motionCaptureHandler = new MotionCaptureHandler();
+//        motionCaptureHandler.loadDatabase();
 
         reload();
     }
