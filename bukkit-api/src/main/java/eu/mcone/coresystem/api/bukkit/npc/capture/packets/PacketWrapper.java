@@ -12,35 +12,15 @@ import java.io.Serializable;
 
 @BsonDiscriminator
 @Getter
-public abstract class PacketWrapper {
+public abstract class PacketWrapper implements Serializable {
 
     private PacketType packetType;
     private EntityAction entityAction;
-    private WorldAction worldAction;
-    private ServerAction serverAction;
 
     @BsonCreator
-    public PacketWrapper(@BsonProperty("packetType") final PacketType packetType, @BsonProperty("entityAction") final EntityAction entityAction,
-                         @BsonProperty("worldAction") final WorldAction worldAction, @BsonProperty("serverAction") final ServerAction serverAction) {
+    public PacketWrapper(@BsonProperty("packetType") final PacketType packetType, @BsonProperty("entityAction") final EntityAction entityAction) {
         this.packetType = packetType;
         this.entityAction = entityAction;
-        this.worldAction = worldAction;
-        this.serverAction = serverAction;
-    }
-
-    public PacketWrapper(final PacketType packetType, final EntityAction entityAction) {
-        this.packetType = packetType;
-        this.entityAction = entityAction;
-    }
-
-    public PacketWrapper(final PacketType packetType, final WorldAction worldAction) {
-        this.packetType = packetType;
-        this.worldAction = worldAction;
-    }
-
-    public PacketWrapper(final PacketType packetType, final ServerAction serverAction) {
-        this.packetType = packetType;
-        this.serverAction = serverAction;
     }
 
     public PacketWrapper(final PacketType packetType) {

@@ -1,5 +1,6 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture.packets;
 
+import eu.mcone.coresystem.api.bukkit.npc.capture.packets.templates.EntityItemPacketWrapperTemplate;
 import lombok.Getter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
