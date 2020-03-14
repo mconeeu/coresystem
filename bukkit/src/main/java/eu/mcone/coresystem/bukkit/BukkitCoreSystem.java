@@ -226,7 +226,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
             getServer().getScheduler().runTask(this, () -> {
                 Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
-                getServer().getPluginManager().callEvent(new CorePlayerLoadedEvent(CorePlayerLoadedEvent.Reason.RELOAD, new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(
+                CorePlayerLoadedEvent e = new CorePlayerLoadedEvent(CorePlayerLoadedEvent.Reason.RELOAD, new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(
                         this,
                         p.getAddress().getAddress(),
                         new SkinInfo(
@@ -236,7 +236,17 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                                 SkinInfo.SkinType.PLAYER
                         ),
                         p
-                ), p));
+                ), p);
+                getServer().getPluginManager().callEvent(e);
+
+                if (!e.isHidden()) {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        if (player != p) {
+                            player.showPlayer(p);
+                            p.showPlayer(player);
+                        }
+                    }
+                }
 
                 channelHandler.createSetRequest(p, "UNNICK");
 
