@@ -12,7 +12,7 @@ import org.bukkit.Location;
 
 @BsonDiscriminator
 @Getter
-public class EntityLocationWrapperTemplate extends PacketWrapper {
+public abstract class EntityLocationWrapperTemplate extends PacketWrapper {
 
     private double x;
     private double y;

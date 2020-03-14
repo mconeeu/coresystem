@@ -171,6 +171,7 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     @SuppressWarnings("deprecation")
     @Override
     protected void _spawn(Player p) {
+
         int size = entityData.isVisibleOnTab() ? 8 : 9;
         size += entityData.isSleeping() ? 1 : 0;
         int i = -1;
@@ -214,7 +215,6 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
 
             packets[++i] = bedPacket;
         }
-
         sendPackets(p, packets);
     }
 

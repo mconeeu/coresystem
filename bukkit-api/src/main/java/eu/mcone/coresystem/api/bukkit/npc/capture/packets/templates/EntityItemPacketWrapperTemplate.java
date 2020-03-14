@@ -18,7 +18,7 @@ import java.util.Map;
 
 @Getter
 @BsonDiscriminator
-public class EntityItemPacketWrapperTemplate extends PacketWrapper {
+public abstract class EntityItemPacketWrapperTemplate extends PacketWrapper {
 
     private Material material;
     private int amount;

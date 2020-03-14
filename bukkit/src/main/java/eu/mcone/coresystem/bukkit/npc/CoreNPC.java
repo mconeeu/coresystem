@@ -25,11 +25,13 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeToggleUtil implements NPC {
 
+    private static final int ENTITY_SPAWN_DISTANCE = Bukkit.spigot().getConfig().getInt("world-settings.default.entity-tracking-range.players", 48) * 24;
     private final Set<Player> spawned;
 
     @Getter
@@ -38,7 +40,8 @@ public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeT
     protected final int entityId;
     @Getter
     protected T entityData;
-    @Getter @Setter
+    @Getter
+    @Setter
     protected Location location;
 
     protected CoreNPC(Class<T> dataClass, NpcData data, ListMode listMode, Player... players) {
@@ -107,9 +110,7 @@ public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeT
 
     @Override
     public boolean canBeSeenBy(Player player) {
-        return player.getLocation().getWorld().equals(location.getWorld())
-                && (player.getLocation().distanceSquared(location)
-                < (Bukkit.spigot().getConfig().getInt("world-settings.default.entity-tracking-range.players", 48) * 24));
+        return player.getLocation().getWorld().equals(location.getWorld()) && (player.getLocation().distanceSquared(location) < ENTITY_SPAWN_DISTANCE);
     }
 
     @Override
@@ -139,10 +140,7 @@ public abstract class CoreNPC<T extends AbstractNpcData> extends PlayerListModeT
     @Override
     public void teleport(CoreLocation location, Player... players) {
         sendPackets(makeTeleportPackets(location), players);
-
-        if (players.length > 0) {
-            this.data.setLocation(location);
-        }
+        this.location = location.bukkit();
     }
 
     private static synchronized int getNextEntityId() {
