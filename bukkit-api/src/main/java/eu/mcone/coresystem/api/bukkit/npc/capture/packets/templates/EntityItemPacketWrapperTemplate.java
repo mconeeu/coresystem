@@ -1,7 +1,10 @@
-package eu.mcone.coresystem.api.bukkit.npc.capture.packets;
+package eu.mcone.coresystem.api.bukkit.npc.capture.packets.templates;
 
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.ItemStackTypeAdapterUtils;
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
+import eu.mcone.coresystem.api.bukkit.npc.capture.packets.EntityAction;
+import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketType;
+import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketWrapper;
 import lombok.Getter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
