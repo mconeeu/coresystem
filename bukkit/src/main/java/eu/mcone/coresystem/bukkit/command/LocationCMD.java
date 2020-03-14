@@ -49,20 +49,24 @@ public class LocationCMD extends CorePlayerCommand {
                                 .append(", ")
                                 .color(ChatColor.GRAY);
                     }
-                    if (w.getBlockLocations().size() > 0) {
-                        componentBuilder.append("\n");
-                    }
-                    for (Map.Entry<String, CoreBlockLocation> loc : w.getBlockLocations().entrySet()) {
-                        componentBuilder
-                                .append(loc.getKey())
-                                .color(ChatColor.DARK_GREEN)
-                                .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(loc.getValue().toString() + "\n§7§oLinksklick zum teleportieren").create()))
-                                .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/location tpblock " + w.getName() + " " + loc.getKey()))
-                                .append(", ")
-                                .color(ChatColor.GRAY);
-                    }
 
                     p.spigot().sendMessage(componentBuilder.create());
+
+                    if (w.getBlockLocations().size() > 0) {
+                        ComponentBuilder blockComponentBuilder = new ComponentBuilder("");
+
+                        for (Map.Entry<String, CoreBlockLocation> loc : w.getBlockLocations().entrySet()) {
+                            blockComponentBuilder
+                                    .append(loc.getKey())
+                                    .color(ChatColor.DARK_GREEN)
+                                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(loc.getValue().toString() + "\n§7§oLinksklick zum teleportieren").create()))
+                                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/location tpblock " + w.getName() + " " + loc.getKey()))
+                                    .append(", ")
+                                    .color(ChatColor.GRAY);
+                        }
+
+                        p.spigot().sendMessage(blockComponentBuilder.create());
+                    }
                 }
             }
 
