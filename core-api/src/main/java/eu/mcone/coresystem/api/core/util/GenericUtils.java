@@ -14,7 +14,9 @@ public class GenericUtils {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             ObjectOutput out = new ObjectOutputStream(bos);
             out.writeObject(object);
-            return bos.toByteArray();
+            byte[] array = bos.toByteArray();
+            bos.close();
+            return array;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -25,7 +27,9 @@ public class GenericUtils {
         try {
             ByteArrayInputStream bis = new ByteArrayInputStream(byteArray);
             ObjectInput in = new ObjectInputStream(bis);
-            return in.readObject();
+            Object obj = in.readObject();
+            in.close();
+            return obj;
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
