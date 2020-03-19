@@ -7,14 +7,20 @@ package eu.mcone.coresystem.api.bukkit.world;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import java.io.Serializable;
 
 @NoArgsConstructor
+@BsonDiscriminator
 public final class CoreLocation implements Serializable {
 
+    @BsonIgnore
     private transient Location bukkit;
 
     @Getter
@@ -24,7 +30,9 @@ public final class CoreLocation implements Serializable {
     @Getter
     private float yaw, pitch;
 
-    public CoreLocation(String world, double x, double y, double z, float yaw, float pitch) {
+    @BsonCreator
+    public CoreLocation(@BsonProperty("world") String world, @BsonProperty("x") double x, @BsonProperty("y") double y, @BsonProperty("z") double z,
+                        @BsonProperty("yaw") float yaw, @BsonProperty("pitch") float pitch) {
         this.world = world;
         this.x = x;
         this.y = y;
@@ -42,6 +50,7 @@ public final class CoreLocation implements Serializable {
         this.pitch = loc.getPitch();
     }
 
+    @BsonIgnore
     public Location bukkit() {
         return bukkit != null ? bukkit : (bukkit = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch));
     }
