@@ -23,7 +23,6 @@ import eu.mcone.coresystem.api.core.exception.NpcCreateException;
 import eu.mcone.coresystem.api.core.exception.SkinNotFoundException;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.bukkit.npc.CoreNPC;
 import eu.mcone.coresystem.bukkit.npc.capture.MotionPlayer;
 import eu.mcone.coresystem.bukkit.util.ReflectionManager;
 import lombok.Getter;
@@ -39,7 +38,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
-public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
+public class PlayerCoreNpc extends ProjectileThrowable<PlayerNpcData> implements PlayerNpc {
 
     private static final Random UUID_RANDOM = new Random();
     private final Location bedLocation;
@@ -305,14 +304,16 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     }
 
     @Override
+    public void setBow(boolean drawBow, Player... players) {
+        dataWatcher = new DataWatcher(null);
+        dataWatcher.a(0, (drawBow ? (byte) 16 : (byte) 0));
+        sendPackets(makeMetadataPacket(), players);
+    }
+
+    @Override
     public void sneak(boolean sneak, Player... players) {
         dataWatcher = new DataWatcher(null);
-        if (sneak) {
-            dataWatcher.a(0, (byte) 2);
-        } else {
-            dataWatcher.a(0, (byte) 0);
-        }
-
+        dataWatcher.a(0, (sneak ? (byte) 2 : (byte) 0));
         dataWatcher.a(1, (short) 0);
         dataWatcher.a(8, (byte) 0);
 
@@ -324,12 +325,7 @@ public class PlayerCoreNpc extends CoreNPC<PlayerNpcData> implements PlayerNpc {
     public void block(boolean block, Player... players) {
         dataWatcher.a(0, (byte) 16);
         dataWatcher.a(1, (short) 0);
-
-        if (block) {
-            dataWatcher.a(6, (byte) 1);
-        } else {
-            dataWatcher.a(6, (byte) 0);
-        }
+        dataWatcher.a(6, (block ? (byte) 1 : (byte) 0));
 
         sendPackets(makeMetadataPacket(), players);
     }

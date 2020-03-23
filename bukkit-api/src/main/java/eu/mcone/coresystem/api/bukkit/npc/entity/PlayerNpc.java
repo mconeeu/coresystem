@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
-public interface PlayerNpc extends NPC {
+public interface PlayerNpc extends NPC, ProjectileThrowable {
 
     /**
      * returns the current UUID of the NPC
@@ -87,6 +87,8 @@ public interface PlayerNpc extends NPC {
      * @param players players which should receive the name add|remove (choose no players to send the update to all players and save this setting in PlayerNpcData & core-config)
      */
     void playLabymodEmote(int emoteId, Player... players);
+
+    void setBow(boolean drawBow, Player... players);
 
     void playMotionCapture(final String name);
 

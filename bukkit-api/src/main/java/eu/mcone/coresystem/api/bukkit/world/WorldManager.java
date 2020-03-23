@@ -30,6 +30,13 @@ public interface WorldManager {
     CoreWorld getWorld(World world);
 
     /**
+     * checks if a world exists
+     * @param world World name
+     * @return boolean
+     */
+    boolean existWorld(String world);
+
+    /**
      * enables the /world upload [name] command
      * @param enable enables the upload command
      */

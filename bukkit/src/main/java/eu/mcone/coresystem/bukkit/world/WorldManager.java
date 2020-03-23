@@ -152,6 +152,11 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     }
 
     @Override
+    public boolean existWorld(String name) {
+        return new File(Bukkit.getWorldContainer(), name).exists();
+    }
+
+    @Override
     public void enableUploadCommand(boolean enable) {
         worldCMD.setEnableUploadCmd(enable);
     }

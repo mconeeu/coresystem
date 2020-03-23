@@ -7,7 +7,10 @@ package eu.mcone.coresystem.api.bukkit.npc.data;
 
 import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;

@@ -16,6 +16,8 @@ public class UnZip {
             z = entryEnumeration.nextElement();
             extractEntry(zipFile, z, dest);
         }
+
+        zipFile.close();
     }
 
     private void extractEntry(ZipFile zipFile, ZipEntry entry, String destDir) throws IOException {
