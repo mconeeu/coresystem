@@ -22,11 +22,13 @@ import eu.mcone.coresystem.api.bukkit.event.MoneyChangeEvent;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
+import eu.mcone.coresystem.api.bukkit.npc.entity.EntityProjectile;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
 import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
+import eu.mcone.coresystem.api.bukkit.util.CoreProjectile;
 import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
 import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
@@ -43,10 +45,7 @@ import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
 import eu.mcone.coresystem.bukkit.listener.*;
 import eu.mcone.coresystem.bukkit.npc.CoreNpcManager;
 import eu.mcone.coresystem.bukkit.player.*;
-import eu.mcone.coresystem.bukkit.util.ActionBar;
-import eu.mcone.coresystem.bukkit.util.PluginManager;
-import eu.mcone.coresystem.bukkit.util.TablistInfo;
-import eu.mcone.coresystem.bukkit.util.Title;
+import eu.mcone.coresystem.bukkit.util.*;
 import eu.mcone.coresystem.bukkit.world.WorldManager;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.PermissionManager;
@@ -407,6 +406,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Override
     public CoreAnvilInventory createAnvilInventory(AnvilClickEventHandler handler) {
         return new AnvilInventory(handler);
+    }
+
+    @Override
+    public CoreProjectile createProjectile(EntityProjectile type) {
+        return new Projectile(type);
     }
 
     @Override

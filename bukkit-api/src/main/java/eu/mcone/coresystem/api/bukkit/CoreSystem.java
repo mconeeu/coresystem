@@ -10,16 +10,14 @@ import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
+import eu.mcone.coresystem.api.bukkit.npc.entity.EntityProjectile;
 import eu.mcone.coresystem.api.bukkit.player.AfkManager;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.NickManager;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
-import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
-import eu.mcone.coresystem.api.bukkit.util.CorePluginManager;
-import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
-import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
+import eu.mcone.coresystem.api.bukkit.util.*;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.WorldManager;
@@ -156,6 +154,8 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return new ActionBar
      */
     public abstract CoreActionBar createActionBar();
+
+    public abstract CoreProjectile createProjectile(EntityProjectile type);
 
     /**
      * opens a predefined book for a player

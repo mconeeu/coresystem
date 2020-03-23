@@ -13,17 +13,21 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
 import eu.mcone.coresystem.api.bukkit.npc.data.PlayerNpcData;
+import eu.mcone.coresystem.api.bukkit.npc.entity.EntityProjectile;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
+import eu.mcone.coresystem.api.bukkit.util.CoreProjectile;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.core.exception.MotionCaptureCurrentlyRunningException;
 import eu.mcone.coresystem.api.core.exception.NpcCreateException;
 import eu.mcone.coresystem.api.core.exception.SkinNotFoundException;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.bukkit.npc.CoreNPC;
 import eu.mcone.coresystem.bukkit.npc.capture.MotionPlayer;
+import eu.mcone.coresystem.bukkit.npc.nms.EntityHumanNPC;
 import eu.mcone.coresystem.bukkit.util.ReflectionManager;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.*;
@@ -31,14 +35,16 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_8_R3.util.CraftChatMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 
-public class PlayerCoreNpc extends ProjectileThrowable<PlayerNpcData> implements PlayerNpc {
+public class PlayerCoreNpc extends CoreNPC<EntityHumanNPC, PlayerNpcData> implements PlayerNpc {
 
     private static final Random UUID_RANDOM = new Random();
     private final Location bedLocation;
@@ -79,13 +85,17 @@ public class PlayerCoreNpc extends ProjectileThrowable<PlayerNpcData> implements
                     "MHF_Question",
                     "eyJ0aW1lc3RhbXAiOjE1MTIyNjI0NTg5NDcsInByb2ZpbGVJZCI6ImQxY2VjOWFkMWRhODQxNzliMWU1NjA0ZjcyYmZiMjI2IiwicHJvZmlsZU5hbWUiOiJydXRnZXI0NjUiLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzQyNDQzNjg4ZGI5NjQ5YjA1NTliNjg4ZTdjMTI3ZjY2N2FiYjhmOWY1YTU5ZDVhOWRhNzEyMjZmNzNmODMzMCJ9fX0=",
                     "iVxHKJfmQh8VlCXF0Wwr6Yl6p81+OIXuGLoM/KM1sgM+OQ2WwHr7V6FNHATnlz1uGEDpzMZUKsUq9SVy50soQ9RWb7iynfB51QBxU0NByUCNQf2olHXEZH6CQEUbZTgYrN1aNZ1Y/Z7T1xrMKfc43HqNfM2H49JufRoLr4ZPWcl6T8d0lSzshndkFZxtS45PRQDBzo0QFyG63WjeoMbW42ufaTWVYz354BhnksAQWb1lSfdXcB7JQOKjf0MzeYmx0pOMB5CWhERJQZpi5mJ1MoabeSwNygcdfZAMB9xtmScbX5tUPvrC2Ooo20jl2fQ/KG+6obZeydKKr2vznj+0oq+04VnmqooHhLjXyZSvGIB3Ht9aDL9MzVbwpbLnLjrngyUzX/7+oJEm2a4xrktszoHGKHdnbD1d9CDyWh+FnyRCmO5RE3ZR8yHE5SakTKOkASR2H79RAHn+wF1h535wJctjoHyYBRc/gXWo58jyjG1hGu/6cI2XuQCEvdnkZTj0rqKWUtn8pWn2KLbm2S2S6CoTMTsGHG0anz4c4Jkzni91wzWvg5xIf1f3YzMRhuyOirtM9gyJok2BplRaGiv1f63fWa7cbS6A3nj/sKr2SNQ6Efri6+Z1xPOOy7xHFaZH0wlf8kz1qPDqIw/nAy0eZAthPN61TZw5iCegIG01KqU=",
-                    SkinInfo.SkinType.PLAYER
+                    SkinInfo.SkinType.CUSTOM
             );
 
             throw new NpcCreateException("Could not create NPC: ", e);
         }
 
         this.profile = makeGameProfile(uuid, data.getDisplayname(), skin);
+
+        WorldServer nmsWorld = ((CraftWorld) location.getWorld()).getHandle();
+        this.entity = new EntityHumanNPC(nmsWorld.getServer().getServer(), nmsWorld, profile, new PlayerInteractManager(nmsWorld));
+        entity.getWorld().players.add(entity);
     }
 
     @Override
@@ -170,7 +180,6 @@ public class PlayerCoreNpc extends ProjectileThrowable<PlayerNpcData> implements
     @SuppressWarnings("deprecation")
     @Override
     protected void _spawn(Player p) {
-
         int size = entityData.isVisibleOnTab() ? 8 : 9;
         size += entityData.isSleeping() ? 1 : 0;
         int i = -1;
@@ -184,7 +193,7 @@ public class PlayerCoreNpc extends ProjectileThrowable<PlayerNpcData> implements
         packets[++i] = makeTablistPacket(true);
 
         packets[++i] = new PacketPlayOutNamedEntitySpawn();
-        ReflectionManager.setValue(packets[i], "a", entityId);
+        ReflectionManager.setValue(packets[i], "a", entity.getId());
         ReflectionManager.setValue(packets[i], "b", profile.getId());
         ReflectionManager.setValue(packets[i], "c", MathHelper.floor(location.getX() * 32.0D));
         ReflectionManager.setValue(packets[i], "d", MathHelper.floor(location.getY() * 32.0D));
@@ -209,11 +218,12 @@ public class PlayerCoreNpc extends ProjectileThrowable<PlayerNpcData> implements
             BlockPosition block = new BlockPosition(bedLocation.getBlockX(), bedLocation.getBlockY(), bedLocation.getBlockZ());
 
             PacketPlayOutBed bedPacket = new PacketPlayOutBed();
-            ReflectionManager.setValue(bedPacket, "a", entityId);
+            ReflectionManager.setValue(bedPacket, "a", entity.getId());
             ReflectionManager.setValue(bedPacket, "b", block);
 
             packets[++i] = bedPacket;
         }
+
         sendPackets(p, packets);
     }
 
@@ -222,7 +232,7 @@ public class PlayerCoreNpc extends ProjectileThrowable<PlayerNpcData> implements
         sendPackets(
                 player,
                 makeTablistPacket(false),
-                new PacketPlayOutEntityDestroy(entityId)
+                new PacketPlayOutEntityDestroy(entity.getId())
         );
     }
 
@@ -331,18 +341,23 @@ public class PlayerCoreNpc extends ProjectileThrowable<PlayerNpcData> implements
     }
 
     public void setItemInHand(final ItemStack item, final Player... players) {
-        sendPackets(new PacketPlayOutEntityEquipment(entityId, 0, CraftItemStack.asNMSCopy(item)), players);
+        sendPackets(new PacketPlayOutEntityEquipment(entity.getId(), 0, CraftItemStack.asNMSCopy(item)), players);
     }
 
     //TODO: Check if this works (Code snipped: https://dev-tek.de/forum/thread/328-packetplayoutentityeffect/)
     public void addPotionEffect(MobEffect effect, Player... players) {
         PacketPlayOutEntityEffect packet = new PacketPlayOutEntityEffect();
-        ReflectionManager.setValue(packet, "a", entityId);
+        ReflectionManager.setValue(packet, "a", entity.getId());
         ReflectionManager.setValue(packet, "b", (byte) effect.getEffectId());
         ReflectionManager.setValue(packet, "c", (short) effect.getDuration());
         ReflectionManager.setValue(packet, "d", (byte) effect.getAmplifier());
 //                plugin.reflect.setPrivateField(packet, "e", hide);
         sendPackets(packet, players);
+    }
+
+    @Override
+    public CoreProjectile throwProjectile(EntityProjectile type, Vector vector) {
+        return CoreSystem.getInstance().createProjectile(type).velocity(vector).throwProjectile(location.clone().add(0, 1.5, 0));
     }
 
     private PacketPlayOutPlayerInfo makeTablistPacket(boolean add) {
@@ -356,14 +371,14 @@ public class PlayerCoreNpc extends ProjectileThrowable<PlayerNpcData> implements
     }
 
     private PacketPlayOutEntityEquipment makeEquipmentPacket(EquipmentPosition slot, ItemStack itemStack) {
-        return new PacketPlayOutEntityEquipment(entityId, slot.getId(), CraftItemStack.asNMSCopy(itemStack));
+        return new PacketPlayOutEntityEquipment(entity.getId(), slot.getId(), CraftItemStack.asNMSCopy(itemStack));
     }
 
     private Packet<?>[] makeSleepPackets(Location bedLocation) {
         BlockPosition block = new BlockPosition(bedLocation.getBlockX(), bedLocation.getBlockY(), bedLocation.getBlockZ());
 
         PacketPlayOutBed bedPacket = new PacketPlayOutBed();
-        ReflectionManager.setValue(bedPacket, "a", entityId);
+        ReflectionManager.setValue(bedPacket, "a", entity.getId());
         ReflectionManager.setValue(bedPacket, "b", block);
 
         Packet<?>[] tpPackets = makeTeleportPackets(new CoreLocation(location));
@@ -376,7 +391,7 @@ public class PlayerCoreNpc extends ProjectileThrowable<PlayerNpcData> implements
     }
 
     private PacketPlayOutEntityMetadata makeMetadataPacket() {
-        return new PacketPlayOutEntityMetadata(entityId, dataWatcher, true);
+        return new PacketPlayOutEntityMetadata(entity.getId(), dataWatcher, true);
     }
 
     private GameProfile makeGameProfile(UUID uuid, String name, SkinInfo skin) {

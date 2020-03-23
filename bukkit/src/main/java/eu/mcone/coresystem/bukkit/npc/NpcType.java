@@ -7,6 +7,7 @@ package eu.mcone.coresystem.bukkit.npc;
 
 import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
+import eu.mcone.coresystem.bukkit.npc.entity.PigCoreNPC;
 import eu.mcone.coresystem.bukkit.npc.entity.PlayerCoreNpc;
 import lombok.Getter;
 import org.bukkit.entity.EntityType;
@@ -18,18 +19,19 @@ import java.lang.reflect.InvocationTargetException;
 @Getter
 public enum NpcType {
 
-    PLAYER(EntityType.PLAYER, PlayerCoreNpc.class);
+    PLAYER(EntityType.PLAYER, PlayerCoreNpc.class),
+    PIG(EntityType.PIG, PigCoreNPC.class);
 
     private EntityType type;
-    private Class<? extends CoreNPC<?>> npcClass;
+    private Class<? extends CoreNPC<?, ?>> npcClass;
 
-    NpcType(EntityType type, Class<? extends CoreNPC<?>> npcClass) {
+    NpcType(EntityType type, Class<? extends CoreNPC<?, ?>> npcClass) {
         this.type = type;
         this.npcClass = npcClass;
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends CoreNPC<?>> T construct(NpcData data, ListMode visibilityMode, Player... players) {
+    public <T extends CoreNPC<?, ?>> T construct(NpcData data, ListMode visibilityMode, Player... players) {
         try {
             Constructor<?> constructor = npcClass.getDeclaredConstructor(NpcData.class, ListMode.class, Player[].class);
             return (T) constructor.newInstance(data, visibilityMode, players);

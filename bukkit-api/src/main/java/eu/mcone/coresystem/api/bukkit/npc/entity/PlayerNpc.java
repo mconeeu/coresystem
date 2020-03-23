@@ -16,7 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
-public interface PlayerNpc extends NPC, ProjectileThrowable {
+public interface PlayerNpc extends NPC {
 
     /**
      * returns the current UUID of the NPC

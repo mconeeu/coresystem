@@ -35,8 +35,7 @@ import java.util.Set;
 public class CoreNpcManager implements NpcManager {
 
     @Getter
-    private Set<CoreNPC<?>> npcSet;
-
+    private Set<CoreNPC<?, ?>> npcSet;
     @Getter
     private MotionCaptureHandler motionCaptureHandler;
 
@@ -85,13 +84,13 @@ public class CoreNpcManager implements NpcManager {
 
     @Override
     public NPC addNPC(NpcData data, ListMode listMode, Player... players) {
-        for (CoreNPC<?> npc : npcSet) {
+        for (CoreNPC<?, ?> npc : npcSet) {
             if (npc.getData().getLocation().getWorld().equals(data.getLocation().getWorld()) && npc.getData().getName().equalsIgnoreCase(data.getName())) {
                 throw new NpcCreateException("Could not create NPC +" + data.getName() + ": NPC with that name already exists in the world" + npc.getData().getLocation().getWorld() + "!");
             }
         }
 
-        CoreNPC<?> npc = null;
+        CoreNPC<?, ?> npc = null;
         for (NpcType type : NpcType.values()) {
             if (data.getType().equals(type.getType())) {
                 npc = type.construct(data, listMode, players);
@@ -147,7 +146,7 @@ public class CoreNpcManager implements NpcManager {
 
     @Override
     public NPC getNPC(CoreWorld world, String name) {
-        for (CoreNPC<?> npc : npcSet) {
+        for (CoreNPC<?, ?> npc : npcSet) {
             if (npc.getData().getLocation().bukkit().getWorld().getName().equals(world.getName()) && npc.getData().getName().equals(name)) {
                 return npc;
             }
@@ -157,8 +156,8 @@ public class CoreNpcManager implements NpcManager {
 
     @Override
     public NPC getNPC(int entityId) {
-        for (CoreNPC<?> npc : npcSet) {
-            if (npc.getEntityId() == entityId) {
+        for (CoreNPC<?, ?> npc : npcSet) {
+            if (npc.getEntity().getId() == entityId) {
                 return npc;
             }
         }

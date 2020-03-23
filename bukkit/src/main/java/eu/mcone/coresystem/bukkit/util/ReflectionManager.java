@@ -34,6 +34,19 @@ public class ReflectionManager {
 		return null;
 	}
 
+	public static Field getField(Class<?> clazz, String field) {
+		if (clazz != null) {
+			try {
+				Field f = clazz.getDeclaredField(field);
+				f.setAccessible(true);
+				return f;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
 	public static EntityPlayer getNMSPlayer(Player p) {
 		return ((CraftPlayer) p).getHandle();
 	}

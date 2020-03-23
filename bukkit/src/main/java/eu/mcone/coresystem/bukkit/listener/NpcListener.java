@@ -28,7 +28,7 @@ public class NpcListener implements Listener {
 
     @EventHandler
     public void on(PluginEnableEvent e) {
-        for (CoreNPC<?> npc : api.getNpcSet()) {
+        for (CoreNPC<?, ?> npc : api.getNpcSet()) {
             npc.playerJoined(Bukkit.getOnlinePlayers().toArray(new Player[0]));
         }
     }
@@ -37,7 +37,7 @@ public class NpcListener implements Listener {
     public void on(PlayerJoinEvent e) {
         Player p = e.getPlayer();
 
-        for (CoreNPC<?> npc : api.getNpcSet()) {
+        for (CoreNPC<?, ?> npc : api.getNpcSet()) {
             npc.despawn(p);
             npc.playerJoined(p);
         }
@@ -45,7 +45,7 @@ public class NpcListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void on(PlayerQuitEvent e) {
-        for (CoreNPC<?> npc : api.getNpcSet()) {
+        for (CoreNPC<?, ?> npc : api.getNpcSet()) {
             npc.playerLeaved(e.getPlayer());
         }
     }
@@ -54,7 +54,7 @@ public class NpcListener implements Listener {
     public void on(PlayerTeleportEvent e) {
         Player p = e.getPlayer();
 
-        for (CoreNPC<?> npc : api.getNpcSet()) {
+        for (CoreNPC<?, ?> npc : api.getNpcSet()) {
             if (!npc.canBeSeenBy(p) || !npc.isVisibleFor(p)) {
                 npc.despawn(p);
             } else if (npc.canBeSeenBy(p) && npc.isVisibleFor(p)) {
@@ -69,7 +69,7 @@ public class NpcListener implements Listener {
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             if (!checkLocation(e.getFrom(), e.getTo())) {
-                for (CoreNPC<?> npc : api.getNpcSet()) {
+                for (CoreNPC<?, ?> npc : api.getNpcSet()) {
                     if (!npc.canBeSeenBy(p) || !npc.isVisibleFor(p)) {
                         npc.despawn(p);
                     } else if (npc.canBeSeenBy(p) && npc.isVisibleFor(p)) {
@@ -82,7 +82,7 @@ public class NpcListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void on(PlayerDeathEvent e) {
-        for (CoreNPC<?> npc : api.getNpcSet()) {
+        for (CoreNPC<?, ?> npc : api.getNpcSet()) {
             npc.despawn(e.getEntity());
         }
     }
@@ -91,7 +91,7 @@ public class NpcListener implements Listener {
     public void on(PlayerChangedWorldEvent e) {
         Player p = e.getPlayer();
 
-        for (CoreNPC<?> npc : api.getNpcSet()) {
+        for (CoreNPC<?, ?> npc : api.getNpcSet()) {
             if (!npc.getData().getLocation().getWorld().equals(p.getWorld().getName())) {
                 npc.despawn(p);
             }

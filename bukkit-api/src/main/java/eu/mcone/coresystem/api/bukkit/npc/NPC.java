@@ -6,13 +6,17 @@
 package eu.mcone.coresystem.api.bukkit.npc;
 
 import eu.mcone.coresystem.api.bukkit.npc.data.AbstractNpcData;
+import eu.mcone.coresystem.api.bukkit.npc.entity.EntityProjectile;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcState;
 import eu.mcone.coresystem.api.bukkit.spawnable.PlayerListModeToggleable;
+import eu.mcone.coresystem.api.bukkit.util.CoreProjectile;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
+import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.Packet;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 public interface NPC extends PlayerListModeToggleable {
 
@@ -29,10 +33,10 @@ public interface NPC extends PlayerListModeToggleable {
     <T extends AbstractNpcData> T getEntityData();
 
     /**
-     * returns the currently used entity-id by the NPC
-     * @return entity-id
+     * returns the created NMS entity instance
+     * @return entity
      */
-    int getEntityId();
+    <E extends Entity> E getEntity();
 
     /**
      * returns the live Location of the NPC
@@ -81,12 +85,11 @@ public interface NPC extends PlayerListModeToggleable {
      */
     void teleport(Location location, Player... players);
 
-    /**
-     * Sends a Teleport packet (if specific players are chosen, this update is temporary and will not be saved permanently to NpcData)
-     * @param location location to where the NPC should be teleported
-     * @param players players which should receive the teleport packet (choose no players to send the update to all players and save it in NpcData & core-config)
-     */
     void teleport(CoreLocation location, Player... players);
+
+    CoreProjectile throwProjectile(EntityProjectile type);
+
+    CoreProjectile throwProjectile(EntityProjectile type, Vector vector);
 
     void sendPackets(Packet<?>... packets);
 
