@@ -40,13 +40,17 @@ public class PacketInListener extends MessageToMessageDecoder<Packet<?>> {
             PacketPlayInUseEntity packet = (PacketPlayInUseEntity) object;
 
             if (packet.a().equals(PacketPlayInUseEntity.EnumEntityUseAction.ATTACK) || packet.a().equals(PacketPlayInUseEntity.EnumEntityUseAction.INTERACT)) {
-                NPC npc = BukkitCoreSystem.getSystem().getNpcManager().getNPC((int) ReflectionManager.getValue(packet, "a"));
+                try {
+                    NPC npc = BukkitCoreSystem.getSystem().getNpcManager().getNPC((int) ReflectionManager.getValue(packet, "a"));
 
-                if (npc != null) {
-                    Bukkit.getScheduler().runTask(
-                            BukkitCoreSystem.getSystem(),
-                            () -> Bukkit.getPluginManager().callEvent(new NpcInteractEvent(player, npc, packet.a()))
-                    );
+                    if (npc != null) {
+                        Bukkit.getScheduler().runTask(
+                                BukkitCoreSystem.getSystem(),
+                                () -> Bukkit.getPluginManager().callEvent(new NpcInteractEvent(player, npc, packet.a()))
+                        );
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }
