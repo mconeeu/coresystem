@@ -242,4 +242,16 @@ public abstract class CoreNPC<E extends Entity, T extends AbstractNpcData> exten
         return packet;
     }
 
+    @Override
+    public String toString() {
+        return "CoreNPC{" +
+                "spawned=" + spawned +
+                ", data=" + data +
+                ", entity=" + entity +
+                ", entityData=" + entityData +
+                ", location=" + location +
+                ", listMode=" + listMode +
+                ", visiblePlayersList=" + visiblePlayersList +
+                '}';
+    }
 }

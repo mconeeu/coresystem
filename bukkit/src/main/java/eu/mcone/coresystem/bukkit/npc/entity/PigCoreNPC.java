@@ -18,23 +18,21 @@ import org.bukkit.entity.Player;
 
 public class PigCoreNPC extends CoreNPC<EntityPigNPC, PigNpcData> implements PigNpc {
 
-    private EntityPigNPC entity;
-
     public PigCoreNPC(NpcData data, ListMode listMode, Player[] players) {
         super(PigNpcData.class, data, listMode, players);
     }
 
     @Override
     protected void onCreate() {
-        entity = new EntityPigNPC(((CraftWorld) location.getWorld()).getHandle());
-        entity.setCustomName(data.getDisplayname());
-        entity.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+        this.entity = new EntityPigNPC(((CraftWorld) location.getWorld()).getHandle());
+        this.entity.setCustomName(data.getDisplayname());
+        this.entity.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
 
         ((CraftWorld) location.getWorld()).getHandle().addEntity(entity);
 
         Material beneath = location.getBlock().getRelative(BlockFace.DOWN).getType();
         if (beneath.isBlock()) {
-            entity.onGround = true;
+            this.entity.onGround = true;
         }
     }
 
@@ -66,4 +64,5 @@ public class PigCoreNPC extends CoreNPC<EntityPigNPC, PigNpcData> implements Pig
                 new PacketPlayOutEntityDestroy(entity.getId())
         );
     }
+
 }
