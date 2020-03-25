@@ -87,9 +87,25 @@ public interface NPC extends PlayerListModeToggleable {
 
     void teleport(CoreLocation location, Player... players);
 
+    /**
+     * Launches a specified projectile from the players location
+     * @param type Projectile type (Snowball etc.)
+     * @return Returns a CoreProjectile object
+     */
     CoreProjectile throwProjectile(EntityProjectile type);
 
+    /**
+     * Launches a specified projectile from the players location with a given vector (Velocity)
+     * @param type Projectile type (Snowball etc.)
+     * @return Returns a CoreProjectile object
+     */
     CoreProjectile throwProjectile(EntityProjectile type, Vector vector);
+
+    /**
+     * Returns the current location from the NPC as bukkit Vector
+     * @return The Vector from the player
+     */
+    Vector getVector();
 
     void sendPackets(Packet<?>... packets);
 

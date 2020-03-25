@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
 import eu.mcone.coresystem.api.bukkit.npc.data.PlayerNpcData;
@@ -243,6 +244,15 @@ public class PlayerCoreNpc extends CoreNPC<EntityHumanNPC, PlayerNpcData> implem
     }
 
     @Override
+    public void clearEquipment() {
+        entityData.getEquipment().clear();
+
+        for (int i = 0; i < 3; i++)
+            sendPackets(new PacketPlayOutEntityEquipment(entity.getId(), i, CraftItemStack.asNMSCopy(new ItemBuilder(Material.AIR, 1).create())));
+        sendPackets();
+    }
+
+    @Override
     public void setSkin(SkinInfo skin, Player... players) {
         this.skin = skin;
 
@@ -320,6 +330,52 @@ public class PlayerCoreNpc extends CoreNPC<EntityHumanNPC, PlayerNpcData> implem
         sendPackets(makeMetadataPacket(), players);
     }
 
+    public void fishingHook(boolean hook, Player... players) {
+        Location eye = new Location(location.getWorld(), location.getX(), location.getY() + 1.5, location.getZ());
+        World world = ((CraftWorld) location.getWorld()).getHandle();
+
+//        EntityFishingHook entity = new EntityFishingHook(world, this.entity);
+//        entity.setPosition(location.getX(), location.getY(), location.getZ());
+//        world.addEntity(entity);
+//        entity.getBukkitEntity();
+
+        this.entity.locX = location.getX();
+        this.entity.locY = location.getY();
+        this.entity.locZ = location.getZ();
+        this.entity.yaw = location.getYaw();
+
+        FishingHook hook1 = new FishingHook(location, this.entity);
+        hook1.spawn();
+
+//        EntityFishingHook nmsHook = new EntityFishingHook(((CraftWorld) location.getWorld()).getHandle(), this.entity);
+//        nmsHook.yaw = location.getYaw();
+//        nmsHook.pitch = location.getPitch();
+//        nmsHook.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
+//
+////        nmsHook.setPosition(location.getX() + 10, location.getY() + 10, location.getZ() + 10);
+//        Vector vector = location.getDirection();
+//        nmsHook.g(vector.getX(), vector.getY(), vector.getZ());
+////        nmsHook.setLocation(location.getX() + eye.getX(), eye.getY() + eye.getDirection().getY(), eye.getZ() + eye.getZ(), eye.getYaw(), eye.getPitch());
+////        nmsHook.setLocation(location.getX() + 100, eye.getY() + 100, eye.getZ() + + 100, eye.getYaw(), eye.getPitch());
+//        world.addEntity(nmsHook);
+//        CraftEntity hookE = nmsHook.getBukkitEntity();
+//        hookE.setVelocity(location.getDirection());
+
+        //OLD
+//        Vector vector = location.getDirection().multiply(1.5);
+//        entity.getBukkitEntity().setVelocity(vector);
+
+//        EntityFishingHook entity = new EntityFishingHook(((CraftWorld) location.getWorld()).getHandle(), this.entity);
+//        entity.getBukkitEntity();
+//        ((CraftWorld) location.getWorld()).getHandle().addEntity(entity);
+//        Vector vector = location.getDirection().multiply(0.8);
+//        entity.getBukkitEntity().setVelocity(vector);
+
+//        PacketPlayOutSpawnEntity spawn = new PacketPlayOutSpawnEntity(entity, 90);
+//        PacketPlayOutEntityVelocity velocity = new PacketPlayOutEntityVelocity(entity.getId(), vector.getX(), vector.getY(), vector.getZ());
+//        sendPackets(new Packet[] {spawn, velocity}, players);
+    }
+
     @Override
     public void sneak(boolean sneak, Player... players) {
         dataWatcher = new DataWatcher(null);
@@ -341,6 +397,7 @@ public class PlayerCoreNpc extends CoreNPC<EntityHumanNPC, PlayerNpcData> implem
     }
 
     public void setItemInHand(final ItemStack item, final Player... players) {
+        entity.getBukkitEntity().setItemInHand(item);
         sendPackets(new PacketPlayOutEntityEquipment(entity.getId(), 0, CraftItemStack.asNMSCopy(item)), players);
     }
 

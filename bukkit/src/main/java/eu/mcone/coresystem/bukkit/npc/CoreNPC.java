@@ -42,7 +42,8 @@ public abstract class CoreNPC<E extends Entity, T extends AbstractNpcData> exten
     protected E entity;
     @Getter
     protected T entityData;
-    @Getter @Setter
+    @Getter
+    @Setter
     protected Location location;
 
     protected CoreNPC(Class<T> dataClass, NpcData data, ListMode listMode, Player... players) {
@@ -155,6 +156,11 @@ public abstract class CoreNPC<E extends Entity, T extends AbstractNpcData> exten
     @Override
     public CoreProjectile throwProjectile(EntityProjectile type, Vector vector) {
         return CoreSystem.getInstance().createProjectile(type).velocity(vector).throwProjectile(location);
+    }
+
+    @Override
+    public Vector getVector() {
+        return new Vector(location.getX(), location.getY(), location.getZ());
     }
 
     public void sendPackets(Packet<?>... packets) {

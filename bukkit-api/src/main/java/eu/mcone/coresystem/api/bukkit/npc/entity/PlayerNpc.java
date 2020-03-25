@@ -38,6 +38,11 @@ public interface PlayerNpc extends NPC {
     void setEquipment(EquipmentPosition position, ItemStack item, Player... players);
 
     /**
+     * Clears the Equipment content of the player
+     */
+    void clearEquipment();
+
+    /**
      * Sends a packet to update the skin (if specific players are chosen, this update is temporary and will not be saved permanently to NpcData)
      *
      * @param skin    skin info
@@ -89,6 +94,8 @@ public interface PlayerNpc extends NPC {
     void playLabymodEmote(int emoteId, Player... players);
 
     void setBow(boolean drawBow, Player... players);
+
+    void fishingHook(boolean hook, Player... players);
 
     void playMotionCapture(final String name);
 

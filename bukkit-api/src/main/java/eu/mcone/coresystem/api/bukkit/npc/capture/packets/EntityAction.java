@@ -16,6 +16,8 @@ public enum EntityAction {
     PLACE_BLOCK,
     BREAK_BLOCK,
     SEND_MESSAGE,
+    RESPAWN,
+    SHOOT_PROJECTILE,
     STATS,
     CHAT,
     MOVE,
