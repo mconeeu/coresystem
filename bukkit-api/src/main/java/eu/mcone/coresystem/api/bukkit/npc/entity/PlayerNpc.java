@@ -21,6 +21,7 @@ public interface PlayerNpc extends NPC {
     /**
      * returns the current UUID of the NPC
      * they UUID may change when changing name or skin of the NPC
+     *
      * @return current npcs uuid
      */
     UUID getUuid();
@@ -68,6 +69,8 @@ public interface PlayerNpc extends NPC {
      * sets a sleeping NPC awake on the same location
      */
     void setAwake();
+
+    void setCamera(Player player, boolean active);
 
     /**
      * Sends a packet to update the tablist name (if specific players are chosen, this update is temporary and will not be saved permanently to NpcData)

@@ -5,15 +5,11 @@
 
 package eu.mcone.coresystem.bukkit.player;
 
-import eu.mcone.coresystem.api.bukkit.event.npc.NpcInteractEvent;
-import eu.mcone.coresystem.api.bukkit.npc.NPC;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.bukkit.util.ReflectionManager;
+import eu.mcone.coresystem.api.bukkit.event.nms.PacketReceiveEvent;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.MessageToMessageDecoder;
 import net.minecraft.server.v1_8_R3.Packet;
-import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -35,25 +31,7 @@ public class PacketInListener extends MessageToMessageDecoder<Packet<?>> {
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, Packet<?> object, List<Object> list) {
         list.add(object);
-
-        if (object instanceof PacketPlayInUseEntity) {
-            PacketPlayInUseEntity packet = (PacketPlayInUseEntity) object;
-
-            if (packet.a().equals(PacketPlayInUseEntity.EnumEntityUseAction.ATTACK) || packet.a().equals(PacketPlayInUseEntity.EnumEntityUseAction.INTERACT)) {
-                try {
-                    NPC npc = BukkitCoreSystem.getSystem().getNpcManager().getNPC((int) ReflectionManager.getValue(packet, "a"));
-
-                    if (npc != null) {
-                        Bukkit.getScheduler().runTask(
-                                BukkitCoreSystem.getSystem(),
-                                () -> Bukkit.getPluginManager().callEvent(new NpcInteractEvent(player, npc, packet.a()))
-                        );
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        Bukkit.getPluginManager().callEvent(new PacketReceiveEvent(object, list, player));
     }
 
     public void remove() {
