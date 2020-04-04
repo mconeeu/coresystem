@@ -156,7 +156,7 @@ public final class Messager {
     }
 
     public Broadcast broadcast(final Broadcast.BroadcastMessageTyp messageTyp, final String message, final Player... players) {
-        Broadcast broadcast = new Broadcast(this, messageTyp, message, players).send();
+        Broadcast broadcast = new Broadcast(this, messageTyp, message, players);
         Bukkit.getPluginManager().callEvent(new BroadcastMessageEvent(broadcast));
         return broadcast.send();
     }
@@ -171,19 +171,11 @@ public final class Messager {
         private Player[] players;
 
         public Broadcast(Messager messager, final String message) {
-            this.messager = messager;
-            this.messageTyp = BroadcastMessageTyp.INFO_MESSAGE;
-            this.message = message;
-            this.players = Bukkit.getOnlinePlayers().toArray(new Player[0]);
-            send();
+            this(messager, BroadcastMessageTyp.INFO_MESSAGE, message, Bukkit.getOnlinePlayers().toArray(new Player[0]));
         }
 
         public Broadcast(Messager messager, final BroadcastMessageTyp typ, final String message) {
-            this.messager = messager;
-            this.messageTyp = typ;
-            this.message = message;
-            this.players = Bukkit.getOnlinePlayers().toArray(new Player[0]);
-            send();
+            this(messager, typ, message, Bukkit.getOnlinePlayers().toArray(new Player[0]));
         }
 
         public Broadcast(Messager messager, final BroadcastMessageTyp typ, final String message, Player... players) {
@@ -191,7 +183,6 @@ public final class Messager {
             this.messageTyp = typ;
             this.message = message;
             this.players = players;
-            send();
         }
 
         @BsonCreator
@@ -202,15 +193,19 @@ public final class Messager {
         }
 
         public Broadcast sendSimple() {
-            for (Player player : players)
+            for (Player player : players) {
+                System.out.println(player.getName());
                 player.sendMessage(message);
+            }
 
             return this;
         }
 
         public Broadcast send() {
-            for (Player player : players)
+            for (Player player : players) {
+                System.out.println(player.getName());
                 messager.send(player, message);
+            }
 
             return this;
         }
