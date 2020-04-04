@@ -359,10 +359,10 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                 world.getMonsterSpawnLimit() > 0,
                 world.getKeepSpawnInMemory(),
                 new int[]{(int) loc.getX(), (int) loc.getY(), (int) loc.getZ()},
-                Collections.emptyMap(),
-                Collections.emptyMap(),
-                Collections.emptyList(),
-                Collections.emptyList(),
+                new HashMap<>(),
+                new HashMap<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
                 LATEST_CONFIG_VERSION
         );
         w.save();
