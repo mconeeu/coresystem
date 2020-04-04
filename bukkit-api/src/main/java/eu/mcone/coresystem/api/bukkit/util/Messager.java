@@ -7,7 +7,6 @@ package eu.mcone.coresystem.api.bukkit.util;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.BroadcastMessageEvent;
-import eu.mcone.coresystem.api.bukkit.event.BuildModeChangeEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.translation.Language;
 import lombok.Getter;
@@ -18,10 +17,6 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 public final class Messager {
 
@@ -138,71 +133,85 @@ public final class Messager {
         sender.sendMessage(message);
     }
 
+    public Broadcast simpleBroadcast(final String message) {
+        return this.simpleBroadcast(Broadcast.BroadcastMessageTyp.INFO_MESSAGE, message, Bukkit.getOnlinePlayers().toArray(new Player[0]));
+    }
+
+    public Broadcast simpleBroadcast(final Broadcast.BroadcastMessageTyp typ, final String message) {
+        return this.simpleBroadcast(typ, message, Bukkit.getOnlinePlayers().toArray(new Player[0]));
+    }
+
+    public Broadcast simpleBroadcast(final Broadcast.BroadcastMessageTyp messageTyp, final String message, final Player... players) {
+        Broadcast broadcast = new Broadcast(this, messageTyp, message, players).send();
+        Bukkit.getPluginManager().callEvent(new BroadcastMessageEvent(broadcast));
+        return broadcast.sendSimple();
+    }
+
     public Broadcast broadcast(final String message) {
-        return this.broadcast(Broadcast.BroadcastMessageTyp.INFO_MESSAGE, message, new Player[]{});
+        return this.broadcast(Broadcast.BroadcastMessageTyp.INFO_MESSAGE, message, Bukkit.getOnlinePlayers().toArray(new Player[0]));
     }
 
     public Broadcast broadcast(final Broadcast.BroadcastMessageTyp typ, final String message) {
-        return this.broadcast(typ, message, new Player[]{});
+        return this.broadcast(typ, message, Bukkit.getOnlinePlayers().toArray(new Player[0]));
     }
 
     public Broadcast broadcast(final Broadcast.BroadcastMessageTyp messageTyp, final String message, final Player... players) {
-        Broadcast broadcast = new Broadcast(messageTyp, message, players).send();
+        Broadcast broadcast = new Broadcast(this, messageTyp, message, players).send();
         Bukkit.getPluginManager().callEvent(new BroadcastMessageEvent(broadcast));
         return broadcast.send();
     }
 
     @Getter
     public static class Broadcast {
+        private Messager messager;
         private BroadcastMessageTyp messageTyp;
         @BsonIgnore
         private transient final String message;
-        private List<UUID> players;
+        @BsonIgnore
+        private Player[] players;
 
-        public Broadcast(final String message) {
+        public Broadcast(Messager messager, final String message) {
+            this.messager = messager;
             this.messageTyp = BroadcastMessageTyp.INFO_MESSAGE;
             this.message = message;
-            this.players = new ArrayList<>();
+            this.players = Bukkit.getOnlinePlayers().toArray(new Player[0]);
             send();
         }
 
-        public Broadcast(final BroadcastMessageTyp typ, final String message) {
+        public Broadcast(Messager messager, final BroadcastMessageTyp typ, final String message) {
+            this.messager = messager;
             this.messageTyp = typ;
             this.message = message;
-            this.players = new ArrayList<>();
+            this.players = Bukkit.getOnlinePlayers().toArray(new Player[0]);
             send();
         }
 
-        public Broadcast(final BroadcastMessageTyp typ, final String message, final Player... players) {
+        public Broadcast(Messager messager, final BroadcastMessageTyp typ, final String message, Player... players) {
+            this.messager = messager;
             this.messageTyp = typ;
             this.message = message;
-            this.players = new ArrayList<>();
-
-            for (Player player : players) {
-                this.players.add(player.getUniqueId());
-            }
-
+            this.players = players;
             send();
         }
 
         @BsonCreator
-        public Broadcast(@BsonProperty("message") final BroadcastMessageTyp messageTyp, @BsonProperty("message") final String message, @BsonProperty("players") List<UUID> players) {
+        public Broadcast(@BsonProperty("message") final BroadcastMessageTyp messageTyp, @BsonProperty("message") final String message, @BsonProperty("players") Player[] players) {
             this.message = message;
             this.players = players;
             this.messageTyp = messageTyp;
         }
 
-        public Broadcast send() {
-            //Format message
-            if (this.players.size() > 0) {
-                for (int i = 0; i < this.players.size(); i++) {
-                    if (message.contains("{" + i + "}")) {
-                        message.replace("{" + i + "}", Bukkit.getPlayer(this.players.get(i)).getName());
-                    }
-                }
-            }
+        public Broadcast sendSimple() {
+            for (Player player : players)
+                player.sendMessage(message);
 
-            Bukkit.broadcastMessage(message);
+            return this;
+        }
+
+        public Broadcast send() {
+            for (Player player : players)
+                messager.send(player, message);
+
             return this;
         }
 
