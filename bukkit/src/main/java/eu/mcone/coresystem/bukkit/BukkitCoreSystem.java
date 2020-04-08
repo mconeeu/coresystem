@@ -182,7 +182,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
 
         sendConsoleMessage("§aLoading Translations...");
-        translationManager = new TranslationManager(database1, this);
+        translationManager = new TranslationManager(database1);
 
         sendConsoleMessage("§aInitializing LabyModManager...");
         labyModAPI = new LabyModManager();

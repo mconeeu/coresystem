@@ -9,9 +9,17 @@ import lombok.Getter;
 
 public enum Language {
 
-    ENGLISH("EN", "§c§lEnglish", "http://textures.minecraft.net/texture/6840e67a86cc3140afca057ed27013b19b5a20e528b147005036e29ce53e53f4"),
     GERMAN("DE", "§e§lDeutsch", "http://textures.minecraft.net/texture/b948d8dedc30a8db264f17ac3950eb67fd30b249488691cb60f4092402905055"),
-    FRENCH("FR", "§9§lFrançais", "http://textures.minecraft.net/texture/70cc11c49397fc16f0469095f89675e439869c8414bb695971872ba16544ff61");
+    BAVARIA("BY", "§b§lBoarisch", "http://textures.minecraft.net/texture/bf79448a48f8fbac041a1b7d43c95de4e8b27aff7ed58f31309afd299e17f4b"),
+    FRENCH("FR", "§9§lLe français", "http://textures.minecraft.net/texture/70cc11c49397fc16f0469095f89675e439869c8414bb695971872ba16544ff61"),
+    ENGLISH("EN", "§c§lEnglish", "http://textures.minecraft.net/texture/6840e67a86cc3140afca057ed27013b19b5a20e528b147005036e29ce53e53f4"),
+    ITALIAN("IT", "§2§lItaliano", "http://textures.minecraft.net/texture/85ce89223fa42fe06ad65d8d44ca412ae899c831309d68924dfe0d142fdbeea4"),
+    SPAN("ES", "§c§lEspanol", "http://textures.minecraft.net/texture/4d3923b2d050cd42cd9fbb89ee683a2a9899345e3518bd6c7f3cbb53fd151d72"),
+    POLISH("PL", "§f§lPolski", "http://textures.minecraft.net/texture/921b2af8d2322282fce4a1aa4f257a52b68e27eb334f4a181fd976bae6d8eb"),
+    PORTUGUESE("PT", "§2§lPortuguês", "http://textures.minecraft.net/texture/ebd51f4693af174e6fe1979233d23a40bb987398e3891665fafd2ba567b5a53a"),
+    SWEDISH("SW", "§1§lSvenska", "http://textures.minecraft.net/texture/7d86242b0d97ece9994660f3974d72df7b887f630a4530dadc5b1ab7c2134aec"),
+    RUSSIAN("RU", "§1§lPусский", "http://textures.minecraft.net/texture/16eafef980d6117dabe8982ac4b4509887e2c4621f6a8fe5c9b735a83d775ad"),
+    TURKISH("TU", "§c§lTürk", "http://textures.minecraft.net/texture/6bbeaf52e1c4bfcd8a1f4c6913234b840241aa48829c15abc6ff8fdf92cd89e");
 
     @Getter
     private String id, name, textureUrl;

@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
@@ -80,10 +79,15 @@ public class NpcListener implements Listener {
         });
     }
 
+//    @EventHandler(priority = EventPriority.MONITOR)
+//    public void on(PlayerDeathEvent e) {
+//
+//    }
+
     @EventHandler(priority = EventPriority.MONITOR)
-    public void on(PlayerDeathEvent e) {
+    public void on(PlayerRespawnEvent e) {
         for (CoreNPC<?, ?> npc : api.getNpcSet()) {
-            npc.despawn(e.getEntity());
+            npc.despawn(e.getPlayer());
         }
     }
 

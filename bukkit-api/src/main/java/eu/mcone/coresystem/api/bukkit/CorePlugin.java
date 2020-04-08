@@ -16,9 +16,17 @@ import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import lombok.Getter;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.jar.JarFile;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -51,11 +59,26 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin 
         this.consolePrefix = "§8[" + pluginColor + pluginName + "§8] §7";
         this.pluginColor = pluginColor;
         this.messager = new Messager(prefixTranslation);
+    }
+
+    @Override
+    public void onEnable() {
+        super.onEnable();
 
         if (CoreSystem.getInstance() != null) {
             try {
                 CoreSystem.getInstance().getPluginManager().registerCorePlugin(this);
-            } catch (CoreException e) {
+
+                CoreSystem.getInstance().getTranslationManager().loadCategories(getGamemode().toString());
+
+                JarFile jar = new JarFile(new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI()));
+                FileConfiguration config = YamlConfiguration.loadConfiguration(jar.getInputStream(jar.getJarEntry("plugin.yml")));
+                ArrayList<String> list = (ArrayList<String>) config.getList("translations");
+
+                if (list != null && !list.isEmpty()) {
+                    CoreSystem.getInstance().getTranslationManager().insertKeys(list, getGamemode().toString());
+                }
+            } catch (CoreException | IOException | URISyntaxException e) {
                 e.printStackTrace();
             }
         }

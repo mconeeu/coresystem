@@ -75,6 +75,23 @@ public final class Messager {
     }
 
     /**
+     * send Translation with prefix to player
+     *
+     * @param player      player
+     * @param translationKey translation name/key
+     */
+    public void sendTransl(final Player player, String translationKey, Object... replacements) {
+        CorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
+        String translation = CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, cp, replacements) + CoreSystem.getInstance().getTranslationManager().get(translationKey, cp, replacements);
+
+        if (translation.isEmpty()) {
+            player.sendMessage("§4Translation " + translation + " not found!");
+        } else {
+            player.sendMessage(translation);
+        }
+    }
+
+    /**
      * send Translation with prefix to command sender
      *
      * @param sender      command sender
@@ -89,18 +106,35 @@ public final class Messager {
     }
 
     /**
+     * send Translation with prefix to command sender
+     *
+     * @param sender         command sender
+     * @param translationKey translation name/key
+     */
+    public void sendTransl(final CommandSender sender, String translationKey, Object... replacements) {
+        String translation = CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, Language.ENGLISH) + CoreSystem.getInstance().getTranslationManager().get(translationKey, Language.ENGLISH, replacements);
+        if (translation.isEmpty()) {
+            sender.sendMessage("§4Translation " + translation + " not found!");
+        } else {
+            sender.sendMessage(translation);
+        }
+    }
+
+    /**
      * send Translation with prefix to player
      *
      * @param player      player
-     * @param translation translation name/key
+     * @param translationKey translation name/key
      */
-    public void sendSimpleTransl(final Player player, String... translation) {
+    public void sendSimpleTransl(final Player player, String translationKey, Object... replacements) {
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
-        StringBuilder sb = new StringBuilder();
-        for (String s : translation) {
-            sb.append(CoreSystem.getInstance().getTranslationManager().get(s, cp));
+        String translation = CoreSystem.getInstance().getTranslationManager().get(translationKey, cp, replacements);
+
+        if (translation.isEmpty()) {
+            player.sendMessage("§4Translation " + translation + " not found!");
+        } else {
+            player.sendMessage(translation);
         }
-        player.sendMessage(sb.toString());
     }
 
     /**
