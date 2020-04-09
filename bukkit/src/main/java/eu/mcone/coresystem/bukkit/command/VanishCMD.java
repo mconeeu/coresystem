@@ -37,11 +37,11 @@ public class VanishCMD extends CorePlayerCommand {
         return false;
     }
 
-    private static void setVanished(CorePlayer cp) {
+    private static boolean setVanished(CorePlayer cp) {
         if (!cp.isVanished()) {
-            cp.setVanished(true);
+            return cp.setVanished(true);
         } else {
-            cp.setVanished(false);
+            return cp.setVanished(false);
         }
     }
 

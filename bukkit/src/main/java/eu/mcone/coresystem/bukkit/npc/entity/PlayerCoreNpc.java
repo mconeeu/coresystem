@@ -27,7 +27,7 @@ import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.npc.CoreNPC;
 import eu.mcone.coresystem.bukkit.npc.capture.MotionPlayer;
 import eu.mcone.coresystem.bukkit.npc.nms.EntityHumanNPC;
-import eu.mcone.coresystem.bukkit.util.ReflectionManager;
+import eu.mcone.coresystem.api.bukkit.util.ReflectionManager;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
@@ -286,6 +286,12 @@ public class PlayerCoreNpc extends CoreNPC<EntityHumanNPC, PlayerNpcData> implem
             location.subtract(0, 0.15, 0);
         }
         teleport(location);
+    }
+
+    public void setCamera(Player player, boolean active) {
+        PacketPlayOutCamera camera = new PacketPlayOutCamera();
+        camera.a = (active ? getEntity().getId() : player.getEntityId());
+        sendPackets(player, camera);
     }
 
     @Override

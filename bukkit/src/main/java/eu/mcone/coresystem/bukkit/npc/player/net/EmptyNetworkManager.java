@@ -1,6 +1,6 @@
 package eu.mcone.coresystem.bukkit.npc.player.net;
 
-import eu.mcone.coresystem.bukkit.util.ReflectionManager;
+import eu.mcone.coresystem.api.bukkit.util.ReflectionManager;
 import net.minecraft.server.v1_8_R3.EnumProtocolDirection;
 import net.minecraft.server.v1_8_R3.NetworkManager;
 

@@ -1,12 +1,9 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture.packets;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
-import org.bukkit.Server;
-import org.bukkit.World;
 
 import java.io.Serializable;
 

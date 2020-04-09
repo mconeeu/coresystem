@@ -1,8 +1,10 @@
 package eu.mcone.coresystem.bukkit.player;
 
+import eu.mcone.coresystem.api.bukkit.event.nms.PacketSendEvent;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PlayerConnection;
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
@@ -21,6 +23,8 @@ public class PacketOutListener extends PlayerConnection {
     //Packets to send
     @Override
     public void sendPacket(Packet packet) {
+        Bukkit.getPluginManager().callEvent(new PacketSendEvent(packet, player));
+
         //Send the packet
         super.sendPacket(packet);
     }

@@ -7,6 +7,7 @@ package eu.mcone.coresystem.bukkit.player;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.PlayerSettingsChangeEvent;
+import eu.mcone.coresystem.api.bukkit.event.PlayerVanishEvent;
 import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
@@ -163,39 +164,50 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     @Override
     public boolean setVanished(boolean vanish) {
         if (vanished != vanish) {
-            vanished = vanish;
-            Player p = bukkit();
+            PlayerVanishEvent vanishEvent = new PlayerVanishEvent(this, vanish);
+            Bukkit.getPluginManager().callEvent(vanishEvent);
 
-            if (vanish) {
-                for (Player t : Bukkit.getOnlinePlayers()) {
-                    if (!t.hasPermission("system.bukkit.vanish.see") && t != p) {
-                        t.hidePlayer(p);
-                    } else {
+            if (!vanishEvent.isCancelled()) {
+                vanished = vanish;
+                Player p = bukkit();
+
+                if (vanish) {
+                    for (Player t : Bukkit.getOnlinePlayers()) {
+                        if (!t.hasPermission("system.bukkit.vanish.see") && t != p) {
+                            t.hidePlayer(p);
+                        } else {
+                            CoreScoreboard sb = CoreSystem.getInstance().getCorePlayer(t).getScoreboard();
+
+                            if (sb instanceof MainScoreboard) {
+                                sb.reload();
+                            }
+                        }
+                    }
+
+                    p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
+                    BukkitCoreSystem.getInstance().getMessager().send(bukkit(), "§2Du bist nun im §aVanish Modus§2!");
+                } else {
+                    for (Player t : Bukkit.getOnlinePlayers()) {
+                        t.showPlayer(p);
+
                         CoreScoreboard sb = CoreSystem.getInstance().getCorePlayer(t).getScoreboard();
-
                         if (sb instanceof MainScoreboard) {
                             sb.reload();
                         }
                     }
+
+                    p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
+                    BukkitCoreSystem.getInstance().getMessager().send(bukkit(), "§7Du bist nicht mehr im §fVanish Modus§7!");
                 }
 
-                p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
-                BukkitCoreSystem.getInstance().getMessager().send(bukkit(), "§2Du bist nun im §aVanish Modus§2!");
+                return true;
             } else {
-                for (Player t : Bukkit.getOnlinePlayers()) {
-                    t.showPlayer(p);
-
-                    CoreScoreboard sb = CoreSystem.getInstance().getCorePlayer(t).getScoreboard();
-                    if (sb instanceof MainScoreboard) {
-                        sb.reload();
-                    }
+                if (!vanishEvent.getCancelCause().isEmpty()) {
+                    BukkitCoreSystem.getInstance().getMessager().send(bukkit(), vanishEvent.getCancelCause());
                 }
 
-                p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
-                BukkitCoreSystem.getInstance().getMessager().send(bukkit(), "§7Du bist nicht mehr im §fVanish Modus§7!");
+                return false;
             }
-
-            return true;
         } else {
             return false;
         }

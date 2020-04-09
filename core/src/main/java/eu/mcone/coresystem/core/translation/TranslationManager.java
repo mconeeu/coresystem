@@ -7,7 +7,6 @@ package eu.mcone.coresystem.core.translation;
 
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.api.core.translation.TranslationField;
@@ -15,19 +14,22 @@ import org.bson.Document;
 
 import java.util.*;
 
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.combine;
+
 public class TranslationManager implements eu.mcone.coresystem.api.core.translation.TranslationManager {
 
     private MongoCollection<Document> collection;
     private Map<String, TranslationField> translations;
     private List<String> categories;
+    private List<Language> languages;
 
-    public TranslationManager(MongoDatabase database, GlobalCorePlugin coreSystem, String... categories) {
+    public TranslationManager(MongoDatabase database, Language... languages) {
         this.collection = database.getCollection("translations");
         this.translations = new HashMap<>();
         this.categories = new ArrayList<>();
-
-        this.categories.add(coreSystem.getPluginName());
-        this.categories.addAll(Arrays.asList(categories));
+        this.languages = new ArrayList<>();
+        this.languages.addAll(Arrays.asList(languages));
 
         reload();
     }
@@ -44,7 +46,8 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
                         for (Language language : Language.values()) {
                             values.put(language, document.getString(language.getId()));
                         }
-                        translations.put(document.getString("key").replaceAll("&", "§"), new TranslationField(values));
+
+                        translations.put(document.getString("key"), new TranslationField(values));
                     }
                 }
             } else {
@@ -52,14 +55,44 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
                 for (Language language : Language.values()) {
                     values.put(language, document.getString(language.getId()));
                 }
-                translations.put(document.getString("key").replaceAll("&", "§"), new TranslationField(values));
+
+                translations.put(document.getString("key"), new TranslationField(values));
             }
         }
     }
 
     @Override
-    public void loadCategories(GlobalCorePlugin plugin, String... categories) {
-        this.categories.add(plugin.getPluginName());
+    public void insertKeys(List<String> keys, String category) {
+        for (String key : keys) {
+            if (collection.find(combine(eq("key", key), eq("category", category))).first() == null) {
+                collection.insertOne(
+                        new Document("key", key)
+                                .append("category", category)
+                                .append(Language.ENGLISH.getId(), null)
+                                .append(Language.GERMAN.getId(), null)
+                                .append(Language.BAVARIA.getId(), null)
+                );
+            }
+        }
+    }
+
+    @Override
+    public void loadTranslation(GlobalCorePlayer player) {
+        if (!languages.contains(player.getSettings().getLanguage())) {
+            for (Document document : collection.find()) {
+                String category = document.getString("category");
+                if (category != null) {
+                    if (categories.contains(category)) {
+                        translations.put(document.getString("key"), new TranslationField(player.getSettings().getLanguage().getName()));
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void loadCategories(String... categories) {
+//        this.categories.add(plugin.getPluginName());
         this.categories.addAll(Arrays.asList(categories));
 
         reload();
@@ -81,8 +114,33 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
     }
 
     @Override
+    public String get(String key, Language language, Object... replace) {
+        return replace(getTranslation(key, language), replace);
+    }
+
+
+    @Override
     public String get(String key, GlobalCorePlayer player) {
         return get(key, player.getSettings().getLanguage());
+    }
+
+    @Override
+    public String get(String key, GlobalCorePlayer player, Object... replace) {
+        return replace(get(key, player.getSettings().getLanguage()), replace);
+    }
+
+    private String replace(String translation, Object... replace) {
+        List<Object> replaces = Arrays.asList(replace);
+
+        if (translation != null) {
+            int i = 0;
+            while (translation.contains("{" + i + "}") && replaces.get(i) != null) {
+                translation = translation.replaceAll("\\{" + i + "}", String.valueOf(replaces.get(i)));
+                i++;
+            }
+        }
+
+        return translation;
     }
 
     private String getTranslation(String key, Language language) {
@@ -92,12 +150,11 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
             if (result != null) {
                 return result.replaceAll("&", "§");
             } else {
-                result = translations.get(key).getString(Language.GERMAN);
+                result = translations.get(key).getString(Language.ENGLISH);
                 return result.replaceAll("&", "§");
             }
         } else {
             return null;
         }
     }
-
 }

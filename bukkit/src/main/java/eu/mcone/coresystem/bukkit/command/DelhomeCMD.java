@@ -31,9 +31,9 @@ public class DelhomeCMD extends CorePlayerCommand {
         if (args.length == 1) {
             if (api.getHomes().containsKey(args[0])) {
                 api.removeHome(args[0]);
-                messager.send(p, "§2Dein Home §a"+args[0]+"§2 wurde erfolgreich gelöscht!");
+                messager.send(p, "§2Dein Home §a" + args[0] + "§2 wurde erfolgreich gelöscht!");
             } else {
-                messager.send(p, "§4Du hast kein Home mit dem Namen §c"+args[0]+"§4!");
+                messager.send(p, "§4Du hast kein Home mit dem Namen §c" + args[0] + "§4!");
             }
 
             return true;

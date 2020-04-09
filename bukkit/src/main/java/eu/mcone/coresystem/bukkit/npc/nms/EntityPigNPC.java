@@ -1,7 +1,7 @@
 package eu.mcone.coresystem.bukkit.npc.nms;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.bukkit.util.ReflectionManager;
+import eu.mcone.coresystem.api.bukkit.util.ReflectionManager;
 import net.minecraft.server.v1_8_R3.EntityPig;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;

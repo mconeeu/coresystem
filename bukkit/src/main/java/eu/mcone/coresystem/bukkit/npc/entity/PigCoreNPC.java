@@ -6,7 +6,7 @@ import eu.mcone.coresystem.api.bukkit.npc.entity.PigNpc;
 import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.bukkit.npc.CoreNPC;
 import eu.mcone.coresystem.bukkit.npc.nms.EntityPigNPC;
-import eu.mcone.coresystem.bukkit.util.ReflectionManager;
+import eu.mcone.coresystem.api.bukkit.util.ReflectionManager;
 import net.minecraft.server.v1_8_R3.MathHelper;
 import net.minecraft.server.v1_8_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_8_R3.PacketPlayOutSpawnEntityLiving;

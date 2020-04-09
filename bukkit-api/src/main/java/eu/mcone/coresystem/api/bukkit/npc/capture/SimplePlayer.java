@@ -1,7 +1,6 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -10,7 +9,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 public abstract class SimplePlayer {
     @Getter
@@ -21,9 +19,6 @@ public abstract class SimplePlayer {
     protected boolean backward = false;
 
     protected BukkitTask playingTask;
-
-    @Getter@Setter
-    protected double speed = 1;
 
     protected HashSet<Player> watcher = new HashSet<>();
 
