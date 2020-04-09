@@ -31,7 +31,26 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
         this.languages = new ArrayList<>();
         this.languages.addAll(Arrays.asList(languages));
 
+//        update();
+
         reload();
+    }
+
+    public void update() {
+        int updated = 0;
+        for (Document document : collection.find()) {
+            String category = document.getString("category");
+
+            if (category != null) {
+                if (category.equalsIgnoreCase("GAMESYSTEM")) {
+                    document.append("category", "UNDEFINED");
+                    collection.replaceOne(combine(eq("category", category), eq("key", document.getString("key"))), document);
+                    updated++;
+                }
+            }
+        }
+
+        System.out.println(updated + " docs updated");
     }
 
     @Override
@@ -40,15 +59,13 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
 
         for (Document document : collection.find()) {
             if (document.getString("category") != null) {
-                for (String cat : categories) {
-                    if (document.getString("category").equalsIgnoreCase(cat)) {
-                        final Map<Language, String> values = new HashMap<>();
-                        for (Language language : Language.values()) {
-                            values.put(language, document.getString(language.getId()));
-                        }
-
-                        translations.put(document.getString("key"), new TranslationField(values));
+                if (categories.contains(document.getString("category"))) {
+                    final Map<Language, String> values = new HashMap<>();
+                    for (Language language : Language.values()) {
+                        values.put(language, document.getString(language.getId()));
                     }
+
+                    translations.put(document.getString("key"), new TranslationField(values));
                 }
             } else {
                 final Map<Language, String> values = new HashMap<>();
@@ -59,6 +76,7 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
                 translations.put(document.getString("key"), new TranslationField(values));
             }
         }
+
     }
 
     @Override
@@ -151,7 +169,11 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
                 return result.replaceAll("&", "§");
             } else {
                 result = translations.get(key).getString(Language.ENGLISH);
-                return result.replaceAll("&", "§");
+                if (result != null) {
+                    return result.replaceAll("&", "§");
+                } else {
+                    return null;
+                }
             }
         } else {
             return null;
