@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.core.labymod;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import eu.mcone.coresystem.api.core.labymod.LabyModAPI;
@@ -16,8 +17,11 @@ import io.netty.handler.codec.EncoderException;
 
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.UUID;
 
 public abstract class LMCUtils<P> implements LabyModAPI<P> {
+
+    public static final String DOMAIN = "play.mcone.eu";
 
     protected abstract void sendLMCMessage(P player, byte[] message);
 
@@ -30,6 +34,98 @@ public abstract class LMCUtils<P> implements LabyModAPI<P> {
         }
 
         sendServerMessage(player, "PERMISSIONS", object);
+    }
+
+    @Override
+    public void unsetCurrentServer(P player) {
+        setCurrentServer(player, false, null);
+    }
+
+    @Override
+    public void setCurrentServer(P player, String gamemodeName) {
+        setCurrentServer(player, true, gamemodeName);
+    }
+
+    private void setCurrentServer(P player, boolean visible, String gamemodeName) {
+        JsonObject object = new JsonObject();
+        object.addProperty("show_gamemode", visible); // Gamemode visible for everyone
+        object.addProperty("gamemode_name", gamemodeName); // Name of the current playing gamemode
+
+        // Send to LabyMod using the API
+        sendServerMessage(player, "server_gamemode", object);
+    }
+
+    @Override
+    public void unsetCurrentGameInfo(P player) {
+        setCurrentGameInfo(player, false, null, 0, 0);
+    }
+
+    @Override
+    public void setCurrentGameInfo(P player, String gamemode, long startTime, long endTime) {
+        setCurrentGameInfo(player, true, gamemode, startTime, endTime);
+    }
+
+    private void setCurrentGameInfo(P player, boolean hasGame, String gamemode, long startTime, long endTime) {
+        // Create game json object
+        JsonObject obj = new JsonObject();
+        obj.addProperty("hasGame", hasGame);
+
+        if (hasGame) {
+            obj.addProperty("game_mode", gamemode);
+            obj.addProperty("game_startTime", startTime); // Set to 0 for countdown
+            obj.addProperty("game_endTime", endTime); // // Set to 0 for timer
+        }
+
+        // Send to user
+        sendServerMessage(player, "discord_rpc", obj);
+    }
+
+    @Override
+    public void unsetPartyInfo(P player) {
+        setPartyInfo(player, false, null, 0, 0);
+    }
+
+    @Override
+    public void setPartyInfo(P player, UUID partyLeaderUUID, int partySize, int maxPartyMembers) {
+        setPartyInfo(player, true, partyLeaderUUID, partySize, maxPartyMembers);
+    }
+
+    public void setPartyInfo(P player, boolean hasParty, UUID partyLeaderUUID, int partySize, int maxPartyMembers) {
+        // Create party json object
+        JsonObject obj = new JsonObject();
+        obj.addProperty("hasParty", hasParty);
+
+        if (hasParty) {
+            obj.addProperty("partyId", partyLeaderUUID.toString() + ":" + DOMAIN);
+            obj.addProperty("party_size", partySize);
+            obj.addProperty("party_max", maxPartyMembers);
+        }
+
+        // Send to user
+        sendServerMessage(player, "discord_rpc", obj);
+    }
+
+    @Override
+    public void setSubtitle(P receiver, UUID subtitlePlayer, String value) {
+        // List of all subtitles
+        JsonArray array = new JsonArray();
+
+        // Add subtitle
+        JsonObject subtitle = new JsonObject();
+        subtitle.addProperty("uuid", subtitlePlayer.toString());
+
+        // Optional: Size of the subtitle
+        subtitle.addProperty("size", 0.8d); // Range is 0.8 - 1.6 (1.6 is Minecraft default)
+
+        // no value = remove the subtitle
+        if (value != null)
+            subtitle.addProperty("value", value);
+
+        // You can set multible subtitles in one packet
+        array.add(subtitle);
+
+        // Send to LabyMod using the API
+        sendServerMessage(receiver, "account_subtitle", array);
     }
 
     @Override
@@ -49,6 +145,17 @@ public abstract class LMCUtils<P> implements LabyModAPI<P> {
 
         // Returning the byte array
         sendLMCMessage(player, bytes);
+    }
+
+    @Override
+    public void sendClientToServer(P player, String title, String address, boolean preview) {
+        JsonObject object = new JsonObject();
+        object.addProperty("title", title); // Title of the warning
+        object.addProperty("address", address); // Destination server address
+        object.addProperty("preview", preview); // Display the server icon, motd and user count
+
+        // Send to LabyMod using the API
+        sendServerMessage(player, "server_switch", object);
     }
 
     /**

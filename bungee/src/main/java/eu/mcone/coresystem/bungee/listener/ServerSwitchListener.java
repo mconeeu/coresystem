@@ -20,6 +20,12 @@ public class ServerSwitchListener implements Listener {
         ProxiedPlayer p = e.getPlayer();
         CorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p);
 
+        if (p.getServer() != null) {
+            CoreSystem.getInstance().getLabyModAPI().setCurrentServer(p, p.getServer().getInfo().getName());
+        } else {
+            CoreSystem.getInstance().getLabyModAPI().unsetCurrentServer(p);
+        }
+
         if (cp.isNicked()) CoreSystem.getInstance().getChannelHandler().createInfoRequest(p, "NICK");
         PostLoginListener.updateTabHeader(p);
     }

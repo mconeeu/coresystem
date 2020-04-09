@@ -11,10 +11,7 @@ import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.api.bukkit.npc.entity.EntityProjectile;
-import eu.mcone.coresystem.api.bukkit.player.AfkManager;
-import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.api.bukkit.player.NickManager;
-import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.*;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
 import eu.mcone.coresystem.api.bukkit.util.*;
@@ -23,7 +20,6 @@ import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.WorldManager;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
-import eu.mcone.coresystem.api.core.labymod.LabyModAPI;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -89,7 +85,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * returns the bukkit Labymod API
      * @return bukkit Labymod API instance
      */
-    public abstract LabyModAPI<Player> getLabyModAPI();
+    public abstract LabyModBukkitAPI getLabyModAPI();
 
     /**
      * returns the mc one plugin messaging channel handler

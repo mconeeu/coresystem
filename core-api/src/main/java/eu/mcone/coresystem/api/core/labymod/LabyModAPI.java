@@ -8,6 +8,7 @@ package eu.mcone.coresystem.api.core.labymod;
 import com.google.gson.JsonElement;
 
 import java.util.Map;
+import java.util.UUID;
 
 public interface LabyModAPI<P> {
 
@@ -18,6 +19,20 @@ public interface LabyModAPI<P> {
      */
     void sendPermissions(P player, Map<LabyPermission, Boolean> permissions);
 
+    void unsetCurrentServer(P player);
+
+    void setCurrentServer(P receiver, String gamemodeName);
+
+    void unsetCurrentGameInfo(P player);
+
+    void setCurrentGameInfo(P player, String gamemode, long startTime, long endTime);
+
+    void unsetPartyInfo(P player);
+
+    void setPartyInfo(P player, UUID partyLeaderUUID, int partySize, int maxPartyMembers);
+
+    void setSubtitle(P receiver, UUID subtitlePlayer, String value);
+
     /**
      * sends a specific message to the LabyMod client that can be read i.e. with a LabyMod AddOn
      * @param player target player
@@ -26,4 +41,5 @@ public interface LabyModAPI<P> {
      */
     void sendServerMessage(P player, String messageKey, JsonElement json);
 
+    void sendClientToServer(P player, String title, String address, boolean preview);
 }
