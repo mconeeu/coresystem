@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
+import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.labymod.LabyPermission;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
@@ -79,6 +80,7 @@ public class PostLoginListener implements Listener {
                 put(LabyPermission.GUI_ITEM_HUD, false);
             }});
 
+            CoreSystem.getInstance().getLabyModAPI().setCurrentServer(p, p.getServer().getInfo().getName());
             TeamspeakVerifier tsv = BungeeCoreSystem.getSystem().getTeamspeakVerifier();
             if (cp.isTeamspeakIdLinked() && tsv != null) tsv.updateLink(cp, null);
         }, 1000L, TimeUnit.MILLISECONDS);

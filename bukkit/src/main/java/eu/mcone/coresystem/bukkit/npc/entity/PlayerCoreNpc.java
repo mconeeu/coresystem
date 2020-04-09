@@ -5,8 +5,6 @@
 
 package eu.mcone.coresystem.bukkit.npc.entity;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
@@ -316,16 +314,9 @@ public class PlayerCoreNpc extends CoreNPC<EntityHumanNPC, PlayerNpcData> implem
 
     @Override
     public void playLabymodEmote(int emoteId, Player... players) {
-        JsonArray array = new JsonArray();
-
-        JsonObject emote = new JsonObject();
-        emote.addProperty("uuid", uuid.toString());
-        emote.addProperty("emote_id", emoteId);
-        array.add(emote);
-
         Collection<? extends Player> send = players.length > 0 ? Arrays.asList(players) : Bukkit.getOnlinePlayers();
         for (Player player : send) {
-            BukkitCoreSystem.getInstance().getLabyModAPI().sendServerMessage(player, "emote_api", array);
+            BukkitCoreSystem.getInstance().getLabyModAPI().forceEmote(player, uuid, emoteId);
         }
     }
 
