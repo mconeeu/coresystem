@@ -37,15 +37,32 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
     }
 
     public void update() {
+        List<String> categories = new ArrayList<String>() {{
+            add("BEDWARS");
+            add("SKYPVP");
+            add("KNOCKIT");
+            add("MINEWAR");
+            add("BUILD");
+            add("CITYBUILD");
+            add("UNDEFINED");
+        }};
+
+
         int updated = 0;
         for (Document document : collection.find()) {
             String category = document.getString("category");
 
             if (category != null) {
-                if (category.equalsIgnoreCase("GAMESYSTEM")) {
-                    document.append("category", "UNDEFINED");
-                    collection.replaceOne(combine(eq("category", category), eq("key", document.getString("key"))), document);
-                    updated++;
+                if (!categories.contains(category)) {
+                    if (category.contains("BUKKITSYSTEM")) {
+                        document.append("category", null);
+                        collection.replaceOne(combine(eq("category", category), eq("key", document.getString("key"))), document);
+                        updated++;
+                    } else {
+                        document.append("category", "UNDEFINED");
+                        collection.replaceOne(combine(eq("category", category), eq("key", document.getString("key"))), document);
+                        updated++;
+                    }
                 }
             }
         }

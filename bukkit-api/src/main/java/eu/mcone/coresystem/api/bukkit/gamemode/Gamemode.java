@@ -15,9 +15,9 @@ public enum Gamemode {
     BEDWARS("BW", "Bedwars", ChatColor.RED, Material.BED),
     SKYPVP("SP", "SkyPvP", ChatColor.BLUE, Material.DIAMOND_SWORD),
     KNOCKIT("KI", "KnockIT", ChatColor.DARK_GREEN, Material.STICK),
-    MINEWAR("MW", "Minewar", ChatColor.LIGHT_PURPLE, Material.DIRT),
+    MINEWAR("MW", "Minewar", ChatColor.LIGHT_PURPLE, Material.COBBLESTONE),
+    TRASHWARS("TW", "Trashwars", ChatColor.GREEN, Material.IRON_PICKAXE),
     BUILD("BU", "Build", ChatColor.YELLOW, Material.GRASS),
-    CITYBUILD("CB", "Citybuild", ChatColor.AQUA, Material.IRON_PICKAXE),
     UNDEFINED("UD", "undefined", ChatColor.DARK_GRAY, Material.COAL);
 
     @Getter
