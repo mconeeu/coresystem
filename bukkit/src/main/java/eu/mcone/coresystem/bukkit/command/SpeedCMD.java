@@ -23,13 +23,13 @@ public class SpeedCMD extends CorePlayerCommand {
             if (speed > -1 && speed < 1) {
                 if (p.isFlying()) {
                     p.setFlySpeed(speed);
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Deine Fluggeschwindigkeit wurde auf §f" + speed + "§2 gesetzt!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Deine Fluggeschwindigkeit wurde auf §f" + speed + "§2 gesetzt!");
                 } else {
                     p.setWalkSpeed(speed);
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Deine Laufgeschwindigkeit wurde auf §f" + speed + "§2 gesetzt!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Deine Laufgeschwindigkeit wurde auf §f" + speed + "§2 gesetzt!");
                 }
             } else {
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du kannst nur Geschwindigkeiten zwischen -1 und 1 setzen!");
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du kannst nur Geschwindigkeiten zwischen -1 und 1 setzen!");
             }
         }
 

@@ -10,7 +10,7 @@
     <parent>
         <artifactId>mcone-coresystem</artifactId>
         <groupId>eu.mcone.coresystem</groupId>
-        <version>10.6.1-SNAPSHOT</version>
+        <version>10.6.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -52,7 +52,7 @@
             <!--<plugin>
                 <groupId>com.github.wvengen</groupId>
                 <artifactId>proguard-maven-plugin</artifactId>
-                <version>2.0.14</version>
+                <version>2.2.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -60,20 +60,9 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <options>
-                        <option>-ignorewarnings</option>
-                        <option>-dontnote</option>
-                        <option>-keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,LocalVariable*Table,*Annotation*,Synthetic,EnclosingMethod,EventHandler,Override</option>
-                        <option>-keepclassmembers class ** { @net.md_5.bungee.event.EventHandler *; }</option>
-                        <option>-keep class eu.mcone.coresystem.api.** { *; }</option>
-                        <option>-keep class ** extends net.md_5.bungee.api.plugin.Plugin { public void onEnable(); public void onDisable(); }</option>
-                        <option>-keep class org.mariadb.jdbc.** { *; }</option>
-                        <option>-keep class net.labymod.** { *; }</option>
-                    </options>
-                    <obfuscate>true</obfuscate>
+                    <proguardInclude>${project.basedir}/proguard.pro</proguardInclude>
                     <libs>
                         <lib>${java.home}/lib/rt.jar</lib>
-                        <lib>${java.home}/lib/jsse.jar</lib>
                     </libs>
                 </configuration>
             </plugin>-->
@@ -93,7 +82,7 @@
         </repository>
         <repository>
             <id>mcone-systems</id>
-            <url>https://repo.mcone.eu/repository/mcone-systems/</url>
+            <url>https://repo.onegaming.group/repository/mcone-systems/</url>
         </repository>
 
         <!--  DISCORD REPOS -->
@@ -108,7 +97,7 @@
         <dependency>
             <groupId>eu.mcone.coresystem</groupId>
             <artifactId>core</artifactId>
-            <version>10.6.1-SNAPSHOT</version>
+            <version>10.6.2-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -120,7 +109,7 @@
         <dependency>
             <groupId>eu.mcone.coresystem</groupId>
             <artifactId>bungee-api</artifactId>
-            <version>10.6.1-SNAPSHOT</version>
+            <version>10.6.2-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 

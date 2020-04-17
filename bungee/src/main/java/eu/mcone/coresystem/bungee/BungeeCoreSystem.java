@@ -18,6 +18,7 @@ import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.Currency;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.PlayerState;
+import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.bungee.command.*;
 import eu.mcone.coresystem.bungee.friend.FriendSystem;
 import eu.mcone.coresystem.bungee.listener.*;
@@ -157,7 +158,9 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
 
         sendConsoleMessage("§aLoading Translations...");
-        translationManager = new TranslationManager(getMongoDB());
+        translationManager = new TranslationManager(this, "bungeesystem");
+        translationManager.loadAdditionalLanguages(Language.values());
+        translationManager.loadAdditionalCategories("bukkitsystem");
 
         sendConsoleMessage("§aLoading Permissions & Groups...");
         permissionManager = new PermissionManager("Proxy", getMongoDB());

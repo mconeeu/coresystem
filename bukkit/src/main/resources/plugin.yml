@@ -111,3 +111,7 @@ permissions:
         children:
           system.bungee.cooldown:
             description: Allows to bypass the CooldownSystem
+
+translations:
+  - system.bukkit.home.delete
+  - system.bukkit.home.null

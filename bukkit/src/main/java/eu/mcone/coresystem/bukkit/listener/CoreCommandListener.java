@@ -25,7 +25,7 @@ public class CoreCommandListener implements Listener {
 
             HelpTopic topic = Bukkit.getServer().getHelpMap().getHelpTopic(cmd);
             if (topic == null) {
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Befehl §c" + cmd + "§4 existiert nicht!");
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Der Befehl §c" + cmd + "§4 existiert nicht!");
                 e.setCancelled(true);
             }
         }

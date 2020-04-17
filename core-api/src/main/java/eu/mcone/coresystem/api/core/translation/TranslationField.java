@@ -20,14 +20,13 @@ public final class TranslationField {
     public TranslationField(String... translations) {
         this.values = new HashMap<>();
 
-        int i = 0;
-        for (Language language : Language.values()) {
-            if (translations.length >= i+1) {
-                values.put(language, translations[i]);
-            } else {
-                values.put(language, null);
-            }
+        for (int i = 0; i < translations.length && i < Language.values().length; i++) {
+            values.put(Language.values()[0], translations[0]);
         }
+    }
+
+    public void setTranslation(Language language, String value) {
+        values.put(language, value);
     }
 
     /**
@@ -65,4 +64,10 @@ public final class TranslationField {
         return Boolean.valueOf(values.get(language));
     }
 
+    @Override
+    public String toString() {
+        return "TranslationField{" +
+                "values=" + values +
+                '}';
+    }
 }

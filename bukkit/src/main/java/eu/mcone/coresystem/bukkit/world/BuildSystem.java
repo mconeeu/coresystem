@@ -79,7 +79,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                                 ) {
                                     e.setCancelled(true);
                                     if (notify)
-                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst hier nicht abbauen!");
+                                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du darfst hier nicht abbauen!");
                                 }
                             }
                         }
@@ -98,7 +98,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                                         ) {
                                             e.setCancelled(true);
                                             if (notify)
-                                                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst hier nicht abbauen!");
+                                                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du darfst hier nicht abbauen!");
                                         }
                                     }
                                 }
@@ -119,7 +119,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                                         ) {
                                             e.setCancelled(true);
                                             if (notify)
-                                                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst hier nicht abbauen!");
+                                                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du darfst hier nicht abbauen!");
                                         }
                                     }
                                 }
@@ -140,7 +140,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                                         ) {
                                             e.setCancelled(true);
                                             if (notify)
-                                                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst das Feld nicht zertrampeln!");
+                                                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du darfst das Feld nicht zertrampeln!");
                                         }
                                     }
                                 }
@@ -163,7 +163,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                                 ) {
                                     e.setCancelled(true);
                                     if (notify)
-                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst hier nicht bauen!");
+                                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du darfst hier nicht bauen!");
                                 }
                             }
                         }
@@ -180,7 +180,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                                 ) {
                                     e.setCancelled(true);
                                     if (notify)
-                                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst hier nicht bauen!");
+                                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du darfst hier nicht bauen!");
                                 }
                             }
                         }
@@ -205,7 +205,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                                     ) {
                                         e.setCancelled(true);
                                         if (notify)
-                                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst damit nicht interagieren!");
+                                            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du darfst damit nicht interagieren!");
                                     }
                                 }
                             }
@@ -224,7 +224,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                                     ) {
                                         e.setCancelled(true);
                                         if (notify)
-                                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du darfst damit nicht interagieren!");
+                                            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du darfst damit nicht interagieren!");
                                     }
                                 }
                             }
@@ -256,12 +256,12 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
         if (allowedPlayers.containsKey(p.getUniqueId())) {
             p.setGameMode(allowedPlayers.get(p.getUniqueId()));
             allowedPlayers.remove(p.getUniqueId());
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du kannst nun nicht mehr bauen!");
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du kannst nun nicht mehr bauen!");
             Bukkit.getPluginManager().callEvent(new BuildModeChangeEvent(p, false));
         } else {
             allowedPlayers.put(p.getUniqueId(), p.getGameMode());
             p.setGameMode(GameMode.CREATIVE);
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du kannst nun bauen!");
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du kannst nun bauen!");
             Bukkit.getPluginManager().callEvent(new BuildModeChangeEvent(p, true));
         }
     }

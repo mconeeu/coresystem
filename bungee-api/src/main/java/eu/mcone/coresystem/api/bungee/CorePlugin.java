@@ -5,7 +5,7 @@
 
 package eu.mcone.coresystem.api.bungee;
 
-import eu.mcone.coresystem.api.bungee.util.Messager;
+import eu.mcone.coresystem.api.bungee.util.Messenger;
 import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
@@ -18,15 +18,15 @@ import net.md_5.bungee.api.plugin.Plugin;
 public abstract class CorePlugin extends Plugin implements GlobalCorePlugin {
 
     @Getter
-    private String pluginName;
-    private String consolePrefix;
+    private final String pluginName;
+    private final String consolePrefix;
     @Getter
-    private Messager messager;
+    private final Messenger messenger;
 
     protected CorePlugin(String pluginName, ChatColor pluginColor, String prefixTranslation) {
         this.pluginName = pluginName;
         this.consolePrefix = "§8[" + pluginColor + pluginName + "§8] §7";
-        this.messager = new Messager(prefixTranslation);
+        this.messenger = new Messenger(prefixTranslation);
 
         if (CoreSystem.getInstance() != null) CoreSystem.getInstance().registerPlugin(this);
     }

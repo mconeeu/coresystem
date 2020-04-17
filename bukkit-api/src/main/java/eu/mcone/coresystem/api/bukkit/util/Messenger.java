@@ -9,6 +9,7 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.BroadcastMessageEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.translation.Language;
+import eu.mcone.coresystem.api.core.translation.TranslationManager;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bson.codecs.pojo.annotations.BsonCreator;
@@ -18,12 +19,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public final class Messager {
+public final class Messenger {
 
     @Getter
-    private String prefixTranslation;
+    private final String prefixTranslation;
 
-    public Messager(String prefixTranlation) {
+    public Messenger(String prefixTranlation) {
         this.prefixTranslation = prefixTranlation;
     }
 
@@ -33,8 +34,13 @@ public final class Messager {
      * @param player  player
      * @param message message
      */
-    public void send(final Player player, final String message) {
-        player.sendMessage(CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, CoreSystem.getInstance().getCorePlayer(player)) + message);
+    public void send(Player player, String message) {
+        CorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
+
+        player.sendMessage(CoreSystem.getInstance().getTranslationManager().get(
+                prefixTranslation,
+                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE
+        ) + message);
     }
 
     /**
@@ -43,9 +49,15 @@ public final class Messager {
      * @param player        player
      * @param textComponent text component
      */
-    public void send(final Player player, final TextComponent textComponent) {
-        TextComponent realTc = new TextComponent(CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, CoreSystem.getInstance().getCorePlayer(player)));
+    public void send(Player player, TextComponent textComponent) {
+        CorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
+
+        TextComponent realTc = new TextComponent(CoreSystem.getInstance().getTranslationManager().get(
+                prefixTranslation,
+                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE
+        ));
         realTc.addExtra(textComponent);
+
         player.spigot().sendMessage(realTc);
     }
 
@@ -55,8 +67,13 @@ public final class Messager {
      * @param sender  command sender
      * @param message message
      */
-    public void send(final CommandSender sender, final String message) {
-        sender.sendMessage(CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, Language.ENGLISH) + message);
+    public void send(CommandSender sender, String message) {
+        CorePlayer cp = sender instanceof Player ? CoreSystem.getInstance().getCorePlayer((Player) sender) : null;
+
+        sender.sendMessage(CoreSystem.getInstance().getTranslationManager().get(
+                prefixTranslation,
+                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE
+        ) + message);
     }
 
     /**
@@ -67,10 +84,12 @@ public final class Messager {
      */
     public void sendTransl(final Player player, String... translation) {
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
+
         StringBuilder sb = new StringBuilder(CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, cp));
         for (String s : translation) {
             sb.append(CoreSystem.getInstance().getTranslationManager().get(s, cp));
         }
+
         player.sendMessage(sb.toString());
     }
 
@@ -82,13 +101,10 @@ public final class Messager {
      */
     public void sendTransl(final Player player, String translationKey, Object... replacements) {
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
-        String translation = CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, cp, replacements) + CoreSystem.getInstance().getTranslationManager().get(translationKey, cp, replacements);
+        String translation = CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, cp, replacements)
+                + CoreSystem.getInstance().getTranslationManager().get(translationKey, cp, replacements);
 
-        if (translation.isEmpty()) {
-            player.sendMessage("§4Translation " + translation + " not found!");
-        } else {
-            player.sendMessage(translation);
-        }
+        player.sendMessage(translation);
     }
 
     /**
@@ -98,10 +114,16 @@ public final class Messager {
      * @param translation translation name/key
      */
     public void sendTransl(final CommandSender sender, String... translation) {
-        StringBuilder sb = new StringBuilder(CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, Language.ENGLISH));
+        CorePlayer cp = sender instanceof Player ? CoreSystem.getInstance().getCorePlayer((Player) sender) : null;
+
+        StringBuilder sb = new StringBuilder(CoreSystem.getInstance().getTranslationManager().get(
+                prefixTranslation,
+                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE
+        ));
         for (String s : translation) {
             sb.append(CoreSystem.getInstance().getTranslationManager().get(s, Language.ENGLISH));
         }
+
         sender.sendMessage(sb.toString());
     }
 
@@ -112,12 +134,18 @@ public final class Messager {
      * @param translationKey translation name/key
      */
     public void sendTransl(final CommandSender sender, String translationKey, Object... replacements) {
-        String translation = CoreSystem.getInstance().getTranslationManager().get(prefixTranslation, Language.ENGLISH) + CoreSystem.getInstance().getTranslationManager().get(translationKey, Language.ENGLISH, replacements);
-        if (translation.isEmpty()) {
-            sender.sendMessage("§4Translation " + translation + " not found!");
-        } else {
-            sender.sendMessage(translation);
-        }
+        CorePlayer cp = sender instanceof Player ? CoreSystem.getInstance().getCorePlayer((Player) sender) : null;
+
+        String translation = CoreSystem.getInstance().getTranslationManager().get(
+                prefixTranslation,
+                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE
+        ) + CoreSystem.getInstance().getTranslationManager().get(
+                translationKey,
+                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE,
+                replacements
+        );
+
+        sender.sendMessage(translation);
     }
 
     /**
@@ -130,11 +158,7 @@ public final class Messager {
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
         String translation = CoreSystem.getInstance().getTranslationManager().get(translationKey, cp, replacements);
 
-        if (translation.isEmpty()) {
-            player.sendMessage("§4Translation " + translation + " not found!");
-        } else {
-            player.sendMessage(translation);
-        }
+        player.sendMessage(translation);
     }
 
     /**
@@ -197,22 +221,22 @@ public final class Messager {
 
     @Getter
     public static class Broadcast {
-        private Messager messager;
+        private Messenger messager;
         private BroadcastMessageTyp messageTyp;
         @BsonIgnore
         private transient final String message;
         @BsonIgnore
         private Player[] players;
 
-        public Broadcast(Messager messager, final String message) {
+        public Broadcast(Messenger messager, final String message) {
             this(messager, BroadcastMessageTyp.INFO_MESSAGE, message, Bukkit.getOnlinePlayers().toArray(new Player[0]));
         }
 
-        public Broadcast(Messager messager, final BroadcastMessageTyp typ, final String message) {
+        public Broadcast(Messenger messager, final BroadcastMessageTyp typ, final String message) {
             this(messager, typ, message, Bukkit.getOnlinePlayers().toArray(new Player[0]));
         }
 
-        public Broadcast(Messager messager, final BroadcastMessageTyp typ, final String message, Player... players) {
+        public Broadcast(Messenger messager, final BroadcastMessageTyp typ, final String message, Player... players) {
             this.messager = messager;
             this.messageTyp = typ;
             this.message = message;

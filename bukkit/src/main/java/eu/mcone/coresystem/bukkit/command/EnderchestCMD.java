@@ -23,7 +23,7 @@ public class EnderchestCMD extends CorePlayerCommand {
             p.openInventory(p.getEnderChest());
 
             if (p.hasPermission("system.bukkit.ecsee.other")) {
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§f§oTipp: §7Benutze §f/ec <player>§7 um die Enderkiste eines anderen Spielers zu sehen!");
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§f§oTipp: §7Benutze §f/ec <player>§7 um die Enderkiste eines anderen Spielers zu sehen!");
             }
         } else if (args.length == 1) {
             if (p.hasPermission("system.bukkit.ecsee.other")) {
@@ -32,13 +32,13 @@ public class EnderchestCMD extends CorePlayerCommand {
                 if (t != null) {
                     p.openInventory(t.getEnderChest());
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler §c" + args[0] + "§4 ist nicht online!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Der Spieler §c" + args[0] + "§4 ist nicht online!");
                 }
             } else {
-                CoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
+                CoreSystem.getInstance().getMessenger().sendTransl(p, "system.command.noperm");
             }
         } else {
-            BukkitCoreSystem.getInstance().getMessager().send(p,
+            BukkitCoreSystem.getInstance().getMessenger().send(p,
                     p.hasPermission("system.bukkit.ecsee.other") ? "§4Bitte benutze: §c/ec [<player>]" : "§4Bitte benutze: §c/ec"
             );
         }

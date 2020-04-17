@@ -20,12 +20,12 @@ public class TpposCMD extends CorePlayerCommand {
     @Override
     public boolean onPlayerCommand(Player p, String[] args) {
         if (args.length == 0) {
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze §c/tppos <x> <y> <z>");
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze §c/tppos <x> <y> <z>");
         } else {
             World myworld = p.getWorld();
             Location yourlocation = new Location(myworld, Double.parseDouble(args[0]), Double.parseDouble(args[1]), Double.parseDouble(args[2]));
             p.teleport(yourlocation);
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§7Du wurdest teleportiert!");
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§7Du wurdest teleportiert!");
         }
 
         return true;

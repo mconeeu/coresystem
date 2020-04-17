@@ -30,6 +30,8 @@ public class CoreInventory implements ItemEventStore {
     protected final Inventory inventory;
     @Getter
     protected Map<Integer, CoreItemStack> items;
+    @Getter
+    private final boolean allowModification;
 
     /**
      * creates new CoreInventory
@@ -42,6 +44,7 @@ public class CoreInventory implements ItemEventStore {
         this.player = player;
         this.inventory = Bukkit.createInventory(null, size, title);
         this.items = new HashMap<>();
+        this.allowModification = Arrays.asList(options).contains(InventoryOption.ALLOW_MODIFICATION);
 
         if (Arrays.asList(options).contains(InventoryOption.FILL_EMPTY_SLOTS)) {
             for (int i = 0; i < size; i++) {

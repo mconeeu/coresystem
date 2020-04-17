@@ -25,13 +25,13 @@ public class InvCMD extends CorePlayerCommand {
                 if (p != t) {
                     p.openInventory(t.getInventory());
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§7Drücke §fE §7um dein eigenes Inventar zu öffnen!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§7Drücke §fE §7um dein eigenes Inventar zu öffnen!");
                 }
             } else {
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler §c"+args[0]+"§4 ist nicht online!");
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Der Spieler §c"+args[0]+"§4 ist nicht online!");
             }
         } else {
-            BukkitCoreSystem.getInstance().getMessager().send(p,
+            BukkitCoreSystem.getInstance().getMessenger().send(p,
                     p.hasPermission("system.bukkit.invsee.other") ? "§4Bitte benutze: §c/inv <player>" : "§4Bitte benutze: §c/inv"
             );
         }

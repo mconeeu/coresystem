@@ -40,7 +40,7 @@ public class ChatListener implements Listener {
                                 && !CoreSystem.getInstance().getCooldownSystem().addAndCheck(CoreSystem.getInstance(), getClass(), p.getUniqueId())
                                 && !p.hasPermission("system.bukkit.chat.cooldown.bypass")
                 ) {
-                    CoreSystem.getInstance().getMessager().send(p, "Bitte warte " + cooldown + " Sekunden bevor du eine neue Nachricht schreibst!");
+                    CoreSystem.getInstance().getMessenger().send(p, "Bitte warte " + cooldown + " Sekunden bevor du eine neue Nachricht schreibst!");
                     e.setCancelled(true);
                     return;
                 }
@@ -60,23 +60,23 @@ public class ChatListener implements Listener {
                             }
 
                             e.getRecipients().remove(receiver);
-                            receiver.sendMessage((cp.isNicked() ? Group.SPIELER.getPrefix() : cp.getMainGroup().getPrefix()) + BukkitCoreSystem.getInstance().getTranslationManager().get("system.bukkit.chat").replaceAll("%Player%", p.getName()) + targetMessage);
+                            receiver.sendMessage((cp.isNicked() ? Group.SPIELER.getPrefix() : cp.getMainGroup().getPrefix()) + BukkitCoreSystem.getInstance().getTranslationManager().get("system.chat").replaceAll("%Player%", p.getName()) + targetMessage);
                             receiver.playSound(receiver.getLocation(), Sound.NOTE_BASS, 1.0F, 1.0F);
                         }
                     }
                 }
 
                 e.setFormat(
-                        (cp.isNicked() ? Group.SPIELER.getPrefix() : cp.getMainGroup().getPrefix()) + BukkitCoreSystem.getInstance().getTranslationManager().get("system.bukkit.chat").replaceAll("%Player%", p.getName())
+                        (cp.isNicked() ? Group.SPIELER.getPrefix() : cp.getMainGroup().getPrefix()) + BukkitCoreSystem.getInstance().getTranslationManager().get("system.chat").replaceAll("%Player%", p.getName())
                                 + "%2$s"
                 );
 
                 e.getRecipients().remove(p);
-                p.sendMessage((cp.isNicked() ? Group.SPIELER.getPrefix() : cp.getMainGroup().getPrefix()) + BukkitCoreSystem.getInstance().getTranslationManager().get("system.bukkit.chat").replaceAll("%Player%", p.getName()) + playerMessage);
+                p.sendMessage((cp.isNicked() ? Group.SPIELER.getPrefix() : cp.getMainGroup().getPrefix()) + BukkitCoreSystem.getInstance().getTranslationManager().get("system.chat").replaceAll("%Player%", p.getName()) + playerMessage);
                 VanishChatCMD.usingCommand.remove(p.getUniqueId());
             } else {
                 e.setCancelled(true);
-                CoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze §c/vc <message>§4 um eine Chatnachricht zu schreiben während du im Vanish-Modus bist!");
+                CoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze §c/vc <message>§4 um eine Chatnachricht zu schreiben während du im Vanish-Modus bist!");
             }
         }
     }

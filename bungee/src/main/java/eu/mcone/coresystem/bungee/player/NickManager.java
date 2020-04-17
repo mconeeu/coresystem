@@ -59,7 +59,7 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
             ((BungeeCorePlayer) cp).setNickedSkin(nick);
             ((BungeeCorePlayer) cp).setNicked(true);
         } else {
-            BungeeCoreSystem.getInstance().getMessager().send(p, "§4Es ist kein Nickname mehr verfügbar!");
+            BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Es ist kein Nickname mehr verfügbar!");
         }
     }
 

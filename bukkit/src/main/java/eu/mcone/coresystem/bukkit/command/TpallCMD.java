@@ -28,12 +28,12 @@ public class TpallCMD extends CorePlayerCommand {
                 if (target != null) {
                     p1.teleport(target.getLocation());
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler §f" + args[0] + "§4 konnte nicht gefunden werden!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Der Spieler §f" + args[0] + "§4 konnte nicht gefunden werden!");
                 }
             }
         }
 
-        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze §c/tpall <Spieler>");
+        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze §c/tpall <Spieler>");
 
         return true;
     }

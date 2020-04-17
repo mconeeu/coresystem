@@ -39,7 +39,7 @@ public class CorePlayerUpdateListener implements Listener {
                     for (Group g : player.getGroups()) {
                         if (groups.contains(g)) {
                             player.reloadPermissions();
-                            BukkitCoreSystem.getInstance().getMessager().send(player.bukkit(), "§7§oDeine Permissions wurden upgedated!");
+                            BukkitCoreSystem.getInstance().getMessenger().send(player.bukkit(), "§7§oDeine Permissions wurden upgedated!");
                             break;
                         }
                     }
@@ -50,7 +50,7 @@ public class CorePlayerUpdateListener implements Listener {
                 Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
                     BukkitCoreSystem.getInstance().getPermissionManager().reload();
                     p.reloadPermissions();
-                    BukkitCoreSystem.getInstance().getMessager().send(p.bukkit(), "§7§oDeine Permissions wurden upgedated!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p.bukkit(), "§7§oDeine Permissions wurden upgedated!");
                 });
             }
         } else if (e.getType() == PermissionChangeEvent.Type.GROUP_CHANGE) {
@@ -61,7 +61,7 @@ public class CorePlayerUpdateListener implements Listener {
                 StringBuilder sb = new StringBuilder();
                 e.getGroups().forEach(g -> sb.append(g.getLabel()).append(" "));
 
-                BukkitCoreSystem.getInstance().getMessager().send(p.bukkit(), "§7Deine Permissions wurden geändert! Du besitzt nun folgende Permissions-Gruppen: "+sb.toString());
+                BukkitCoreSystem.getInstance().getMessenger().send(p.bukkit(), "§7Deine Permissions wurden geändert! Du besitzt nun folgende Permissions-Gruppen: "+sb.toString());
                 for (CorePlayer player : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
                     player.getScoreboard().reload();
                 }

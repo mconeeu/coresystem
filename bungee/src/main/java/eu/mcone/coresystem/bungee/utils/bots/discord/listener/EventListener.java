@@ -71,7 +71,7 @@ public class EventListener extends ListenerAdapter {
                     discordControlBot.getRegistering().remove(user.getName());
                 } else {
                     for (Map.Entry<String, UUID> entry : discordControlBot.getRegistering().entrySet()) {
-                        BungeeCoreSystem.getSystem().getMessager().send(ProxyServer.getInstance().getPlayer(entry.getValue()), "§4Der Verknüpfungsvorgang wurde abgenbrochen, da der angegebene Spieler mit dem Namen " + rawMessage + " nicht existiert oder online ist.");
+                        BungeeCoreSystem.getSystem().getMessenger().send(ProxyServer.getInstance().getPlayer(entry.getValue()), "§4Der Verknüpfungsvorgang wurde abgenbrochen, da der angegebene Spieler mit dem Namen " + rawMessage + " nicht existiert oder online ist.");
                         message.getPrivateChannel().sendMessage("*Der Verknüpfungsvorgang wurde abgenbrochen, da der angegebene Spieler mit dem Namen* **" + rawMessage + "** *nicht existiert oder online ist.*").queue();
                     }
 

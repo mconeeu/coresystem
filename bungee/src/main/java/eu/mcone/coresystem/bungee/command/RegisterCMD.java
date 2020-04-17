@@ -43,7 +43,7 @@ public class RegisterCMD extends Command {
 
             try {
                 String code = createAndGetNewCode(p.getUniqueId());
-                BungeeCoreSystem.getInstance().getMessager().send(p,
+                BungeeCoreSystem.getInstance().getMessenger().send(p,
                         new ComponentBuilder("Danke, dass du eine OneGaming ID erstellst!\nDein Register Code lautet: ")
                                 .color(ChatColor.GRAY)
                                 .append(code)
@@ -59,10 +59,10 @@ public class RegisterCMD extends Command {
                                 .create()
                 );
             } catch (CoreException ingored) {
-                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du hast dich bereits registriert!");
+                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du hast dich bereits registriert!");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessager().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 

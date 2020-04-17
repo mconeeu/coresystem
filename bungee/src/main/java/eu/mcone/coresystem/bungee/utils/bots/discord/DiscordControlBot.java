@@ -69,17 +69,17 @@ public class DiscordControlBot {
             }
 
             if (user != null) {
-                BungeeCoreSystem.getInstance().getMessager().send(p, "§2Bitte wechsle zu deinem Discord Fenster und gib in dem gerade vom §fMCONE ControlBot§2 geöffneten Chat deinen §aMinecraft-Namen§2 ein, um den Verifizierungsvorgang abzuschließen.");
+                BungeeCoreSystem.getInstance().getMessenger().send(p, "§2Bitte wechsle zu deinem Discord Fenster und gib in dem gerade vom §fMCONE ControlBot§2 geöffneten Chat deinen §aMinecraft-Namen§2 ein, um den Verifizierungsvorgang abzuschließen.");
                 user.openPrivateChannel().queue((channel) -> {
                     channel.sendMessage("» **MCONE** *Verifizierungs System* «\n" +
                             "*Um die Verknüpfung deines Minecraftaccounts abzuschließen gib bitte hier deinen* **Minecraft Namen** *an.*").queue();
                 });
                 registering.put(discordName, p.getUniqueId());
             } else {
-                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Es konnte kein User mit dem Discord Namen " + discordName + " gefunden werden, der Verifizierungsvorgang wurde abgebrochen.");
+                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Es konnte kein User mit dem Discord Namen " + discordName + " gefunden werden, der Verifizierungsvorgang wurde abgebrochen.");
             }
         } else {
-            BungeeCoreSystem.getSystem().getMessager().send(p, "§4Es ist ein Datenbank Fehler aufgetreten, bitte melde dies einem McOne Teammitglied!");
+            BungeeCoreSystem.getSystem().getMessenger().send(p, "§4Es ist ein Datenbank Fehler aufgetreten, bitte melde dies einem McOne Teammitglied!");
         }
     }
 
@@ -95,7 +95,7 @@ public class DiscordControlBot {
 
             user.openPrivateChannel().queue((channel) -> channel.sendMessage("» **MCONE** *Verifizierungs System* «\n" +
                     "Du hast deine Discord Identität erfolgreich mit deinem Minecraftaccount verknüpft!").queue());
-            BungeeCoreSystem.getInstance().getMessager().send(cp.bungee(), "§2Deine Discord Identität wurde erfolgreich verknüpft!");
+            BungeeCoreSystem.getInstance().getMessenger().send(cp.bungee(), "§2Deine Discord Identität wurde erfolgreich verknüpft!");
 
         } else {
             BungeeCoreSystem.getSystem().sendConsoleMessage("§4ERROR discord user is null");
@@ -117,7 +117,7 @@ public class DiscordControlBot {
 
             user.openPrivateChannel().queue((channel) -> channel.sendMessage("» **MCONE** *Verifizierungs System* «\n" +
                     "Deine Discord Identität wurde erfolgreich von deinem Minecraftaccount entfernt.").queue());
-            BungeeCoreSystem.getInstance().getMessager().send(cp.bungee(), "§2Deine Discord Identität wurde erfolgreich von deinem Minecraftaccount entfernt. Benutze §a/discord link <Discord-Name>§2 um wieder deine Discord Identität zu verlinken.");
+            BungeeCoreSystem.getInstance().getMessenger().send(cp.bungee(), "§2Deine Discord Identität wurde erfolgreich von deinem Minecraftaccount entfernt. Benutze §a/discord link <Discord-Name>§2 um wieder deine Discord Identität zu verlinken.");
         }
     }
 

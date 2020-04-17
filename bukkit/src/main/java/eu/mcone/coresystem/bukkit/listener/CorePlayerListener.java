@@ -79,6 +79,12 @@ public class CorePlayerListener implements Listener {
         }
 
         Bukkit.getScheduler().runTask(BukkitCoreSystem.getSystem(), () -> {
+            CorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(p);
+
+            if (!BukkitCoreSystem.getSystem().getTranslationManager().getLoadedLanguages().contains(cp.getSettings().getLanguage())) {
+                BukkitCoreSystem.getSystem().getTranslationManager().loadAdditionalLanguages(cp.getSettings().getLanguage());
+            }
+
             CorePlayerLoadedEvent e = new CorePlayerLoadedEvent(loadReason, BukkitCoreSystem.getInstance().getCorePlayer(p), p);
             Bukkit.getPluginManager().callEvent(e);
 
@@ -118,7 +124,7 @@ public class CorePlayerListener implements Listener {
             teleports.get(p.getUniqueId()).cancel();
             teleports.remove(p.getUniqueId());
 
-            BukkitCoreSystem.getSystem().getMessager().send(p, "§4Der Teleportvorgang wurde abgebrochen, weil du dich bewegt hast!");
+            BukkitCoreSystem.getSystem().getMessenger().send(p, "§4Der Teleportvorgang wurde abgebrochen, weil du dich bewegt hast!");
         }
     }
 
@@ -132,7 +138,7 @@ public class CorePlayerListener implements Listener {
         BukkitCorePlayer p = (BukkitCorePlayer) BukkitCoreSystem.getSystem().getCorePlayer(e.getPlayer());
         p.unregisterAttachment();
 
-        Bukkit.getScheduler().runTask(BukkitCoreSystem.getInstance(), p::unregister);
+        Bukkit.getScheduler().runTask(BukkitCoreSystem.getInstance(), () -> p.unregister(true));
     }
 
     public static void setCorePermissibleBase(Player p) {

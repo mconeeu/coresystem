@@ -39,7 +39,7 @@ public class VanishChatCMD extends CorePlayerCommand {
                 p.chat(sb.toString());
             }
         } else {
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Benutze §c/vanish§4 um in den Vanish-Modus zu wechseln!");
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Benutze §c/vanish§4 um in den Vanish-Modus zu wechseln!");
         }
 
         return false;

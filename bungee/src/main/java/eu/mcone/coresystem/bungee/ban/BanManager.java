@@ -113,7 +113,7 @@ public class BanManager {
                 cp.setMuteTime(muteTime);
                 cp.setMuted(true);
 
-                BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "\n§8§m----------------§r§8 [§7§l!§8] §fSystem §8§m----------------"
+                BungeeCoreSystem.getInstance().getMessenger().sendSimple(p, "\n§8§m----------------§r§8 [§7§l!§8] §fSystem §8§m----------------"
                         + "\n§f§lMC ONE §3Minecraftnetzwerk"
                         + "\n§7§oDu wurdest gemuted"
                         + "\n§r"

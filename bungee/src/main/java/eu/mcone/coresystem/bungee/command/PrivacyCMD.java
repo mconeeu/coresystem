@@ -26,7 +26,7 @@ public class PrivacyCMD extends Command {
         if (sender instanceof ProxiedPlayer) {
             CorePlayer p = CoreSystem.getInstance().getCorePlayer((ProxiedPlayer) sender);
 
-            CoreSystem.getInstance().getMessager().send(p.bungee(),
+            CoreSystem.getInstance().getMessenger().send(p.bungee(),
                     new ComponentBuilder("§7§oMit dem Spielen auf MC ONE akzeptierst du unsere Datenschutzvereinbarung!\n")
                             .append("[DATENSCHUTZERKLÄRUNG ÖFFNEN]", ComponentBuilder.FormatRetention.NONE)
                             .color(ChatColor.GREEN)

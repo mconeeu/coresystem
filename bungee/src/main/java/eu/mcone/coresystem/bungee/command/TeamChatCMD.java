@@ -24,7 +24,7 @@ public class TeamChatCMD extends Command {
                 return;
 
             if (args.length == 0) {
-                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/tc <Nachricht>");
+                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/tc <Nachricht>");
             } else {
                 StringBuilder message = new StringBuilder();
                 for (String arg : args) {
@@ -32,7 +32,7 @@ public class TeamChatCMD extends Command {
                 }
                 for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
                     if (player.hasPermission("system.bungee.teamchat")) {
-                        BungeeCoreSystem.getInstance().getMessager().sendSimple(
+                        BungeeCoreSystem.getInstance().getMessenger().sendSimple(
                                 player,
                                 BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.teamchat")
                                         .replaceAll(
@@ -44,7 +44,7 @@ public class TeamChatCMD extends Command {
                 }
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessager().send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 }

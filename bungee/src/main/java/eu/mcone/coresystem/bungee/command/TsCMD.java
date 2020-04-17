@@ -49,9 +49,9 @@ public class TsCMD extends Command {
                 if (cp.isTeamspeakIdLinked()) {
                     TeamspeakVerifier tsv = BungeeCoreSystem.getSystem().getTeamspeakVerifier();
                     if (tsv != null) tsv.unlink(cp);
-                    BungeeCoreSystem.getInstance().getMessager().send(p, "§2Deine Identität wurde erfolgreich von deinem Minecraftaccount entfernt. Benutze §a/ts link§2 um wieder eine Identität zu verlinken.");
+                    BungeeCoreSystem.getInstance().getMessenger().send(p, "§2Deine Identität wurde erfolgreich von deinem Minecraftaccount entfernt. Benutze §a/ts link§2 um wieder eine Identität zu verlinken.");
                 } else {
-                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du hast gerade keine TeamSpeak-Identität verlinkt! Benutze §c/ts link§4 um eine Identität zu verlinken.");
+                    BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du hast gerade keine TeamSpeak-Identität verlinkt! Benutze §c/ts link§4 um eine Identität zu verlinken.");
                 }
                 return;
             } else if (args.length == 1 && args[0].equalsIgnoreCase("link")) {
@@ -60,10 +60,10 @@ public class TsCMD extends Command {
                     if (tsv != null) {
                         tsv.sendClientsWithIP(cp);
                     } else {
-                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Die TeamSpeak Verifizierung ist nicht verfügbar! Bitte melde dies einem Teammitglied.");
+                        BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Die TeamSpeak Verifizierung ist nicht verfügbar! Bitte melde dies einem Teammitglied.");
                     }
                 } else {
-                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du kannst nicht mehr als eine TeamSpeak Identität verlinken!");
+                    BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du kannst nicht mehr als eine TeamSpeak Identität verlinken!");
                 }
                 return;
             } else if(args.length == 2 && args[0].equalsIgnoreCase("uidlink")) {
@@ -72,7 +72,7 @@ public class TsCMD extends Command {
                 tsv.addRegistering(p, tsId);
             }
 
-            BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/tc §4oder §c/ts link <Identität-UID> §4oder §c/ts unlink");
+            BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/tc §4oder §c/ts link <Identität-UID> §4oder §c/ts unlink");
         }
     }
 }

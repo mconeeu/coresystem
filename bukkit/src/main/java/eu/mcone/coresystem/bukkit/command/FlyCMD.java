@@ -29,12 +29,12 @@ public class FlyCMD extends CorePlayerCommand {
                 p.setAllowFlight(false);
                 p.setFlying(false);
                 fly.remove(p.getUniqueId());
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast den §fFlugmodus §2deaktiviert!");
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du hast den §fFlugmodus §2deaktiviert!");
             } else {
                 p.setAllowFlight(true);
                 p.setFlying(true);
                 fly.add(p.getUniqueId());
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast den §fFlugmodus §2aktiviert!");
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du hast den §fFlugmodus §2aktiviert!");
             }
         } else if (args.length == 1) {
             Player target = Bukkit.getPlayer(args[0]);
@@ -43,18 +43,18 @@ public class FlyCMD extends CorePlayerCommand {
                     target.setAllowFlight(false);
                     target.setFlying(false);
                     fly.remove(target.getUniqueId());
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast den §fFlugmodus §2für §f" + target.getName() + " §2deaktiviert!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du hast den §fFlugmodus §2für §f" + target.getName() + " §2deaktiviert!");
                 } else {
                     target.setAllowFlight(true);
                     target.setFlying(true);
                     fly.add(target.getUniqueId());
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast den §fFlugmodus §2für §f" + target.getName() + " §2aktiviert!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du hast den §fFlugmodus §2für §f" + target.getName() + " §2aktiviert!");
                 }
             } else {
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler §c" + args[0] + " §4konnte nicht gefunden werden");
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Der Spieler §c" + args[0] + " §4konnte nicht gefunden werden");
             }
         } else {
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/fly §4oder §c/fly {spieler}");
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/fly §4oder §c/fly {spieler}");
         }
 
         return true;

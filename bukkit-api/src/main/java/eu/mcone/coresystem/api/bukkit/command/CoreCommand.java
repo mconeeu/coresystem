@@ -42,7 +42,7 @@ public abstract class CoreCommand extends Command {
         if (permission == null || sender.hasPermission(permission)) {
             return onCommand(sender, args);
         } else {
-            if (sender instanceof Player) CoreSystem.getInstance().getMessager().sendTransl((Player) sender, "system.command.noperm");
+            if (sender instanceof Player) CoreSystem.getInstance().getMessenger().sendTransl((Player) sender, "system.command.noperm");
             return false;
         }
     }

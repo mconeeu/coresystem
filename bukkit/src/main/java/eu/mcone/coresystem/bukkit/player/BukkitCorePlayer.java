@@ -128,7 +128,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
         Player p = bukkit();
 
         if (cooldown > 0) {
-            BukkitCoreSystem.getSystem().getMessager().send(p, "§7Du wirst in §f" + cooldown + " Sekunden§7 teleportiert! Bewege dich nicht!");
+            BukkitCoreSystem.getSystem().getMessenger().send(p, "§7Du wirst in §f" + cooldown + " Sekunden§7 teleportiert! Bewege dich nicht!");
             CorePlayerListener.teleports.put(uuid, Bukkit.getScheduler().runTaskLater(BukkitCoreSystem.getSystem(), () -> {
                 CorePlayerListener.teleports.remove(uuid);
 
@@ -185,7 +185,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
                     }
 
                     p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
-                    BukkitCoreSystem.getInstance().getMessager().send(bukkit(), "§2Du bist nun im §aVanish Modus§2!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(bukkit(), "§2Du bist nun im §aVanish Modus§2!");
                 } else {
                     for (Player t : Bukkit.getOnlinePlayers()) {
                         t.showPlayer(p);
@@ -197,13 +197,13 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
                     }
 
                     p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
-                    BukkitCoreSystem.getInstance().getMessager().send(bukkit(), "§7Du bist nicht mehr im §fVanish Modus§7!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(bukkit(), "§7Du bist nicht mehr im §fVanish Modus§7!");
                 }
 
                 return true;
             } else {
                 if (!vanishEvent.getCancelCause().isEmpty()) {
-                    BukkitCoreSystem.getInstance().getMessager().send(bukkit(), vanishEvent.getCancelCause());
+                    BukkitCoreSystem.getInstance().getMessenger().send(bukkit(), vanishEvent.getCancelCause());
                 }
 
                 return false;
@@ -222,7 +222,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
         if (permissionAttachment != null) bukkit().removeAttachment(permissionAttachment);
     }
 
-    public void unregister() {
+    public void unregister(boolean removePacketListener) {
         scoreboard.unregister();
         BukkitCoreSystem.getSystem().getAfkManager().unregisterPlayer(uuid);
         BukkitCoreSystem.getSystem().getCorePlayers().remove(uuid);

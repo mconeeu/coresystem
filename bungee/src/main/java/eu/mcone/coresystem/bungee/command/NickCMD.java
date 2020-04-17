@@ -32,13 +32,13 @@ public class NickCMD extends Command{
                 }
             } else if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
                 if (p.hasPermission("group.Developer")) {
-                    BungeeCoreSystem.getInstance().getMessager().send(p, "§aDie Nicks wurden erfolgreich neu geladen");
+                    BungeeCoreSystem.getInstance().getMessenger().send(p, "§aDie Nicks wurden erfolgreich neu geladen");
                     BungeeCoreSystem.getInstance().getNickManager().reload();
                 } else {
-                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du hast keine Berechtigung für diesen Befehl!");
+                    BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du hast keine Berechtigung für diesen Befehl!");
                 }
             } else {
-                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/nick");
+                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/nick");
             }
         }
     }

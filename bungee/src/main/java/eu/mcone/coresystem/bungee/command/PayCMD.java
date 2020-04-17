@@ -35,14 +35,14 @@ public class PayCMD extends Command {
                         for (ProxiedPlayer t : s.getPlayers()) {
                             if (t != bp) {
                                 CoreSystem.getInstance().getCorePlayer(t).addCoins(amount);
-                                CoreSystem.getInstance().getMessager().send(t, "§2Du hast §a" + amount + " Coins§2 von §f" + p.getName() + "§2 bekommen!");
+                                CoreSystem.getInstance().getMessenger().send(t, "§2Du hast §a" + amount + " Coins§2 von §f" + p.getName() + "§2 bekommen!");
                                 p.removeCoins(amount);
                             }
                         }
 
-                        CoreSystem.getInstance().getMessager().send(bp, "§2Du hast §fallen Spielern§2 erfolgreich §a" + amount + " Coins§2 gegeben!");
+                        CoreSystem.getInstance().getMessenger().send(bp, "§2Du hast §fallen Spielern§2 erfolgreich §a" + amount + " Coins§2 gegeben!");
                     } else {
-                        CoreSystem.getInstance().getMessager().send(bp, "§4Du hast nicht genügend Coins!");
+                        CoreSystem.getInstance().getMessenger().send(bp, "§4Du hast nicht genügend Coins!");
                     }
                 } else {
                     CorePlayer t = CoreSystem.getInstance().getCorePlayer(args[0]);
@@ -53,23 +53,23 @@ public class PayCMD extends Command {
                                 p.removeCoins(amount);
                                 t.addCoins(amount);
 
-                                CoreSystem.getInstance().getMessager().send(bp, "§2Du hast §f" + t.getName() + "§2 erfolgreich §a" + amount + " Coins§2 gegeben!");
-                                CoreSystem.getInstance().getMessager().send(t.bungee(), "§2Du hast §a" + amount + " Coins §2von §f" + p.getName() + "§2 bekommen!");
+                                CoreSystem.getInstance().getMessenger().send(bp, "§2Du hast §f" + t.getName() + "§2 erfolgreich §a" + amount + " Coins§2 gegeben!");
+                                CoreSystem.getInstance().getMessenger().send(t.bungee(), "§2Du hast §a" + amount + " Coins §2von §f" + p.getName() + "§2 bekommen!");
                             } else {
-                                CoreSystem.getInstance().getMessager().send(bp, "§4Du hast nicht genügend Coins!");
+                                CoreSystem.getInstance().getMessenger().send(bp, "§4Du hast nicht genügend Coins!");
                             }
                         } else {
-                            CoreSystem.getInstance().getMessager().send(bp, "§4Du kannst dir nicht selbs Coins zahlen, Dummkopf.");
+                            CoreSystem.getInstance().getMessenger().send(bp, "§4Du kannst dir nicht selbs Coins zahlen, Dummkopf.");
                         }
                     } else {
-                        CoreSystem.getInstance().getMessager().send(bp, "§4Der Spieler ist nicht online!");
+                        CoreSystem.getInstance().getMessenger().send(bp, "§4Der Spieler ist nicht online!");
                     }
                 }
             } else {
-                CoreSystem.getInstance().getMessager().send(bp, "§4Bitte benutze: §c/pay <Spieler> <Anzahl>");
+                CoreSystem.getInstance().getMessenger().send(bp, "§4Bitte benutze: §c/pay <Spieler> <Anzahl>");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessager().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 }

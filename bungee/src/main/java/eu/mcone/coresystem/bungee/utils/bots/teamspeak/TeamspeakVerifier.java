@@ -102,9 +102,9 @@ public class TeamspeakVerifier {
                 }
             });
             if (results.size() == 0) {
-                BungeeCoreSystem.getInstance().getMessager().send(player.bungee(), "§4Ein TeamSpeak Account mit deiner IP-Adresse ist nicht online.");
+                BungeeCoreSystem.getInstance().getMessenger().send(player.bungee(), "§4Ein TeamSpeak Account mit deiner IP-Adresse ist nicht online.");
             } else {
-                BungeeCoreSystem.getInstance().getMessager().send(player.bungee(), "Folgende Identitäten wurden gefunden. Bitte wähle deine aus:");
+                BungeeCoreSystem.getInstance().getMessenger().send(player.bungee(), "Folgende Identitäten wurden gefunden. Bitte wähle deine aus:");
                 results.forEach(v -> {
                     TextComponent tp = new TextComponent("§8 » §f" + v.getNickname());
                     tp.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Klicke hier um dich mit diesem Account zu verbinden").create()));
@@ -156,7 +156,7 @@ public class TeamspeakVerifier {
                         api.sendPrivateMessage(e.getInvokerId(), "[b][color=darkred]Der Spieler [/color][color=red]" + e.getMessage() + "[/color][color=darkred] ist nicht online! Der Verifizierungsvorgang wurde abgebrochen.[/color][/b]");
                         for (HashMap.Entry<UUID, String> entry : registering.entrySet()) {
                             if (entry.getValue().equals(e.getInvokerUniqueId())) {
-                                BungeeCoreSystem.getInstance().getMessager().send(ProxyServer.getInstance().getPlayer(entry.getKey()), "§4Der Verknüpfungsvorgang wurde abgebrochen, da der TeamSpeak Client einen anderen Minecraftnamen angegeben hat.");
+                                BungeeCoreSystem.getInstance().getMessenger().send(ProxyServer.getInstance().getPlayer(entry.getKey()), "§4Der Verknüpfungsvorgang wurde abgebrochen, da der TeamSpeak Client einen anderen Minecraftnamen angegeben hat.");
                                 toDelete.add(entry.getKey());
                             }
                         }
@@ -201,18 +201,18 @@ public class TeamspeakVerifier {
 
     public void addRegistering(ProxiedPlayer p, String ts3Uid) {
         if (BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("teamspeak_uid", ts3Uid)).first() != null) {
-            BungeeCoreSystem.getInstance().getMessager().send(p, "§4Diese TeamSpeak ID wurde bereits von einem anderen Spieler registriert. Bitte melde dich bei unserem Support oder erstelle ein Support Ticket, wenn das deine ID ist.");
+            BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Diese TeamSpeak ID wurde bereits von einem anderen Spieler registriert. Bitte melde dich bei unserem Support oder erstelle ein Support Ticket, wenn das deine ID ist.");
         } else {
             api.getClientByUId(ts3Uid)
                     .onSuccess(clientInfo -> {
                         int code = randInt(1000, 9999);
                         registeringCodes.put(p.getUniqueId(), code);
-                        BungeeCoreSystem.getInstance().getMessager().send(p, "§2Bitte wechsle zu deinem TeamSpeak Fenster und gib in dem gerade vom §f[Bot] mc1net§2 geöffneten Chat folgenden Code ein, um den Vorgang abzuschließen: §e" + code);
+                        BungeeCoreSystem.getInstance().getMessenger().send(p, "§2Bitte wechsle zu deinem TeamSpeak Fenster und gib in dem gerade vom §f[Bot] mc1net§2 geöffneten Chat folgenden Code ein, um den Vorgang abzuschließen: §e" + code);
                         api.sendPrivateMessage(clientInfo.getId(), "[b]Es wird versucht, sich mit deinem Account zu verbinden. Bitte gebe den in Minecraft erhaltenen Code hier ein:[/b]");
                         registering.put(p.getUniqueId(), ts3Uid);
                         ingameUniqueIds.put(ts3Uid, p.getUniqueId());
                     })
-                    .onFailure(e -> BungeeCoreSystem.getInstance().getMessager().send(p, "§4Der TeamSpeak Account mit der angegeben ID ist nicht auf dem TeamSpeak Server online! (TS-IP: §cmcone.eu§4)"));
+                    .onFailure(e -> BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Der TeamSpeak Account mit der angegeben ID ist nicht auf dem TeamSpeak Server online! (TS-IP: §cmcone.eu§4)"));
         }
     }
 
@@ -246,7 +246,7 @@ public class TeamspeakVerifier {
 
         updateLink(p, clientInfo -> {
             api.sendPrivateMessage(clientInfo.getId(), "[b][color=green]Du hast deine TeamSpeak Identität erfolgreich mit deinem Minecraftaccount verknüpft![/color][/b]").onFailure(Throwable::printStackTrace);
-            BungeeCoreSystem.getInstance().getMessager().send(p.bungee(), "§2Deine TeamSpeak Identität wurde erfolgreich verknüpft!");
+            BungeeCoreSystem.getInstance().getMessenger().send(p.bungee(), "§2Deine TeamSpeak Identität wurde erfolgreich verknüpft!");
         });
     }
 

@@ -6,5 +6,5 @@
 package eu.mcone.coresystem.api.bukkit.inventory;
 
 public enum InventoryOption {
-    FILL_EMPTY_SLOTS
+    FILL_EMPTY_SLOTS, ALLOW_MODIFICATION
 }

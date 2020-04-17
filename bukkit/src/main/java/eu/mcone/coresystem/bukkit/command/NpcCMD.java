@@ -38,7 +38,7 @@ public class NpcCMD extends CorePlayerCommand {
 
         if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("list"))) {
             if (api.getNpcs().size() > 0) {
-                CoreSystem.getInstance().getMessager().send(p, "§7Folgende NPCs existieren auf diesem Server: ");
+                CoreSystem.getInstance().getMessenger().send(p, "§7Folgende NPCs existieren auf diesem Server: ");
 
                 for (CoreWorld w : BukkitCoreSystem.getInstance().getWorldManager().getWorlds()) {
                     if (w.getNPCs().size() > 0) {
@@ -58,7 +58,7 @@ public class NpcCMD extends CorePlayerCommand {
                     }
                 }
             } else {
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§7Auf dem Server existieren keine NPCs!");
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§7Auf dem Server existieren keine NPCs!");
             }
 
             return true;
@@ -74,9 +74,9 @@ public class NpcCMD extends CorePlayerCommand {
 
             if (npc != null) {
                 api.updateAndSave(npc, line.toString(), p.getLocation());
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§2NPC §f" + args[1] + "§2 erfolgreich upgedated!");
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§2NPC §f" + args[1] + "§2 erfolgreich upgedated!");
             } else {
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§4Ein NPC mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Ein NPC mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
             }
 
             return true;
@@ -88,7 +88,7 @@ public class NpcCMD extends CorePlayerCommand {
             }
 
             api.addNPCAndSave(EntityType.valueOf(args[1]), args[2], line.toString().replaceAll("&", "§"), p.getLocation());
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§2NPC §f" + args[1] + "§2 erfolgreich hinzugefügt!");
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2NPC §f" + args[1] + "§2 erfolgreich hinzugefügt!");
             return true;
         } else if (args.length == 4) {
 
@@ -100,12 +100,12 @@ public class NpcCMD extends CorePlayerCommand {
                 if (npc != null) {
                     try {
                         api.updateDataAndSave(npc, CoreSystem.getInstance().getJsonParser().parse(args[2]));
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Daten des NPCs §f" + args[1] + "§2 erfolgreich upgedated!");
+                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Daten des NPCs §f" + args[1] + "§2 erfolgreich upgedated!");
                     } catch (JsonSyntaxException e) {
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Ungültiger JSON Syntax: " + e.getMessage());
+                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Ungültiger JSON Syntax: " + e.getMessage());
                     }
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Ein NPC mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Ein NPC mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
                 }
                 return true;
             } else if (args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("teleport")) {
@@ -116,12 +116,12 @@ public class NpcCMD extends CorePlayerCommand {
 
                     if (npc != null) {
                         p.teleport(npc.getData().getLocation().bukkit());
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest zum NPC §a" + npc.getData().getName() + "§2 teleportiert!");
+                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du wurdest zum NPC §a" + npc.getData().getName() + "§2 teleportiert!");
                     } else {
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene NPC existiert nicht in der Welt §c" + w.getName() + "§4!");
+                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die angegebene NPC existiert nicht in der Welt §c" + w.getName() + "§4!");
                     }
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene Welt existiert nicht!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die angegebene Welt existiert nicht!");
                 }
 
                 return true;
@@ -132,12 +132,12 @@ public class NpcCMD extends CorePlayerCommand {
                 if (npc != null) {
                     try {
                         npc.sendAnimation(NpcAnimation.valueOf(args[2]));
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Der NPC §a" + args[1] + "§2 in der Welt " + w.getName() + " hat erfolgreich die Animation §7" + args[2] + "§2 ausgeführt!");
+                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Der NPC §a" + args[1] + "§2 in der Welt " + w.getName() + " hat erfolgreich die Animation §7" + args[2] + "§2 ausgeführt!");
                     } catch (IllegalArgumentException e) {
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Eine Animation mit dem Namen §c" + args[2] + "§4 existiert nicht!");
+                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Eine Animation mit dem Namen §c" + args[2] + "§4 existiert nicht!");
                     }
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Ein NPC mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Ein NPC mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
                 }
 
                 return true;
@@ -149,9 +149,9 @@ public class NpcCMD extends CorePlayerCommand {
 
                 if (npc != null) {
                     api.removeNPCAndSave(npc);
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2NPC §a" + args[1] + "§2 wurde erfolgreich aus der Welt " + w.getName() + " gelöscht!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2NPC §a" + args[1] + "§2 wurde erfolgreich aus der Welt " + w.getName() + " gelöscht!");
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Ein NPC mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Ein NPC mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
                 }
 
                 return true;
@@ -179,10 +179,10 @@ public class NpcCMD extends CorePlayerCommand {
 
                         p.spigot().sendMessage(componentBuilder.create());
                     } else {
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§7Die Welt hat keine NPCs!");
+                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§7Die Welt hat keine NPCs!");
                     }
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene Welt existiert nicht!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die angegebene Welt existiert nicht!");
                 }
 
                 return true;
@@ -191,20 +191,20 @@ public class NpcCMD extends CorePlayerCommand {
 
                 if (npc != null) {
                     p.teleport(npc.getData().getLocation().bukkit());
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest zum NPC §a" + npc.getData().getName() + "§2 teleportiert!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du wurdest zum NPC §a" + npc.getData().getName() + "§2 teleportiert!");
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene NPC existiert nicht!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die angegebene NPC existiert nicht!");
                 }
 
                 return true;
             }
         } else if (args[0].equalsIgnoreCase("reload")) {
             api.reload();
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§2NPCs erfolgreich neu geladen!");
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2NPCs erfolgreich neu geladen!");
             return true;
         }
 
-        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: " +
+        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: " +
                 "\n§c/npc add <entity-type> <name> <display-name> §4oder " +
                 "\n§c/npc update <name> <display-name> §4oder " +
                 "\n§c/npc updateData <name> <{} JSON-Data> §4oder " +

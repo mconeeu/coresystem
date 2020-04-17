@@ -45,9 +45,9 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
             p.setDisplayName(name);
 
             setNick(p, name, skin);
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Dein Nickname ist nun §f" + name);
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Dein Nickname ist nun §f" + name);
         } else {
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du bist bereits genickt!");
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du bist bereits genickt!");
         }
     }
 
@@ -61,9 +61,9 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
             p.setDisplayName(name);
 
             setNick(p, name, ((CraftPlayer) p).getHandle().getProfile());
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Dein Nickname ist nun §f" + name);
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Dein Nickname ist nun §f" + name);
         } else {
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du bist bereits genickt!");
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du bist bereits genickt!");
         }
     }
 
@@ -98,9 +98,9 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
             } else {
                 setNick(p, cp.getName(), ((CraftPlayer) p).getProfile());
             }
-            BukkitCoreSystem.getInstance().getMessager().send(p, "Du bist nun nicht mehr genickt!");
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "Du bist nun nicht mehr genickt!");
         } else {
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Du bist nicht genickt!");
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du bist nicht genickt!");
         }
     }
 

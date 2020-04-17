@@ -8,18 +8,18 @@ package eu.mcone.coresystem.bukkit.command;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
-import eu.mcone.coresystem.api.bukkit.util.Messager;
+import eu.mcone.coresystem.api.bukkit.util.Messenger;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class TpacceptCMD extends CorePlayerCommand {
 
-    private final Messager messager;
+    private final Messenger messager;
     private final int cooldown;
 
     public TpacceptCMD(CorePlugin plugin, int cooldown) {
         super("tpaccept", null, "tpaaccept");
-        this.messager = plugin.getMessager();
+        this.messager = plugin.getMessenger();
         this.cooldown = cooldown;
     }
 

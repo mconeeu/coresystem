@@ -7,18 +7,25 @@ package eu.mcone.coresystem.api.core.translation;
 
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface TranslationManager {
+
+    Language DEFAULT_LANGUAGE = Language.ENGLISH;
 
     /**
      * reloads all translation fields from set categories from database
      */
     void reload();
 
-    void loadTranslation(GlobalCorePlayer player);
+    Collection<Language> getLoadedLanguages();
 
-    void insertKeys(List<String> keys, String category);
+    Collection<String> getLoadedCategories();
+
+    void registerKeys(String category, List<String> keys);
+
+    void loadAdditionalLanguages(Language... languages);
 
     /**
      * get a specific translation
@@ -64,6 +71,6 @@ public interface TranslationManager {
      *
      * @param categories categories name
      */
-    void loadCategories(String... categories);
+    void loadAdditionalCategories(String... categories);
 
 }

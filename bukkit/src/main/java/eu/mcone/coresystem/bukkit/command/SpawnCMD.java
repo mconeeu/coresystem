@@ -35,10 +35,10 @@ public class SpawnCMD extends CorePlayerCommand {
     @Override
     public boolean onPlayerCommand(Player p, String[] args) {
         if (args.length == 0) {
-            plugin.getMessager().send(p, "§2Teleportiere zum Spawn...");
+            plugin.getMessenger().send(p, "§2Teleportiere zum Spawn...");
             BukkitCoreSystem.getSystem().getCorePlayer(p).teleportWithCooldown(world.getLocation("spawn"), cooldown);
         } else {
-            plugin.getMessager().send(p, "§4Benutze §c/spawn §4um dich zum Spawn zu teleportieren");
+            plugin.getMessenger().send(p, "§4Benutze §c/spawn §4um dich zum Spawn zu teleportieren");
         }
 
         return true;

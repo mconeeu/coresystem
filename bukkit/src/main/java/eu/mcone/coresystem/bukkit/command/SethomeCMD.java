@@ -10,18 +10,18 @@ import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManager;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
-import eu.mcone.coresystem.api.bukkit.util.Messager;
+import eu.mcone.coresystem.api.bukkit.util.Messenger;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.entity.Player;
 
 public class SethomeCMD extends CorePlayerCommand {
 
-    private final Messager messager;
+    private final Messenger messager;
     private final HomeManagerGetter apiGetter;
     
     public SethomeCMD(CorePlugin plugin, HomeManagerGetter apiGetter) {
         super("sethome");
-        this.messager = plugin.getMessager();
+        this.messager = plugin.getMessenger();
         this.apiGetter = apiGetter;
     }
 

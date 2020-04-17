@@ -31,18 +31,18 @@ public class BuildCMD extends CorePlayerCommand {
 
                 if (t != null) {
                     buildSystem.changeBuildMode(t);
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast den Build-Modus von §a" + args[0] + "§2 verändert!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du hast den Build-Modus von §a" + args[0] + "§2 verändert!");
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Dieser Spieler ist nicht online!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Dieser Spieler ist nicht online!");
                 }
                 return true;
             }
         } else {
-            BukkitCoreSystem.getInstance().getMessager().sendTransl(p, "system.command.noperm");
+            BukkitCoreSystem.getInstance().getMessenger().sendTransl(p, "system.command.noperm");
             return true;
         }
 
-        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/build [<Spieler>]");
+        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/build [<Spieler>]");
         return true;
     }
 

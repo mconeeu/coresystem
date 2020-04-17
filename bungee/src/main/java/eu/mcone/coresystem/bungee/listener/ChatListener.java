@@ -35,11 +35,11 @@ public class ChatListener implements Listener {
             return;
         } else if (e.getMessage().startsWith("/")) {
             if (new ArrayList<>(Arrays.asList("/plugins", "/pl", "/bukkit:pl", "bukkit:pl")).contains(msg)) {
-                BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "§fPlugins (6): §aDa§f, §amusst§f, §adu§f, §afrüher§f, §aaufstehen§f, §a" + p.getName());
+                BungeeCoreSystem.getInstance().getMessenger().sendSimple(p, "§fPlugins (6): §aDa§f, §amusst§f, §adu§f, §afrüher§f, §aaufstehen§f, §a" + p.getName());
                 e.setCancelled(true);
                 return;
             } else if (cmds.contains(msg)) {
-                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du hast keine Berechtigung für den Befehl §c" + msg + "§4!");
+                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du hast keine Berechtigung für den Befehl §c" + msg + "§4!");
                 e.setCancelled(true);
                 return;
             } else {
@@ -48,7 +48,7 @@ public class ChatListener implements Listener {
         } else {
             if (cp.isMuted()) {
                 e.setCancelled(true);
-                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du bist noch für " + BanManager.getEndeString(cp.getMuteTime()) + "§4 gemutet!");
+                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du bist noch für " + BanManager.getEndeString(cp.getMuteTime()) + "§4 gemutet!");
                 return;
             }
 
@@ -60,7 +60,7 @@ public class ChatListener implements Listener {
             }
 
             if (canelled) {
-                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte achte auf deine Ausdrucksweise!");
+                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte achte auf deine Ausdrucksweise!");
                 e.setCancelled(true);
                 return;
             } else {

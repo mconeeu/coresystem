@@ -34,10 +34,10 @@ public class PostLoginListener implements Listener {
         final ProxiedPlayer p = e.getPlayer();
         final CorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUniqueId());
 
-        BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "\n\n\n\n§8[§7§l!§8] §3MC ONE §8» §7§o" + getRandomWelcomeMSG(p, cp.isNew()) + ", §f§o" + p.getName() + "§7§o!");
+        BungeeCoreSystem.getInstance().getMessenger().sendSimple(p, "\n\n\n\n§8[§7§l!§8] §3MC ONE §8» §7§o" + getRandomWelcomeMSG(p, cp.isNew()) + ", §f§o" + p.getName() + "§7§o!");
         if (cp.isNew()) {
             ProxyServer.getInstance().getPluginManager().dispatchCommand(p, "privacy");
-            BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "§8[§7§l!§8] §3MC ONE §8» §2Als kleines Willkommensgeschenk bekommst du 20 Coins gutgeschrieben!");
+            BungeeCoreSystem.getInstance().getMessenger().sendSimple(p, "§8[§7§l!§8] §3MC ONE §8» §2Als kleines Willkommensgeschenk bekommst du 20 Coins gutgeschrieben!");
         } else {
             ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getSystem(), () ->
                     BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(
@@ -53,9 +53,9 @@ public class PostLoginListener implements Listener {
 
         Map<UUID, String> requests = cp.getFriendData().getRequests();
         if (requests.size() >= 1) {
-            BungeeCoreSystem.getInstance().getMessager().sendSimple(p, "");
-            BungeeCoreSystem.getInstance().getMessager().send(p, "§7Du hast noch §f" + requests.size() + " §7offene Freundschaftsanfrage(n)!");
-            BungeeCoreSystem.getInstance().getMessager().send(p, "§7Benutze §f/friend req §7zum einsehen!");
+            BungeeCoreSystem.getInstance().getMessenger().sendSimple(p, "");
+            BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Du hast noch §f" + requests.size() + " §7offene Freundschaftsanfrage(n)!");
+            BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Benutze §f/friend req §7zum einsehen!");
         }
 
         Title title = ProxyServer.getInstance().createTitle();

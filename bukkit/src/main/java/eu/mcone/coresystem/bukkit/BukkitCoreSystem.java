@@ -182,7 +182,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
 
         sendConsoleMessage("§aLoading Translations...");
-        translationManager = new TranslationManager(database1);
+        translationManager = new TranslationManager(this, "bukkitsystem");
 
         sendConsoleMessage("§aInitializing LabyModManager...");
         labyModAPI = new LabyModManager();
@@ -260,7 +260,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Override
     public void onDisable() {
         for (CorePlayer p : getOnlineCorePlayers()) {
-            ((BukkitCorePlayer) p).unregister();
+            ((BukkitCorePlayer) p).unregister(false);
             ((BukkitCorePlayer) p).unregisterAttachment();
 
             if (p.isNicked()) {

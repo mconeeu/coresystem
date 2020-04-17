@@ -1,6 +1,6 @@
 package eu.mcone.coresystem.api.bukkit.event;
 
-import eu.mcone.coresystem.api.bukkit.util.Messager;
+import eu.mcone.coresystem.api.bukkit.util.Messenger;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.event.Event;
@@ -13,7 +13,7 @@ public class BroadcastMessageEvent extends Event {
     @Getter
     private static final HandlerList handlerList = new HandlerList();
 
-    private final Messager.Broadcast broadcast;
+    private final Messenger.Broadcast broadcast;
 
     public HandlerList getHandlers() {
         return handlerList;

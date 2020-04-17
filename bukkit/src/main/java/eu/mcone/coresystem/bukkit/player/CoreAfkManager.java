@@ -59,7 +59,7 @@ public class CoreAfkManager implements AfkManager {
             if (afkPlayers.contains(p.getUniqueId())) {
                 if (i<150) {
                     afkPlayers.remove(p.getUniqueId());
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du bist nun nicht mehr AFK!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du bist nun nicht mehr AFK!");
                     ((GlobalCorePlayer) BukkitCoreSystem.getInstance().getCorePlayer(p)).setState(PlayerState.ONLINE);
 
                     Bukkit.getScheduler().runTask(BukkitCoreSystem.getSystem(), () -> Bukkit.getPluginManager().callEvent(new AfkEvent(p, PlayerState.ONLINE)));
@@ -67,7 +67,7 @@ public class CoreAfkManager implements AfkManager {
             } else {
                 if (i>150) {
                     afkPlayers.add(p.getUniqueId());
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du bist nun AFK!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du bist nun AFK!");
                     ((GlobalCorePlayer) BukkitCoreSystem.getInstance().getCorePlayer(p)).setState(PlayerState.AFK);
 
                     Bukkit.getScheduler().runTask(BukkitCoreSystem.getSystem(), () -> Bukkit.getPluginManager().callEvent(new AfkEvent(p, PlayerState.AFK)));

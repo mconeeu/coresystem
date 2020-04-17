@@ -37,7 +37,7 @@ public class HoloCMD extends CorePlayerCommand {
 
         if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("list"))) {
             if (api.getHologramSet().size() > 0) {
-                CoreSystem.getInstance().getMessager().send(p, "§7Folgende Hologramme existieren auf diesem Server: ");
+                CoreSystem.getInstance().getMessenger().send(p, "§7Folgende Hologramme existieren auf diesem Server: ");
 
                 for (CoreWorld w : BukkitCoreSystem.getInstance().getWorldManager().getWorlds()) {
                     if (w.getHolograms().size() > 0) {
@@ -57,7 +57,7 @@ public class HoloCMD extends CorePlayerCommand {
                     }
                 }
             } else {
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§7Auf dem Server existieren keine Hologramme!");
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§7Auf dem Server existieren keine Hologramme!");
             }
 
             return true;
@@ -70,7 +70,7 @@ public class HoloCMD extends CorePlayerCommand {
                 }
 
                 api.addHologramAndSave(args[1], p.getLocation(), line.toString());
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§2Hologramm §f" + args[1] + "§2 erfolgreich hinzugefügt!");
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Hologramm §f" + args[1] + "§2 erfolgreich hinzugefügt!");
                 return true;
             } else if (args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("teleport")) {
                 CoreWorld w = BukkitCoreSystem.getSystem().getWorldManager().getWorld(args[1]);
@@ -80,12 +80,12 @@ public class HoloCMD extends CorePlayerCommand {
 
                     if (holo != null) {
                         p.teleport(holo.getData().getLocation().bukkit());
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest zum Hologramm §a" + holo.getData().getName() + "§2 teleportiert!");
+                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du wurdest zum Hologramm §a" + holo.getData().getName() + "§2 teleportiert!");
                     } else {
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Das angegebene Hologramm existiert nicht in der Welt §c" + w.getName() + "§4!");
+                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Das angegebene Hologramm existiert nicht in der Welt §c" + w.getName() + "§4!");
                     }
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene Welt existiert nicht!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die angegebene Welt existiert nicht!");
                 }
 
                 return true;
@@ -104,9 +104,9 @@ public class HoloCMD extends CorePlayerCommand {
                     text.add(line.toString());
 
                     api.updateAndSave(holo, text.toArray(new String[0]), holo.getData().getLocation().bukkit());
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Zeile wurde hinzugefügt!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Die Zeile wurde hinzugefügt!");
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Ein Hologram mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Ein Hologram mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
                 }
 
                 return true;
@@ -129,15 +129,15 @@ public class HoloCMD extends CorePlayerCommand {
                             text.set(i-1, line.toString());
 
                             api.updateAndSave(holo, text.toArray(new String[0]), holo.getData().getLocation().bukkit());
-                            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Zeile §a" + args[2] + "§2 wurde gesetzt!");
+                            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Die Zeile §a" + args[2] + "§2 wurde gesetzt!");
                         } else {
-                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Das Hologram §o" + args[1] + "§4 hat nur §c" + text.size() + " Zeilen§4!");
+                            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Das Hologram §o" + args[1] + "§4 hat nur §c" + text.size() + " Zeilen§4!");
                         }
                     } catch (NumberFormatException ignored) {
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§c" + args[2] + "§4 ist keine Zahl!");
+                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§c" + args[2] + "§4 ist keine Zahl!");
                     }
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Ein Hologram mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Ein Hologram mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
                 }
 
                 return true;
@@ -154,15 +154,15 @@ public class HoloCMD extends CorePlayerCommand {
                             text.remove(i-1);
 
                             api.updateAndSave(holo, text.toArray(new String[0]), holo.getData().getLocation().bukkit());
-                            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Die Zeile §a" + args[2] + "§2 wurde gelöscht!");
+                            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Die Zeile §a" + args[2] + "§2 wurde gelöscht!");
                         } else {
-                            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Das Hologram §o" + args[1] + "§4 hat nur §c" + text.size() + " Zeilen§4!");
+                            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Das Hologram §o" + args[1] + "§4 hat nur §c" + text.size() + " Zeilen§4!");
                         }
                     } catch (NumberFormatException ignored) {
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§c" + args[2] + "§4 ist keine Zahl!");
+                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§c" + args[2] + "§4 ist keine Zahl!");
                     }
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Ein Hologram mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Ein Hologram mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
                 }
             }
 
@@ -174,9 +174,9 @@ public class HoloCMD extends CorePlayerCommand {
 
                 if (holo != null) {
                     api.updateAndSave(holo, holo.getData().getText(), p.getLocation());
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du hast das Hologram erfolgreich zu deiner Position verschoben!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du hast das Hologram erfolgreich zu deiner Position verschoben!");
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Ein Hologram mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Ein Hologram mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
                 }
 
                 return true;
@@ -186,9 +186,9 @@ public class HoloCMD extends CorePlayerCommand {
 
                 if (holo != null) {
                     api.removeHologramAndSave(holo);
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Hologramm §a" + args[1] + "§2 wurde erfolgreich aus der Welt " + w.getName() + " gelöscht!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Hologramm §a" + args[1] + "§2 wurde erfolgreich aus der Welt " + w.getName() + " gelöscht!");
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Ein Hologram mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Ein Hologram mit dem Namen §c" + args[1] + "§4 existiert nicht in der Welt " + w.getName() + "!");
                 }
 
                 return true;
@@ -216,10 +216,10 @@ public class HoloCMD extends CorePlayerCommand {
 
                         p.spigot().sendMessage(componentBuilder.create());
                     } else {
-                        BukkitCoreSystem.getInstance().getMessager().send(p, "§7Die Welt hat keine Hologramme!");
+                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§7Die Welt hat keine Hologramme!");
                     }
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene Welt existiert nicht!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die angegebene Welt existiert nicht!");
                 }
 
                 return true;
@@ -228,19 +228,19 @@ public class HoloCMD extends CorePlayerCommand {
 
                 if (holo != null) {
                     p.teleport(holo.getData().getLocation().bukkit());
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wurdest zum Hologramm §a" + holo.getData().getName() + "§2 teleportiert!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du wurdest zum Hologramm §a" + holo.getData().getName() + "§2 teleportiert!");
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Die angegebene Hologramm existiert nicht!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die angegebene Hologramm existiert nicht!");
                 }
                 return true;
             }
         } else if (args[0].equalsIgnoreCase("reload")) {
             api.reload();
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Hologramme erfolgreich neu geladen!");
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Hologramme erfolgreich neu geladen!");
             return true;
         }
 
-        BukkitCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: " +
+        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: " +
                 "\n§c/holo add <name> <display-name> §4oder " +
                 "\n§c/holo remove <name> §4oder " +
                 "\n§c/holo setline <holo-name> <line> <text> §4oder " +

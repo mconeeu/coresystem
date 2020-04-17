@@ -41,14 +41,14 @@ public class CoreInventoryListener implements Listener {
                         e.setCancelled(false);
                     } else {
                         e.setCancelled(true);
-                        BukkitCoreSystem.getSystem().getMessager().send(p, "§4Du hast keine Berechtigung um andere Inventare zu modifizieren!");
+                        BukkitCoreSystem.getSystem().getMessenger().send(p, "§4Du hast keine Berechtigung um andere Inventare zu modifizieren!");
                     }
                 } else if (inv.getType().equals(InventoryType.ENDER_CHEST) || inv.getTitle().equals(PlayerInventoryProfile.ENDERCHEST_TITLE)) {
                     if (p.hasPermission("system.bukkit.ecsee.modify.other")) {
                         e.setCancelled(false);
                     } else {
                         e.setCancelled(true);
-                        BukkitCoreSystem.getSystem().getMessager().send(p, "§4Du hast keine Berechtigung um andere Enderchests zu modifizieren!");
+                        BukkitCoreSystem.getSystem().getMessenger().send(p, "§4Du hast keine Berechtigung um andere Enderchests zu modifizieren!");
                     }
                 } else if (inv.getType().equals(InventoryType.ANVIL)) {
                     for (AnvilInventory anvilInv : BukkitCoreSystem.getSystem().getPluginManager().getCoreAnvilInventories()) {
@@ -74,7 +74,7 @@ public class CoreInventoryListener implements Listener {
 
                     if (coreInv != null) {
                         if (coreInv.getInventory().equals(inv)) {
-                            e.setCancelled(true);
+                            e.setCancelled(coreInv.isAllowModification());
                             fireEvent(coreInv, e);
                         }
                     }
@@ -100,6 +100,7 @@ public class CoreInventoryListener implements Listener {
                     SkullMeta clickedMeta = (SkullMeta) item.getItemMeta();
 
                     if (meta.equals(clickedMeta) || meta.hasOwner() ? (meta.getOwner() != null && clickedMeta.getOwner() != null && meta.getOwner().equals(clickedMeta.getOwner()) && meta.getDisplayName().equalsIgnoreCase(clickedMeta.getDisplayName())) : meta.getDisplayName().equalsIgnoreCase(clickedMeta.getDisplayName())) {
+                        e.setCancelled(true);
                         event.onClick(e);
                         return true;
                     }

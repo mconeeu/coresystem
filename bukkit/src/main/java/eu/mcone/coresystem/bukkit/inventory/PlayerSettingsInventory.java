@@ -36,18 +36,12 @@ class PlayerSettingsInventory extends CoreInventory {
         );
 
         setItem(InventorySlot.ROW_2_SLOT_4, Skull.fromUrl("http://textures.minecraft.net/texture/6f74f58f541342393b3b16787dd051dfacec8cb5cd3229c61e5f73d63947ad", 1).toItemBuilder().displayName("§f§lSprache").create());
-        setItem(InventorySlot.ROW_3_SLOT_4, Skull.fromUrl(cp.getSettings().getLanguage().getTextureUrl(), 1).toItemBuilder().displayName("§f§l" + cp.getSettings().getLanguage().getName()).lore("§7§oKlicke zum ändern").create(), e -> {
-            switch (cp.getSettings().getLanguage()) {
-                case ENGLISH:
-                    cp.getSettings().setLanguage(Language.GERMAN);
-                    break;
-                case GERMAN:
-                    cp.getSettings().setLanguage(Language.FRENCH);
-                    break;
-                case FRENCH:
-                    cp.getSettings().setLanguage(Language.ENGLISH);
-                    break;
-            }
+        setItem(InventorySlot.ROW_3_SLOT_4, Skull.fromUrl(cp.getSettings().getLanguage().getTextureUrl(), 1).toItemBuilder().displayName("§f§l" + cp.getSettings().getLanguage().getName()).lore("§7§oKlicke zum ändern deiner Sprache").create(), e -> {
+            cp.getSettings().setLanguage(
+                    cp.getSettings().getLanguage().ordinal() >= Language.values().length - 1
+                            ? Language.values()[0]
+                            : Language.values()[cp.getSettings().getLanguage().ordinal() + 1]
+            );
 
             cp.updateSettings();
             new PlayerSettingsInventory(p);
@@ -68,17 +62,11 @@ class PlayerSettingsInventory extends CoreInventory {
 
         setItem(InventorySlot.ROW_2_SLOT_6, new ItemBuilder(Material.PAPER).displayName("§f§lPrivate Nachrichten erhalten").create());
         setItem(InventorySlot.ROW_3_SLOT_6, getSenderItem(cp.getSettings().getPrivateMessages()).lore("§7§oKlicke um auszuwählen von wem", "§7§odu private Nachrichten erhalten", "§7möchtest.").create(), e -> {
-            switch (cp.getSettings().getPrivateMessages()) {
-                case ALL:
-                    cp.getSettings().setPrivateMessages(PlayerSettings.Sender.FRIENDS);
-                    break;
-                case FRIENDS:
-                    cp.getSettings().setPrivateMessages(PlayerSettings.Sender.NOBODY);
-                    break;
-                case NOBODY:
-                    cp.getSettings().setPrivateMessages(PlayerSettings.Sender.ALL);
-                    break;
-            }
+            cp.getSettings().setPrivateMessages(
+                    cp.getSettings().getPrivateMessages().ordinal() >= PlayerSettings.Sender.values().length - 1
+                            ? PlayerSettings.Sender.values()[0]
+                            : PlayerSettings.Sender.values()[cp.getSettings().getPrivateMessages().ordinal() + 1]
+            );
 
             cp.updateSettings();
             new PlayerSettingsInventory(p);
@@ -86,17 +74,11 @@ class PlayerSettingsInventory extends CoreInventory {
 
         setItem(InventorySlot.ROW_2_SLOT_7, new ItemBuilder(Material.CAKE).displayName("§f§lPartyanfragenanfragen erhalten").create());
         setItem(InventorySlot.ROW_3_SLOT_7, getSenderItem(cp.getSettings().getPartyInvites()).lore("§7§oKlicke um auszuwählen von wem", "§7§odu Partyanfragen erhalten", "§7möchtest.").create(), e -> {
-            switch (cp.getSettings().getPartyInvites()) {
-                case ALL:
-                    cp.getSettings().setPartyInvites(PlayerSettings.Sender.FRIENDS);
-                    break;
-                case FRIENDS:
-                    cp.getSettings().setPartyInvites(PlayerSettings.Sender.NOBODY);
-                    break;
-                case NOBODY:
-                    cp.getSettings().setPartyInvites(PlayerSettings.Sender.ALL);
-                    break;
-            }
+            cp.getSettings().setPartyInvites(
+                    cp.getSettings().getPartyInvites().ordinal() >= PlayerSettings.Sender.values().length - 1
+                            ? PlayerSettings.Sender.values()[0]
+                            : PlayerSettings.Sender.values()[cp.getSettings().getPartyInvites().ordinal() + 1]
+            );
 
             cp.updateSettings();
             new PlayerSettingsInventory(p);

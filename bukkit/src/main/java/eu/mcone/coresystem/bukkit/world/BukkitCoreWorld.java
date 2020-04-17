@@ -64,10 +64,10 @@ public class BukkitCoreWorld implements CoreWorld {
         Location loc = getLocation(locationName);
 
         if (loc != null) {
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wirst teleportiert...");
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du wirst teleportiert...");
             p.teleport(loc);
         } else {
-            BukkitCoreSystem.getInstance().getMessager().send(p, "§4Dieser Ort existiert nicht.");
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Dieser Ort existiert nicht.");
         }
     }
 
@@ -200,7 +200,7 @@ public class BukkitCoreWorld implements CoreWorld {
         if (!safeWorld.equals(bukkit())) {
             for (Player p : bukkit().getPlayers()) {
                 p.teleport(safeWorld.getSpawnLocation());
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§7§oDeine aktuelle Welt ist nicht mehr zugänglich. Du wurdest auf die Hauptwelt verschoben.");
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§7§oDeine aktuelle Welt ist nicht mehr zugänglich. Du wurdest auf die Hauptwelt verschoben.");
             }
         }
 

@@ -9,7 +9,7 @@ import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManager;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
-import eu.mcone.coresystem.api.bukkit.util.Messager;
+import eu.mcone.coresystem.api.bukkit.util.Messenger;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -21,12 +21,12 @@ import java.util.Map;
 
 public class ListHomesCMD extends CorePlayerCommand {
 
-    private final Messager messager;
+    private final Messenger messager;
     private final HomeManagerGetter apiGetter;
 
     public ListHomesCMD(CorePlugin plugin, HomeManagerGetter apiGetter) {
         super("listhomes", null, "listhome", "homelist", "lhome", "lhomes");
-        this.messager = plugin.getMessager();
+        this.messager = plugin.getMessenger();
         this.apiGetter = apiGetter;
     }
 

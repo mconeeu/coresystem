@@ -27,7 +27,7 @@ public class GiveCMD extends CoreCommand {
                 Player p = (Player) sender;
                 givePlayerItem(sender, p, args[0]);
             } else {
-                CoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.consolesender");
+                CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.consolesender");
                 return false;
             }
         } else if (args.length == 2) {
@@ -36,7 +36,7 @@ public class GiveCMD extends CoreCommand {
             if (t != null) {
                 givePlayerItem(sender, t, args[1]);
             } else {
-                BukkitCoreSystem.getInstance().getMessager().send(sender, "§4Der Spieler §c" + args[0] + " §4konnte nicht gefunden werden!");
+                BukkitCoreSystem.getInstance().getMessenger().send(sender, "§4Der Spieler §c" + args[0] + " §4konnte nicht gefunden werden!");
             }
         }
 
@@ -48,9 +48,9 @@ public class GiveCMD extends CoreCommand {
 
         if (material != null) {
             p.getInventory().addItem(new ItemStack(material));
-            BukkitCoreSystem.getInstance().getMessager().send(sender, "§2Du hast das Item §a" + material.toString() + " §2erhalten!");
+            BukkitCoreSystem.getInstance().getMessenger().send(sender, "§2Du hast das Item §a" + material.toString() + " §2erhalten!");
         } else {
-            BukkitCoreSystem.getInstance().getMessager().send(sender, "§4Das Item §c" + arg + " §4konnte nicht gefunden werden!");
+            BukkitCoreSystem.getInstance().getMessenger().send(sender, "§4Das Item §c" + arg + " §4konnte nicht gefunden werden!");
         }
     }
 

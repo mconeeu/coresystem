@@ -17,23 +17,23 @@ public class Broadcast implements Runnable{
 
         if (i == 1) {
             for (CorePlayer p : BungeeCoreSystem.getInstance().getOnlineCorePlayers()){
-                BungeeCoreSystem.getInstance().getMessager().sendSimple(p.bungee(), BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.broadcast1", p));
+                BungeeCoreSystem.getInstance().getMessenger().sendSimple(p.bungee(), BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.broadcast1", p));
             }
         } else if (i == 2) {
             for (CorePlayer p : BungeeCoreSystem.getInstance().getOnlineCorePlayers()){
-                BungeeCoreSystem.getInstance().getMessager().sendSimple(p.bungee(), BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.broadcast2", p));
+                BungeeCoreSystem.getInstance().getMessenger().sendSimple(p.bungee(), BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.broadcast2", p));
             }
         } else if (i == 3) {
             for (CorePlayer p : BungeeCoreSystem.getInstance().getOnlineCorePlayers()){
-                BungeeCoreSystem.getInstance().getMessager().sendSimple(p.bungee(), BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.broadcast3", p));
+                BungeeCoreSystem.getInstance().getMessenger().sendSimple(p.bungee(), BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.broadcast3", p));
             }
         } else if (i == 4) {
             for (CorePlayer p : BungeeCoreSystem.getInstance().getOnlineCorePlayers()){
-                BungeeCoreSystem.getInstance().getMessager().sendSimple(p.bungee(), BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.broadcast4", p));
+                BungeeCoreSystem.getInstance().getMessenger().sendSimple(p.bungee(), BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.broadcast4", p));
             }
         }else if (i == 5) {
             for (CorePlayer p : BungeeCoreSystem.getInstance().getOnlineCorePlayers()){
-                BungeeCoreSystem.getInstance().getMessager().sendSimple(p.bungee(), BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.broadcast5", p));
+                BungeeCoreSystem.getInstance().getMessenger().sendSimple(p.bungee(), BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.broadcast5", p));
             }
             i = 1;
         }

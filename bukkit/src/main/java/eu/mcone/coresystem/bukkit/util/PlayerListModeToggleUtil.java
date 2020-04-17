@@ -55,8 +55,6 @@ public abstract class PlayerListModeToggleUtil implements PlayerListModeToggleab
         }
 
         this.listMode = listMode;
-        System.out.println("mode: "+listMode);
-        System.out.println("setmap: "+setMap);
         for (Map.Entry<Player, Boolean> entry : setMap.entrySet()) {
             if (entry.getValue()) { ;
                 spawn(entry.getKey());

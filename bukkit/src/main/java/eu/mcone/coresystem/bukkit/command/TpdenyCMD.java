@@ -7,17 +7,17 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
-import eu.mcone.coresystem.api.bukkit.util.Messager;
+import eu.mcone.coresystem.api.bukkit.util.Messenger;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class TpdenyCMD extends CorePlayerCommand {
 
-    private final Messager messager;
+    private final Messenger messager;
 
     public TpdenyCMD(CorePlugin plugin) {
         super("tpdeny", null, "tpadeny");
-        this.messager = plugin.getMessager();
+        this.messager = plugin.getMessenger();
     }
 
     @Override

@@ -11,7 +11,7 @@ import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManager;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
-import eu.mcone.coresystem.api.bukkit.util.Messager;
+import eu.mcone.coresystem.api.bukkit.util.Messenger;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -20,13 +20,13 @@ import java.util.Map;
 
 public class HomeCMD extends CorePlayerCommand {
 
-    private final Messager messager;
+    private final Messenger messager;
     private final HomeManagerGetter apiGetter;
     private final int cooldown;
 
     public HomeCMD(CorePlugin plugin, HomeManagerGetter apiGetter, int cooldown) {
         super("home", "system.bukkit.home", "homes");
-        this.messager = plugin.getMessager();
+        this.messager = plugin.getMessenger();
         this.apiGetter = apiGetter;
         this.cooldown = cooldown;
     }

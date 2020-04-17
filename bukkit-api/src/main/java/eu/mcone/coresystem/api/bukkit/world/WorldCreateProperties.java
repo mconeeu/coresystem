@@ -33,7 +33,6 @@ public final class WorldCreateProperties {
 
     public static WorldCreateProperties fromMap(Map<String, String> map) throws IllegalArgumentException {
         WorldCreateProperties builder = new WorldCreateProperties();
-        System.out.println(map);
 
         try {
             for (Map.Entry<String, String> entry : map.entrySet()) {

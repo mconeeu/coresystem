@@ -57,13 +57,13 @@ public class DiscordCMD extends Command {
                                 dv.register(p, args[1]);
                             }
                         } else {
-                            BungeeCoreSystem.getInstance().getMessager().send(p, "§4Die Discord Verifizierung ist nicht verfügbar! Bitte melde dies einem Teammitglied.");
+                            BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Die Discord Verifizierung ist nicht verfügbar! Bitte melde dies einem Teammitglied.");
                         }
                     } else {
-                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du bist bereits im Verifizierungsvorgang!");
+                        BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du bist bereits im Verifizierungsvorgang!");
                     }
                 } else {
-                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du kannst nicht mehr als eine Discord Identität verlinken!");
+                    BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du kannst nicht mehr als eine Discord Identität verlinken!");
                 }
             } else if (args.length == 1 && args[0].equalsIgnoreCase("unlink")) {
                 if (cp.isDiscordIdLinked()) {
@@ -74,16 +74,16 @@ public class DiscordCMD extends Command {
                             if (document != null) {
                                 dv.unlink(document.getString("discord_uid"), cp);
                             } else {
-                                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Es ist ein Datenbank fehler aufgetreten, bitte melde dies einem MCONE Teammitglied!");
+                                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Es ist ein Datenbank fehler aufgetreten, bitte melde dies einem MCONE Teammitglied!");
                             }
                         } else {
-                            BungeeCoreSystem.getInstance().getMessager().send(p, "§4Die Discord Verifizierung ist nicht verfügbar! Bitte melde dies einem Teammitglied.");
+                            BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Die Discord Verifizierung ist nicht verfügbar! Bitte melde dies einem Teammitglied.");
                         }
                     } else {
-                        BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du bist noch im Verifizierungsvorgang!");
+                        BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du bist noch im Verifizierungsvorgang!");
                     }
                 } else {
-                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du hast dich noch nicht verifiziert!");
+                    BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du hast dich noch nicht verifiziert!");
                 }
             }
         }

@@ -8,7 +8,7 @@ package eu.mcone.coresystem.bukkit.command;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
-import eu.mcone.coresystem.api.bukkit.util.Messager;
+import eu.mcone.coresystem.api.bukkit.util.Messenger;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -23,13 +23,13 @@ import java.util.Map;
 
 public class TpaCMD extends CorePlayerCommand {
 
-    private final Messager messager;
+    private final Messenger messager;
 
     static Map<String, List<String>> players = new HashMap<>();
 
     public TpaCMD(CorePlugin plugin) {
         super("tpa");
-        this.messager = plugin.getMessager();
+        this.messager = plugin.getMessenger();
     }
 
     @Override

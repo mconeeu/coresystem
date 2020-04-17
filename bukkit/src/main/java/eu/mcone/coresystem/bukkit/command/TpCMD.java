@@ -27,14 +27,14 @@ public class TpCMD extends CoreCommand {
 
                 Player target = Bukkit.getServer().getPlayer(args[0]);
                 if (target == null) {
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§4Der Spieler §f" + args[0] + " §4konnte nicht gefunden werden!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Der Spieler §f" + args[0] + " §4konnte nicht gefunden werden!");
                     return true;
                 }
                 p.teleport(target.getLocation());
-                BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wirst zu §f" + args[0] + "§2 teleportiert!");
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du wirst zu §f" + args[0] + "§2 teleportiert!");
                 return true;
             } else {
-                CoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.consolesender");
+                CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.consolesender");
                 return false;
             }
         } else if (args.length == 2) {
@@ -43,15 +43,15 @@ public class TpCMD extends CoreCommand {
                 Player target2 = Bukkit.getServer().getPlayer(args[1]);
 
                 if (target1 == null) {
-                    BukkitCoreSystem.getInstance().getMessager().send(sender, "§4Der Spieler §f" + args[0] + " §4konnte nicht gefunden werden!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(sender, "§4Der Spieler §f" + args[0] + " §4konnte nicht gefunden werden!");
                 } else if (target2 == null) {
-                    BukkitCoreSystem.getInstance().getMessager().send(sender, "§4Der Spieler §f" + args[1] + " §4konnte nicht gefunden werden!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(sender, "§4Der Spieler §f" + args[1] + " §4konnte nicht gefunden werden!");
                 } else {
                     target1.teleport(target2.getLocation());
-                    BukkitCoreSystem.getInstance().getMessager().send(sender, "§2Der Spieler §f" + args[0] + "§2 wird zu §f" + args[1] + "§2 teleportiert!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(sender, "§2Der Spieler §f" + args[0] + "§2 wird zu §f" + args[1] + "§2 teleportiert!");
                 }
             } else {
-                BukkitCoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.noperm");
+                BukkitCoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.noperm");
             }
         } else if (args.length == 3) {
             if (sender.hasPermission("system.bukkit.tp.pos")) {
@@ -76,13 +76,13 @@ public class TpCMD extends CoreCommand {
                     Location tplocation = new Location(tpworld, x, y, z);
 
                     p.teleport(tplocation);
-                    BukkitCoreSystem.getInstance().getMessager().send(p, "§2Du wirst zu §f" + args[0] + " " + args[1] + " " + args[2] + "§2 teleportiert!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du wirst zu §f" + args[0] + " " + args[1] + " " + args[2] + "§2 teleportiert!");
                 } else {
-                    CoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.consolesender");
+                    CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.consolesender");
                     return false;
                 }
             } else {
-                BukkitCoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.noperm");
+                BukkitCoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.noperm");
             }
         } else if (args.length == 4) {
             if (sender.hasPermission("system.bukkit.tp.others.pos")) {
@@ -110,15 +110,15 @@ public class TpCMD extends CoreCommand {
                     Location tplocation = new Location(tpworld, x, y, z);
 
                     t.teleport(tplocation);
-                    BukkitCoreSystem.getInstance().getMessager().send(sender, "§2Du hast §a"+args[0]+"§2 zu §f" + args[0] + " " + args[1] + " " + args[2] + "§2 teleportiert!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(sender, "§2Du hast §a"+args[0]+"§2 zu §f" + args[0] + " " + args[1] + " " + args[2] + "§2 teleportiert!");
                 } else {
-                    BukkitCoreSystem.getInstance().getMessager().send(sender, "§4Der Spieler §f" + args[0] + " §4konnte nicht gefunden werden!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(sender, "§4Der Spieler §f" + args[0] + " §4konnte nicht gefunden werden!");
                 }
             } else {
-                BukkitCoreSystem.getInstance().getMessager().sendTransl(sender, "system.command.noperm");
+                BukkitCoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.noperm");
             }
         } else {
-            BukkitCoreSystem.getInstance().getMessager().send(sender, "§4Bitte benutze §c/tp [<Spieler>] <Zielspieler> §4oder §c/tp <x> <y> <z>");
+            BukkitCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze §c/tp [<Spieler>] <Zielspieler> §4oder §c/tp <x> <y> <z>");
         }
 
         return true;

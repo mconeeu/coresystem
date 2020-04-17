@@ -27,10 +27,10 @@ public class UnnickCMD extends Command{
                 if (cp.isNicked()) {
                     BungeeCoreSystem.getInstance().getNickManager().unnick(p);
                 } else {
-                    BungeeCoreSystem.getInstance().getMessager().send(p, "§4Du bist nicht genickt!");
+                    BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du bist nicht genickt!");
                 }
             } else {
-                BungeeCoreSystem.getInstance().getMessager().send(p, "§4Bitte benutze: §c/unnick");
+                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/unnick");
             }
         }
     }

@@ -11,7 +11,7 @@ import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.inventory.modification.InventoryModificationManager;
 import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
-import eu.mcone.coresystem.api.bukkit.util.Messager;
+import eu.mcone.coresystem.api.bukkit.util.Messenger;
 import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import lombok.Getter;
@@ -22,24 +22,20 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.jar.JarFile;
 
 import static com.mongodb.client.model.Filters.eq;
 
 public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin {
 
     @Getter
-    private Gamemode gamemode;
+    private final Gamemode gamemode;
     @Getter
-    private String pluginName, consolePrefix;
+    private final String pluginName, consolePrefix;
     @Getter
-    private ChatColor pluginColor;
+    private final ChatColor pluginColor;
     @Getter
-    private Messager messager;
+    private final Messenger messenger;
 
     protected CorePlugin(Gamemode pluginGamemode, String prefixTranslation) {
         this(pluginGamemode, pluginGamemode.getName().toLowerCase(), pluginGamemode.getColor(), prefixTranslation);
@@ -58,27 +54,14 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin 
         this.pluginName = pluginName;
         this.consolePrefix = "§8[" + pluginColor + pluginName + "§8] §7";
         this.pluginColor = pluginColor;
-        this.messager = new Messager(prefixTranslation);
-    }
-
-    @Override
-    public void onEnable() {
-        super.onEnable();
+        this.messenger = new Messenger(prefixTranslation);
 
         if (CoreSystem.getInstance() != null) {
             try {
                 CoreSystem.getInstance().getPluginManager().registerCorePlugin(this);
-
-                CoreSystem.getInstance().getTranslationManager().loadCategories(getGamemode().toString());
-
-                JarFile jar = new JarFile(new File(getClass().getProtectionDomain().getCodeSource().getLocation().toURI()));
-                FileConfiguration config = YamlConfiguration.loadConfiguration(jar.getInputStream(jar.getJarEntry("plugin.yml")));
-                ArrayList<String> list = (ArrayList<String>) config.getList("translations");
-
-                if (list != null && !list.isEmpty()) {
-                    CoreSystem.getInstance().getTranslationManager().insertKeys(list, getGamemode().toString());
-                }
-            } catch (CoreException | IOException | URISyntaxException e) {
+                CoreSystem.getInstance().getTranslationManager().loadAdditionalCategories(pluginName);
+                registerTranslationKeys();
+            } catch (CoreException e) {
                 e.printStackTrace();
             }
         }
@@ -160,6 +143,15 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin 
     public void unregisterCommands(CoreCommand... commands) {
         for (CoreCommand command : commands) {
             CoreSystem.getInstance().getPluginManager().unregisterCoreCommand(command);
+        }
+    }
+
+    private void registerTranslationKeys() {
+        FileConfiguration config = YamlConfiguration.loadConfiguration(getTextResource("plugin.yml"));
+        ArrayList<String> list = (ArrayList<String>) config.getList("translations");
+
+        if (list != null && !list.isEmpty()) {
+            CoreSystem.getInstance().getTranslationManager().registerKeys(pluginName, list);
         }
     }
 
