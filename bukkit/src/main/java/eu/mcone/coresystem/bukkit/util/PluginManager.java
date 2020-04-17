@@ -12,7 +12,6 @@ import eu.mcone.coresystem.api.bukkit.inventory.modification.InventoryModificati
 import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
 import eu.mcone.coresystem.api.bukkit.util.CorePluginManager;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
 import eu.mcone.coresystem.bukkit.inventory.modification.CoreInventoryModificationManager;
 import eu.mcone.coresystem.core.util.CoreCooldownSystem;
@@ -32,14 +31,12 @@ public class PluginManager implements CorePluginManager {
     private static CommandMap commandMap;
 
     @Getter
-    private CoreCooldownSystem cooldownSystem;
-    @Getter
-    private List<CorePlugin> corePlugins;
-    private Map<CorePlugin, List<CoreCommand>> commands;
-    private Map<Player, CoreInventory> coreInventories;
-    private Map<CorePlugin, InventoryModificationManager> inventoryModificationManagers;
-    private List<AnvilInventory> anvilInventories;
-    private List<GameProfile> gameProfiles;
+    private final CoreCooldownSystem cooldownSystem;
+    private final Map<CorePlugin, List<CoreCommand>> commands;
+    private final Map<Player, CoreInventory> coreInventories;
+    private final Map<CorePlugin, InventoryModificationManager> inventoryModificationManagers;
+    private final List<AnvilInventory> anvilInventories;
+    private final List<GameProfile> gameProfiles;
     @Getter
     private String gameProfileWorld;
 
@@ -56,7 +53,6 @@ public class PluginManager implements CorePluginManager {
 
     public PluginManager() {
         this.cooldownSystem = new CoreCooldownSystem();
-        this.corePlugins = new ArrayList<>();
         this.commands = new HashMap<>();
         this.coreInventories = new HashMap<>();
         this.inventoryModificationManagers = new HashMap<>();
@@ -66,19 +62,9 @@ public class PluginManager implements CorePluginManager {
     }
 
     public void disable() {
-        corePlugins.clear();
         commands.clear();
         inventoryModificationManagers.clear();
         gameProfiles.clear();
-    }
-
-    @Override
-    public void registerCorePlugin(CorePlugin plugin) throws CoreException {
-        if (!corePlugins.contains(plugin)) {
-            corePlugins.add(plugin);
-        } else {
-            throw new CoreException("CorePlugin " + plugin.getPluginName() + " already registered in BCS!");
-        }
     }
 
     public void registerCoreInventory(Player player, CoreInventory inv) {

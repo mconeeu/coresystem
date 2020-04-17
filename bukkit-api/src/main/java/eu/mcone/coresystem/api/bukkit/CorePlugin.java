@@ -55,16 +55,12 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin 
         this.consolePrefix = "§8[" + pluginColor + pluginName + "§8] §7";
         this.pluginColor = pluginColor;
         this.messenger = new Messenger(prefixTranslation);
+    }
 
-        if (CoreSystem.getInstance() != null) {
-            try {
-                CoreSystem.getInstance().getPluginManager().registerCorePlugin(this);
-                CoreSystem.getInstance().getTranslationManager().loadAdditionalCategories(pluginName);
-                registerTranslationKeys();
-            } catch (CoreException e) {
-                e.printStackTrace();
-            }
-        }
+    @Override
+    public void onEnable() {
+        CoreSystem.getInstance().getTranslationManager().loadAdditionalCategories(pluginName);
+        registerTranslationKeys();
     }
 
     public InventoryModificationManager getInventoryModificationManager() {

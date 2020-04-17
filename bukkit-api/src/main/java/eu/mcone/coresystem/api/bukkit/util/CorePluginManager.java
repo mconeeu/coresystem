@@ -11,12 +11,10 @@ import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.modification.InventoryModificationManager;
 import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.util.CooldownSystem;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
-import java.util.List;
 
 public interface CorePluginManager {
 
@@ -26,21 +24,6 @@ public interface CorePluginManager {
      * @return CooldownSystem
      */
     CooldownSystem getCooldownSystem();
-
-    /**
-     * returns a List of all registered CorePlugins
-     *
-     * @return CorePlugin List
-     */
-    List<CorePlugin> getCorePlugins();
-
-    /**
-     * registers new CorePlugin in BCS
-     *
-     * @param plugin CorePlugin
-     * @throws CoreException thrown if the plugin is already registered in BCS
-     */
-    void registerCorePlugin(CorePlugin plugin) throws CoreException;
 
     /**
      * returns the registered inventoryModificationManager for the specified CorePlugin

@@ -5,7 +5,9 @@
 
 package eu.mcone.coresystem.core.translation;
 
+import com.mongodb.MongoBulkWriteException;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.InsertManyOptions;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.api.core.translation.TranslationField;
@@ -72,14 +74,15 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
     @Override
     public void registerKeys(String category, List<String> keys) {
         List<Document> keyDocuments = new ArrayList<>();
-        System.out.println("registering keys: "+keys);
         for (String key : keys) {
             keyDocuments.add(
                     new Document("key", key).append("category", category)
             );
         }
 
-        collection.insertMany(keyDocuments);
+        try {
+            collection.insertMany(keyDocuments, new InsertManyOptions().ordered(false));
+        } catch (MongoBulkWriteException ignored) {}
     }
 
     @Override

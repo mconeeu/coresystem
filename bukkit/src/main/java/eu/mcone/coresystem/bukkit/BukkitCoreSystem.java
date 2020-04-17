@@ -254,6 +254,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             });
         }
 
+        super.onEnable();
         sendConsoleMessage("§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
     }
 

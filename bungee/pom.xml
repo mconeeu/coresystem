@@ -10,7 +10,7 @@
     <parent>
         <artifactId>mcone-coresystem</artifactId>
         <groupId>eu.mcone.coresystem</groupId>
-        <version>10.6.2-SNAPSHOT</version>
+        <version>10.6.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -97,7 +97,7 @@
         <dependency>
             <groupId>eu.mcone.coresystem</groupId>
             <artifactId>core</artifactId>
-            <version>10.6.2-SNAPSHOT</version>
+            <version>10.6.3-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -109,7 +109,7 @@
         <dependency>
             <groupId>eu.mcone.coresystem</groupId>
             <artifactId>bungee-api</artifactId>
-            <version>10.6.2-SNAPSHOT</version>
+            <version>10.6.3-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
 
