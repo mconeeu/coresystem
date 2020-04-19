@@ -9,8 +9,8 @@ public enum DiscordToken {
 
     API("MCONE_VERIFIER", "NTAwMzY3NDAzMTYzODQ0NjI4.DqJzxw.dwsrub1YFyI5OeElWyU7cemvMao");
 
-    private String name;
-    private String apiToken;
+    private final String name;
+    private final String apiToken;
 
     DiscordToken(final String name, final String apiToken) {
         this.name = name;

@@ -25,9 +25,9 @@ public enum Group {
     SPIELVERDERBER(13, "Spielverderber", "§8Spielverderber", "§8[§0SV§8] §8", "§8", 95, 32);
 
     @Getter
-    private int id, score, tsId;
+    private final int id, score, tsId;
     @Getter
-    private String name, label, prefix, formattingCode;
+    private final String name, label, prefix, formattingCode;
 
     Group(int id, String name, String label, String prefix, String formattingCode, int score, int tsId) {
         this.id = id;

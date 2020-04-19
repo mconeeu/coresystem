@@ -47,9 +47,9 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     private String nickname;
     @Getter
     private CoreScoreboard scoreboard;
-    private Map<Gamemode, StatsAPI> stats;
+    private final Map<Gamemode, StatsAPI> stats;
     @Getter
-    private SkinInfo skin;
+    private final SkinInfo skin;
     @Getter
     private boolean vanished;
     private PacketInListener packetInListener;

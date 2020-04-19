@@ -21,9 +21,9 @@ public enum BanTemplate {
     WERBUNG("WB", "Werbung", 0, 2);
 
     @Getter
-    private int banPoints, mutePoints;
+    private final int banPoints, mutePoints;
     @Getter
-    private String id, name;
+    private final String id, name;
 
     BanTemplate(String id, String name, int banPoints, int mutePoints) {
         this.id = id;

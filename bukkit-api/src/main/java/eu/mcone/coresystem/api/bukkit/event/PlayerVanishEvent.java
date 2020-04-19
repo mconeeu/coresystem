@@ -9,7 +9,7 @@ import org.bukkit.event.HandlerList;
 
 @Getter
 @RequiredArgsConstructor
-public class PlayerVanishEvent extends Event {
+public final class PlayerVanishEvent extends Event {
 
     @Getter
     private static final HandlerList handlerList = new HandlerList();

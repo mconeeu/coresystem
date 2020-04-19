@@ -27,7 +27,7 @@ public class CoreHologram extends PlayerListModeToggleUtil implements eu.mcone.c
 
     private final List<EntityArmorStand> entitylist;
     @Getter
-    private HologramData data;
+    private final HologramData data;
 
     public CoreHologram(HologramData data, ListMode listMode, Player... players) {
         this.entitylist = new ArrayList<>();

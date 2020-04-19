@@ -12,8 +12,8 @@ import org.bukkit.entity.Player;
 @Getter
 public class BlockSound {
 
-    private Block block;
-    private net.minecraft.server.v1_8_R3.Block nmsBlock;
+    private final Block block;
+    private final net.minecraft.server.v1_8_R3.Block nmsBlock;
 
     public BlockSound(Block block) {
         this.block = block;

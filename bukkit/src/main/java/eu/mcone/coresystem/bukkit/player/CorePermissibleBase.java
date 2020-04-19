@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class CorePermissibleBase extends PermissibleBase {
 
-    private Player player;
+    private final Player player;
 
     public CorePermissibleBase(Player player) {
         super(player);

@@ -16,9 +16,9 @@ public enum EntityProjectile {
     WITHER_SKULL(66, EntityType.WITHER_SKULL, EntityWitherSkull.class),
     THROWEN_EXP_BOTTLE(73, EntityType.THROWN_EXP_BOTTLE, EntityThrownExpBottle.class);
 
-    private int id;
-    private EntityType type;
-    private Class<? extends Entity> clazz;
+    private final int id;
+    private final EntityType type;
+    private final Class<? extends Entity> clazz;
 
     EntityProjectile(int id, EntityType type, Class<? extends Entity> clazz) {
         this.id = id;

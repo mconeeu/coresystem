@@ -166,7 +166,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         permissionManager = new PermissionManager("Proxy", getMongoDB());
 
         sendConsoleMessage("§aLoading FriendSystem...");
-        friendSystem = new FriendSystem(getMongoDB());
+        friendSystem = new FriendSystem();
 
         sendConsoleMessage("§aInitializing LabyModManager...");
         labyModAPI = new LabyModManager(this);

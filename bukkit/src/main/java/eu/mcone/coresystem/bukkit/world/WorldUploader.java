@@ -29,8 +29,7 @@ class WorldUploader {
     private final MongoCollection<Document> collection;
 
     WorldUploader(CoreWorld world) {
-        this.world = world;
-        this.collection = BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("cloudwrapper_worlds");
+        this(world, BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("cloudwrapper_worlds"));
     }
 
     WorldUploader(CoreWorld world, MongoCollection<Document> collection) {

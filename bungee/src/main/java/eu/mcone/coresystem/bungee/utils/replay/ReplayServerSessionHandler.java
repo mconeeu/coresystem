@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class ReplayServerSessionHandler {
 
-    private HashMap<String, ReplayServerSession> replayServerSessions;
+    private final HashMap<String, ReplayServerSession> replayServerSessions;
 
     public ReplayServerSessionHandler() {
         replayServerSessions = new HashMap<>();

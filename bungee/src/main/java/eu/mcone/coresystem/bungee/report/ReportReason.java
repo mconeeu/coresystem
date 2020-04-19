@@ -25,9 +25,9 @@ public enum ReportReason {
     BELEIDIGUNG("Beleidigung", 1);
 
     @Getter
-    private String name;
+    private final String name;
     @Getter
-    private int level;
+    private final int level;
 
     ReportReason(String name, int level) {
         this.name = name;

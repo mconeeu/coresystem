@@ -38,7 +38,7 @@ import static com.mongodb.client.model.Updates.set;
 public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer, OfflineCorePlayer {
 
     @Getter
-    private FriendData friendData;
+    private final FriendData friendData;
     @Getter
     @Setter
     private long banTime, muteTime;

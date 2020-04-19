@@ -29,18 +29,18 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MotionRecorder extends SimpleRecorder implements Listener, eu.mcone.coresystem.api.bukkit.npc.capture.MotionRecorder {
 
     @Getter
-    private String recorderName;
+    private final String recorderName;
     @Getter
-    private String world;
+    private final String world;
     @Getter
-    private String name;
+    private final String name;
     @Getter
     protected long recorded;
 
     @Getter
     public HashMap<String, List<PacketWrapper>> packets;
 
-    private Player player;
+    private final Player player;
 
     public MotionRecorder(final Player player, final String name) {
         this.player = player;

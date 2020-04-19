@@ -28,9 +28,9 @@ public enum LabyPermission {
     SATURATION_BAR("Saturation bar", true);
 
     @Getter
-    private String displayName;
+    private final String displayName;
     @Getter
-    private boolean defaultEnabled;
+    private final boolean defaultEnabled;
 
     /**
      * @param displayName    the permission's display-name

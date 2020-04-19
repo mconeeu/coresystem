@@ -25,8 +25,8 @@ import java.util.*;
 
 public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickManager {
 
-    private BukkitCoreSystem instance;
-    private Map<UUID, SkinInfo> oldProfiles;
+    private final BukkitCoreSystem instance;
+    private final Map<UUID, SkinInfo> oldProfiles;
     @Getter @Setter
     private boolean allowSkinChange = true;
 

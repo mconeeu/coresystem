@@ -14,11 +14,11 @@ import java.util.*;
 public class PermissionManager implements eu.mcone.coresystem.api.core.player.PermissionManager {
 
     private final String servername;
-    private MongoDatabase database;
+    private final MongoDatabase database;
 
-    private Map<Group, Set<String>> groups;
-    private Map<Group, Set<Group>> parents;
-    private HashMap<UUID, Set<String>> permissions;
+    private final Map<Group, Set<String>> groups;
+    private final Map<Group, Set<Group>> parents;
+    private final HashMap<UUID, Set<String>> permissions;
 
     public PermissionManager(String servername, MongoDatabase database) {
         this.servername = servername != null ? servername : "unknownserver";

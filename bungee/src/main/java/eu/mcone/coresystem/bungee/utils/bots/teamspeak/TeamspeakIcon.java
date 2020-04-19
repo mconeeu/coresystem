@@ -12,7 +12,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class TeamspeakIcon {
 
-    private byte[] bytes;
-    private long iconId;
+    private final byte[] bytes;
+    private final long iconId;
 
 }

@@ -31,7 +31,6 @@ import org.bukkit.entity.EntityType;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,15 +42,14 @@ import static com.mongodb.client.model.Updates.set;
 
 public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldManager {
 
+    private static final MongoCollection<Document> WORLD_COLLECTION = BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("cloudwrapper_worlds");
     final static String CONFIG_NAME = "core-config.json";
 
     private final static String CONFIG_VERSION_KEY = "configVersion";
     final static int LATEST_CONFIG_VERSION = 4;
 
-    private WorldCMD worldCMD;
+    private final WorldCMD worldCMD;
     List<BukkitCoreWorld> coreWorlds;
-
-    private final MongoCollection<Document> worldCollection;
 
     public WorldManager(BukkitCoreSystem instance) {
         this.coreWorlds = new ArrayList<>();
@@ -59,8 +57,6 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
 
         instance.getPluginManager().registerCoreCommand(worldCMD, CoreSystem.getInstance());
         instance.getPluginManager().registerCoreCommand(new LocationCMD(instance), CoreSystem.getInstance());
-
-        this.worldCollection = BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("cloudwrapper_worlds");
 
         reload();
     }
@@ -233,7 +229,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     @Override
     public boolean download(final String name) {
         CoreSystem.getInstance().sendConsoleMessage("§aDownloading world...");
-        Document document = worldCollection.find(eq("name", name)).first();
+        Document document = WORLD_COLLECTION.find(eq("name", name)).first();
 
         if (document != null) {
             try {
@@ -308,18 +304,18 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
 
         try {
             FileInputStream fis = new FileInputStream(zipFile);
-            Document document = worldCollection.find(eq("name", world.getName())).projection(include("build")).first();
+            Document document = WORLD_COLLECTION.find(eq("name", world.getName())).projection(include("build")).first();
 
             int build = 0;
             if (document != null) {
                 build = document.getInteger("build");
 
-                worldCollection.updateOne(eq("name", world.getName()), combine(
+                WORLD_COLLECTION.updateOne(eq("name", world.getName()), combine(
                         set("build", ++build),
                         set("name", world.getName()),
                         set("bytes", IOUtils.toByteArray(fis))));
             } else {
-                worldCollection.insertOne(new Document("build", ++build)
+                WORLD_COLLECTION.insertOne(new Document("build", ++build)
                         .append("name", world.getName())
                         .append("bytes", IOUtils.toByteArray(fis)));
             }
@@ -337,7 +333,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
 
     @Override
     public boolean existsWorldInDatabase(final String name) {
-        return worldCollection.find(eq("name", name)).projection(include("build")).first() != null;
+        return WORLD_COLLECTION.find(eq("name", name)).projection(include("build")).first() != null;
     }
 
     private BukkitCoreWorld constructNewCoreWorld(World world, String generator, String generatorSettings) {

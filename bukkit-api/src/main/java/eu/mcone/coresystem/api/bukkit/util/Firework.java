@@ -6,7 +6,7 @@ import org.bukkit.Location;
 
 public class Firework {
 
-    private FireworkEffect.Builder fireworkEffect_builder;
+    private final FireworkEffect.Builder fireworkEffect_builder;
 
     public Firework() {
         this.fireworkEffect_builder = FireworkEffect.builder();

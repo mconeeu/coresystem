@@ -15,10 +15,10 @@ import java.util.UUID;
 @AllArgsConstructor
 public final class LabyModConnection {
 
-    private UUID playerUuid;
-    private String modVersion;
-    private boolean chunkCachingEnabled;
-    private int chunkCachingVersion;
-    private List<Addon> addons;
+    private final UUID playerUuid;
+    private final String modVersion;
+    private final boolean chunkCachingEnabled;
+    private final int chunkCachingVersion;
+    private final List<Addon> addons;
 
 }

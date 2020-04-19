@@ -37,7 +37,7 @@ public class CoreNpcManager implements NpcManager {
     @Getter
     private Set<CoreNPC<?, ?>> npcSet;
     @Getter
-    private MotionCaptureHandler motionCaptureHandler;
+    private final MotionCaptureHandler motionCaptureHandler;
 
     public CoreNpcManager(BukkitCoreSystem instance) {
         instance.registerEvents(new NpcListener(instance, this));

@@ -12,7 +12,7 @@ public enum Preference {
     BETA_KEY_SYSTEM(false);
 
     @Getter
-    private Object defaultValue;
+    private final Object defaultValue;
 
     Preference(Object defaultValue) {
         this.defaultValue = defaultValue;

@@ -27,7 +27,7 @@ public class AnvilInventory implements CoreAnvilInventory {
     @Getter
     private AnvilClickEventHandler handler;
     private Map<AnvilSlot, ItemStack> items;
-    private Map<Player, Inventory> inventories;
+    private final Map<Player, Inventory> inventories;
 
     public AnvilInventory(AnvilClickEventHandler handler) {
         this.handler = handler;

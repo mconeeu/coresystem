@@ -10,6 +10,7 @@ import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.player.FriendData;
+import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.ProxyServer;
 import org.bson.Document;
 
@@ -21,11 +22,7 @@ import static com.mongodb.client.model.Updates.push;
 
 public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.FriendSystem {
 
-    private MongoDatabase database;
-
-    public FriendSystem(MongoDatabase database) {
-        this.database = database;
-    }
+    private static final MongoDatabase DATABASE = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM);
 
     public FriendData getData(UUID uuid) {
         Map<UUID, String> names = new HashMap<>();
@@ -34,10 +31,10 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
         List<UUID> blocks;
         List<UUID> toggled;
 
-        Document entry = database.getCollection("bungeesystem_friends").find(eq("uuid", uuid.toString())).first();
+        Document entry = DATABASE.getCollection("bungeesystem_friends").find(eq("uuid", uuid.toString())).first();
 
         if (entry != null) {
-            for (Document player : database.getCollection("userinfo").find(
+            for (Document player : DATABASE.getCollection("userinfo").find(
                     or(
                             in("uuid", entry.get("friends", new ArrayList<String>())),
                             in("uuid", entry.get("requests", new ArrayList<String>()))
@@ -71,7 +68,7 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
             CorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
             if (p != null) p.getFriendData().getFriends().put(friend, friendName);
 
-            database.getCollection("bungeesystem_friends").updateOne(
+            DATABASE.getCollection("bungeesystem_friends").updateOne(
                     eq("uuid", player.toString()),
                     push("friends", friend.toString()),
                     new UpdateOptions().upsert(true)
@@ -84,7 +81,7 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
             CorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
             if (p != null) p.getFriendData().getFriends().remove(friend);
 
-            database.getCollection("bungeesystem_friends").updateOne(
+            DATABASE.getCollection("bungeesystem_friends").updateOne(
                     eq("uuid", player.toString()),
                     pull("friends", friend.toString())
             );
@@ -96,7 +93,7 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
             CorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
             if (p != null) p.getFriendData().getRequests().put(friend, friendName);
 
-            database.getCollection("bungeesystem_friends").updateOne(
+            DATABASE.getCollection("bungeesystem_friends").updateOne(
                     eq("uuid", player.toString()),
                     push("requests", friend.toString()),
                     new UpdateOptions().upsert(true)
@@ -109,7 +106,7 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
             CorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
             if (p != null) p.getFriendData().getRequests().remove(friend);
 
-            database.getCollection("bungeesystem_friends").updateOne(
+            DATABASE.getCollection("bungeesystem_friends").updateOne(
                     eq("uuid", player.toString()),
                     pull("requests", friend.toString())
             );
@@ -121,7 +118,7 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
             CorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
             if (p != null) p.getFriendData().getBlocks().add(friend);
 
-            database.getCollection("bungeesystem_friends").updateOne(
+            DATABASE.getCollection("bungeesystem_friends").updateOne(
                     eq("uuid", player.toString()),
                     push("blocks", friend.toString()),
                     new UpdateOptions().upsert(true)
@@ -134,7 +131,7 @@ public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.Frien
             CorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(player);
             if (p != null) p.getFriendData().getBlocks().remove(friend);
 
-            database.getCollection("bungeesystem_friends").updateOne(
+            DATABASE.getCollection("bungeesystem_friends").updateOne(
                     eq("uuid", player.toString()),
                     pull("blocks", friend.toString())
             );

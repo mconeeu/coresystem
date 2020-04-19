@@ -8,7 +8,7 @@ import org.bukkit.event.HandlerList;
 
 @Getter
 @RequiredArgsConstructor
-public class BroadcastMessageEvent extends Event {
+public final class BroadcastMessageEvent extends Event {
 
     @Getter
     private static final HandlerList handlerList = new HandlerList();

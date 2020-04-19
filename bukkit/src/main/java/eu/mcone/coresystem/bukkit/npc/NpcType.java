@@ -22,8 +22,8 @@ public enum NpcType {
     PLAYER(EntityType.PLAYER, PlayerCoreNpc.class),
     PIG(EntityType.PIG, PigCoreNPC.class);
 
-    private EntityType type;
-    private Class<? extends CoreNPC<?, ?>> npcClass;
+    private final EntityType type;
+    private final Class<? extends CoreNPC<?, ?>> npcClass;
 
     NpcType(EntityType type, Class<? extends CoreNPC<?, ?>> npcClass) {
         this.type = type;

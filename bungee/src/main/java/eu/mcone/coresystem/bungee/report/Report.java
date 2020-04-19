@@ -16,10 +16,10 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class Report {
 
-    private ReportReason reason;
+    private final ReportReason reason;
     private int id;
-    private ProxiedPlayer reporter;
-    private ProxiedPlayer reportedPlayer;
+    private final ProxiedPlayer reporter;
+    private final ProxiedPlayer reportedPlayer;
 
     public Report(ProxiedPlayer reporter, ProxiedPlayer reportedPlayer, ReportReason reason){
         this.reporter = reporter;

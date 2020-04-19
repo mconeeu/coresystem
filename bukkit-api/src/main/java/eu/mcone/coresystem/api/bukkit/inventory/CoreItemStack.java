@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 @AllArgsConstructor
 public class CoreItemStack {
 
-    private ItemStack itemStack;
-    private CoreItemEvent coreItemEvent;
+    private final ItemStack itemStack;
+    private final CoreItemEvent coreItemEvent;
 
 }

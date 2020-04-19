@@ -14,7 +14,7 @@ public enum AnvilSlot {
     OUTPUT(2);
 
     @Getter
-    private int slot;
+    private final int slot;
 
     AnvilSlot(int slot) {
         this.slot = slot;

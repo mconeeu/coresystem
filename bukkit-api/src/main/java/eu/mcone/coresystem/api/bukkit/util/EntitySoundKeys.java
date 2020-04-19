@@ -12,7 +12,7 @@ public enum EntitySoundKeys {
     ENTITY_ITEM_PICKUP("entity.item.pickup"),
     BLOCK_BUTTON_CLICK("block.button.click");
 
-    private String nmsSound;
+    private final String nmsSound;
 
     EntitySoundKeys(String nmsSound) {
         this.nmsSound = nmsSound;

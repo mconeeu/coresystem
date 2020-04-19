@@ -21,11 +21,11 @@ public enum Gamemode {
     UNDEFINED("UD", "undefined", ChatColor.DARK_GRAY, Material.COAL);
 
     @Getter
-    private String id, name;
+    private final String id, name;
     @Getter
-    private ChatColor color;
+    private final ChatColor color;
     @Getter
-    private Material item;
+    private final Material item;
 
     Gamemode(String id, String name, ChatColor color, Material item) {
         this.id = id;

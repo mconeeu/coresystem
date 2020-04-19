@@ -24,7 +24,7 @@ public abstract class GlobalCorePlayer extends GlobalOfflineCorePlayer implement
 
     @Getter
     protected final String ipAdress;
-    private long joined;
+    private final long joined;
     @Getter @Setter
     private boolean nicked = false;
     @Getter @Setter

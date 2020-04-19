@@ -125,7 +125,7 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
             ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo")
                     .insertOne(new Document("uuid", uuid.toString())
                             .append("name", name)
-                            .append("groups", new ArrayList<>(Collections.singletonList(11)))
+                            .append("groups", Collections.singletonList(Group.SPIELER.getId()))
                             .append("coins", coins)
                             .append("emeralds", emeralds)
                             .append("ip", null)

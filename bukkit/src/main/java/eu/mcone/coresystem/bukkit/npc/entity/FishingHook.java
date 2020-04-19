@@ -10,9 +10,9 @@ import org.bukkit.util.Vector;
 
 public class FishingHook extends EntityFishingHook {
 
-    private World world;
-    private Location location;
-    private EntityHumanNPC npc;
+    private final World world;
+    private final Location location;
+    private final EntityHumanNPC npc;
 
     public FishingHook(Location location, EntityHumanNPC npc){
         super(((CraftWorld) location.getWorld()).getHandle(), npc);

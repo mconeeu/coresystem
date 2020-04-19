@@ -15,6 +15,7 @@ import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.player.BungeeCorePlayer;
+import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -29,13 +30,11 @@ import static com.mongodb.client.model.Updates.*;
 
 public class PermsCMD extends Command implements TabExecutor {
 
-    private final MongoCollection<Document> groupCollection;
-    private final MongoCollection<Document> playerCollection;
+    private static final MongoCollection<Document> GROUP_COLLECTION = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("permission_groups");
+    private static final MongoCollection<Document> PLAYER_COLLECTION = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("permission_players");
 
     public PermsCMD(MongoDatabase database) {
         super("perms", "system.bungee.perms", "permissions");
-        this.groupCollection = database.getCollection("permission_groups");
-        this.playerCollection = database.getCollection("permission_players");
     }
 
     @Override
@@ -103,7 +102,7 @@ public class PermsCMD extends Command implements TabExecutor {
                     String permission = args[3].replace('.', '-');
 
                     if (args.length == 4) {
-                        playerCollection.updateOne(
+                        PLAYER_COLLECTION.updateOne(
                                 eq("uuid", p.getUuid().toString()),
                                 set("permissions." + permission, null),
                                 new UpdateOptions().upsert(true)
@@ -118,7 +117,7 @@ public class PermsCMD extends Command implements TabExecutor {
                     } else if (args.length == 5) {
                         String server = args[4];
 
-                        playerCollection.updateOne(
+                        PLAYER_COLLECTION.updateOne(
                                 eq("uuid", p.getUuid().toString()),
                                 set("permissions." + permission, server),
                                 new UpdateOptions().upsert(true)
@@ -135,14 +134,14 @@ public class PermsCMD extends Command implements TabExecutor {
                     String permission = args[3].replace('.', '-');
 
                     if (args.length == 4) {
-                        Document permissionEntry = playerCollection.find(eq("uuid", p.getUuid().toString())).first();
+                        Document permissionEntry = PLAYER_COLLECTION.find(eq("uuid", p.getUuid().toString())).first();
                         if (permissionEntry != null && permissionEntry.get("permissions", new Document()).containsKey(permission)) {
-                            playerCollection.updateOne(
+                            PLAYER_COLLECTION.updateOne(
                                     eq("uuid", p.getUuid().toString()),
                                     unset("permissions." + permission)
                             );
                         } else {
-                            playerCollection.updateOne(
+                            PLAYER_COLLECTION.updateOne(
                                     eq("uuid", p.getUuid().toString()),
                                     set("permissions.-" + permission, null),
                                     new UpdateOptions().upsert(true)
@@ -159,14 +158,14 @@ public class PermsCMD extends Command implements TabExecutor {
                     } else if (args.length == 5) {
                         String server = args[4];
 
-                        Document permissionEntry = playerCollection.find(eq("uuid", p.getUuid().toString())).first();
+                        Document permissionEntry = PLAYER_COLLECTION.find(eq("uuid", p.getUuid().toString())).first();
                         if (permissionEntry != null && permissionEntry.get("permissions", new Document()).containsKey(permission)) {
-                            playerCollection.updateOne(
+                            PLAYER_COLLECTION.updateOne(
                                     eq("uuid", p.getUuid().toString()),
                                     unset("permissions." + permission)
                             );
                         } else {
-                            playerCollection.updateOne(
+                            PLAYER_COLLECTION.updateOne(
                                     eq("uuid", p.getUuid().toString()),
                                     set("permissions.-" + permission, server),
                                     new UpdateOptions().upsert(true)
@@ -184,7 +183,7 @@ public class PermsCMD extends Command implements TabExecutor {
                 } else if (args.length == 4 && args[2].equalsIgnoreCase("check")) {
                     String permission = args[3].replace('.', '-');
 
-                    Document permissionEntry = playerCollection.find(eq("uuid", p.getUuid().toString())).first();
+                    Document permissionEntry = PLAYER_COLLECTION.find(eq("uuid", p.getUuid().toString())).first();
                     Map<String, String> permissions;
 
                     if (permissionEntry != null && (permissions = permissionEntry.get("permissions", new HashMap<>())).containsKey(permission)) {
@@ -206,7 +205,7 @@ public class PermsCMD extends Command implements TabExecutor {
                     String permission = args[3].replace('.', '-');
 
                     if (args.length == 4) {
-                        groupCollection.updateOne(
+                        GROUP_COLLECTION.updateOne(
                                 eq("id", g.getId()),
                                 set("permissions." + permission, null)
                         );
@@ -219,7 +218,7 @@ public class PermsCMD extends Command implements TabExecutor {
                     } else if (args.length == 5) {
                         String server = args[4];
 
-                        groupCollection.updateOne(
+                        GROUP_COLLECTION.updateOne(
                                 eq("id", g.getId()),
                                 set("permissions." + permission, server)
                         );
@@ -234,14 +233,14 @@ public class PermsCMD extends Command implements TabExecutor {
                     String permission = args[3].replace('.', '-');
 
                     if (args.length == 4) {
-                        Document permissionEntry = groupCollection.find(eq("id", g.getId())).first();
+                        Document permissionEntry = GROUP_COLLECTION.find(eq("id", g.getId())).first();
                         if (permissionEntry != null && permissionEntry.get("permissions", new Document()).containsKey(permission)) {
-                            groupCollection.updateOne(
+                            GROUP_COLLECTION.updateOne(
                                     eq("id", g.getId()),
                                     unset("permissions." + permission)
                             );
                         } else {
-                            groupCollection.updateOne(
+                            GROUP_COLLECTION.updateOne(
                                     eq("id", g.getId()),
                                     set("permissions.-" + permission, null)
                             );
@@ -256,14 +255,14 @@ public class PermsCMD extends Command implements TabExecutor {
                     } else if (args.length == 5) {
                         String server = args[4];
 
-                        Document permissionEntry = groupCollection.find(eq("id", g.getId())).first();
+                        Document permissionEntry = GROUP_COLLECTION.find(eq("id", g.getId())).first();
                         if (permissionEntry != null && permissionEntry.get("permissions", new Document()).containsKey(permission)) {
-                            groupCollection.updateOne(
+                            GROUP_COLLECTION.updateOne(
                                     eq("id", g.getId()),
                                     unset("permissions." + permission)
                             );
                         } else {
-                            groupCollection.updateOne(
+                            GROUP_COLLECTION.updateOne(
                                     eq("id", g.getId()),
                                     set("permissions.-" + permission, server)
                             );
@@ -279,7 +278,7 @@ public class PermsCMD extends Command implements TabExecutor {
                 } else if (args.length == 4 && args[2].equalsIgnoreCase("check")) {
                     final String permission = args[3].replace('.', '-');
 
-                    Document permissionEntry = groupCollection.find(eq("id", g.getId())).first();
+                    Document permissionEntry = GROUP_COLLECTION.find(eq("id", g.getId())).first();
                     Map<String, String> permissions;
 
                     if (permissionEntry != null && (permissions = permissionEntry.get("permissions", new HashMap<>())).containsKey(permission)) {

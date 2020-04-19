@@ -36,9 +36,9 @@ public class DiscordControlBot {
 
     private final JDA verifierInstance;
     @Getter
-    private Map<String, UUID> registering;
+    private final Map<String, UUID> registering;
     @Getter
-    private Map<String, DiscordCommand> commands;
+    private final Map<String, DiscordCommand> commands;
 
     public DiscordControlBot() throws LoginException {
         //OTHER STUFF

@@ -21,9 +21,9 @@ import java.util.*;
 
 public class CoreAfkManager implements AfkManager {
 
-    private Map<UUID, Location> locations;
-    private Map<UUID, Long> players;
-    private List<UUID> afkPlayers;
+    private final Map<UUID, Location> locations;
+    private final Map<UUID, Long> players;
+    private final List<UUID> afkPlayers;
 
     private BukkitTask task;
 

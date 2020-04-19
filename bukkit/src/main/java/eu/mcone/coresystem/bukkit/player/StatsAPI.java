@@ -26,14 +26,14 @@ import static com.mongodb.client.model.Updates.set;
 public class StatsAPI implements eu.mcone.coresystem.api.bukkit.player.Stats {
 
     @Getter
-    private Gamemode gamemode;
+    private final Gamemode gamemode;
 
     @Getter
     private int kill = 0, death = 0, win = 0, lose = 0, goal = 0;
     
-    private BukkitCoreSystem instance;
-    private UUID uuid;
-    private MongoCollection<Document> collection;
+    private final BukkitCoreSystem instance;
+    private final UUID uuid;
+    private final MongoCollection<Document> collection;
 
 	/**
 	 * Create a new class object with the values, Spielmodus, name, eu.mcone.coresystem.api.core.mysql

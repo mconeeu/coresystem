@@ -6,7 +6,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 @Getter
-public class NpcAnimationStateChangeEvent extends Event {
+public final class NpcAnimationStateChangeEvent extends Event {
     @Getter
     private static final HandlerList handlerList = new HandlerList();
 

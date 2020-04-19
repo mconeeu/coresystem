@@ -19,10 +19,10 @@ import java.util.Map;
 
 public abstract class CoreScoreboard {
 
-    private Map<DisplaySlot, CoreObjective> objectives;
+    private final Map<DisplaySlot, CoreObjective> objectives;
 
     @Getter
-    private org.bukkit.scoreboard.Scoreboard scoreboard;
+    private final org.bukkit.scoreboard.Scoreboard scoreboard;
     @Getter
     private CorePlayer player;
 

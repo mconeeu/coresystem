@@ -21,7 +21,7 @@ import java.util.UUID;
 @Getter
 public final class Addon {
 
-    private UUID uuid;
-    private String name;
+    private final UUID uuid;
+    private final String name;
 
 }

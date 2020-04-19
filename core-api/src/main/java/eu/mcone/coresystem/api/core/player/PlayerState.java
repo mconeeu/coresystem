@@ -15,9 +15,9 @@ public enum PlayerState {
     BANNED(3, "§cgebannt");
 
     @Getter
-    private int id;
+    private final int id;
     @Getter
-    private String name;
+    private final String name;
 
     PlayerState(int id, String name) {
         this.id = id;

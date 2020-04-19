@@ -17,11 +17,11 @@ import java.util.List;
 public abstract class DiscordCommand {
 
     @Getter
-    private String name;
+    private final String name;
     @Getter
-    private Role role;
+    private final Role role;
     @Getter
-    private List<String> aliases;
+    private final List<String> aliases;
 
     public DiscordCommand(String name, Role role, String... aliases) {
         this.name = name;

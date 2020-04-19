@@ -49,8 +49,8 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
             EntityType.ARMOR_STAND
     ));
 
-    private Map<UUID, GameMode> allowedPlayers;
-    private Map<BuildEvent, List<Integer>> filteredBlocks;
+    private final Map<UUID, GameMode> allowedPlayers;
+    private final Map<BuildEvent, List<Integer>> filteredBlocks;
 
     @Setter
     private boolean notify = false, useBuildPermissionNodes = false;
