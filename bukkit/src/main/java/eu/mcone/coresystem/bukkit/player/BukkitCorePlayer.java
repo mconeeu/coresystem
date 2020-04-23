@@ -226,7 +226,10 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
         scoreboard.unregister();
         BukkitCoreSystem.getSystem().getAfkManager().unregisterPlayer(uuid);
         BukkitCoreSystem.getSystem().getCorePlayers().remove(uuid);
-        packetInListener.remove();
+
+        if (removePacketListener) {
+            packetInListener.remove();
+        }
 
         BukkitCoreSystem.getInstance().sendConsoleMessage("Unloaded Player " + name);
     }
