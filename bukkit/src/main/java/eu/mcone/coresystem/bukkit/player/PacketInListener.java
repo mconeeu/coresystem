@@ -25,6 +25,9 @@ public class PacketInListener extends MessageToMessageDecoder<Packet<?>> {
         this.player = player;
         this.pipeline = ((CraftPlayer) player).getHandle().playerConnection.networkManager.channel.pipeline();
 
+        if (pipeline.get("PacketInjector") != null) {
+            pipeline.remove("PacketInjector");
+        }
         pipeline.addAfter("decoder", "PacketInjector", this);
     }
 
@@ -39,4 +42,5 @@ public class PacketInListener extends MessageToMessageDecoder<Packet<?>> {
             pipeline.remove(this);
         }
     }
+
 }
