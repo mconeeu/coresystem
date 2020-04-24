@@ -3,8 +3,8 @@ package eu.mcone.coresystem.api.bukkit.npc.capture.packets.templates;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.ItemStackTypeAdapterUtils;
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.npc.capture.packets.EntityAction;
-import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketType;
-import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketWrapper;
+import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketTyp;
+import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketContainer;
 import lombok.Getter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
@@ -18,14 +18,14 @@ import java.util.Map;
 
 @Getter
 @BsonDiscriminator
-public abstract class EntityItemPacketWrapperTemplate extends PacketWrapper {
+public abstract class EntityItemPacketTContainer extends PacketContainer {
 
     private Material material;
     private int amount;
     private String enchantments;
 
-    public EntityItemPacketWrapperTemplate(final EntityAction entityAction, final ItemStack item) {
-        super(PacketType.ENTITY, entityAction);
+    public EntityItemPacketTContainer(final EntityAction entityAction, final ItemStack item) {
+        super(PacketTyp.ENTITY, entityAction);
         this.material = item.getType();
         this.amount = item.getAmount();
 
@@ -33,8 +33,8 @@ public abstract class EntityItemPacketWrapperTemplate extends PacketWrapper {
     }
 
     @BsonCreator
-    public EntityItemPacketWrapperTemplate(@BsonProperty("entityAction") final EntityAction entityAction, @BsonProperty("material") final Material material, @BsonProperty("amount") final int amount, @BsonProperty("enchantments") final String enchantments) {
-        super(PacketType.ENTITY, entityAction);
+    public EntityItemPacketTContainer(@BsonProperty("entityAction") final EntityAction entityAction, @BsonProperty("material") final Material material, @BsonProperty("amount") final int amount, @BsonProperty("enchantments") final String enchantments) {
+        super(PacketTyp.ENTITY, entityAction);
 
         this.material = material;
         this.amount = amount;

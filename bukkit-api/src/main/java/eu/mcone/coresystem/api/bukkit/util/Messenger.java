@@ -13,6 +13,7 @@ import eu.mcone.coresystem.api.core.translation.TranslationManager;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 import org.bukkit.Bukkit;
@@ -96,7 +97,7 @@ public final class Messenger {
     /**
      * send Translation with prefix to player
      *
-     * @param player      player
+     * @param player         player
      * @param translationKey translation name/key
      */
     public void sendTransl(final Player player, String translationKey, Object... replacements) {
@@ -151,7 +152,7 @@ public final class Messenger {
     /**
      * send Translation with prefix to player
      *
-     * @param player      player
+     * @param player         player
      * @param translationKey translation name/key
      */
     public void sendSimpleTransl(final Player player, String translationKey, Object... replacements) {
@@ -220,39 +221,45 @@ public final class Messenger {
     }
 
     @Getter
+    @BsonDiscriminator
     public static class Broadcast {
-        private Messenger messager;
-        private BroadcastMessageTyp messageTyp;
         @BsonIgnore
-        private transient final String message;
-        @BsonIgnore
-        private Player[] players;
+        private transient Messenger messenger;
+        @Getter
+        private final transient BroadcastMessageTyp messageTyp;
+        private String sMessageTyp = null;
 
-        public Broadcast(Messenger messager, final String message) {
-            this(messager, BroadcastMessageTyp.INFO_MESSAGE, message, Bukkit.getOnlinePlayers().toArray(new Player[0]));
+        @Getter
+        private final String message;
+        @BsonIgnore
+        private transient Player[] players;
+
+        public Broadcast(Messenger messenger, final String message) {
+            this(messenger, BroadcastMessageTyp.INFO_MESSAGE, message, Bukkit.getOnlinePlayers().toArray(new Player[0]));
         }
 
-        public Broadcast(Messenger messager, final BroadcastMessageTyp typ, final String message) {
-            this(messager, typ, message, Bukkit.getOnlinePlayers().toArray(new Player[0]));
+        public Broadcast(Messenger messenger, final BroadcastMessageTyp typ, final String message) {
+            this(messenger, typ, message, Bukkit.getOnlinePlayers().toArray(new Player[0]));
         }
 
-        public Broadcast(Messenger messager, final BroadcastMessageTyp typ, final String message, Player... players) {
-            this.messager = messager;
+        public Broadcast(Messenger messenger, final BroadcastMessageTyp typ, final String message, Player... players) {
+            this.messenger = messenger;
+
             this.messageTyp = typ;
+            this.sMessageTyp = typ.toString();
+
             this.message = message;
             this.players = players;
         }
 
         @BsonCreator
-        public Broadcast(@BsonProperty("message") final BroadcastMessageTyp messageTyp, @BsonProperty("message") final String message, @BsonProperty("players") Player[] players) {
+        public Broadcast(@BsonProperty("sMessageTyp") String sMessageTyp, @BsonProperty("message") String message) {
+            this.messageTyp = BroadcastMessageTyp.valueOf(sMessageTyp);
             this.message = message;
-            this.players = players;
-            this.messageTyp = messageTyp;
         }
 
         public Broadcast sendSimple() {
             for (Player player : players) {
-                System.out.println(player.getName());
                 player.sendMessage(message);
             }
 
@@ -261,8 +268,7 @@ public final class Messenger {
 
         public Broadcast send() {
             for (Player player : players) {
-                System.out.println(player.getName());
-                messager.send(player, message);
+                messenger.send(player, message);
             }
 
             return this;

@@ -9,23 +9,23 @@ import java.io.Serializable;
 
 @BsonDiscriminator
 @Getter
-public abstract class PacketWrapper implements Serializable {
+public abstract class PacketContainer implements Serializable {
 
-    private PacketType packetType;
+    private PacketTyp packetType;
     private EntityAction entityAction;
 
     @BsonCreator
-    public PacketWrapper(@BsonProperty("packetType") final PacketType packetType, @BsonProperty("entityAction") final EntityAction entityAction) {
+    public PacketContainer(@BsonProperty("packetType") final PacketTyp packetType, @BsonProperty("entityAction") final EntityAction entityAction) {
         this.packetType = packetType;
         this.entityAction = entityAction;
     }
 
-    public PacketWrapper(final PacketType packetType) {
+    public PacketContainer(final PacketTyp packetType) {
         this.packetType = packetType;
     }
 
-    public PacketWrapper(final EntityAction entityAction) {
-        this.packetType = PacketType.ENTITY;
+    public PacketContainer(final EntityAction entityAction) {
+        this.packetType = PacketTyp.ENTITY;
         this.entityAction = entityAction;
     }
 }

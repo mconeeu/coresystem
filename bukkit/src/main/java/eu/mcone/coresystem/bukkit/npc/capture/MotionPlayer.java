@@ -17,7 +17,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.entity.Player;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -45,14 +44,14 @@ public class MotionPlayer extends SimplePlayer implements eu.mcone.coresystem.ap
 
                 if (packetsCount.get() < data.getMotionData().size() - 1) {
                     if (data.getMotionData().containsKey(tick)) {
-                        for (PacketWrapper wrapper : data.getMotionData().get(tick)) {
-                            if (wrapper instanceof EntityMovePacketWrapper) {
-                                ((PlayerCoreNpc) playerNpc).setLocation(((EntityMovePacketWrapper) wrapper).calculateLocation());
-                                playerNpc.teleport(((EntityMovePacketWrapper) wrapper).calculateLocation());
+                        for (PacketContainer wrapper : data.getMotionData().get(tick)) {
+                            if (wrapper instanceof EntityMovePacketContainer) {
+                                ((PlayerCoreNpc) playerNpc).setLocation(((EntityMovePacketContainer) wrapper).calculateLocation());
+                                playerNpc.teleport(((EntityMovePacketContainer) wrapper).calculateLocation());
                             }
 
-                            if (wrapper instanceof EntitySneakPacketWrapper) {
-                                EntitySneakPacketWrapper sneakPacket = (EntitySneakPacketWrapper) wrapper;
+                            if (wrapper instanceof EntitySneakPacketContainer) {
+                                EntitySneakPacketContainer sneakPacket = (EntitySneakPacketContainer) wrapper;
                                 if (sneakPacket.getEntityAction().equals(EntityAction.START_SNEAKING)) {
                                     playerNpc.sneak(true);
                                 } else {
@@ -60,17 +59,17 @@ public class MotionPlayer extends SimplePlayer implements eu.mcone.coresystem.ap
                                 }
                             }
 
-                            if (wrapper instanceof EntitySwitchItemPacketWrapper) {
-                                playerNpc.setEquipment(EquipmentPosition.HAND, ((EntitySwitchItemPacketWrapper) wrapper).constructItemStack());
+                            if (wrapper instanceof EntitySwitchItemPacketContainer) {
+                                playerNpc.setEquipment(EquipmentPosition.HAND, ((EntitySwitchItemPacketContainer) wrapper).constructItemStack());
                             }
 
-                            if (wrapper instanceof EntityClickPacketWrapper) {
+                            if (wrapper instanceof EntityClickPacketContainer) {
                                 playerNpc.sendAnimation(NpcAnimation.SWING_ARM);
                             }
 
-                            if (wrapper instanceof EntityButtonInteractPacketWrapper) {
+                            if (wrapper instanceof EntityButtonInteractPacketContainer) {
                                 BlockStateDirection FACING = BlockStateDirection.of("facing");
-                                EntityButtonInteractPacketWrapper packet = (EntityButtonInteractPacketWrapper) wrapper;
+                                EntityButtonInteractPacketContainer packet = (EntityButtonInteractPacketContainer) wrapper;
                                 Location location = packet.calculateLocation();
                                 WorldServer world = ((CraftWorld) location.getWorld()).getHandle();
                                 BlockPosition blockposition = new BlockPosition(location.getX(), location.getY(), location.getZ());
@@ -78,8 +77,8 @@ public class MotionPlayer extends SimplePlayer implements eu.mcone.coresystem.ap
                                 Block block = iblockdata.getBlock();
 
                                 block.interact(((CraftWorld) location.getWorld()).getHandle(), blockposition, iblockdata, null, iblockdata.get(FACING), (float) location.getX(), (float) location.getY(), (float) location.getZ());
-                            } else if (wrapper instanceof EntityOpenDoorPacketWrapper) {
-                                EntityOpenDoorPacketWrapper packet = (EntityOpenDoorPacketWrapper) wrapper;
+                            } else if (wrapper instanceof EntityOpenDoorPacketContainer) {
+                                EntityOpenDoorPacketContainer packet = (EntityOpenDoorPacketContainer) wrapper;
                                 Location location = packet.calculateLocation();
                                 BlockPosition blockposition = new BlockPosition(location.getX(), location.getY(), location.getZ());
                                 WorldServer world = ((CraftWorld) location.getWorld()).getHandle();
@@ -103,7 +102,7 @@ public class MotionPlayer extends SimplePlayer implements eu.mcone.coresystem.ap
                                 }
                             }
 
-                            if (wrapper instanceof EntityDamagePacketWrapper) {
+                            if (wrapper instanceof EntityDamagePacketContainer) {
                                 playerNpc.sendAnimation(NpcAnimation.TAKE_DAMAGE);
                             }
                         }

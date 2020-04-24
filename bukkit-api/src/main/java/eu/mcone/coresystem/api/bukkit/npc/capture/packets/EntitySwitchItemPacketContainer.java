@@ -1,6 +1,6 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture.packets;
 
-import eu.mcone.coresystem.api.bukkit.npc.capture.packets.templates.EntityItemPacketWrapperTemplate;
+import eu.mcone.coresystem.api.bukkit.npc.capture.packets.templates.EntityItemPacketTContainer;
 import lombok.Getter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
@@ -10,14 +10,14 @@ import org.bukkit.inventory.ItemStack;
 
 @BsonDiscriminator
 @Getter
-public class EntitySwitchItemPacketWrapper extends EntityItemPacketWrapperTemplate {
+public class EntitySwitchItemPacketContainer extends EntityItemPacketTContainer {
 
-    public EntitySwitchItemPacketWrapper(final ItemStack item) {
+    public EntitySwitchItemPacketContainer(final ItemStack item) {
         super(EntityAction.SWITCH_ITEM_IN_HAND, item);
     }
 
     @BsonCreator
-    public EntitySwitchItemPacketWrapper(@BsonProperty("material") final Material material, @BsonProperty("amount") final int amount, @BsonProperty("enchantments") final String enchantments) {
+    public EntitySwitchItemPacketContainer(@BsonProperty("material") final Material material, @BsonProperty("amount") final int amount, @BsonProperty("enchantments") final String enchantments) {
         super(EntityAction.SWITCH_ITEM_IN_HAND, material, amount, enchantments);
     }
 }

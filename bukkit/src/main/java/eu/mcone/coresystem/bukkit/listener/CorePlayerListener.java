@@ -112,7 +112,9 @@ public class CorePlayerListener implements Listener {
         ((NickManager) BukkitCoreSystem.getInstance().getNickManager()).setNicks(bp);
 
         for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
-            cp.getScoreboard().reload();
+            if (cp.getScoreboard() != null) {
+                cp.getScoreboard().reload();
+            }
         }
     }
 

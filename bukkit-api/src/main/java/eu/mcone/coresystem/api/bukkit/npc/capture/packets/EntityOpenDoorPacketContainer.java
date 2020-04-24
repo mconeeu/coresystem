@@ -9,7 +9,7 @@ import org.bukkit.Location;
 
 @BsonDiscriminator
 @Getter
-public class EntityOpenDoorPacketWrapper extends PacketWrapper {
+public class EntityOpenDoorPacketContainer extends PacketContainer {
 
     private double x;
     private double y;
@@ -19,12 +19,12 @@ public class EntityOpenDoorPacketWrapper extends PacketWrapper {
     private String worldName;
     private boolean doorOpen;
 
-    public EntityOpenDoorPacketWrapper() {
-        super(PacketType.ENTITY, EntityAction.INTERACT);
+    public EntityOpenDoorPacketContainer() {
+        super(PacketTyp.ENTITY, EntityAction.INTERACT);
     }
 
-    public EntityOpenDoorPacketWrapper(final Location location, final boolean doorOpen) {
-        super(PacketType.ENTITY, EntityAction.INTERACT);
+    public EntityOpenDoorPacketContainer(final Location location, final boolean doorOpen) {
+        super(PacketTyp.ENTITY, EntityAction.INTERACT);
 
         x = location.getX();
         y = location.getY();
@@ -37,9 +37,9 @@ public class EntityOpenDoorPacketWrapper extends PacketWrapper {
     }
 
     @BsonCreator
-    public EntityOpenDoorPacketWrapper(@BsonProperty("x") final double x, @BsonProperty("y") final double y, @BsonProperty("z") final double z, @BsonProperty("yaw") final float yaw,
-                                       @BsonProperty("pitch") final float pitch, @BsonProperty("worldName") final String worldName, @BsonProperty("doorOpen") final boolean doorOpen) {
-        super(PacketType.ENTITY, EntityAction.INTERACT);
+    public EntityOpenDoorPacketContainer(@BsonProperty("x") final double x, @BsonProperty("y") final double y, @BsonProperty("z") final double z, @BsonProperty("yaw") final float yaw,
+                                         @BsonProperty("pitch") final float pitch, @BsonProperty("worldName") final String worldName, @BsonProperty("doorOpen") final boolean doorOpen) {
+        super(PacketTyp.ENTITY, EntityAction.INTERACT);
 
         this.x = x;
         this.y = y;

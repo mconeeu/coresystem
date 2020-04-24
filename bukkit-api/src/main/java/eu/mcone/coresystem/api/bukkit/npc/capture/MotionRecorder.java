@@ -1,6 +1,6 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture;
 
-import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketWrapper;
+import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketContainer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,8 +22,8 @@ public interface MotionRecorder {
 
     boolean isStopped();
 
-    HashMap<String, List<PacketWrapper>> getPackets();
+    HashMap<String, List<PacketContainer>> getPackets();
 
-    Map<String, List<PacketWrapper>> stopRecording();
+    Map<String, List<PacketContainer>> stopRecording();
 
 }

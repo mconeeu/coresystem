@@ -9,7 +9,7 @@ import org.bukkit.Location;
 
 @BsonDiscriminator
 @Getter
-public class EntityButtonInteractPacketWrapper extends PacketWrapper {
+public class EntityButtonInteractPacketContainer extends PacketContainer {
 
     private double x;
     private double y;
@@ -19,12 +19,12 @@ public class EntityButtonInteractPacketWrapper extends PacketWrapper {
     private String worldName;
     private boolean pressed;
 
-    public EntityButtonInteractPacketWrapper() {
-        super(PacketType.ENTITY, EntityAction.INTERACT);
+    public EntityButtonInteractPacketContainer() {
+        super(PacketTyp.ENTITY, EntityAction.INTERACT);
     }
 
-    public EntityButtonInteractPacketWrapper(final Location location, final boolean pressed) {
-        super(PacketType.ENTITY, EntityAction.INTERACT);
+    public EntityButtonInteractPacketContainer(final Location location, final boolean pressed) {
+        super(PacketTyp.ENTITY, EntityAction.INTERACT);
 
         x = location.getX();
         y = location.getY();
@@ -37,9 +37,9 @@ public class EntityButtonInteractPacketWrapper extends PacketWrapper {
     }
 
     @BsonCreator
-    public EntityButtonInteractPacketWrapper(@BsonProperty("x") final double x, @BsonProperty("y") final double y, @BsonProperty("z") final double z, @BsonProperty("yaw") final float yaw,
-                                       @BsonProperty("pitch") final float pitch, @BsonProperty("worldName") final String worldName, @BsonProperty("pressed") final boolean pressed) {
-        super(PacketType.ENTITY, EntityAction.INTERACT);
+    public EntityButtonInteractPacketContainer(@BsonProperty("x") final double x, @BsonProperty("y") final double y, @BsonProperty("z") final double z, @BsonProperty("yaw") final float yaw,
+                                               @BsonProperty("pitch") final float pitch, @BsonProperty("worldName") final String worldName, @BsonProperty("pressed") final boolean pressed) {
+        super(PacketTyp.ENTITY, EntityAction.INTERACT);
 
         this.x = x;
         this.y = y;

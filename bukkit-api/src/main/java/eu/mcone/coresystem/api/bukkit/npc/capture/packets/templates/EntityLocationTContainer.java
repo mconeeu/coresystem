@@ -1,8 +1,8 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture.packets.templates;
 
 import eu.mcone.coresystem.api.bukkit.npc.capture.packets.EntityAction;
-import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketType;
-import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketWrapper;
+import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketTyp;
+import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketContainer;
 import lombok.Getter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
@@ -12,7 +12,7 @@ import org.bukkit.Location;
 
 @BsonDiscriminator
 @Getter
-public abstract class EntityLocationWrapperTemplate extends PacketWrapper {
+public abstract class EntityLocationTContainer extends PacketContainer {
 
     private double x;
     private double y;
@@ -21,7 +21,7 @@ public abstract class EntityLocationWrapperTemplate extends PacketWrapper {
     private float pitch;
     private String worldName;
 
-    public EntityLocationWrapperTemplate(final PacketType typ, final EntityAction action, final Location location) {
+    public EntityLocationTContainer(final PacketTyp typ, final EntityAction action, final Location location) {
         super(typ, action);
 
         x = location.getX();
@@ -34,9 +34,9 @@ public abstract class EntityLocationWrapperTemplate extends PacketWrapper {
     }
 
     @BsonCreator
-    public EntityLocationWrapperTemplate(@BsonProperty("packetType") final PacketType packetType, @BsonProperty("entityAction") final EntityAction entityAction,
-                                         @BsonProperty("x") final double x, @BsonProperty("y") final double y, @BsonProperty("z") final double z,
-                                         @BsonProperty("yaw") final float yaw, @BsonProperty("pitch") final float pitch, @BsonProperty("worldName") final String worldName) {
+    public EntityLocationTContainer(@BsonProperty("packetType") final PacketTyp packetType, @BsonProperty("entityAction") final EntityAction entityAction,
+                                    @BsonProperty("x") final double x, @BsonProperty("y") final double y, @BsonProperty("z") final double z,
+                                    @BsonProperty("yaw") final float yaw, @BsonProperty("pitch") final float pitch, @BsonProperty("worldName") final String worldName) {
         super(packetType, entityAction);
 
         this.x = x;

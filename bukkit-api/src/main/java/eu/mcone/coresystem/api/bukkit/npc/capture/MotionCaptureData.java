@@ -1,9 +1,7 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture;
 
-import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketWrapper;
-import eu.mcone.coresystem.api.core.util.GenericUtils;
+import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketContainer;
 import lombok.Getter;
-import org.bson.Document;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
@@ -26,7 +24,7 @@ public class MotionCaptureData {
     @Getter
     private int length;
     @Getter
-    private Map<String, List<PacketWrapper>> motionData;
+    private Map<String, List<PacketContainer>> motionData;
 
     public MotionCaptureData() {}
 
@@ -41,7 +39,7 @@ public class MotionCaptureData {
 
     @BsonCreator
     public MotionCaptureData(@BsonProperty("name") final String name, @BsonProperty("world") final String worldName, @BsonProperty("recorded") final long recorded,
-                             @BsonProperty("creator") final String creator, @BsonProperty("length") final int length, @BsonProperty("motionData") final Map<String, List<PacketWrapper>> motionData) {
+                             @BsonProperty("creator") final String creator, @BsonProperty("length") final int length, @BsonProperty("motionData") final Map<String, List<PacketContainer>> motionData) {
         this.name = name;
         this.world = worldName;
         this.recorded = recorded;

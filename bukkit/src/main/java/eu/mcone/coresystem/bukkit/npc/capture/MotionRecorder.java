@@ -38,7 +38,7 @@ public class MotionRecorder extends SimpleRecorder implements Listener, eu.mcone
     protected long recorded;
 
     @Getter
-    public HashMap<String, List<PacketWrapper>> packets;
+    public HashMap<String, List<PacketContainer>> packets;
 
     private final Player player;
 
@@ -64,7 +64,7 @@ public class MotionRecorder extends SimpleRecorder implements Listener, eu.mcone
             @EventHandler(priority = EventPriority.HIGHEST)
             public void on(PlayerMoveEvent e) {
                 if (player.equals(e.getPlayer())) {
-                    addData(new EntityMovePacketWrapper(e.getPlayer().getLocation()));
+                    addData(new EntityMovePacketContainer(e.getPlayer().getLocation()));
 
                     if (isStopped()) {
                         e.getHandlers().unregister(this);
@@ -75,7 +75,7 @@ public class MotionRecorder extends SimpleRecorder implements Listener, eu.mcone
             @EventHandler(priority = EventPriority.HIGHEST)
             public void on(PlayerItemHeldEvent e) {
                 if (player.equals(e.getPlayer())) {
-                    addData(new EntitySwitchItemPacketWrapper(e.getPlayer().getItemInHand()));
+                    addData(new EntitySwitchItemPacketContainer(e.getPlayer().getItemInHand()));
 
                     if (isStopped()) {
                         e.getHandlers().unregister(this);
@@ -89,15 +89,15 @@ public class MotionRecorder extends SimpleRecorder implements Listener, eu.mcone
                     if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
                         if (e.getClickedBlock().getType().equals(Material.STONE_BUTTON) || e.getClickedBlock().getType().equals(Material.STONE_BUTTON)) {
                             BlockState blockState = e.getClickedBlock().getState();
-                            addData(new EntityButtonInteractPacketWrapper(e.getClickedBlock().getLocation(), ((Button) blockState.getData()).isPowered()));
-                            addData(new EntityClickPacketWrapper());
+                            addData(new EntityButtonInteractPacketContainer(e.getClickedBlock().getLocation(), ((Button) blockState.getData()).isPowered()));
+                            addData(new EntityClickPacketContainer());
                         } else if (e.getClickedBlock().getType().toString().contains("DOOR")) {
                             BlockState blockState = e.getClickedBlock().getState();
-                            addData(new EntityOpenDoorPacketWrapper(e.getClickedBlock().getLocation(), ((Door) blockState.getData()).isOpen()));
-                            addData(new EntityClickPacketWrapper());
+                            addData(new EntityOpenDoorPacketContainer(e.getClickedBlock().getLocation(), ((Door) blockState.getData()).isOpen()));
+                            addData(new EntityClickPacketContainer());
                         }
                     } else if (e.getAction().equals(Action.LEFT_CLICK_AIR) || e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
-                        addData(new EntityClickPacketWrapper());
+                        addData(new EntityClickPacketContainer());
                     }
 
                     if (isStopped()) {
@@ -110,7 +110,7 @@ public class MotionRecorder extends SimpleRecorder implements Listener, eu.mcone
             public void on(EntityDamageEvent e) {
                 if (e.getEntity() instanceof Player) {
                     if (player.equals(e.getEntity())) {
-                        addData(new EntityDamagePacketWrapper());
+                        addData(new EntityDamagePacketContainer());
 
                         if (isStopped()) {
                             e.getHandlers().unregister(this);
@@ -123,9 +123,9 @@ public class MotionRecorder extends SimpleRecorder implements Listener, eu.mcone
             public void on(PlayerToggleSneakEvent e) {
                 if (player.equals(e.getPlayer())) {
                     if (e.isSneaking()) {
-                        addData(new EntitySneakPacketWrapper(EntityAction.START_SNEAKING));
+                        addData(new EntitySneakPacketContainer(EntityAction.START_SNEAKING));
                     } else {
-                        addData(new EntitySneakPacketWrapper(EntityAction.STOP_SNEAKING));
+                        addData(new EntitySneakPacketContainer(EntityAction.STOP_SNEAKING));
                     }
 
                     if (isStopped()) {
@@ -136,12 +136,12 @@ public class MotionRecorder extends SimpleRecorder implements Listener, eu.mcone
         });
     }
 
-    protected void addData(PacketWrapper data) {
+    protected void addData(PacketContainer data) {
         String tick = String.valueOf(ticks);
         if (this.packets.containsKey(tick)) {
             this.packets.get(tick).add(data);
         } else {
-            this.packets.put(tick, new ArrayList<PacketWrapper>() {{
+            this.packets.put(tick, new ArrayList<PacketContainer>() {{
                 add(data);
             }});
         }
@@ -149,7 +149,7 @@ public class MotionRecorder extends SimpleRecorder implements Listener, eu.mcone
         savedPackets.getAndIncrement();
     }
 
-    public Map<String, List<PacketWrapper>> stopRecording() {
+    public Map<String, List<PacketContainer>> stopRecording() {
         isStopped = true;
         taskID.cancel();
         return packets;

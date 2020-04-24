@@ -1,6 +1,6 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture.packets;
 
-public enum PacketType {
+public enum PacketTyp {
 
     ENTITY,
     WORLD,

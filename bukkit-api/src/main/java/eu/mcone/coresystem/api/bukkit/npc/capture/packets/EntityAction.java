@@ -20,6 +20,7 @@ public enum EntityAction {
     RESPAWN,
     SHOOT_PROJECTILE,
     BLOCK_ANIMATION,
+    PLAY_SOUND,
     STATS,
     CHAT,
     MOVE,
