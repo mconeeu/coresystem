@@ -13,8 +13,8 @@ import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.FriendData;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
+import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
-import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
@@ -48,7 +48,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     private boolean banned = false, muted = false;
     @Getter
     @Setter
-    private SkinInfo nickedSkin;
+    private Nick currentNick;
 
     public BungeeCorePlayer(CoreSystem instance, InetAddress address, UUID uuid, String name) {
         super(instance, address, uuid, name);

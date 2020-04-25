@@ -9,6 +9,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import lombok.Getter;
@@ -36,16 +37,16 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
     }
 
     @Override
-    public void nick(Player p, String name, SkinInfo skin) {
+    public void nick(Player p, Nick nick) {
         CorePlayer cp = instance.getCorePlayer(p);
 
         if (!cp.isNicked()) {
-            ((BukkitCorePlayer) cp).setNickname(name);
+            ((BukkitCorePlayer) cp).setNick(nick);
             ((BukkitCorePlayer) cp).setNicked(true);
-            p.setDisplayName(name);
+            p.setDisplayName(nick.getName());
 
-            setNick(p, name, skin);
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Dein Nickname ist nun §f" + name);
+            setNick(p, nick.getName(), nick.getSkinInfo());
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Dein Nickname ist nun " + nick.getGroup().getLabel() + nick.getName());
         } else {
             BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du bist bereits genickt!");
         }
@@ -56,7 +57,7 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
         CorePlayer cp = instance.getCorePlayer(p);
 
         if (!cp.isNicked()) {
-            ((BukkitCorePlayer) cp).setNickname(name);
+            ((BukkitCorePlayer) cp).setNick(new Nick(name));
             ((BukkitCorePlayer) cp).setNicked(true);
             p.setDisplayName(name);
 
@@ -88,7 +89,7 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
         CorePlayer cp = instance.getCorePlayer(p);
 
         if (cp.isNicked()) {
-            ((BukkitCorePlayer) cp).setNickname(null);
+            ((BukkitCorePlayer) cp).setNick(null);
             ((BukkitCorePlayer) cp).setNicked(false);
             p.setDisplayName(cp.getName());
 

@@ -6,12 +6,12 @@
 package eu.mcone.coresystem.api.bungee.player;
 
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
-import eu.mcone.coresystem.api.core.player.SkinInfo;
+import eu.mcone.coresystem.api.core.player.Nick;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public interface CorePlayer extends GlobalCorePlayer, OfflineCorePlayer {
 
-    SkinInfo getNickedSkin();
+    Nick getCurrentNick();
 
     ProxiedPlayer bungee();
 

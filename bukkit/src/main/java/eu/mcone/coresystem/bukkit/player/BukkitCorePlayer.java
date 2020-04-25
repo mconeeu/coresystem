@@ -15,6 +15,7 @@ import eu.mcone.coresystem.api.bukkit.player.Stats;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
+import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
@@ -44,7 +45,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
 
     @Getter
     @Setter
-    private String nickname;
+    private Nick nick;
     @Getter
     private CoreScoreboard scoreboard;
     private final Map<Gamemode, StatsAPI> stats;

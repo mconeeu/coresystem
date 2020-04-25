@@ -9,6 +9,7 @@ import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
+import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -16,11 +17,11 @@ import org.bukkit.entity.Player;
 public interface CorePlayer extends GlobalCorePlayer {
 
     /**
-     * returns the current nickname. null if player is not nicked
+     * returns the current nick. null if player is not nicked
      *
-     * @return nickname
+     * @return Nick
      */
-    String getNickname();
+    Nick getNick();
 
     /**
      * returns the players CoreScoreboard. null if player has no scoreboard

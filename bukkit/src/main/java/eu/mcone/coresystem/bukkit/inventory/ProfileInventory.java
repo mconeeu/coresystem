@@ -28,21 +28,36 @@ public class ProfileInventory extends CoreInventory {
     private static List<ProfileInventoryModifier> modifiers = new ArrayList<>();
 
     public ProfileInventory(Player p) {
-        super("§8» §3§l" + p.getName() + "'"+ (!p.getName().endsWith("s") && !p.getName().endsWith("S") ? "s" : "") +" Profil", p, (size > 0) ? size : InventorySlot.ROW_4, InventoryOption.FILL_EMPTY_SLOTS);
+        super("§8» §3§l" + p.getName() + "'" + (!p.getName().endsWith("s") && !p.getName().endsWith("S") ? "s" : "") + " Profil", p, (size > 0) ? size : InventorySlot.ROW_4, InventoryOption.FILL_EMPTY_SLOTS);
 
         CorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(p);
         double onlinetime = Math.floor(((double) cp.getOnlinetime() / 60 / 60) * 100) / 100;
         String status = cp.getState().getName();
 
-        setItem(InventorySlot.ROW_1_SLOT_5, new Skull(p.getName(), 1).toItemBuilder().displayName("§f§l" + p.getName()).lore(
-                cp.getMainGroup().getLabel(),
-                "",
-                "§7Coins: §f" + cp.getFormattedCoins(),
-                "§7Emeralds: §f" + cp.getFormattedEmeralds(),
-                "§7Onlinetime: §f" + onlinetime + " Stunden",
-                "§7Status: " + status
-                ).create()
-        );
+        if (cp.isNicked()) {
+            setItem(InventorySlot.ROW_1_SLOT_5, new Skull(p.getName(), 1).toItemBuilder().displayName("§f§l" + p.getName()).lore(
+                    cp.getMainGroup().getLabel(),
+                    "",
+                    "§7Coins: §f" + cp.getFormattedCoins(),
+                    "§7Emeralds: §f" + cp.getFormattedEmeralds(),
+                    "§7Onlinetime: §f" + onlinetime + " Stunden",
+                    "§7Status: " + status,
+                    "",
+                    "§7Nickname: " + cp.getNick().getName(),
+                    "§7Nickrang: " + cp.getNick().getGroup().getLabel()
+                    ).create()
+            );
+        } else {
+            setItem(InventorySlot.ROW_1_SLOT_5, new Skull(p.getName(), 1).toItemBuilder().displayName("§f§l" + p.getName()).lore(
+                    cp.getMainGroup().getLabel(),
+                    "",
+                    "§7Coins: §f" + cp.getFormattedCoins(),
+                    "§7Emeralds: §f" + cp.getFormattedEmeralds(),
+                    "§7Onlinetime: §f" + onlinetime + " Stunden",
+                    "§7Status: " + status
+                    ).create()
+            );
+        }
 
         setItem(InventorySlot.ROW_3_SLOT_2, new ItemBuilder(Material.NETHER_STAR, 1, 0).displayName("§f§lStats").lore("§7§oRufe die deine Spielerstatistiken", "§7§oaus allen MC ONE Spielmodi ab!", "", "§8» §f§nLinksklick§8 | §7§oÖffnen").create(), e -> {
             p.performCommand("stats");

@@ -5,18 +5,17 @@
 
 package eu.mcone.coresystem.api.bukkit.player;
 
-import eu.mcone.coresystem.api.core.player.SkinInfo;
+import eu.mcone.coresystem.api.core.player.Nick;
 import org.bukkit.entity.Player;
 
 public interface NickManager {
 
     /**
-     * nicks a player with a specific name and skin
-     * @param player player
-     * @param name nickname
-     * @param skin SkinInfo object
+     *  nicks a player with a specific name and skin
+     * @param player Player
+     * @param nick nick
      */
-    void nick(Player player, String name, SkinInfo skin);
+    void nick(Player player, Nick nick);
 
     /**
      * nicks a player with a specific name and without skin
