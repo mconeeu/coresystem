@@ -67,7 +67,7 @@ public class ChatListener implements Listener {
                 }
 
                 e.setFormat(
-                        (cp.isNicked() ? Group.SPIELER.getPrefix() : cp.getMainGroup().getPrefix()) + BukkitCoreSystem.getInstance().getTranslationManager().get("system.chat").replaceAll("%Player%", p.getName())
+                        (cp.isNicked() ? cp.getNick().getGroup().getPrefix() : cp.getMainGroup().getPrefix()) + BukkitCoreSystem.getInstance().getTranslationManager().get("system.chat").replaceAll("%Player%", p.getName())
                                 + "%2$s"
                 );
 

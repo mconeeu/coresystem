@@ -6,11 +6,12 @@ import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
+import java.io.Serializable;
 import java.util.Random;
 
 @BsonDiscriminator
 @Getter
-public class Nick {
+public class Nick implements Serializable {
 
     @Setter
     private SkinInfo skinInfo;
@@ -21,7 +22,6 @@ public class Nick {
     private int coins;
     private int onlineTime;
 
-    @BsonCreator
     public Nick(String name) {
         this.name = name;
         this.texture = "";

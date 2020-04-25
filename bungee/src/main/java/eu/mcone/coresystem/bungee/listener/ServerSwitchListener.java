@@ -21,12 +21,15 @@ public class ServerSwitchListener implements Listener {
         CorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p);
 
         if (p.getServer() != null) {
-            CoreSystem.getInstance().getLabyModAPI().setCurrentServer(p, "MCONE-"+p.getServer().getInfo().getName());
+            CoreSystem.getInstance().getLabyModAPI().setCurrentServer(p, "MCONE-" + p.getServer().getInfo().getName());
         } else {
             CoreSystem.getInstance().getLabyModAPI().unsetCurrentServer(p);
         }
 
-        if (cp.isNicked()) CoreSystem.getInstance().getChannelHandler().createInfoRequest(p, "NICK");
+        if (cp.getSettings().isAutoNick()) {
+            BungeeCoreSystem.getSystem().getNickManager().nick(p);
+        }
+
         PostLoginListener.updateTabHeader(p);
     }
 

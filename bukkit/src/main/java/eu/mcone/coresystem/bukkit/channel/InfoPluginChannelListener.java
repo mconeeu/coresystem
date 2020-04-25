@@ -8,10 +8,7 @@ package eu.mcone.coresystem.bukkit.channel;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.*;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.api.core.player.Currency;
-import eu.mcone.coresystem.api.core.player.Nick;
-import eu.mcone.coresystem.api.core.player.PlayerSettings;
-import eu.mcone.coresystem.api.core.util.GenericUtils;
+import eu.mcone.coresystem.api.core.player.*;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.player.GlobalOfflineCorePlayer;
 import org.bukkit.Bukkit;
@@ -60,8 +57,9 @@ public class InfoPluginChannelListener implements PluginMessageListener {
                     break;
                 }
                 case "NICK": {
-                    Nick nick = (Nick) GenericUtils.deserialize(in.readUTF().getBytes());
-//                    SkinInfo info = CoreSystem.getInstance().getPlayerUtils().constructSkinInfo(in.readUTF(), in.readUTF(), in.readUTF());
+                    SkinInfo info = CoreSystem.getInstance().getPlayerUtils() .constructSkinInfo(in.readUTF(), in.readUTF(), in.readUTF());
+                    Nick nick = new Nick(in.readUTF(), info.getName(), Group.valueOf(in.readUTF()), in.readInt(), in.readInt());
+                    nick.setSkinInfo(info);
 
                     if (CoreSystem.getInstance().getNickManager().isAllowSkinChange()) {
                         NickEvent event = new NickEvent(cp, true);

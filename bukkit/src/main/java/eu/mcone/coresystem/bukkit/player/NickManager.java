@@ -28,7 +28,8 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
 
     private final BukkitCoreSystem instance;
     private final Map<UUID, SkinInfo> oldProfiles;
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean allowSkinChange = true;
 
     public NickManager(BukkitCoreSystem instance) {
@@ -162,7 +163,10 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
         });
 
         p.setDisplayName(name);
-        instance.getCorePlayer(p).getScoreboard().reload();
+
+        if (instance.getCorePlayer(p).getScoreboard() != null) {
+            instance.getCorePlayer(p).getScoreboard().reload();
+        }
     }
 
     public static void setGameProfileName(GameProfile gp, String name) {

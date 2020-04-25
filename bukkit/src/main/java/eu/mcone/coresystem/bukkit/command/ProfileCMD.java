@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.bukkit.command;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.bukkit.inventory.ProfileInventory;
 import org.bukkit.Sound;
@@ -19,7 +20,7 @@ public class ProfileCMD extends CorePlayerCommand {
     @Override
     public boolean onPlayerCommand(Player p, String[] args) {
         if (args.length == 0) {
-            new ProfileInventory(p);
+            new ProfileInventory(CoreSystem.getInstance().getCorePlayer(p));
             p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
         }
 

@@ -12,7 +12,6 @@ import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.item.Skull;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import lombok.Setter;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -27,32 +26,30 @@ public class ProfileInventory extends CoreInventory {
     private static int size;
     private static List<ProfileInventoryModifier> modifiers = new ArrayList<>();
 
-    public ProfileInventory(Player p) {
-        super("§8» §3§l" + p.getName() + "'" + (!p.getName().endsWith("s") && !p.getName().endsWith("S") ? "s" : "") + " Profil", p, (size > 0) ? size : InventorySlot.ROW_4, InventoryOption.FILL_EMPTY_SLOTS);
+    public ProfileInventory(CorePlayer corePlayer) {
+        super("§8» §3§l" + corePlayer.getName() + "'" + (!corePlayer.getName().endsWith("s") && !corePlayer.getName().endsWith("S") ? "s" : "") + " Profil", corePlayer.bukkit(), (size > 0) ? size : InventorySlot.ROW_4, InventoryOption.FILL_EMPTY_SLOTS);
+        Player p = corePlayer.bukkit();
 
-        CorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(p);
-        double onlinetime = Math.floor(((double) cp.getOnlinetime() / 60 / 60) * 100) / 100;
-        String status = cp.getState().getName();
+        double onlinetime = Math.floor(((double) corePlayer.getOnlinetime() / 60 / 60) * 100) / 100;
+        String status = corePlayer.getState().getName();
 
-        if (cp.isNicked()) {
-            setItem(InventorySlot.ROW_1_SLOT_5, new Skull(p.getName(), 1).toItemBuilder().displayName("§f§l" + p.getName()).lore(
-                    cp.getMainGroup().getLabel(),
+        if (corePlayer.isNicked()) {
+            setItem(InventorySlot.ROW_1_SLOT_5, new Skull(corePlayer.getName(), 1).toItemBuilder().displayName("§f§l" + corePlayer.getName()).lore(
+                    corePlayer.getMainGroup().getLabel(),
+                    corePlayer.getNick().getGroup().getLabel(),
                     "",
-                    "§7Coins: §f" + cp.getFormattedCoins(),
-                    "§7Emeralds: §f" + cp.getFormattedEmeralds(),
+                    "§7Coins: §f" + corePlayer.getFormattedCoins(),
+                    "§7Emeralds: §f" + corePlayer.getFormattedEmeralds(),
                     "§7Onlinetime: §f" + onlinetime + " Stunden",
-                    "§7Status: " + status,
-                    "",
-                    "§7Nickname: " + cp.getNick().getName(),
-                    "§7Nickrang: " + cp.getNick().getGroup().getLabel()
+                    "§7Status: " + status
                     ).create()
             );
         } else {
-            setItem(InventorySlot.ROW_1_SLOT_5, new Skull(p.getName(), 1).toItemBuilder().displayName("§f§l" + p.getName()).lore(
-                    cp.getMainGroup().getLabel(),
+            setItem(InventorySlot.ROW_1_SLOT_5, new Skull(corePlayer.getName(), 1).toItemBuilder().displayName("§f§l" + corePlayer.getName()).lore(
+                    corePlayer.getMainGroup().getLabel(),
                     "",
-                    "§7Coins: §f" + cp.getFormattedCoins(),
-                    "§7Emeralds: §f" + cp.getFormattedEmeralds(),
+                    "§7Coins: §f" + corePlayer.getFormattedCoins(),
+                    "§7Emeralds: §f" + corePlayer.getFormattedEmeralds(),
                     "§7Onlinetime: §f" + onlinetime + " Stunden",
                     "§7Status: " + status
                     ).create()

@@ -11,14 +11,12 @@ import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.exception.SkinNotFoundException;
 import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
-import eu.mcone.coresystem.api.core.util.GenericUtils;
 import eu.mcone.coresystem.api.core.util.Random;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -43,6 +41,7 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
                 SkinInfo info = instance.getPlayerUtils().getSkinFromSkinDatabase(nick.getTexture());
 
                 if (info != null) {
+                    nick.setSkinInfo(info);
                     nicks.put(nick, null);
                 }
             } catch (SkinNotFoundException e) {
@@ -65,7 +64,10 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
             if (p == null) available.add(skin);
         });
 
-        return available.get(Random.randomInt(0, available.size() - 1));
+        if (!nicks.isEmpty())
+            return available.get(Random.randomInt(0, available.size() - 1));
+
+        return null;
     }
 
     public void nick(ProxiedPlayer p) {
@@ -74,7 +76,17 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
         nicks.put(nick, p);
 
         if (nick != null) {
-            CoreSystem.getInstance().getChannelHandler().createInfoRequest(p, "NICK", Arrays.toString(GenericUtils.serialize(nick)));
+            CoreSystem.getInstance().getChannelHandler().createInfoRequest(p,
+                    "NICK",
+                    nick.getTexture(),
+                    nick.getSkinInfo().getValue(),
+                    nick.getSkinInfo().getSignature(),
+                    nick.getName(),
+                    nick.getGroup().toString(),
+                    String.valueOf(nick.getCoins()),
+                    String.valueOf(nick.getOnlineTime())
+            );
+
             ((BungeeCorePlayer) cp).setCurrentNick(nick);
             ((BungeeCorePlayer) cp).setNicked(true);
         } else {

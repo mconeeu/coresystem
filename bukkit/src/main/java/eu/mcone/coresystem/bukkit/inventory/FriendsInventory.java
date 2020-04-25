@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.bukkit.inventory;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventoryOption;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
@@ -36,7 +37,7 @@ class FriendsInventory extends CoreInventory {
 
             setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
                 p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
-                new ProfileInventory(p);
+                new ProfileInventory(CoreSystem.getInstance().getCorePlayer(p));
             });
 
             openInventory();

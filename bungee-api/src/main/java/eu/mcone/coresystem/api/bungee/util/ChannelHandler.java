@@ -12,32 +12,36 @@ public interface ChannelHandler {
 
     /**
      * sends a plugin message with a specific task over the mc one plugin messaging channel
+     *
      * @param player target player
-     * @param write message array
+     * @param write  message array
      */
     void createInfoRequest(ProxiedPlayer player, String... write);
 
     /**
      * sends a plugin message with a specific task over the mc one plugin messaging channel
+     *
      * @param server target server
-     * @param uuid uuid
-     * @param write message array
+     * @param uuid   uuid
+     * @param write  message array
      */
     void createReturnRequest(Server server, String uuid, String... write);
 
     /**
      * sends a plugin message over the mc one plugin messaging channel
-     * @param server target server
+     *
+     * @param server  target server
      * @param channel channel name (for ex. SET,...)
-     * @param write message array
+     * @param write   message array
      */
     void sendPluginMessage(Server server, String channel, String... write);
 
     /**
      * sends a plugin message with a specific task over the mc one plugin messaging channel
-     * @param player target player
+     *
+     * @param player  target player
      * @param channel channel name  (for ex. SET,...)
-     * @param write message array
+     * @param write   message array
      */
     void sendPluginMessage(ProxiedPlayer player, String channel, String... write);
 

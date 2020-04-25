@@ -85,7 +85,7 @@ class PlayerSettingsInventory extends CoreInventory {
         });
 
         setItem(InventorySlot.ROW_4_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
-            new ProfileInventory(p);
+            new ProfileInventory(CoreSystem.getInstance().getCorePlayer(p));
             p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
         });
 
