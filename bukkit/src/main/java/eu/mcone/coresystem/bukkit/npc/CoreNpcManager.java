@@ -40,7 +40,10 @@ public class CoreNpcManager implements NpcManager {
     private final MotionCaptureHandler motionCaptureHandler;
 
     public CoreNpcManager(BukkitCoreSystem instance) {
-        instance.registerEvents(new NpcListener(instance, this));
+        NpcListener listener = new NpcListener(instance, this);
+
+        instance.registerEvents(listener);
+        instance.getPacketManager().registerPacketListener(listener);
         instance.registerCommands(new NpcCMD(this));
 
         motionCaptureHandler = new MotionCaptureHandler();

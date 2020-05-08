@@ -7,7 +7,7 @@ package eu.mcone.coresystem.core.labymod;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import eu.mcone.coresystem.api.core.labymod.Addon;
+import eu.mcone.coresystem.api.core.labymod.LabyModAddon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,11 +21,11 @@ public class AddonManager {
      * @param jsonObject the json object of the message
      * @return a list containing the message's addons
      */
-    public static List<Addon> getAddons(JsonObject jsonObject) {
+    public static List<LabyModAddon> getAddons(JsonObject jsonObject) {
         if (!jsonObject.has("addons") || !jsonObject.get("addons").isJsonArray())
             return new ArrayList<>();
 
-        List<Addon> addons = new ArrayList<>();
+        List<LabyModAddon> addons = new ArrayList<>();
 
         for (JsonElement arrayElement : jsonObject.get("addons").getAsJsonArray()) {
             if (!arrayElement.isJsonObject())
@@ -45,7 +45,7 @@ public class AddonManager {
                 continue;
             }
 
-            addons.add(new Addon(uuid, arrayObject.get("name").getAsString()));
+            addons.add(new LabyModAddon(uuid, arrayObject.get("name").getAsString()));
         }
 
         return addons;

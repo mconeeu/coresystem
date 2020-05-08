@@ -19,7 +19,7 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import java.util.ArrayList;
 
 @RequiredArgsConstructor
-public class LabyModMessageListener implements PluginMessageListener {
+public class LMCLegacyListener implements PluginMessageListener {
 
     private final LMCUtils<?> utils;
 
@@ -36,8 +36,8 @@ public class LabyModMessageListener implements PluginMessageListener {
                     new LabyModConnection(
                             player.getUniqueId(),
                             version,
-                            false,
-                            0,
+                            false, false,
+                            0, 0,
                             new ArrayList<>()
                     )
             ));

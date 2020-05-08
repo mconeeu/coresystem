@@ -140,7 +140,10 @@ public class CorePlayerListener implements Listener {
         BukkitCorePlayer p = (BukkitCorePlayer) BukkitCoreSystem.getSystem().getCorePlayer(e.getPlayer());
         p.unregisterAttachment();
 
-        Bukkit.getScheduler().runTask(BukkitCoreSystem.getInstance(), () -> p.unregister(true));
+        Bukkit.getScheduler().runTask(BukkitCoreSystem.getInstance(), () -> {
+            p.unregister();
+            BukkitCoreSystem.getSystem().getCorePlayers().remove(p.getUuid());
+        });
     }
 
     public static void setCorePermissibleBase(Player p) {

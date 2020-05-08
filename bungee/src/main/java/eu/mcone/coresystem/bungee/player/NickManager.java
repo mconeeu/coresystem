@@ -8,10 +8,7 @@ package eu.mcone.coresystem.bungee.player;
 import com.mongodb.client.MongoCollection;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
-import eu.mcone.coresystem.api.core.exception.SkinNotFoundException;
 import eu.mcone.coresystem.api.core.player.Nick;
-import eu.mcone.coresystem.api.core.player.SkinInfo;
-import eu.mcone.coresystem.api.core.util.Random;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -19,43 +16,32 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
+
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.inc;
 
 public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickManager {
 
-    private final MongoCollection<Nick> nicksCollection;
+    private static final Random NICK_CHOOSE_RANDOM = new Random();
+    private static final MongoCollection<Nick> NICKS_COLLECTION = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("nicks", Nick.class);
 
     private final BungeeCoreSystem instance;
-    private HashMap<Nick, ProxiedPlayer> nicks;
+    private final HashMap<Nick, ProxiedPlayer> nicks;
 
     public NickManager(BungeeCoreSystem instance) {
         this.instance = instance;
-        nicksCollection = instance.getMongoDB(Database.SYSTEM).getCollection("bungeesystem_nicks", Nick.class);
+        this.nicks = new HashMap<>();
+
         reload();
     }
 
     public void reload() {
-        nicks = new HashMap<>();
+        nicks.clear();
 
-        for (Nick nick : nicksCollection.find()) {
-            try {
-                SkinInfo info = instance.getPlayerUtils().getSkinFromSkinDatabase(nick.getTexture());
-
-                if (info != null) {
-                    nick.setSkinInfo(info);
-                    nicks.put(nick, null);
-                }
-            } catch (SkinNotFoundException e) {
-                instance.sendConsoleMessage("§4Cannot find skin data for skin name " + nick.getTexture());
-            }
+        for (Nick nick : NICKS_COLLECTION.find()) {
+            nicks.put(nick, null);
         }
-
-//        for (Document document_nicks : instance.getMongoDB(Database.SYSTEM).getCollection("bungeesystem_nicks").find()) {
-//            for (Document document_textures : instance.getMongoDB(Database.SYSTEM).getCollection("bungeesystem_textures").find()) {
-//                if (document_nicks.getString("texture").equalsIgnoreCase(document_textures.getString("name"))) {
-//                    nicks.put(instance.getPlayerUtils().constructSkinInfo(document_nicks.getString("name"), document_textures.getString("texture_value"), document_textures.getString("texture_signature")), null);
-//                }
-//            }
-//        }
     }
 
     private Nick getNick() {
@@ -64,10 +50,11 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
             if (p == null) available.add(skin);
         });
 
-        if (!nicks.isEmpty())
-            return available.get(Random.randomInt(0, available.size() - 1));
-
-        return null;
+        if (!nicks.isEmpty()) {
+            return available.get(NICK_CHOOSE_RANDOM.nextInt(available.size()));
+        } else {
+            return null;
+        }
     }
 
     public void nick(ProxiedPlayer p) {
@@ -78,11 +65,10 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
         if (nick != null) {
             CoreSystem.getInstance().getChannelHandler().createInfoRequest(p,
                     "NICK",
-                    nick.getTexture(),
-                    nick.getSkinInfo().getValue(),
-                    nick.getSkinInfo().getSignature(),
                     nick.getName(),
                     nick.getGroup().toString(),
+                    nick.getSkinInfo().getValue(),
+                    nick.getSkinInfo().getSignature(),
                     String.valueOf(nick.getCoins()),
                     String.valueOf(nick.getOnlineTime())
             );
@@ -97,7 +83,13 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
     public void unnick(ProxiedPlayer p) {
         CorePlayer cp = instance.getCorePlayer(p);
         CoreSystem.getInstance().getChannelHandler().createInfoRequest(p, "UNNICK");
+
+        NICKS_COLLECTION.updateOne(
+                eq("name", cp.getCurrentNick().getName()),
+                inc("onlinetime", NICK_CHOOSE_RANDOM.nextInt(100))
+        );
         nicks.put(cp.getCurrentNick(), null);
+
         ((BungeeCorePlayer) cp).setCurrentNick(null);
         ((BungeeCorePlayer) cp).setNicked(false);
     }

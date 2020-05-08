@@ -96,6 +96,8 @@ public interface PlayerNpc extends NPC {
      */
     void playLabymodEmote(int emoteId, Player... players);
 
+    void playLabymodSticker(short stickerId, Player... players);
+
     void setBow(boolean drawBow, Player... players);
 
     void fishingHook(boolean hook, Player... players);

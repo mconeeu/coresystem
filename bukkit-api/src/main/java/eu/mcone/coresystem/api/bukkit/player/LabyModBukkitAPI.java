@@ -12,4 +12,5 @@ public interface LabyModBukkitAPI extends LabyModAPI<Player> {
 
     void forceEmote(Player receiver, UUID npcUUID, int emoteId);
 
+    void forceSticker(Player receiver, UUID npcUuid, short stickerId);
 }

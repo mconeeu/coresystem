@@ -5,10 +5,16 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
+import eu.mcone.coresystem.api.bukkit.event.npc.NpcInteractEvent;
+import eu.mcone.coresystem.api.bukkit.npc.NPC;
+import eu.mcone.coresystem.api.bukkit.util.PacketListener;
+import eu.mcone.coresystem.api.bukkit.util.ReflectionManager;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.npc.CoreNPC;
 import eu.mcone.coresystem.bukkit.npc.CoreNpcManager;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.server.v1_8_R3.Packet;
+import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -20,7 +26,7 @@ import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
 
 @RequiredArgsConstructor
-public class NpcListener implements Listener {
+public class NpcListener implements Listener, PacketListener {
 
     private final Plugin plugin;
     private final CoreNpcManager api;
@@ -101,6 +107,31 @@ public class NpcListener implements Listener {
             }
         }
     }
+
+    @Override
+    public void onPacketIn(Player player, Packet<?> packetObject) {
+        if (packetObject instanceof PacketPlayInUseEntity) {
+            PacketPlayInUseEntity packet = (PacketPlayInUseEntity) packetObject;
+
+            if (packet.a().equals(PacketPlayInUseEntity.EnumEntityUseAction.ATTACK) || packet.a().equals(PacketPlayInUseEntity.EnumEntityUseAction.INTERACT)) {
+                try {
+                    NPC npc = BukkitCoreSystem.getSystem().getNpcManager().getNPC((int) ReflectionManager.getValue(packet, "a"));
+
+                    if (npc != null) {
+                        Bukkit.getScheduler().runTask(
+                                BukkitCoreSystem.getSystem(),
+                                () -> Bukkit.getPluginManager().callEvent(new NpcInteractEvent(player, npc, packet.a()))
+                        );
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onPacketOut(Player player, Packet<?> packet) {}
 
     private boolean checkLocation(Location loc1, Location loc2) {
         if (loc1 == null || loc2 == null) {

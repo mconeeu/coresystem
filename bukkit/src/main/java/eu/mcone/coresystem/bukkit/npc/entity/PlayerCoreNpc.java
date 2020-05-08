@@ -321,6 +321,14 @@ public class PlayerCoreNpc extends CoreNPC<EntityHumanNPC, PlayerNpcData> implem
     }
 
     @Override
+    public void playLabymodSticker(short stickerId, Player... players) {
+        Collection<? extends Player> send = players.length > 0 ? Arrays.asList(players) : Bukkit.getOnlinePlayers();
+        for (Player player : send) {
+            BukkitCoreSystem.getInstance().getLabyModAPI().forceSticker(player, uuid, stickerId);
+        }
+    }
+
+    @Override
     public void setBow(boolean drawBow, Player... players) {
         dataWatcher = new DataWatcher(null);
         dataWatcher.a(0, (drawBow ? (byte) 16 : (byte) 0));

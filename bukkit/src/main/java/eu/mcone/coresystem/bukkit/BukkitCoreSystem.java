@@ -27,10 +27,7 @@ import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
-import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
-import eu.mcone.coresystem.api.bukkit.util.CoreProjectile;
-import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
-import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
+import eu.mcone.coresystem.api.bukkit.util.*;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
@@ -38,6 +35,7 @@ import eu.mcone.coresystem.api.core.player.Currency;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.channel.*;
+import eu.mcone.coresystem.bukkit.channel.packet.CorePacketManager;
 import eu.mcone.coresystem.bukkit.command.*;
 import eu.mcone.coresystem.bukkit.hologram.CoreHologramManager;
 import eu.mcone.coresystem.bukkit.inventory.ProfileInventory;
@@ -117,6 +115,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private Gson gson;
     @Getter
     private JsonParser jsonParser;
+    @Getter
+    private CorePacketManager packetManager;
 
     @Getter
     private Map<UUID, BukkitCorePlayer> corePlayers;
@@ -162,6 +162,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         database3 = mongoConnection.getDatabase(Database.DATA);
         database4 = mongoConnection.getDatabase(Database.CLOUD);
 
+        packetManager = new CorePacketManager();
         pluginManager = new PluginManager();
         moneyUtil = new MoneyUtil(this, database1) {
             @Override
@@ -260,8 +261,10 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public void onDisable() {
+        packetManager.disable();
+
         for (CorePlayer p : getOnlineCorePlayers()) {
-            ((BukkitCorePlayer) p).unregister(false);
+            ((BukkitCorePlayer) p).unregister();
             ((BukkitCorePlayer) p).unregisterAttachment();
 
             if (p.isNicked()) {
@@ -282,10 +285,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         try {
             mongoConnection.disconnect();
-        } catch (NoClassDefFoundError ignored) {
-        }
-
-        corePlayers.clear();
+        } catch (NoClassDefFoundError ignored) {}
 
         getServer().getMessenger().unregisterIncomingPluginChannel(this);
         getServer().getMessenger().unregisterOutgoingPluginChannel(this);
@@ -329,8 +329,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new LabyModListener(),
                 new SignChangeListener(),
                 new VanishListener(),
-                new ArmorListener(),
-                new PacketReceiveListener()
+                new ArmorListener()
         );
     }
 

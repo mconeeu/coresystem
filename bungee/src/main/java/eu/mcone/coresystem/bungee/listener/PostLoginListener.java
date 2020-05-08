@@ -7,7 +7,7 @@ package eu.mcone.coresystem.bungee.listener;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
-import eu.mcone.coresystem.api.core.labymod.LabyPermission;
+import eu.mcone.coresystem.api.core.labymod.LabyModPermission;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.bots.teamspeak.TeamspeakVerifier;
 import eu.mcone.networkmanager.core.api.database.Database;
@@ -71,13 +71,13 @@ public class PostLoginListener implements Listener {
         ProxyServer.getInstance().getScheduler().schedule(BungeeCoreSystem.getInstance(), () -> {
             updateTabHeader(p);
 
-            BungeeCoreSystem.getInstance().getLabyModAPI().sendPermissions(p, new HashMap<LabyPermission, Boolean>() {{
-                put(LabyPermission.IMPROVED_LAVA, true);
-                put(LabyPermission.CROSSHAIR_SYNC, true);
-                put(LabyPermission.REFILL_FIX, true);
-                put(LabyPermission.GUI_POTION_EFFECTS, false);
-                put(LabyPermission.GUI_ARMOR_HUD, false);
-                put(LabyPermission.GUI_ITEM_HUD, false);
+            BungeeCoreSystem.getInstance().getLabyModAPI().sendPermissions(p, new HashMap<LabyModPermission, Boolean>() {{
+                put(LabyModPermission.IMPROVED_LAVA, true);
+                put(LabyModPermission.CROSSHAIR_SYNC, true);
+                put(LabyModPermission.REFILL_FIX, true);
+                put(LabyModPermission.GUI_POTION_EFFECTS, false);
+                put(LabyModPermission.GUI_ARMOR_HUD, false);
+                put(LabyModPermission.GUI_ITEM_HUD, false);
             }});
 
             CoreSystem.getInstance().getLabyModAPI().setCurrentServer(p, p.getServer().getInfo().getName());

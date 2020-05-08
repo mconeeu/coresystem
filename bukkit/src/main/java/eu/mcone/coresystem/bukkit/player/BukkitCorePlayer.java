@@ -19,6 +19,8 @@ import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.bukkit.channel.packet.PacketInListenerImpl;
+import eu.mcone.coresystem.bukkit.channel.packet.PacketOutListenerImpl;
 import eu.mcone.coresystem.bukkit.listener.CorePlayerListener;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
@@ -53,8 +55,8 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     private final SkinInfo skin;
     @Getter
     private boolean vanished;
-    private PacketInListener packetInListener;
-    private PacketOutListener packetOutListener;
+    private PacketInListenerImpl packetInListener;
+    private PacketOutListenerImpl packetOutListener;
     @Getter
     private PermissionAttachment permissionAttachment;
 
@@ -215,22 +217,18 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     }
 
     public void registerPacketListener(Player p) {
-        this.packetInListener = new PacketInListener(p);
-        this.packetOutListener = new PacketOutListener(p);
+        this.packetInListener = new PacketInListenerImpl(p);
+        this.packetOutListener = new PacketOutListenerImpl(p);
     }
 
     public void unregisterAttachment() {
         if (permissionAttachment != null) bukkit().removeAttachment(permissionAttachment);
     }
 
-    public void unregister(boolean removePacketListener) {
+    public void unregister() {
         scoreboard.unregister();
         BukkitCoreSystem.getSystem().getAfkManager().unregisterPlayer(uuid);
-        BukkitCoreSystem.getSystem().getCorePlayers().remove(uuid);
-
-        if (removePacketListener) {
-            packetInListener.remove();
-        }
+        packetInListener.remove();
 
         BukkitCoreSystem.getInstance().sendConsoleMessage("Unloaded Player " + name);
     }

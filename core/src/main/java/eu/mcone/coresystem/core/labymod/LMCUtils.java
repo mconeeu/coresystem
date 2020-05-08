@@ -9,7 +9,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import eu.mcone.coresystem.api.core.labymod.LabyModAPI;
-import eu.mcone.coresystem.api.core.labymod.LabyPermission;
+import eu.mcone.coresystem.api.core.labymod.LabyModAddon;
+import eu.mcone.coresystem.api.core.labymod.LabyModMiddleClickAction;
+import eu.mcone.coresystem.api.core.labymod.LabyModPermission;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.DecoderException;
@@ -26,10 +28,10 @@ public abstract class LMCUtils<P> implements LabyModAPI<P> {
     protected abstract void sendLMCMessage(P player, byte[] message);
 
     @Override
-    public void sendPermissions(P player, Map<LabyPermission, Boolean> permissions) {
+    public void sendPermissions(P player, Map<LabyModPermission, Boolean> permissions) {
         JsonObject object = new JsonObject();
 
-        for (Map.Entry<LabyPermission, Boolean> permissionEntry : permissions.entrySet()) {
+        for (Map.Entry<LabyModPermission, Boolean> permissionEntry : permissions.entrySet()) {
             object.addProperty(permissionEntry.getKey().name(), permissionEntry.getValue());
         }
 
@@ -126,6 +128,29 @@ public abstract class LMCUtils<P> implements LabyModAPI<P> {
 
         // Send to LabyMod using the API
         sendServerMessage(receiver, "account_subtitle", array);
+    }
+
+    @Override
+    public void recommendAddons(P player, LabyModAddon... addonList) {
+        JsonObject obj = new JsonObject();
+        JsonArray addons = new JsonArray();
+
+        for (LabyModAddon addon : addonList) {
+            addons.add(addon.toJson());
+        }
+
+        obj.add("addons", addons);
+        sendServerMessage(player, "addon_recommendation", obj);
+    }
+
+    @Override
+    public void setMiddleClickActions(P player, LabyModMiddleClickAction... actionList) {
+        JsonArray actions = new JsonArray();
+        for (LabyModMiddleClickAction action : actionList) {
+            actions.add(action.toJson());
+        }
+
+        sendServerMessage(player, "user_menu_actions", actions);
     }
 
     @Override

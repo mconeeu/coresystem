@@ -7,7 +7,7 @@ package eu.mcone.coresystem.api.core.labymod;
 
 import lombok.Getter;
 
-public enum LabyPermission {
+public enum LabyModPermission {
 
     // Permissions that are disabled by default
     IMPROVED_LAVA("Improved Lava", false),
@@ -36,7 +36,7 @@ public enum LabyPermission {
      * @param displayName    the permission's display-name
      * @param defaultEnabled whether or not this permission is enabled/activated by default
      */
-    LabyPermission(String displayName, boolean defaultEnabled) {
+    LabyModPermission(String displayName, boolean defaultEnabled) {
         this.displayName = displayName;
         this.defaultEnabled = defaultEnabled;
     }

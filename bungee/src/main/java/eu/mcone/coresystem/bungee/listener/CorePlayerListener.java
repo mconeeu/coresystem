@@ -29,6 +29,8 @@ public class CorePlayerListener implements Listener {
 
     @EventHandler
     public void onLogin(LoginEvent e) {
+        System.out.println("hostname: "+e.getConnection().getVirtualHost().getHostName());
+
         if (e.getConnection().getVirtualHost().getHostName().equals("register.onegaming.group") || e.getConnection().getVirtualHost().getHostName().equals("register.mcone.eu")) {
             e.setCancelled(true);
 

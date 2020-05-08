@@ -18,13 +18,6 @@ public interface NickManager {
     void nick(Player player, Nick nick);
 
     /**
-     * nicks a player with a specific name and without skin
-     * @param player player
-     * @param name nickname
-     */
-    void nick(Player player, String name);
-
-    /**
      * unnicks a player
      * @param player player
      * @param bypassSkin should the skin be bypassed by unnick?

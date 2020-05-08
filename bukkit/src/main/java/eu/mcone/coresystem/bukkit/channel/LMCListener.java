@@ -43,8 +43,8 @@ public class LMCListener implements PluginMessageListener {
                         && jsonObject.get("version").isJsonPrimitive()
                         && jsonObject.get("version").getAsJsonPrimitive().isString() ? jsonObject.get("version").getAsString() : "Unknown";
 
-                boolean chunkCachingEnabled = false;
-                int chunkCachingVersion = 0;
+                boolean chunkCachingEnabled = false, shadowEnabled = false;
+                int chunkCachingVersion = 0, shadowVersion = 0;
 
                 if (jsonObject.has("ccp") && jsonObject.get("ccp").isJsonObject()) {
                     JsonObject chunkCachingObject = jsonObject.get("ccp").getAsJsonObject();
@@ -56,12 +56,24 @@ public class LMCListener implements PluginMessageListener {
                         chunkCachingVersion = chunkCachingObject.get("version").getAsInt();
                 }
 
+                if (jsonObject.has("shadow") && jsonObject.get("shadow").isJsonObject()) {
+                    JsonObject shadowObject = jsonObject.get("shadow").getAsJsonObject();
+
+                    if (shadowObject.has("enabled"))
+                        shadowEnabled = shadowObject.get("enabled").getAsBoolean();
+
+                    if (shadowObject.has("version"))
+                        shadowVersion = shadowObject.get("version").getAsInt();
+                }
+
                 Bukkit.getPluginManager().callEvent(new LabyModPlayerJoinEvent(player,
                         new LabyModConnection(
                                 player.getUniqueId(),
                                 version,
                                 chunkCachingEnabled,
+                                shadowEnabled,
                                 chunkCachingVersion,
+                                shadowVersion,
                                 AddonManager.getAddons(jsonObject)
                         )
                 ));

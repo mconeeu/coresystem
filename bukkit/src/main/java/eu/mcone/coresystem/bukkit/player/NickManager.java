@@ -44,26 +44,9 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
         if (!cp.isNicked()) {
             ((BukkitCorePlayer) cp).setNick(nick);
             ((BukkitCorePlayer) cp).setNicked(true);
-            p.setDisplayName(nick.getName());
 
             setNick(p, nick.getName(), nick.getSkinInfo());
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Dein Nickname ist nun " + nick.getGroup().getLabel() + nick.getName());
-        } else {
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du bist bereits genickt!");
-        }
-    }
-
-    @Override
-    public void nick(Player p, String name) {
-        CorePlayer cp = instance.getCorePlayer(p);
-
-        if (!cp.isNicked()) {
-            ((BukkitCorePlayer) cp).setNick(new Nick(name));
-            ((BukkitCorePlayer) cp).setNicked(true);
-            p.setDisplayName(name);
-
-            setNick(p, name, ((CraftPlayer) p).getHandle().getProfile());
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Dein Nickname ist nun §f" + name);
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Dein Nickname ist nun §a" + nick.getName());
         } else {
             BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du bist bereits genickt!");
         }
@@ -92,7 +75,6 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
         if (cp.isNicked()) {
             ((BukkitCorePlayer) cp).setNick(null);
             ((BukkitCorePlayer) cp).setNicked(false);
-            p.setDisplayName(cp.getName());
 
             if (!bypassSkin) {
                 setNick(p, cp.getName(), oldProfiles.get(p.getUniqueId()));
@@ -108,7 +90,6 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
 
     @SuppressWarnings("deprecation")
     private void setNick(Player p, String name, eu.mcone.coresystem.api.core.player.SkinInfo skin) {
-        if (skin == null) return;
         EntityPlayer ep = ((CraftPlayer) p).getHandle();
 
         GameProfile gp = ((CraftPlayer) p).getProfile();
@@ -161,8 +142,6 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
                 instance.getCorePlayer(player).getScoreboard().reload();
             }
         });
-
-        p.setDisplayName(name);
 
         if (instance.getCorePlayer(p).getScoreboard() != null) {
             instance.getCorePlayer(p).getScoreboard().reload();

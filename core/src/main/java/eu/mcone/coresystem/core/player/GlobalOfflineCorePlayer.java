@@ -64,7 +64,11 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
 
         Document entry = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
         if (entry != null) {
-            setDatabaseValues(entry, online);
+            if (entry.get("groups") != null) {
+                setDatabaseValues(entry, online);
+            } else {
+                setDefaultValuesAndRegister(uuid, name, online);
+            }
         } else {
             setDefaultValuesAndRegister(uuid, name, online);
         }
@@ -77,7 +81,11 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
 
         Document entry = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
         if (entry != null) {
-            setDatabaseValues(entry, online);
+            if (entry.get("groups") != null) {
+                setDatabaseValues(entry, online);
+            } else {
+                setDefaultValuesAndRegister(uuid, entry.getString("name"), online);
+            }
         } else {
             String name = instance.getPlayerUtils().fetchNameFromMojangAPI(uuid);
 
@@ -98,7 +106,11 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         if (uuid != null) {
             Document entry = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
             if (entry != null) {
-                setDatabaseValues(entry, online);
+                if (entry.get("groups") != null) {
+                    setDatabaseValues(entry, online);
+                } else {
+                    setDefaultValuesAndRegister(uuid, name, online);
+                }
             } else {
                 setDefaultValuesAndRegister(uuid, name, online);
             }
@@ -141,13 +153,13 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         this.uuid = UUID.fromString(entry.getString("uuid"));
         this.name = entry.getString("name");
         this.groupSet = instance.getPermissionManager().getGroups(entry.get("groups", new ArrayList<>()));
-        this.coins = entry.getInteger("coins");
-        this.emeralds = entry.getInteger("emeralds");
+        this.coins = entry.getInteger("coins") != null ? entry.getInteger("coins") : 1000;
+        this.emeralds = entry.getInteger("emeralds") != null ? entry.getInteger("emeralds") : 0;
         this.teamspeakUid = entry.getString("teamspeak_uid");
         this.discordUid = entry.getString("discord_uid");
-        this.state = online ? PlayerState.ONLINE : PlayerState.getPlayerStateById(entry.getInteger("state"));
-        this.onlinetime = entry.getLong("online_time");
-        this.settings = ((CoreModuleCoreSystem) instance).getGson().fromJson(entry.get("player_settings", Document.class).toJson(), PlayerSettings.class);
+        this.state = online ? PlayerState.ONLINE : entry.getInteger("state") != null ? PlayerState.getPlayerStateById(entry.getInteger("state")) : PlayerState.OFFLINE;
+        this.onlinetime = entry.getLong("online_time") != null ? entry.getLong("online_time") : 0;
+        this.settings = entry.get("player_settings") != null ? ((CoreModuleCoreSystem) instance).getGson().fromJson(entry.get("player_settings", Document.class).toJson(), PlayerSettings.class) : new PlayerSettings();
     }
 
     @Override

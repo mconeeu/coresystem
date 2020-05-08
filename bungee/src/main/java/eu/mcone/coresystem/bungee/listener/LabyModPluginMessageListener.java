@@ -53,6 +53,8 @@ public class LabyModPluginMessageListener implements Listener {
                                     p.getUniqueId(),
                                     version,
                                     false,
+                                    false,
+                                    0,
                                     0,
                                     new ArrayList<>()
                             )
@@ -83,10 +85,10 @@ public class LabyModPluginMessageListener implements Listener {
                         JsonObject jsonObject = jsonMessage.getAsJsonObject();
                         String version = jsonObject.has("version")
                                 && jsonObject.get("version").isJsonPrimitive()
-                                && jsonObject.get("version").getAsJsonPrimitive().isString() ? jsonObject.get("version").getAsString() : "Unknown";
+                                && jsonObject.get("version").getAsJsonPrimitive().isString() ? jsonObject.get("version").getAsString() : "unknown";
 
-                        boolean chunkCachingEnabled = false;
-                        int chunkCachingVersion = 0;
+                        boolean chunkCachingEnabled = false, shadowEnabled = false;
+                        int chunkCachingVersion = 0, shadowVersion = 0;
 
                         if (jsonObject.has("ccp") && jsonObject.get("ccp").isJsonObject()) {
                             JsonObject chunkCachingObject = jsonObject.get("ccp").getAsJsonObject();
@@ -98,12 +100,24 @@ public class LabyModPluginMessageListener implements Listener {
                                 chunkCachingVersion = chunkCachingObject.get("version").getAsInt();
                         }
 
+                        if (jsonObject.has("shadow") && jsonObject.get("shadow").isJsonObject()) {
+                            JsonObject shadowObject = jsonObject.get("shadow").getAsJsonObject();
+
+                            if (shadowObject.has("enabled"))
+                                shadowEnabled = shadowObject.get("enabled").getAsBoolean();
+
+                            if (shadowObject.has("version"))
+                                shadowVersion = shadowObject.get("version").getAsInt();
+                        }
+
                         ProxyServer.getInstance().getPluginManager().callEvent(new LabyModPlayerJoinEvent(p,
                                 new LabyModConnection(
                                         p.getUniqueId(),
                                         version,
                                         chunkCachingEnabled,
+                                        shadowEnabled,
                                         chunkCachingVersion,
+                                        shadowVersion,
                                         AddonManager.getAddons(jsonObject)
                                 )
                         ));

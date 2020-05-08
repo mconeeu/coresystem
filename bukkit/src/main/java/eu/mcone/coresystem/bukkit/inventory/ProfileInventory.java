@@ -24,7 +24,7 @@ public class ProfileInventory extends CoreInventory {
 
     @Setter
     private static int size;
-    private static List<ProfileInventoryModifier> modifiers = new ArrayList<>();
+    private static final List<ProfileInventoryModifier> MODIFIERS = new ArrayList<>();
 
     public ProfileInventory(CorePlayer corePlayer) {
         super("§8» §3§l" + corePlayer.getName() + "'" + (!corePlayer.getName().endsWith("s") && !corePlayer.getName().endsWith("S") ? "s" : "") + " Profil", corePlayer.bukkit(), (size > 0) ? size : InventorySlot.ROW_4, InventoryOption.FILL_EMPTY_SLOTS);
@@ -34,10 +34,10 @@ public class ProfileInventory extends CoreInventory {
         String status = corePlayer.getState().getName();
 
         if (corePlayer.isNicked()) {
-            setItem(InventorySlot.ROW_1_SLOT_5, new Skull(corePlayer.getName(), 1).toItemBuilder().displayName("§f§l" + corePlayer.getName()).lore(
+            setItem(InventorySlot.ROW_1_SLOT_5, new Skull(corePlayer.getNick().getName(), 1).toItemBuilder().displayName("§f§l" + corePlayer.getName()).lore(
                     corePlayer.getMainGroup().getLabel(),
-                    corePlayer.getNick().getGroup().getLabel(),
                     "",
+                    "§7Nick: " + corePlayer.getNick().getGroup().getPrefix() + corePlayer.getNick().getName(),
                     "§7Coins: §f" + corePlayer.getFormattedCoins(),
                     "§7Emeralds: §f" + corePlayer.getFormattedEmeralds(),
                     "§7Onlinetime: §f" + onlinetime + " Stunden",
@@ -76,7 +76,7 @@ public class ProfileInventory extends CoreInventory {
             p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
         });
 
-        for (ProfileInventoryModifier modifier : modifiers) {
+        for (ProfileInventoryModifier modifier : MODIFIERS) {
             modifier.onCreate(this, p);
         }
 
@@ -84,7 +84,7 @@ public class ProfileInventory extends CoreInventory {
     }
 
     public static void addModifier(ProfileInventoryModifier modifier) {
-        modifiers.add(modifier);
+        MODIFIERS.add(modifier);
     }
 
 }

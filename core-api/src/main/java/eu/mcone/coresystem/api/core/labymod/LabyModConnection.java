@@ -16,9 +16,9 @@ import java.util.UUID;
 public final class LabyModConnection {
 
     private final UUID playerUuid;
-    private final String modVersion;
-    private final boolean chunkCachingEnabled;
-    private final int chunkCachingVersion;
-    private final List<Addon> addons;
+    private final String version;
+    private final boolean chunkCachingEnabled, shadowEnabled;
+    private final int chunkCachingVersion, shadowVersion;
+    private final List<LabyModAddon> addons;
 
 }

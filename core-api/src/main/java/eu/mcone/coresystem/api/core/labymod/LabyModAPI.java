@@ -17,7 +17,7 @@ public interface LabyModAPI<P> {
      * @param player target player
      * @param permissions permission map
      */
-    void sendPermissions(P player, Map<LabyPermission, Boolean> permissions);
+    void sendPermissions(P player, Map<LabyModPermission, Boolean> permissions);
 
     void unsetCurrentServer(P player);
 
@@ -32,6 +32,10 @@ public interface LabyModAPI<P> {
     void setPartyInfo(P player, UUID partyLeaderUUID, int partySize, int maxPartyMembers);
 
     void setSubtitle(P receiver, UUID subtitlePlayer, String value);
+
+    void recommendAddons(P player, LabyModAddon... addons);
+
+    void setMiddleClickActions(P player, LabyModMiddleClickAction... actionList);
 
     /**
      * sends a specific message to the LabyMod client that can be read i.e. with a LabyMod AddOn

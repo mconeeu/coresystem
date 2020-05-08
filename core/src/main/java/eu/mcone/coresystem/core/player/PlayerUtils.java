@@ -10,12 +10,14 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.SkinNotFoundException;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.networkmanager.core.api.database.Database;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -77,13 +79,11 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
             skinBR.close();
 
             SkinInfo skin = new SkinInfo(player_name, value, signature, SkinInfo.SkinType.PLAYER);
-            instance.runAsync(() -> database.getCollection("userinfo").updateOne(
-                    eq("uuid", uuid.toString()),
-                    combine(
-                            setOnInsert("name", player_name),
-                            set("texture_value", value),
-                            set("texture_signature", signature)
-                    )
+            instance.runAsync(() -> updateDatabase(
+                    uuid,
+                    set("name", player_name),
+                    set("texture_value", value),
+                    set("texture_signature", signature)
             ));
 
             skinCache.put(uuid, skin);
@@ -186,6 +186,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
 
                 UUID uuidResult = UUID.fromString(fromTrimmed(uuid));
                 uuidCache.put(name, uuidResult);
+                instance.runAsync(() -> updateDatabase(uuidResult, set("name", name)));
 
                 return uuidResult;
             } catch (IllegalStateException e) {
@@ -218,6 +219,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
                 String name = obj.get("name").getAsString();
 
                 uuidCache.put(name, uuid);
+                instance.runAsync(() -> updateDatabase(uuid, set("name", name)));
 
                 return name;
             } catch (IllegalStateException e) {
@@ -247,6 +249,16 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
 
     private static String toTrimmed(final String uuid) {
         return uuid.replace("-", "");
+    }
+
+    private void updateDatabase(UUID uuid, Bson... data) {
+        this.database.getCollection("userinfo").updateOne(
+                eq("uuid", uuid.toString()),
+                combine(
+                        data
+                ),
+                new UpdateOptions().upsert(true)
+        );
     }
 
 }

@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.api.bukkit;
 
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
+import eu.mcone.coresystem.api.bukkit.channel.PacketManager;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
@@ -50,6 +51,12 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return CorePluginManager instance
      */
     public abstract CorePluginManager getPluginManager();
+
+    /**
+     * returns the CorePacketManager
+     * @return CorePacketManager instance
+     */
+    public abstract PacketManager getPacketManager();
 
     /**
      * returns the BCS NickManager

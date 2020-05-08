@@ -31,7 +31,7 @@ public class NickCMD extends Command{
                     BungeeCoreSystem.getInstance().getNickManager().unnick(p);
                 }
             } else if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-                if (p.hasPermission("group.Developer")) {
+                if (p.hasPermission("group.developer")) {
                     BungeeCoreSystem.getInstance().getMessenger().send(p, "§aDie Nicks wurden erfolgreich neu geladen");
                     BungeeCoreSystem.getInstance().getNickManager().reload();
                 } else {

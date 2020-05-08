@@ -5,7 +5,7 @@
 
 package eu.mcone.coresystem.api.core.labymod;
 
-public class LabyModEmote {
+public final class LabyModEmote {
 
     public static final int BACKFLIP = 2;
     public static final int DAB = 3;

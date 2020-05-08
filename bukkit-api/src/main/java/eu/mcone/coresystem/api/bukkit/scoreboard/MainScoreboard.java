@@ -7,20 +7,17 @@ package eu.mcone.coresystem.api.bukkit.scoreboard;
 
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
-import org.bukkit.scoreboard.Team;
 
 public final class MainScoreboard extends CoreScoreboard {
 
     @Override
-    public Team modifyTeam(CorePlayer owner, CorePlayer p, Team t) {
+    public void modifyTeam(CorePlayer owner, CorePlayer p, CoreScoreboardEntry t) {
         Group g = p.isNicked() ? p.getNick().getGroup() : p.getMainGroup();
-        t.setPrefix(g.getPrefix());
+        t.prefix(g.getPrefix());
 
         if (p.isVanished()) {
-            t.setSuffix(" §3§lⓋ");
+            t.suffix(" §3§lⓋ");
         }
-
-        return t;
     }
 
 }
