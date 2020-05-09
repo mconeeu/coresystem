@@ -13,7 +13,7 @@ public final class MainScoreboard extends CoreScoreboard {
     @Override
     public void modifyTeam(CorePlayer owner, CorePlayer p, CoreScoreboardEntry t) {
         Group g = p.isNicked() ? p.getNick().getGroup() : p.getMainGroup();
-        t.prefix(g.getPrefix());
+        t.priority(g.getScore()).prefix(g.getPrefix());
 
         if (p.isVanished()) {
             t.suffix(" §3§lⓋ");
