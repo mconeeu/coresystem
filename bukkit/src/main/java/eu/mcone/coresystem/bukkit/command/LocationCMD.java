@@ -212,7 +212,7 @@ public class LocationCMD extends CorePlayerCommand {
 
                     if (loc != null) {
                         p.teleport(loc);
-                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du wurdest erfolgreich zu der Location §a" + args[1] + "§2 teleportiert!");
+                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du wurdest erfolgreich zu der Location §a" + args[2] + "§2 teleportiert!");
                     } else {
                         BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die Location §c" + args[2] + "§4 existiert nicht in der Welt " + args[1] + "!");
                     }

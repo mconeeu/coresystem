@@ -17,6 +17,8 @@ public enum Gamemode {
     KNOCKIT("KI", "KnockIT", ChatColor.DARK_GREEN, Material.STICK),
     MINEWAR("MW", "Minewar", ChatColor.LIGHT_PURPLE, Material.COBBLESTONE),
     TRASHWARS("TW", "Trashwars", ChatColor.GREEN, Material.IRON_PICKAXE),
+    TTT("TTT", "Trouble in Terrorist Town", ChatColor.RED, Material.LEATHER_CHESTPLATE),
+    GAMBLE("GM", "Gamble", ChatColor.GOLD, Material.DIAMOND),
     BUILD("BU", "Build", ChatColor.YELLOW, Material.GRASS),
     UNDEFINED("UD", "undefined", ChatColor.DARK_GRAY, Material.COAL);
 

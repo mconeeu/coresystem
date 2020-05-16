@@ -111,11 +111,6 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     }
 
     @Override
-    public Stats getStats() {
-        return getStats(((BukkitCoreSystem) instance).getGamemode());
-    }
-
-    @Override
     public Stats getStats(Gamemode gamemode) {
         if (stats.containsKey(gamemode)) {
             return stats.get(gamemode);

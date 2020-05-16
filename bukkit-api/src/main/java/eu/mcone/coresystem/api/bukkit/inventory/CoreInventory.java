@@ -9,6 +9,7 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import lombok.Getter;
 import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -21,7 +22,7 @@ import java.util.Map;
 public class CoreInventory implements ItemEventStore {
 
     public static final String PLACEHOLDER_ITEM_DISPLAYNAME = "§8//§oMCONE§8//";
-    public static final ItemStack PLACEHOLDER_ITEM = new ItemBuilder(Material.STAINED_GLASS_PANE, 1, 7).displayName(PLACEHOLDER_ITEM_DISPLAYNAME).create();
+    public static final ItemStack PLACEHOLDER_ITEM = new ItemBuilder(Material.STAINED_GLASS_PANE, 1, DyeColor.GRAY.getData()).displayName(PLACEHOLDER_ITEM_DISPLAYNAME).create();
     public static final ItemStack BACK_ITEM = new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück").create();
 
     @Getter
