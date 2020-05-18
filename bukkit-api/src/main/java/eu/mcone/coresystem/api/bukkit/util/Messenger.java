@@ -201,9 +201,7 @@ public final class Messenger {
     }
 
     public Broadcast simpleBroadcast(final Broadcast.BroadcastMessageTyp messageTyp, final String message, final Player... players) {
-        Broadcast broadcast = new Broadcast(this, messageTyp, message, players).send();
-        Bukkit.getPluginManager().callEvent(new BroadcastMessageEvent(broadcast));
-        return broadcast.sendSimple();
+        return new Broadcast(this, messageTyp, message, players).sendSimple();
     }
 
     public Broadcast broadcast(final String message) {
