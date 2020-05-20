@@ -112,11 +112,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
 
     @Override
     public SkinInfo getSkinInfo(String name) {
-        if (uuidCache.containsKey(name)) {
-            return getSkinInfo(uuidCache.get(name));
-        } else {
-            return getSkinInfo(fetchUuid(name));
-        }
+        return getSkinInfo(fetchUuid(name));
     }
 
     @Override
@@ -137,8 +133,9 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
     }
 
     @Override
-    public UUID fetchUuid(final String name) {
-        if (uuidCache.containsKey(name)) return uuidCache.get(name);
+    public UUID fetchUuid(String name) {
+        UUID uuid = getUuidFromCache(name);
+        if (uuid != null) return uuid;
 
         Document dbEntry = database.getCollection("userinfo").find(eq("name", name)).first();
         if (dbEntry != null) {
@@ -149,7 +146,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
     }
 
     @Override
-    public String fetchName(final UUID uuid) {
+    public String fetchName(UUID uuid) {
         for (HashMap.Entry<String, UUID> entry : uuidCache.entrySet()) {
             if (entry.getValue().equals(uuid)) {
                 return entry.getKey();
@@ -165,7 +162,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
     }
 
     @Override
-    public UUID fetchUuidFromMojangAPI(final String name) {
+    public UUID fetchUuidFromMojangAPI(String name) {
         try {
             URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + name);
             InputStream stream = url.openStream();
@@ -182,11 +179,12 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
             JsonElement element = new JsonParser().parse(result);
             try {
                 JsonObject obj = element.getAsJsonObject();
+                String rightName = obj.get("name").getAsString();
                 String uuid = obj.get("id").getAsString();
 
                 UUID uuidResult = UUID.fromString(fromTrimmed(uuid));
-                uuidCache.put(name, uuidResult);
-                instance.runAsync(() -> updateDatabase(uuidResult, set("name", name)));
+                uuidCache.put(rightName, uuidResult);
+                instance.runAsync(() -> updateDatabase(uuidResult, set("name", rightName)));
 
                 return uuidResult;
             } catch (IllegalStateException e) {
@@ -199,7 +197,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
     }
 
     @Override
-    public String fetchNameFromMojangAPI(final UUID uuid) {
+    public String fetchNameFromMojangAPI(UUID uuid) {
         try {
             URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + toTrimmed(uuid.toString()));
             InputStream stream = url.openStream();
@@ -231,7 +229,17 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
         return null;
     }
 
-    private static String fromTrimmed(final String trimmedUUID) throws IllegalArgumentException {
+    private UUID getUuidFromCache(String name) {
+        for (Map.Entry<String, UUID> uuidEntry : uuidCache.entrySet()) {
+            if (uuidEntry.getKey().equalsIgnoreCase(name)) {
+                return uuidEntry.getValue();
+            }
+        }
+
+        return null;
+    }
+
+    private static String fromTrimmed(String trimmedUUID) throws IllegalArgumentException {
         if (trimmedUUID == null) throw new IllegalArgumentException();
 
         StringBuilder builder = new StringBuilder(trimmedUUID.trim());
@@ -247,7 +255,7 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
         return builder.toString();
     }
 
-    private static String toTrimmed(final String uuid) {
+    private static String toTrimmed(String uuid) {
         return uuid.replace("-", "");
     }
 

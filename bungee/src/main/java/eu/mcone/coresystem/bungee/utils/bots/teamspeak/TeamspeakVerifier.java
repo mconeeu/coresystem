@@ -57,7 +57,7 @@ public class TeamspeakVerifier {
     private static final int VERIFIED_RANK = 23;
 
     private final static int[] RELEVANT_GROUPS = {
-            VERIFIED_RANK, Group.SPIELVERDERBER.getTsId(), Group.PREMIUM.getTsId(), Group.PREMIUMPLUS.getTsId(), Group.YOUTUBER.getTsId()
+            VERIFIED_RANK, Group.SPIELVERDERBER.getTsId(), Group.PREMIUM.getTsId(), Group.PREMIUMPLUS.getTsId(), Group.CREATOR.getTsId()
     };
 
     private TS3Query query;
@@ -275,7 +275,7 @@ public class TeamspeakVerifier {
         List<Integer> groupIds = new ArrayList<>();
         groupIds.add(23);
         for (int groupId : clientInfo.getServerGroups()) {
-            if (new ArrayList<>(Arrays.asList(Group.PREMIUM, Group.PREMIUMPLUS, Group.YOUTUBER)).contains(Group.getGroupByTsId(groupId)) && groupId > 0) {
+            if (new ArrayList<>(Arrays.asList(Group.PREMIUM, Group.PREMIUMPLUS, Group.CREATOR)).contains(Group.getGroupByTsId(groupId)) && groupId > 0) {
                 groupIds.add(groupId);
             }
         }

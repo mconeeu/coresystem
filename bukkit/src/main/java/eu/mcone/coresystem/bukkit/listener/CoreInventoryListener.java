@@ -74,7 +74,7 @@ public class CoreInventoryListener implements Listener {
 
                     if (coreInv != null) {
                         if (coreInv.getInventory().equals(inv)) {
-                            e.setCancelled(coreInv.isAllowModification());
+                            e.setCancelled(!coreInv.isAllowModification());
                             fireEvent(coreInv, e);
                         }
                     }

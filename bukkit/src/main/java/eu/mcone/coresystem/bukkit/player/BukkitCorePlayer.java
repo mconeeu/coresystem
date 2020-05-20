@@ -162,11 +162,12 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     @Override
     public boolean setVanished(boolean vanish) {
         if (vanished != vanish) {
+            vanished = vanish;
+
             PlayerVanishEvent vanishEvent = new PlayerVanishEvent(this, vanish);
             Bukkit.getPluginManager().callEvent(vanishEvent);
 
             if (!vanishEvent.isCancelled()) {
-                vanished = vanish;
                 Player p = bukkit();
 
                 if (vanish) {
@@ -200,6 +201,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
 
                 return true;
             } else {
+                vanished = !vanish;
                 if (!vanishEvent.getCancelCause().isEmpty()) {
                     BukkitCoreSystem.getInstance().getMessenger().send(bukkit(), vanishEvent.getCancelCause());
                 }
