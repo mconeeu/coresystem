@@ -58,7 +58,7 @@ public class PostLoginListener implements Listener {
             BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Benutze §f/friend req §7zum einsehen!");
         }
 
-        BungeeCoreSystem.getInstance().getOverwatch().getReportManager().sendOpenReports(p);
+//        BungeeCoreSystem.getInstance().getOverwatch().getReportManager().sendOpenReports(p);
 
         Title title = ProxyServer.getInstance().createTitle();
         title.title(new TextComponent("§fWillkommen auf §3§lMC ONE"));

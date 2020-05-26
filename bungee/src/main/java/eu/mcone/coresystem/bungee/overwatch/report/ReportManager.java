@@ -32,7 +32,7 @@ import java.util.UUID;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.combine;
 
-public class ReportManager extends GlobalReportManager implements eu.mcone.coresystem.api.bungee.overwatch.report.ReportManager {
+public class ReportManager extends GlobalReportManager {
 
     private final Overwatch overwatch;
 

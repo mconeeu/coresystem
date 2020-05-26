@@ -22,7 +22,7 @@ import java.util.UUID;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.*;
 
-public class BanManager implements eu.mcone.coresystem.api.bungee.overwatch.ban.BanManager {
+public class BanManager {
 
     public BanManager() {
 

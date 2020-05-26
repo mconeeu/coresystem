@@ -13,7 +13,7 @@ import eu.mcone.coresystem.core.overwatch.GlobalOverwatch;
 import lombok.Getter;
 
 @Getter
-public class Overwatch extends GlobalOverwatch implements eu.mcone.coresystem.api.bungee.overwatch.Overwatch {
+public class Overwatch extends GlobalOverwatch {
 
     private final ReportManager reportManager;
     private final BanManager banManager;
