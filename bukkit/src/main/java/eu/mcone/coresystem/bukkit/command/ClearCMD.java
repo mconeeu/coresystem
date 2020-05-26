@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -33,9 +33,9 @@ public class ClearCMD extends CoreCommand {
 
                 if (t != null) {
                     t.getInventory().clear();
-                    CoreSystem.getInstance().getMessenger().send(sender, "§2Du hast erfolgreich das Inventar von §a"+t.getName()+"§2 geleert!");
+                    CoreSystem.getInstance().getMessenger().send(sender, "§2Du hast erfolgreich das Inventar von §a" + t.getName() + "§2 geleert!");
                 } else {
-                    CoreSystem.getInstance().getMessenger().send(sender, "§4Der Spieler §c"+args[0]+"§4 ist nicht online!");
+                    CoreSystem.getInstance().getMessenger().send(sender, "§4Der Spieler §c" + args[0] + "§4 ist nicht online!");
                 }
             } else {
                 CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.noperm");

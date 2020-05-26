@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -7,7 +7,6 @@ package eu.mcone.coresystem.bukkit.listener;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.VanishChatCMD;
 import lombok.Getter;
@@ -60,7 +59,7 @@ public class ChatListener implements Listener {
                             }
 
                             e.getRecipients().remove(receiver);
-                            receiver.sendMessage((cp.isNicked() ? Group.SPIELER.getPrefix() : cp.getMainGroup().getPrefix()) + BukkitCoreSystem.getInstance().getTranslationManager().get("system.chat").replaceAll("%Player%", p.getName()) + targetMessage);
+                            receiver.sendMessage((cp.isNicked() ? cp.getNick().getGroup().getPrefix() : cp.getMainGroup().getPrefix()) + BukkitCoreSystem.getInstance().getTranslationManager().get("system.chat").replaceAll("%Player%", p.getName()) + targetMessage);
                             receiver.playSound(receiver.getLocation(), Sound.NOTE_BASS, 1.0F, 1.0F);
                         }
                     }
@@ -72,7 +71,7 @@ public class ChatListener implements Listener {
                 );
 
                 e.getRecipients().remove(p);
-                p.sendMessage((cp.isNicked() ? Group.SPIELER.getPrefix() : cp.getMainGroup().getPrefix()) + BukkitCoreSystem.getInstance().getTranslationManager().get("system.chat").replaceAll("%Player%", p.getName()) + playerMessage);
+                p.sendMessage((cp.isNicked() ? cp.getNick().getGroup().getPrefix() : cp.getMainGroup().getPrefix()) + BukkitCoreSystem.getInstance().getTranslationManager().get("system.chat").replaceAll("%Player%", p.getName()) + playerMessage);
                 VanishChatCMD.usingCommand.remove(p.getUniqueId());
             } else {
                 e.setCancelled(true);

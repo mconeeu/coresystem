@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -21,7 +21,7 @@ public class SlowchatCMD extends CoreCommand {
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
         if (args.length == 0) {
-            BukkitCoreSystem.getInstance().getMessenger().send(sender, "§2Der Slowchat-Modus ist aktiviert. §a"+ChatListener.getCooldown()+"s Cooldown");
+            BukkitCoreSystem.getInstance().getMessenger().send(sender, "§2Der Slowchat-Modus ist aktiviert. §a" + ChatListener.getCooldown() + "s Cooldown");
             return true;
         } else if (args.length == 1 && !args[0].equalsIgnoreCase("help")) {
             if (args[0].equalsIgnoreCase("reset") || args[0].equalsIgnoreCase("off")) {
@@ -31,17 +31,18 @@ public class SlowchatCMD extends CoreCommand {
                 return true;
             } else if (args[0].equalsIgnoreCase("on")) {
                 ChatListener.setCooldown(DEFAULT_COOLDOWN);
-                BukkitCoreSystem.getInstance().getMessenger().send(sender, "§2Der Slowchat-Modus wurde auf §a"+DEFAULT_COOLDOWN+"s§2 gesetzt!");
+                BukkitCoreSystem.getInstance().getMessenger().send(sender, "§2Der Slowchat-Modus wurde auf §a" + DEFAULT_COOLDOWN + "s§2 gesetzt!");
 
                 return true;
             } else {
                 try {
                     int cooldown = Integer.parseInt(args[0]);
                     ChatListener.setCooldown(cooldown);
-                    BukkitCoreSystem.getInstance().getMessenger().send(sender, "§2Der Slowchat-Modus wurde auf §a"+cooldown+"s§2 gesetzt!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(sender, "§2Der Slowchat-Modus wurde auf §a" + cooldown + "s§2 gesetzt!");
 
                     return true;
-                } catch (NumberFormatException ignored) {}
+                } catch (NumberFormatException ignored) {
+                }
             }
         }
 

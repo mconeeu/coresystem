@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -28,18 +28,21 @@ public interface OfflineCorePlayer extends GlobalOfflineCorePlayer {
 
     /**
      * set the players groups
+     *
      * @param groupList group set
      */
     void setGroups(Set<Group> groupList);
 
     /**
      * add a player group
+     *
      * @param group groups
      */
     void addGroup(Group group);
 
     /**
      * remove a player group
+     *
      * @param group group
      */
     void removeGroup(Group group);

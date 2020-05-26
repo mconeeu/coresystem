@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -11,6 +11,7 @@ public interface CoreTitle {
 
     /**
      * set title
+     *
      * @param title message
      * @return this
      */
@@ -18,6 +19,7 @@ public interface CoreTitle {
 
     /**
      * set sub title
+     *
      * @param subTitle message
      * @return this
      */
@@ -25,6 +27,7 @@ public interface CoreTitle {
 
     /**
      * set fade in time
+     *
      * @param fadeIn time int in seconds
      * @return this
      */
@@ -32,6 +35,7 @@ public interface CoreTitle {
 
     /**
      * set stay time
+     *
      * @param stay time int in seconds
      * @return this
      */
@@ -39,6 +43,7 @@ public interface CoreTitle {
 
     /**
      * set fade out time
+     *
      * @param fadeOut time int in seconds
      * @return this
      */
@@ -46,12 +51,14 @@ public interface CoreTitle {
 
     /**
      * reset all values
+     *
      * @return this
      */
     CoreTitle reset();
 
     /**
      * send Title to player
+     *
      * @param player player
      * @return this
      */

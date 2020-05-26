@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -126,7 +126,7 @@ public class HoloCMD extends CorePlayerCommand {
                         List<String> text = new ArrayList<>(Arrays.asList(holo.getData().getText()));
 
                         if (i <= text.size()) {
-                            text.set(i-1, line.toString());
+                            text.set(i - 1, line.toString());
 
                             api.updateAndSave(holo, text.toArray(new String[0]), holo.getData().getLocation().bukkit());
                             BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Die Zeile §a" + args[2] + "§2 wurde gesetzt!");
@@ -151,7 +151,7 @@ public class HoloCMD extends CorePlayerCommand {
                         List<String> text = new ArrayList<>(Arrays.asList(holo.getData().getText()));
 
                         if (i <= text.size()) {
-                            text.remove(i-1);
+                            text.remove(i - 1);
 
                             api.updateAndSave(holo, text.toArray(new String[0]), holo.getData().getLocation().bukkit());
                             BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Die Zeile §a" + args[2] + "§2 wurde gelöscht!");

@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
 package eu.mcone.coresystem.api.bungee;
 
+import eu.mcone.coresystem.api.bungee.overwatch.Overwatch;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.FriendSystem;
 import eu.mcone.coresystem.api.bungee.player.NickManager;
@@ -37,6 +38,8 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
         }
     }
 
+    public abstract Overwatch getOverwatch();
+
     public abstract FriendSystem getFriendSystem();
 
     public abstract NickManager getNickManager();
@@ -56,6 +59,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     /**
      * creates an CorePlayer object for an offline or online player
      * this object has limited abilities as it should be uses for a potentially offline player
+     *
      * @param name Player name
      * @return OfflineCorePlayer object
      * @throws PlayerNotResolvedException thrown if the wished player is not in the database
@@ -65,6 +69,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     /**
      * creates an CorePlayer object for an offline or online player
      * this object has limited abilities as it should be uses for a potentially offline player
+     *
      * @param uuid Player uuid
      * @return OfflineCorePlayer object
      * @throws PlayerNotResolvedException thrown if the wished player is not in the database
@@ -73,6 +78,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     /**
      * returns an registered CorePlugin
+     *
      * @param name plugin name
      * @return CorePlugin
      */
@@ -80,6 +86,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     /**
      * registers a new CorePlugin in the CoreSystem
+     *
      * @param plugin extended CorePlugin Object
      */
     public abstract void registerPlugin(CorePlugin plugin);

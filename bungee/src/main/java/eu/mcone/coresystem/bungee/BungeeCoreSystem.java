@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -22,6 +22,7 @@ import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.bungee.command.*;
 import eu.mcone.coresystem.bungee.friend.FriendSystem;
 import eu.mcone.coresystem.bungee.listener.*;
+import eu.mcone.coresystem.bungee.overwatch.Overwatch;
 import eu.mcone.coresystem.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.bungee.player.BungeeOfflineCorePlayer;
 import eu.mcone.coresystem.bungee.player.NickManager;
@@ -32,7 +33,7 @@ import eu.mcone.coresystem.bungee.utils.ChannelHandler;
 import eu.mcone.coresystem.bungee.player.LabyModManager;
 import eu.mcone.coresystem.bungee.utils.bots.discord.DiscordControlBot;
 import eu.mcone.coresystem.bungee.utils.bots.teamspeak.TeamspeakVerifier;
-import eu.mcone.coresystem.bungee.utils.replay.ReplayServerSessionHandler;
+import eu.mcone.coresystem.bungee.overwatch.replay.ReplayServerSessionHandler;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
@@ -74,6 +75,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private PreferencesManager preferences;
     @Getter
     private PermissionManager permissionManager;
+    @Getter
+    private Overwatch overwatch;
     @Getter
     private CoreCooldownSystem cooldownSystem;
     @Getter
@@ -165,6 +168,9 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aLoading Permissions & Groups...");
         permissionManager = new PermissionManager("Proxy", getMongoDB());
 
+        sendConsoleMessage("§aLoading §eOverwatch §aSystem...");
+        overwatch = new Overwatch(this);
+
         sendConsoleMessage("§aLoading FriendSystem...");
         friendSystem = new FriendSystem();
 
@@ -199,7 +205,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         sendConsoleMessage("§aRegistering Plugin Messaging Channel...");
         getProxy().registerChannel("MC_ONE_RETURN");
-
         getProxy().registerChannel("MC_ONE_INFO");
 
         sendConsoleMessage("§aVersion: §f" + this.getDescription().getVersion() + "§a enabled!");
@@ -214,7 +219,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         try {
             mongoConnection.disconnect();
-        } catch (NoClassDefFoundError ignored) {}
+        } catch (NoClassDefFoundError ignored) {
+        }
         sendConsoleMessage("§cPlugin disabled!");
     }
 
@@ -244,7 +250,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new JumpCMD(),
                 new MsgCMD(),
                 new ReplyCMD(),
-                new ReportCMD(),
+                new ReportCMD(overwatch),
                 new HelpCMD(),
                 new BungeecordCMD(),
                 new RegisterCMD(),

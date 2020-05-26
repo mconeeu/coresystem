@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -11,6 +11,7 @@ public interface GlobalCorePlayer extends GlobalOfflineCorePlayer {
 
     /**
      * get players IP-Adress
+     *
      * @return IP-Adress as String
      */
     String getIpAdress();
@@ -18,6 +19,7 @@ public interface GlobalCorePlayer extends GlobalOfflineCorePlayer {
     /**
      * adds the player a specific permission
      * this permission gets removed after the PermissionManager or the players permissions get reloaded
+     *
      * @param permission permission String
      */
     void addSemiPermission(String permission);
@@ -25,18 +27,21 @@ public interface GlobalCorePlayer extends GlobalOfflineCorePlayer {
     /**
      * removes either a normal or a semi permission
      * if its a normal permission, it gets added after the PermissionManager or the players permissions get reloaded
+     *
      * @param permission permission String
      */
     void removeSemiPermission(String permission);
 
     /**
      * check if a player is nicked
+     *
      * @return boolean nicked
      */
     boolean isNicked();
 
     /**
      * returns the unique id and other LabyMod spefific packets if player is connected via LabyMod
+     *
      * @return LabyModConnection object
      */
     LabyModConnection getLabyModConnection();
@@ -48,8 +53,9 @@ public interface GlobalCorePlayer extends GlobalOfflineCorePlayer {
 
     /**
      * sends the player a message
+     *
      * @param message message
      */
     void sendMessage(String message);
-    
+
 }

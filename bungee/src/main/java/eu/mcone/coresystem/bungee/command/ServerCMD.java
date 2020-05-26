@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -31,7 +31,8 @@ public class ServerCMD extends Command implements TabExecutor {
     public void execute(final CommandSender sender, final String[] args) {
         if (sender instanceof ProxiedPlayer) {
             final ProxiedPlayer p = (ProxiedPlayer) sender;
-            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId()))
+                return;
 
             if (args.length == 0) {
                 BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Du befindest dich gerade auf dem Server: §f" + p.getServer().getInfo().getName());
@@ -42,8 +43,8 @@ public class ServerCMD extends Command implements TabExecutor {
                 for (ServerInfo si : servers.values()) {
                     cb
                             .append(ChatColor.GREEN + si.getName())
-                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§f"+si.getPlayers().size()+" Spieler\n§7§oLinksklick zum Joinen").create()))
-                            .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/server "+si.getName()));
+                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§f" + si.getPlayers().size() + " Spieler\n§7§oLinksklick zum Joinen").create()))
+                            .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/server " + si.getName()));
                     i++;
                     if (i >= servers.values().size()) break;
 
@@ -66,8 +67,7 @@ public class ServerCMD extends Command implements TabExecutor {
         }
     }
 
-    public Iterable<String> onTabComplete(final CommandSender sender, final String[] args)
-    {
+    public Iterable<String> onTabComplete(final CommandSender sender, final String[] args) {
         ArrayList<String> result = new ArrayList<>();
         if (args.length == 1) {
             for (ServerInfo si : ProxyServer.getInstance().getServers().values()) {

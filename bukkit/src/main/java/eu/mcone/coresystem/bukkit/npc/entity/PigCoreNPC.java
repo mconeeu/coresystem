@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * You are not allowed to decompile the code
+ */
+
 package eu.mcone.coresystem.bukkit.npc.entity;
 
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
@@ -52,7 +57,7 @@ public class PigCoreNPC extends CoreNPC<EntityPigNPC, PigNpcData> implements Pig
         ReflectionManager.setValue(spawnPacket, "i", (byte) ((int) (location.getYaw() * 256.0F / 360.0F)));
         ReflectionManager.setValue(spawnPacket, "j", (byte) ((int) (location.getPitch() * 256.0F / 360.0F)));
         ReflectionManager.setValue(spawnPacket, "l", entity.getDataWatcher());
-        
+
         sendPackets(player, spawnPacket);
         //entity.follow(player);
     }

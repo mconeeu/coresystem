@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -13,6 +13,7 @@ public interface CoreAnvilInventory {
 
     /**
      * sets an item in the inventory
+     *
      * @param slot anvil slot
      * @param item item stack
      * @return this
@@ -21,6 +22,7 @@ public interface CoreAnvilInventory {
 
     /**
      * opens the anvil inventory for a player
+     *
      * @param player target player
      * @return returns the opened inventory
      */
@@ -28,6 +30,7 @@ public interface CoreAnvilInventory {
 
     /**
      * destroys the Inventory with the AnvilClickEventHandler
+     *
      * @return returns the destroyed anvil inventory
      */
     CoreAnvilInventory destroy();

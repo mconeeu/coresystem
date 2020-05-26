@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -38,13 +38,13 @@ public class BlockLocationListener implements Listener {
             if (entry.world.bukkit().equals(p.getWorld())) {
                 entry.world.setBlockLocation(entry.name, e.getClickedBlock().getLocation()).save();
                 BukkitCoreSystem.getInstance().getMessenger().send(p,
-                        "§2Die Location §a"+entry.name+"§2 wurde erfolgreich für den geklickten Block " +
-                                "mit dem Material §f"+e.getClickedBlock().getType().toString()+"§2 abgespeichert"
+                        "§2Die Location §a" + entry.name + "§2 wurde erfolgreich für den geklickten Block " +
+                                "mit dem Material §f" + e.getClickedBlock().getType().toString() + "§2 abgespeichert"
                 );
             } else {
                 BukkitCoreSystem.getSystem().getMessenger().send(p,
-                        "§4Du hattest den set Befehl in der Welt §c"+entry.world.getName()+"§4 ausgeführt! " +
-                        "Falls du eine BlockLocation in dieser Welt setzen willst, gib ihn hier erneut an."
+                        "§4Du hattest den set Befehl in der Welt §c" + entry.world.getName() + "§4 ausgeführt! " +
+                                "Falls du eine BlockLocation in dieser Welt setzen willst, gib ihn hier erneut an."
                 );
             }
 

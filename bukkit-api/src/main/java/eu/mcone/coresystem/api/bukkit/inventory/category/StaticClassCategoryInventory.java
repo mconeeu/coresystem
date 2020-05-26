@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -22,7 +22,7 @@ public class StaticClassCategoryInventory extends CategoryInventory {
         this.categoryInventories = new HashMap<>();
     }
 
-    public void addCategoryWithInventoryClass(ItemStack itemStack, Class<? extends StaticClassCategoryInventory> categoryClass){
+    public void addCategoryWithInventoryClass(ItemStack itemStack, Class<? extends StaticClassCategoryInventory> categoryClass) {
         categoryInventories.put(itemStack, categoryClass);
         addCategory(itemStack);
     }

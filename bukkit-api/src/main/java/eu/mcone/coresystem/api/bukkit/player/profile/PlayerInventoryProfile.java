@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -22,11 +22,12 @@ import org.bukkit.inventory.PlayerInventory;
 import java.util.*;
 
 @NoArgsConstructor
-@Getter @Setter
+@Getter
+@Setter
 public class PlayerInventoryProfile extends PlayerDataProfile {
 
     public static final String ENDERCHEST_TITLE = "§8Deine Enderkiste";
-    private static final LinkedHashMap<String, Integer> ENDERCHEST_SIZES = new LinkedHashMap<String, Integer>(){{
+    private static final LinkedHashMap<String, Integer> ENDERCHEST_SIZES = new LinkedHashMap<String, Integer>() {{
         put("system.bukkit.enderchest.xl", InventorySlot.ROW_6);
         put("system.bukkit.enderchest.l", InventorySlot.ROW_5);
         put("system.bukkit.enderchest.m", InventorySlot.ROW_4);
@@ -76,7 +77,7 @@ public class PlayerInventoryProfile extends PlayerDataProfile {
         }
 
         ItemStack[] armor = p.getInventory().getArmorContents();
-        for (int i=0, x=36; i<4; i++, x++) {
+        for (int i = 0, x = 36; i < 4; i++, x++) {
             items.put(String.valueOf(x), armor[i]);
         }
     }
@@ -93,7 +94,7 @@ public class PlayerInventoryProfile extends PlayerDataProfile {
         }
 
         ItemStack[] armor = p.getInventory().getArmorContents();
-        for (int i=0, x=36; i<4; i++, x++) {
+        for (int i = 0, x = 36; i < 4; i++, x++) {
             items.put(String.valueOf(x), armor[i]);
         }
     }
@@ -114,7 +115,7 @@ public class PlayerInventoryProfile extends PlayerDataProfile {
             if (i < 36) {
                 inv.setItem(i, item.getValue());
             } else {
-                armor[i-36] = item.getValue();
+                armor[i - 36] = item.getValue();
             }
         }
         inv.setArmorContents(armor);
@@ -147,7 +148,7 @@ public class PlayerInventoryProfile extends PlayerDataProfile {
 
             if (!dropItems.isEmpty()) {
                 for (ItemStack i : dropItems.values()) {
-                    p.getWorld().dropItem(p.getLocation().add(0,1,0), i);
+                    p.getWorld().dropItem(p.getLocation().add(0, 1, 0), i);
                 }
 
                 Bukkit.getScheduler().runTaskLaterAsynchronously(CoreSystem.getInstance(), () -> EC_SIZE_CHANGED_TITLE.send(p), 10L);

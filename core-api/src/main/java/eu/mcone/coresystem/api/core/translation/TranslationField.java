@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -31,6 +31,7 @@ public final class TranslationField {
 
     /**
      * get all translation values as list. ordered like the language enum
+     *
      * @return translation list
      */
     public Collection<String> getTranslations() {
@@ -39,6 +40,7 @@ public final class TranslationField {
 
     /**
      * returns the translation for a specific language
+     *
      * @param language language
      * @return translation
      */
@@ -48,6 +50,7 @@ public final class TranslationField {
 
     /**
      * returns the translation for a specific language as Integer
+     *
      * @param language language
      * @return translation
      */
@@ -57,6 +60,7 @@ public final class TranslationField {
 
     /**
      * returns the translation for a specific language as Boolean
+     *
      * @param language language
      * @return translation
      */

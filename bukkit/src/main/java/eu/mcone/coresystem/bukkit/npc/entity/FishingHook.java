@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * You are not allowed to decompile the code
+ */
+
 package eu.mcone.coresystem.bukkit.npc.entity;
 
 import eu.mcone.coresystem.bukkit.npc.nms.EntityHumanNPC;
@@ -14,7 +19,7 @@ public class FishingHook extends EntityFishingHook {
     private final Location location;
     private final EntityHumanNPC npc;
 
-    public FishingHook(Location location, EntityHumanNPC npc){
+    public FishingHook(Location location, EntityHumanNPC npc) {
         super(((CraftWorld) location.getWorld()).getHandle(), npc);
         this.location = location;
         world = ((CraftWorld) location.getWorld()).getHandle();
@@ -26,7 +31,7 @@ public class FishingHook extends EntityFishingHook {
         this.npc = npc;
     }
 
-    public void spawn(){
+    public void spawn() {
         world.addEntity(this);
         Vector velocity = location.getDirection().multiply(1.5);
         CraftEntity entity = this.getBukkitEntity();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -11,6 +11,7 @@ public interface AfkManager {
 
     /**
      * returns true if player is currently afk
+     *
      * @param uuid the wished players uuid
      * @return player is afk
      */
@@ -19,6 +20,7 @@ public interface AfkManager {
     /**
      * returns the players afk time in seconds as long
      * if player is not afk it will return 0
+     *
      * @param uuid the wished players uuid
      * @return players afk time long
      */

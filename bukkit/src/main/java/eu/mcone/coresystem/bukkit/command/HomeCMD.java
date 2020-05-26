@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -42,7 +42,7 @@ public class HomeCMD extends CorePlayerCommand {
             if (it.hasNext()) {
                 Map.Entry<String, Location> home = it.next();
 
-                messager.send(p, "§2Teleportiere zu Home §a"+home.getKey());
+                messager.send(p, "§2Teleportiere zu Home §a" + home.getKey());
                 cp.teleportWithCooldown(home.getValue(), cooldown);
             } else {
                 messager.send(p, "§7§oDu hast noch keine Homes auf diesem Server!");
@@ -58,10 +58,10 @@ public class HomeCMD extends CorePlayerCommand {
                 Location home = api.getHome(args[0]);
 
                 if (home != null) {
-                    messager.send(p, "§2Teleportiere zu Home §a"+args[0]);
+                    messager.send(p, "§2Teleportiere zu Home §a" + args[0]);
                     cp.teleportWithCooldown(home, cooldown);
                 } else {
-                    messager.send(p, "§4Du hast kein Home mit dem Namen §c"+args[0]);
+                    messager.send(p, "§4Du hast kein Home mit dem Namen §c" + args[0]);
                 }
             }
 

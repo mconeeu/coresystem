@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -8,6 +8,7 @@ package eu.mcone.coresystem.core.player;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.exception.RuntimeCoreException;
+import eu.mcone.coresystem.api.core.overwatch.trust.TrustedUser;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.PlayerState;
@@ -58,6 +59,8 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     @Getter
     @Setter
     protected PlayerSettings settings;
+    @Getter
+    protected transient TrustedUser trust;
 
     GlobalOfflineCorePlayer(final GlobalCoreSystem instance, UUID uuid, String name, boolean online) {
         this.instance = instance;
@@ -131,6 +134,7 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         this.settings = new PlayerSettings();
         this.state = online ? PlayerState.ONLINE : PlayerState.OFFLINE;
         this.isNew = true;
+        this.trust = new TrustedUser();
 
         instance.runAsync(() -> {
             ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 is new! Registering in Database...");
@@ -145,6 +149,7 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
                             .append("player_settings", settings)
                             .append("state", online ? PlayerState.ONLINE.getId() : PlayerState.OFFLINE.getId())
                             .append("online_time", onlinetime)
+                            .append("trust", trust)
                     );
         });
     }
@@ -160,6 +165,7 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         this.state = online ? PlayerState.ONLINE : entry.getInteger("state") != null ? PlayerState.getPlayerStateById(entry.getInteger("state")) : PlayerState.OFFLINE;
         this.onlinetime = entry.getLong("online_time") != null ? entry.getLong("online_time") : 0;
         this.settings = entry.get("player_settings") != null ? ((CoreModuleCoreSystem) instance).getGson().fromJson(entry.get("player_settings", Document.class).toJson(), PlayerSettings.class) : new PlayerSettings();
+        this.trust = new TrustedUser(entry.get("trust", Document.class));
     }
 
     @Override
@@ -189,6 +195,11 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     public Set<Group> updateGroupsFromDatabase() {
         @NonNull Document entry = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
         return groupSet = instance.getPermissionManager().getGroups(entry.get("groups", new ArrayList<>()));
+    }
+
+    @Override
+    public void updateTrust() {
+        ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", this.uuid.toString()), set("trust", trust));
     }
 
     @Override

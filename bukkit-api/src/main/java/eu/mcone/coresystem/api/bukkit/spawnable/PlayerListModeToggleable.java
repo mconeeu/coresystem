@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -20,6 +20,7 @@ public interface PlayerListModeToggleable {
     /**
      * makes the NPC either visible or unvisible for a specific player
      * this will add|remove the player to the NPCs black-|whitelist
+     *
      * @param player target player
      * @param canSee if the NPC should be shown or hidden
      */
@@ -27,6 +28,7 @@ public interface PlayerListModeToggleable {
 
     /**
      * returns if the player is allowed to see the NPC if the player is in its range. Calculated by the NpcVisibility settings
+     *
      * @param player target player
      * @return if player is allowed to see NPC due to NpcVisibility settings
      */

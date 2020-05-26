@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -54,7 +54,7 @@ public class CorePlayerUpdateListener implements Listener {
                 }
 
                 for (ProxiedPlayer p : servers.values()) {
-                    CoreSystem.getInstance().getChannelHandler().createInfoRequest(p, "EVENT", "PermissionChangeEvent", "GROUP_PERMISSION;["+target.getId()+"]");
+                    CoreSystem.getInstance().getChannelHandler().createInfoRequest(p, "EVENT", "PermissionChangeEvent", "GROUP_PERMISSION;[" + target.getId() + "]");
                 }
             });
         } else if (e.getType() == PermissionChangeEvent.Type.USER_PERMISSION) {
@@ -82,7 +82,7 @@ public class CorePlayerUpdateListener implements Listener {
                         p.bungee(),
                         "EVENT",
                         "PermissionChangeEvent",
-                        "GROUP_CHANGE;"+CoreSystem.getInstance().getGson().toJson(
+                        "GROUP_CHANGE;" + CoreSystem.getInstance().getGson().toJson(
                                 CoreSystem.getInstance().getPermissionManager().getGroupIDs(e.getGroups())
                         )
                 );

@@ -1,10 +1,9 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
 package eu.mcone.coresystem.api.bukkit.gamemode;
-
 
 import lombok.Getter;
 import org.bukkit.ChatColor;
@@ -19,6 +18,7 @@ public enum Gamemode {
     TRASHWARS("TW", "Trashwars", ChatColor.GREEN, Material.IRON_PICKAXE),
     TTT("TTT", "Trouble in Terrorist Town", ChatColor.RED, Material.LEATHER_CHESTPLATE),
     GAMBLE("GM", "Gamble", ChatColor.GOLD, Material.DIAMOND),
+    ONE_ATTACK("OA", "One Attack", ChatColor.BLUE, Material.DIAMOND_SWORD),
     BUILD("BU", "Build", ChatColor.YELLOW, Material.GRASS),
     UNDEFINED("UD", "undefined", ChatColor.DARK_GRAY, Material.COAL);
 

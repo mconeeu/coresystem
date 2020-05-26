@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -23,6 +23,7 @@ public final class ItemBuilder {
 
     /**
      * create ItemBuilder
+     *
      * @param material material
      */
     public ItemBuilder(Material material) {
@@ -33,8 +34,9 @@ public final class ItemBuilder {
 
     /**
      * create ItemBuilder
+     *
      * @param material material
-     * @param amount amount of items in ItemStack
+     * @param amount   amount of items in ItemStack
      */
     public ItemBuilder(Material material, int amount) {
         itemStack = new ItemStack(material, amount);
@@ -44,9 +46,10 @@ public final class ItemBuilder {
 
     /**
      * create ItemBuilder
+     *
      * @param material material
-     * @param amount amount of items in ItemStack
-     * @param subId sub ID of the material
+     * @param amount   amount of items in ItemStack
+     * @param subId    sub ID of the material
      */
     public ItemBuilder(Material material, int amount, int subId) {
         itemStack = new ItemStack(material, amount, (short) subId);
@@ -56,9 +59,10 @@ public final class ItemBuilder {
 
     /**
      * create ItemBuilder with short sub ID
+     *
      * @param material material
-     * @param amount amount of items in ItemStack
-     * @param subId sub ID of the material
+     * @param amount   amount of items in ItemStack
+     * @param subId    sub ID of the material
      */
     public ItemBuilder(Material material, int amount, short subId) {
         itemStack = new ItemStack(material, amount, subId);
@@ -85,8 +89,9 @@ public final class ItemBuilder {
 
     /**
      * create ItemBuilder for LeatherArmor item
+     *
      * @param material Material of LeatherArmor item
-     * @param color color of leather item
+     * @param color    color of leather item
      * @return new ItemBuilder
      */
     public static ItemBuilder createLeatherArmorItem(Material material, Color color) {
@@ -98,6 +103,7 @@ public final class ItemBuilder {
 
     /**
      * change displayname of the item
+     *
      * @param displayName displayname
      * @return this
      */
@@ -108,6 +114,7 @@ public final class ItemBuilder {
 
     /**
      * set loren of the item
+     *
      * @param lore loren (Array)
      * @return this
      */
@@ -118,6 +125,7 @@ public final class ItemBuilder {
 
     /**
      * set loren of the item
+     *
      * @param loren loren (ArrayList)
      * @return this
      */
@@ -128,6 +136,7 @@ public final class ItemBuilder {
 
     /**
      * add a lore of the item
+     *
      * @param lore lore (String)
      * @return this
      */
@@ -142,8 +151,9 @@ public final class ItemBuilder {
 
     /**
      * add enchantment
+     *
      * @param enchantment enchantment
-     * @param level level of enchantment
+     * @param level       level of enchantment
      * @return this
      */
     public ItemBuilder enchantment(Enchantment enchantment, int level) {
@@ -153,6 +163,7 @@ public final class ItemBuilder {
 
     /**
      * add enchantment
+     *
      * @param enchantments Map of enchantments
      * @return this
      */
@@ -165,6 +176,7 @@ public final class ItemBuilder {
 
     /**
      * add ItemFlags
+     *
      * @param flags item flags (Array)
      * @return this
      */
@@ -175,6 +187,7 @@ public final class ItemBuilder {
 
     /**
      * set if item should be unbreakable
+     *
      * @param unbreakable boolean unbreakable
      * @return this
      */
@@ -185,6 +198,7 @@ public final class ItemBuilder {
 
     /**
      * returns a new ItemBuilder with a fresh ItemStack instance
+     *
      * @return new ItemBuilder
      */
     public ItemBuilder clone() {
@@ -196,6 +210,7 @@ public final class ItemBuilder {
 
     /**
      * create ItemStack
+     *
      * @return ItemStack
      */
     public ItemStack create() {

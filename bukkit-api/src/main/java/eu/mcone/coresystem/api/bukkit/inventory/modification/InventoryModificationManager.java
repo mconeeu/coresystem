@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -80,7 +80,8 @@ public interface InventoryModificationManager {
 
     /**
      * Sets a player modifying an Inventory
-     *  @param player Bukkit Player
+     *
+     * @param player    Bukkit Player
      * @param inventory modifiying Inventory
      */
     ModifyInventory setCurrentlyModifying(Player player, ModifyInventory inventory);
@@ -103,8 +104,8 @@ public interface InventoryModificationManager {
     /**
      * Checks if the inventory for the Player uuid and name is modified
      *
-     * @param uuid   Player UUID
-     * @param inv    the Modify inventory that should be checked
+     * @param uuid Player UUID
+     * @param inv  the Modify inventory that should be checked
      * @return boolean
      */
     boolean hasInventoryModified(UUID uuid, ModifyInventory inv);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -37,9 +37,9 @@ public class CoreInventory implements ItemEventStore {
     /**
      * creates new CoreInventory
      *
-     * @param title inventory title
-     * @param size  inventory size
-     * @param options  options
+     * @param title   inventory title
+     * @param size    inventory size
+     * @param options options
      */
     public CoreInventory(String title, Player player, int size, InventoryOption... options) {
         this.player = player;

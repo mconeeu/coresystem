@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -27,8 +27,8 @@ public class TpdenyCMD extends CorePlayerCommand {
 
             if (t != null) {
                 if (TpaCMD.players.containsKey(t.getName()) && TpaCMD.players.get(t.getName()).contains(p.getName())) {
-                    messager.send(p, "§7Du hast die Teleportanfrage von §f"+t.getName()+"§7 abgelehnt!");
-                    messager.send(t, "§f"+args[0]+"§7 hat deine Anfrage §cabgelehnt§7!");
+                    messager.send(p, "§7Du hast die Teleportanfrage von §f" + t.getName() + "§7 abgelehnt!");
+                    messager.send(t, "§f" + args[0] + "§7 hat deine Anfrage §cabgelehnt§7!");
                     TpaCMD.players.get(t.getName()).remove(p.getName());
                 } else {
                     messager.send(p, "§4Dieser Spieler hat dir keine Teleportanfrage geschickt!");

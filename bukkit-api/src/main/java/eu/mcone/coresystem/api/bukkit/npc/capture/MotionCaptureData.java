@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
+ * You are not allowed to decompile the code
+ */
+
 package eu.mcone.coresystem.api.bukkit.npc.capture;
 
 import eu.mcone.coresystem.api.bukkit.npc.capture.packets.PacketContainer;
@@ -26,7 +31,8 @@ public class MotionCaptureData {
     @Getter
     private Map<String, List<PacketContainer>> motionData;
 
-    public MotionCaptureData() {}
+    public MotionCaptureData() {
+    }
 
     public MotionCaptureData(final String name, final MotionRecorder motionRecorder) {
         this.name = name;

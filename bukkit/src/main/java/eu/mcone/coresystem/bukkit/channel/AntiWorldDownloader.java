@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -16,9 +16,9 @@ public class AntiWorldDownloader implements PluginMessageListener {
         if (channel.equalsIgnoreCase("WDL|INIT") && !player.hasPermission("system.bukkit.allowworlddownload")) {
             CoreSystem.getInstance().getChannelHandler().sendPluginMessage(player, "BungeeCord", "KickPlayer", player.getName(),
                     "§f§lMC ONE §3Minecraftnetzwerk\n" +
-                    "§4§oDu wurdest vom Netzwerk gekickt\n" +
-                    "§r\n" +
-                    "§7WorldDownloader ist auf MC ONE nicht erlaubt!");
+                            "§4§oDu wurdest vom Netzwerk gekickt\n" +
+                            "§r\n" +
+                            "§7WorldDownloader ist auf MC ONE nicht erlaubt!");
         }
     }
 

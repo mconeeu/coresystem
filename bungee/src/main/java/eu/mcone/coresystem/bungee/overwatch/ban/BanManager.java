@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
-package eu.mcone.coresystem.bungee.ban;
+package eu.mcone.coresystem.bungee.overwatch.ban;
 
 import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
@@ -22,7 +22,11 @@ import java.util.UUID;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.*;
 
-public class BanManager {
+public class BanManager implements eu.mcone.coresystem.api.bungee.overwatch.ban.BanManager {
+
+    public BanManager() {
+
+    }
 
     public static void ban(UUID gebannt, BanTemplate template, String grund, UUID team_member) {
         CoreSystem.getInstance().sendConsoleMessage("Banning user with uuid \"" + gebannt.toString() + "\" with template \"" + template.getName() + "\" with reason \"" + grund + "\" by team member with uuid \"" + team_member.toString() + "\"");

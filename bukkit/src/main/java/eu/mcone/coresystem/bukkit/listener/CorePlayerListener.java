@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -137,6 +137,11 @@ public class CorePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuitMonitor(PlayerQuitEvent e) {
+        Player bukkit = e.getPlayer();
+        if (BukkitCoreSystem.getSystem().getOverwatch().getReportManager().currentlyWorkingOnReport(bukkit.getUniqueId())) {
+            BukkitCoreSystem.getSystem().getChannelHandler().createSetRequest(bukkit, "REPORT", "REMOVE", BukkitCoreSystem.getSystem().getOverwatch().getReportManager().getCurrentlyEditing(bukkit.getUniqueId()).getReportID());
+        }
+
         BukkitCorePlayer p = (BukkitCorePlayer) BukkitCoreSystem.getSystem().getCorePlayer(e.getPlayer());
         p.unregisterAttachment();
 

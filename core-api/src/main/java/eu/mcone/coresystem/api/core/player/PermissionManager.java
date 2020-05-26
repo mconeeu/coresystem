@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -18,6 +18,7 @@ public interface PermissionManager {
 
     /**
      * get all parent groups from group, empty if group has no parents
+     *
      * @param group group
      * @return parent set
      */
@@ -25,6 +26,7 @@ public interface PermissionManager {
 
     /**
      * get all child groups from gruop, empty if group has no children
+     *
      * @param group group
      * @return children set
      */
@@ -32,7 +34,8 @@ public interface PermissionManager {
 
     /**
      * get all permissions for a specific set of group and player
-     * @param uuid player uuid
+     *
+     * @param uuid   player uuid
      * @param groups groups
      * @return permission set (including player-permissions)
      */
@@ -40,20 +43,23 @@ public interface PermissionManager {
 
     /**
      * check if permission set contains specific permission
+     *
      * @param permissions permission set
-     * @param permission permission
+     * @param permission  permission
      * @return boolean contains
      */
     boolean hasPermission(Set<String> permissions, String permission);
 
     /**
      * get all groups, in database
+     *
      * @return groups
      */
     Set<Group> getGroups();
 
     /**
      * get all groups from json String
+     *
      * @param groups List of group-ids
      * @return group set
      */
@@ -61,9 +67,10 @@ public interface PermissionManager {
 
     /**
      * get json String from group set
+     *
      * @param groups group set
      * @return json String
      */
     List<Integer> getGroupIDs(Set<Group> groups);
-    
+
 }

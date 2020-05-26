@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -9,6 +9,12 @@ import java.io.*;
 
 public class GenericUtils {
 
+    /**
+     * Serializes a object to an byteArray
+     *
+     * @param object Object
+     * @return byte array
+     */
     public static byte[] serialize(final Object object) {
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -23,6 +29,12 @@ public class GenericUtils {
         return null;
     }
 
+    /**
+     * Deserializes a object to an Object
+     *
+     * @param byteArray serialized object
+     * @return Object
+     */
     public static Object deserialize(final byte[] byteArray) {
         try {
             ByteArrayInputStream bis = new ByteArrayInputStream(byteArray);

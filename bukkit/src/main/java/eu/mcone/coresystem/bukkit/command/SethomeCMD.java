@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -18,7 +18,7 @@ public class SethomeCMD extends CorePlayerCommand {
 
     private final Messenger messager;
     private final HomeManagerGetter apiGetter;
-    
+
     public SethomeCMD(CorePlugin plugin, HomeManagerGetter apiGetter) {
         super("sethome");
         this.messager = plugin.getMessenger();
@@ -31,13 +31,13 @@ public class SethomeCMD extends CorePlayerCommand {
 
         if (args.length == 1) {
             if (args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("set") || args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("del")) {
-                messager.send(p, "§4Dein Home darf nicht §c"+args[0].toLowerCase()+"§4 heißen!");
+                messager.send(p, "§4Dein Home darf nicht §c" + args[0].toLowerCase() + "§4 heißen!");
             } else if (args[0].length() <= 16) {
                 CorePlayer cp = BukkitCoreSystem.getSystem().getCorePlayer(p);
                 int maxHomes = 0;
 
                 for (int i = 50; i > 0; i--) {
-                    if (cp.hasPermission("system.bukkit.home."+i)) {
+                    if (cp.hasPermission("system.bukkit.home." + i)) {
                         maxHomes = i;
                         break;
                     }
@@ -47,9 +47,9 @@ public class SethomeCMD extends CorePlayerCommand {
                     messager.sendTransl(p, "system.command.noperm");
                 } else if (api.getHomes().size() < maxHomes) {
                     api.setHome(args[0], p.getLocation());
-                    messager.send(p, "§2Dein Home §a"+args[0]+"§2 wurde erfolgreich gesetzt!");
+                    messager.send(p, "§2Dein Home §a" + args[0] + "§2 wurde erfolgreich gesetzt!");
                 } else {
-                    messager.send(p, "§4Du hast bereits die maximale Anzahl von §c"+maxHomes+" Homes§4 verwendet! Benutze §c/delhome <name>§4 um ein Home zu löschen!");
+                    messager.send(p, "§4Du hast bereits die maximale Anzahl von §c" + maxHomes + " Homes§4 verwendet! Benutze §c/delhome <name>§4 um ein Home zu löschen!");
                 }
             } else {
                 messager.send(p, "§4Der Name deines Homes darf nicht länger als 16 Zeichen sein!");

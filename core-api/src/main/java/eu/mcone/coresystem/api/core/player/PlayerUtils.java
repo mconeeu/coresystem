@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -13,6 +13,7 @@ public interface PlayerUtils {
 
     /**
      * Returns the skin info of a player with the specified UUID
+     *
      * @param uuid uuid
      * @return skin
      */
@@ -20,6 +21,7 @@ public interface PlayerUtils {
 
     /**
      * Returns the skin info of a player with the specified name
+     *
      * @param name name
      * @return skin
      */
@@ -27,6 +29,7 @@ public interface PlayerUtils {
 
     /**
      * construct new SkinInfo with in database stored texture
+     *
      * @param databaseName packets texture name
      * @return new SkinInfo object
      */
@@ -34,6 +37,7 @@ public interface PlayerUtils {
 
     /**
      * fetch uuid from name, first method is getting from database
+     *
      * @param name name
      * @return uuid
      */
@@ -41,6 +45,7 @@ public interface PlayerUtils {
 
     /**
      * fetch uuid from name with mojang api
+     *
      * @param name name
      * @return uuid
      */
@@ -48,6 +53,7 @@ public interface PlayerUtils {
 
     /**
      * fetch name from uuid, first method is getting from database
+     *
      * @param uuid uuid
      * @return name
      */
@@ -55,6 +61,7 @@ public interface PlayerUtils {
 
     /**
      * fetch uuid from name with mojang api
+     *
      * @param uuid uuid
      * @return name
      */
@@ -62,11 +69,12 @@ public interface PlayerUtils {
 
     /**
      * cunstruct new SkinInfo
-     * @param name packets name
-     * @param value mojang-value
+     *
+     * @param name      packets name
+     * @param value     mojang-value
      * @param signature mojang-signature
      * @return new SkinInfo object
      */
     SkinInfo constructSkinInfo(String name, String value, String signature);
-    
+
 }

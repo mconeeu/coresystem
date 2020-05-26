@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -102,14 +102,14 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
 
     @Override
     public boolean hasPermission(Set<String> permissions, String permission) {
-        if(permissions.contains(permission) || permissions.contains("*") || permission == null) {
+        if (permissions.contains(permission) || permissions.contains("*") || permission == null) {
             return true;
         } else {
             String[] permissionSplit = permission.replace('.', '-').split("-");
             StringBuilder permConstrutor = new StringBuilder();
-            for(int i=0;i<permissionSplit.length-1;i++) {
+            for (int i = 0; i < permissionSplit.length - 1; i++) {
                 permConstrutor.append(permConstrutor.toString().equals("") ? "" : ".").append(permissionSplit[i]);
-                if(permissions.contains(permConstrutor+".*")) {
+                if (permissions.contains(permConstrutor + ".*")) {
                     return true;
                 }
             }

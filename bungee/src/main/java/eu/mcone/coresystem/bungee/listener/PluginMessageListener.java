@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -11,10 +11,8 @@ import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.friend.Party;
-import eu.mcone.coresystem.bungee.utils.replay.ReplayServerSession;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.connection.Connection;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.PluginMessageEvent;
@@ -33,12 +31,12 @@ public class PluginMessageListener implements Listener {
 
     @EventHandler
     public void on(PluginMessageEvent e) {
-        if (e.getTag().equalsIgnoreCase("BungeeCord")) {
-            final DataInputStream in = new DataInputStream(new ByteArrayInputStream(e.getData()));
-            final ProxiedPlayer p = ProxyServer.getInstance().getPlayer(e.getReceiver().toString());
-            final CorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p);
+        try {
+            if (e.getTag().equalsIgnoreCase("BungeeCord")) {
+                final DataInputStream in = new DataInputStream(new ByteArrayInputStream(e.getData()));
+                final ProxiedPlayer p = ProxyServer.getInstance().getPlayer(e.getReceiver().toString());
+                final CorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p);
 
-            try {
                 String mainChannel = in.readUTF();
 
                 if (mainChannel.equalsIgnoreCase("MC_ONE_GET")) {
@@ -93,7 +91,20 @@ public class PluginMessageListener implements Listener {
                 } else if (mainChannel.equals("MC_ONE_SET")) {
                     String subch = in.readUTF();
 
-                    if (subch.equalsIgnoreCase("CMD")) {
+                    if (subch.equalsIgnoreCase("REPORT")) {
+                        String action = in.readUTF();
+
+                        if (action.equalsIgnoreCase("NEW")) {
+                            BungeeCoreSystem.getSystem().getOverwatch().getReportManager().addLiveReportFromDB(in.readUTF());
+                        } else if (action.equalsIgnoreCase("UPDATE")) {
+                            BungeeCoreSystem.getSystem().getOverwatch().getReportManager().updateReportData(in.readUTF());
+                        } else if (action.equalsIgnoreCase("ACCEPT")) {
+                            //TODO: Check if the player is null when he is fast disconnecting
+                            BungeeCoreSystem.getSystem().getOverwatch().getReportManager().acceptReport(in.readUTF(), ProxyServer.getInstance().getPlayer(UUID.fromString(in.readUTF())));
+                        } else if (action.equalsIgnoreCase("REMOVE")) {
+                            BungeeCoreSystem.getSystem().getOverwatch().getReportManager().removeTeamMember(in.readUTF());
+                        }
+                    } else if (subch.equalsIgnoreCase("CMD")) {
                         String input = in.readUTF();
 
                         ProxyServer.getInstance().getPluginManager().dispatchCommand(p, input);
@@ -106,31 +117,28 @@ public class PluginMessageListener implements Listener {
                         }
                     } else if (subch.equalsIgnoreCase("UNNICK")) {
                         BungeeCoreSystem.getInstance().getNickManager().destroy(p);
+                    } else if (subch.equalsIgnoreCase("REFRESHNICK")) {
+                        BungeeCoreSystem.getInstance().getNickManager().nick(p);
                     } else if (subch.equalsIgnoreCase("PLAYER_SETTINGS")) {
                         ProxyServer.getInstance().getPluginManager().callEvent(new PlayerSettingsChangeEvent(
                                 CoreSystem.getInstance().getCorePlayer(p),
                                 CoreSystem.getInstance().getGson().fromJson(in.readUTF(), PlayerSettings.class)
                         ));
                     }
+                } else if (mainChannel.equalsIgnoreCase("MC_ONE_SET_OBJ")) {
                 } else if (mainChannel.equalsIgnoreCase("MC_ONE_REPLAY")) {
                     String subch = in.readUTF();
                     Server server = p.getServer();
 
-                    System.out.println("DEBUG");
-
                     if (subch.equalsIgnoreCase("REGISTER")) {
-                        System.out.println("REGISTERED");
                         BungeeCoreSystem.getSystem().getServerSessionHandler().registerReplayServer(in.readUTF(), server, in.readUTF());
                     } else if (subch.equalsIgnoreCase("UNREGISTER")) {
-                        System.out.println("Unregister");
                         BungeeCoreSystem.getSystem().getServerSessionHandler().unRegisterServer(server);
-                    } else {
-                        System.out.println("DEBUG-1");
                     }
                 }
-            } catch (IOException e1) {
-                e1.printStackTrace();
             }
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -8,7 +8,10 @@ package eu.mcone.coresystem.bukkit.channel;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.*;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.api.core.player.*;
+import eu.mcone.coresystem.api.core.player.Currency;
+import eu.mcone.coresystem.api.core.player.Group;
+import eu.mcone.coresystem.api.core.player.Nick;
+import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.player.GlobalOfflineCorePlayer;
 import org.bukkit.Bukkit;
@@ -91,6 +94,23 @@ public class InfoPluginChannelListener implements PluginMessageListener {
                 }
                 case "CMD": {
                     Bukkit.dispatchCommand(p, in.readUTF());
+                    break;
+                }
+                case "REPORT": {
+                    String action = in.readUTF();
+
+                    if (action.equalsIgnoreCase("ACCEPT")) {
+                        String subAction = in.readUTF();
+
+                        if (subAction.equalsIgnoreCase("CANCELED")) {
+                            if (p != null) {
+                                player.closeInventory();
+                            }
+                        } else {
+                        }
+                    }
+
+                    break;
                 }
             }
 

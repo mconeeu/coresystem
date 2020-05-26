@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -25,16 +25,18 @@ public abstract class GlobalCorePlayer extends GlobalOfflineCorePlayer implement
     @Getter
     protected final String ipAdress;
     private final long joined;
-    @Getter @Setter
+    @Getter
+    @Setter
     private boolean nicked = false;
-    @Getter @Setter
+    @Getter
+    @Setter
     private LabyModConnection labyModConnection;
 
     protected GlobalCorePlayer(final GlobalCoreSystem instance, final InetAddress address, UUID uuid, String name) {
         super(instance, uuid, name, true);
 
         if (!this.name.equals(name)) {
-            ((CoreModuleCoreSystem) instance).sendConsoleMessage("§7Player §f"+name+"§7 has changed his name from §o"+this.name);
+            ((CoreModuleCoreSystem) instance).sendConsoleMessage("§7Player §f" + name + "§7 has changed his name from §o" + this.name);
 
             this.name = name;
             instance.runAsync(() -> {
@@ -42,7 +44,7 @@ public abstract class GlobalCorePlayer extends GlobalOfflineCorePlayer implement
                         eq("uuid", uuid.toString()),
                         set("name", name)
                 );
-                ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Updated name from player §a"+name+"§2 in database");
+                ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Updated name from player §a" + name + "§2 in database");
             });
         }
         this.ipAdress = address.toString().split("/")[1];

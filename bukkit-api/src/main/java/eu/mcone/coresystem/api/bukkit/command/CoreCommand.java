@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -17,7 +17,7 @@ import java.util.List;
 
 public abstract class CoreCommand extends Command {
 
-    private final static String NO_PERM_MESSAGE = CoreSystem.getInstance().getTranslationManager().get("system.prefix.server", Language.ENGLISH)+CoreSystem.getInstance().getTranslationManager().get("system.command.noperm", Language.ENGLISH);
+    private final static String NO_PERM_MESSAGE = CoreSystem.getInstance().getTranslationManager().get("system.prefix.server", Language.ENGLISH) + CoreSystem.getInstance().getTranslationManager().get("system.command.noperm", Language.ENGLISH);
 
     @Getter
     private final String permission;
@@ -42,7 +42,8 @@ public abstract class CoreCommand extends Command {
         if (permission == null || sender.hasPermission(permission)) {
             return onCommand(sender, args);
         } else {
-            if (sender instanceof Player) CoreSystem.getInstance().getMessenger().sendTransl((Player) sender, "system.command.noperm");
+            if (sender instanceof Player)
+                CoreSystem.getInstance().getMessenger().sendTransl((Player) sender, "system.command.noperm");
             return false;
         }
     }

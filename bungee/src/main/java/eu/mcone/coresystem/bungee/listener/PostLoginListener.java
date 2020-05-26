@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -58,6 +58,8 @@ public class PostLoginListener implements Listener {
             BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Benutze §f/friend req §7zum einsehen!");
         }
 
+        BungeeCoreSystem.getInstance().getOverwatch().getReportManager().sendOpenReports(p);
+
         Title title = ProxyServer.getInstance().createTitle();
         title.title(new TextComponent("§fWillkommen auf §3§lMC ONE"));
         title.subTitle(new TextComponent("§7§oDein Nummer 1 Minecraftnetzwerk"));
@@ -83,7 +85,7 @@ public class PostLoginListener implements Listener {
             CoreSystem.getInstance().getLabyModAPI().setCurrentServer(p, p.getServer().getInfo().getName());
             TeamspeakVerifier tsv = BungeeCoreSystem.getSystem().getTeamspeakVerifier();
             if (cp.isTeamspeakIdLinked() && tsv != null) tsv.updateLink(cp, null);
-        }, 1000L, TimeUnit.MILLISECONDS);
+        }, 1, TimeUnit.SECONDS);
     }
 
     private static String getRandomWelcomeMSG(ProxiedPlayer p, boolean isNew) {
@@ -123,7 +125,7 @@ public class PostLoginListener implements Listener {
         p.setTabHeader(
                 new ComponentBuilder(
                         "§3§lMC ONE §8» §7§oDein Nummer 1 Netzwerk"
-                                + "\n§7Online: §f§l"+ProxyServer.getInstance().getOnlineCount()+" Spieler§8 ×§7 Server: §f§l" + (p.getServer() != null ? p.getServer().getInfo().getName() : "?")
+                                + "\n§7Online: §f§l" + ProxyServer.getInstance().getOnlineCount() + " Spieler§8 ×§7 Server: §f§l" + (p.getServer() != null ? p.getServer().getInfo().getName() : "?")
                                 + "\n"
                 ).create(),
                 new ComponentBuilder(

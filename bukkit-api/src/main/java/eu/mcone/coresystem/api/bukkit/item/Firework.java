@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -16,6 +16,7 @@ public final class Firework extends ExtendedItemBuilder<FireworkMeta> {
 
     /**
      * creates Firework instance of ItemStack amount 1
+     *
      * @param effects firework effects that should be bound to this item
      */
     public Firework(FireworkEffect... effects) {
@@ -24,7 +25,8 @@ public final class Firework extends ExtendedItemBuilder<FireworkMeta> {
 
     /**
      * creates Firework instance
-     * @param amount amount of items in ItemStack
+     *
+     * @param amount  amount of items in ItemStack
      * @param effects firework effects that should be bound to this item
      */
     public Firework(int amount, FireworkEffect... effects) {
@@ -41,6 +43,7 @@ public final class Firework extends ExtendedItemBuilder<FireworkMeta> {
 
     /**
      * wraps an existing ItemStack which must be of Material type FIREWORK
+     *
      * @param firewokItem ItemStack
      * @return new Firework instance
      * @throws ClassCastException if ItemStack has a conflicting Material
@@ -52,9 +55,10 @@ public final class Firework extends ExtendedItemBuilder<FireworkMeta> {
 
     /**
      * Add another effect to this firework.
+     *
      * @param effect The firework effect to add
-     * @throws IllegalArgumentException effect is null
      * @return this
+     * @throws IllegalArgumentException effect is null
      */
     public Firework addEffect(FireworkEffect effect) throws IllegalArgumentException {
         meta.addEffect(effect);
@@ -63,10 +67,11 @@ public final class Firework extends ExtendedItemBuilder<FireworkMeta> {
 
     /**
      * Add several effects to this firework.
+     *
      * @param effects The firework effects to add
+     * @return this
      * @throws IllegalArgumentException If effect is null
      * @throws IllegalArgumentException If any effect is null (may be thrown after changes have occurred)
-     * @return this
      */
     public Firework addEffects(FireworkEffect... effects) throws IllegalArgumentException {
         meta.addEffects(effects);
@@ -75,10 +80,11 @@ public final class Firework extends ExtendedItemBuilder<FireworkMeta> {
 
     /**
      * Add several firework effects to this firework.
+     *
      * @param effects An iterable object whose iterator yields the desired firework effects
+     * @return
      * @throws IllegalArgumentException If effects is null
      * @throws IllegalArgumentException If any effect is null (may be thrown after changes have occurred)
-     * @return
      */
     public Firework addEffects(Iterable<FireworkEffect> effects) throws IllegalArgumentException {
         meta.addEffects(effects);
@@ -87,9 +93,10 @@ public final class Firework extends ExtendedItemBuilder<FireworkMeta> {
 
     /**
      * Remove an effect from this firework.
+     *
      * @param index The index of the effect to remove
-     * @throws IndexOutOfBoundsException If index < 0 or index > getEffectsSize()
      * @return this
+     * @throws IndexOutOfBoundsException If index < 0 or index > getEffectsSize()
      */
     public Firework removeEffect(int index) throws IndexOutOfBoundsException {
         meta.removeEffect(index);
@@ -98,6 +105,7 @@ public final class Firework extends ExtendedItemBuilder<FireworkMeta> {
 
     /**
      * Remove all effects from this firework.
+     *
      * @return this
      */
     public Firework clearEffects() {
@@ -107,6 +115,7 @@ public final class Firework extends ExtendedItemBuilder<FireworkMeta> {
 
     /**
      * Sets the approximate power of the firework. Each level of power is half a second of flight time.
+     *
      * @param power the power of the firework, from 0-128
      * @return this
      */
@@ -117,6 +126,7 @@ public final class Firework extends ExtendedItemBuilder<FireworkMeta> {
 
     /**
      * Get the effects in this firework.
+     *
      * @return An immutable list of the firework effects
      */
     public List<FireworkEffect> getEffects() {
@@ -125,6 +135,7 @@ public final class Firework extends ExtendedItemBuilder<FireworkMeta> {
 
     /**
      * Get the number of effects in this firework.
+     *
      * @return The number of effects
      */
     public int getEffectsSize() {
@@ -133,6 +144,7 @@ public final class Firework extends ExtendedItemBuilder<FireworkMeta> {
 
     /**
      * Get whether this firework has any effects.
+     *
      * @return true if it has effects, false if there are no effects
      */
     public boolean hasEffects() {
@@ -141,6 +153,7 @@ public final class Firework extends ExtendedItemBuilder<FireworkMeta> {
 
     /**
      * Gets the approximate height the firework will fly.
+     *
      * @return approximate flight height of the firework.
      */
     public int getPower() {

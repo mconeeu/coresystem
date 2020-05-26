@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -33,7 +33,9 @@ public class CoreCooldownSystem implements CooldownSystem {
         if (classMap.containsKey(clazz)) {
             classMap.get(clazz).put(uuid, System.currentTimeMillis() / 1000);
         } else {
-            classMap.put(clazz, new HashMap<UUID, Long>(){{put(uuid, System.currentTimeMillis() / 1000);}});
+            classMap.put(clazz, new HashMap<UUID, Long>() {{
+                put(uuid, System.currentTimeMillis() / 1000);
+            }});
         }
     }
 
@@ -54,7 +56,7 @@ public class CoreCooldownSystem implements CooldownSystem {
         } else if (classMap.get(clazz).get(uuid) < ((System.currentTimeMillis() / 1000) - customCooldown.getOrDefault(clazz, DEFAULT_COOLDOWN))) {
             return true;
         } else {
-            p.sendMessage("§8[§7§l!§8] §fSystem §8» §4Bitte warte noch "+(classMap.get(clazz).get(uuid) - ((System.currentTimeMillis() / 1000) - customCooldown.getOrDefault(clazz, DEFAULT_COOLDOWN)))+" Sekunden bevor du diesen Befehl wieder ausführst!");
+            p.sendMessage("§8[§7§l!§8] §fSystem §8» §4Bitte warte noch " + (classMap.get(clazz).get(uuid) - ((System.currentTimeMillis() / 1000) - customCooldown.getOrDefault(clazz, DEFAULT_COOLDOWN))) + " Sekunden bevor du diesen Befehl wieder ausführst!");
             return false;
         }
     }

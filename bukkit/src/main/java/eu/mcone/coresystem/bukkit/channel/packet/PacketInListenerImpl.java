@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -34,9 +34,10 @@ public class PacketInListenerImpl extends MessageToMessageDecoder<Packet<?>> {
     }
 
     public void remove() {
+        pipeline.flush();
+
         if (pipeline.get(getClass()) != null) {
             pipeline.remove(this);
         }
     }
-
 }

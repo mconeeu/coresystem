@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -22,11 +22,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import static com.mongodb.client.model.Filters.eq;
 
-public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin {
+public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin, Serializable {
 
     @Getter
     private final Gamemode gamemode;

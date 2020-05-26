@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -46,18 +46,18 @@ public class TpaCMD extends CorePlayerCommand {
                     requests.add(t.getName());
                     players.put(p.getName(), requests);
 
-                    messager.send(t, "§7Du hast eine Teleportanfrage von §f"+p.getName()+"§7 erhalten!");
+                    messager.send(t, "§7Du hast eine Teleportanfrage von §f" + p.getName() + "§7 erhalten!");
                     t.spigot().sendMessage(new ComponentBuilder(CoreSystem.getInstance().getTranslationManager().get("build.prefix"))
                             .append("§a[Annehmen]")
                             .color(ChatColor.DARK_GREEN)
-                            .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaccept "+p.getName()))
-                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(p.getName()+" zu mir teleportieren").color(ChatColor.GRAY).create()))
+                            .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaccept " + p.getName()))
+                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(p.getName() + " zu mir teleportieren").color(ChatColor.GRAY).create()))
                             .append(" §c[Ablehnen]")
-                            .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpdeny "+p.getName()))
-                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(p.getName()+" ablehnen").color(ChatColor.GRAY).create()))
+                            .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpdeny " + p.getName()))
+                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(p.getName() + " ablehnen").color(ChatColor.GRAY).create()))
                             .create()
                     );
-                    messager.send(p, "§2Du hast §a"+args[0]+"§2 eine Teleportanfrage geschickt!");
+                    messager.send(p, "§2Du hast §a" + args[0] + "§2 eine Teleportanfrage geschickt!");
                 }
             } else {
                 messager.send(p, "§4Dieser Spieler ist nicht online!");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -23,6 +23,7 @@ public final class EnchantedBook extends ExtendedItemBuilder<EnchantmentStorageM
 
     /**
      * creates new Book instance
+     *
      * @param amount amount of items in ItemStack
      */
     public EnchantedBook(int amount) {
@@ -35,6 +36,7 @@ public final class EnchantedBook extends ExtendedItemBuilder<EnchantmentStorageM
 
     /**
      * wraps an existing ItemStack which must be of Material.ENCHANTED_BOOK in an EnchantedBook object
+     *
      * @param book ItemStack
      * @return new EnchantedBook instance
      * @throws ClassCastException if ItemStack has a conflicting Material
@@ -46,18 +48,20 @@ public final class EnchantedBook extends ExtendedItemBuilder<EnchantmentStorageM
 
     /**
      * Stores the specified enchantment in this item meta
-     * @param enchantment Enchantment to store
-     * @param level level for the Enchantment
+     *
+     * @param enchantment            Enchantment to store
+     * @param level                  level for the Enchantment
      * @param ignoreLevelRestriction this indicates the enchantment should be applied, ignoring the level limit
      * @return this
      */
-    public EnchantedBook addStoredEnchant(Enchantment enchantment, int level, boolean ignoreLevelRestriction)  {
+    public EnchantedBook addStoredEnchant(Enchantment enchantment, int level, boolean ignoreLevelRestriction) {
         meta.addStoredEnchant(enchantment, level, ignoreLevelRestriction);
         return this;
     }
 
     /**
      * Checks for the existence of any stored enchantments.
+     *
      * @return true if an enchantment exists on this meta
      */
     public boolean hasStoredEnchants() {
@@ -66,6 +70,7 @@ public final class EnchantedBook extends ExtendedItemBuilder<EnchantmentStorageM
 
     /**
      * Checks for storage of the specified enchantment.
+     *
      * @param enchantment enchantments to check
      * @return true if this enchantment is stored in this meta
      */
@@ -75,6 +80,7 @@ public final class EnchantedBook extends ExtendedItemBuilder<EnchantmentStorageM
 
     /**
      * Checks for the level of the stored enchantment.
+     *
      * @param enchantment enchantment to check
      * @return The level that the specified stored enchantment has, or 0 if none
      */
@@ -84,6 +90,7 @@ public final class EnchantedBook extends ExtendedItemBuilder<EnchantmentStorageM
 
     /**
      * Gets a copy the stored enchantments in this ItemMeta.
+     *
      * @return An immutable copy of the stored enchantments
      */
     public Map<Enchantment, Integer> getStoredEnchants() {
@@ -92,6 +99,7 @@ public final class EnchantedBook extends ExtendedItemBuilder<EnchantmentStorageM
 
     /**
      * Remove the specified stored enchantment from this item meta.
+     *
      * @param enchantment enchantment to remove
      * @return true if the item meta changed as a result of this call, false otherwise
      */
@@ -101,6 +109,7 @@ public final class EnchantedBook extends ExtendedItemBuilder<EnchantmentStorageM
 
     /**
      * Checks if the specified enchantment conflicts with any enchantments in this ItemMeta.
+     *
      * @param enchantment enchantment to test
      * @return true if the enchantment conflicts, false otherwise
      */

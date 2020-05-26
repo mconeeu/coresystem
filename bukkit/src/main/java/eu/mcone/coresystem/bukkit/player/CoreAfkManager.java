@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -57,7 +57,7 @@ public class CoreAfkManager implements AfkManager {
 
             long i = players.get(p.getUniqueId());
             if (afkPlayers.contains(p.getUniqueId())) {
-                if (i<150) {
+                if (i < 150) {
                     afkPlayers.remove(p.getUniqueId());
                     BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du bist nun nicht mehr AFK!");
                     ((GlobalCorePlayer) BukkitCoreSystem.getInstance().getCorePlayer(p)).setState(PlayerState.ONLINE);
@@ -65,7 +65,7 @@ public class CoreAfkManager implements AfkManager {
                     Bukkit.getScheduler().runTask(BukkitCoreSystem.getSystem(), () -> Bukkit.getPluginManager().callEvent(new AfkEvent(p, PlayerState.ONLINE)));
                 }
             } else {
-                if (i>150) {
+                if (i > 150) {
                     afkPlayers.add(p.getUniqueId());
                     BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du bist nun AFK!");
                     ((GlobalCorePlayer) BukkitCoreSystem.getInstance().getCorePlayer(p)).setState(PlayerState.AFK);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -51,14 +51,14 @@ public class Party {
                         this.invites.add(m);
                         BungeeCoreSystem.getInstance().getMessenger().sendParty(leader, "§f" + m.getName() + "§7 wurde in die Party eingeladen!");
                         m.sendMessage(
-                            new ComponentBuilder("")
-                                .append(TextComponent.fromLegacyText(BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.party", CoreSystem.getInstance().getCorePlayer(m))))
-                                .append(TextComponent.fromLegacyText("§f"+this.leader.getName()+"§2 hat dich in seine Party eingeladen!\n"))
-                                .append(BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.party", CoreSystem.getInstance().getCorePlayer(m)))
-                                .append("§a[ANNEHMEN]")
-                                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7§o/party accept "+this.leader.getName()).create()))
-                                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept "+this.leader.getName()))
-                                .create()
+                                new ComponentBuilder("")
+                                        .append(TextComponent.fromLegacyText(BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.party", CoreSystem.getInstance().getCorePlayer(m))))
+                                        .append(TextComponent.fromLegacyText("§f" + this.leader.getName() + "§2 hat dich in seine Party eingeladen!\n"))
+                                        .append(BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.party", CoreSystem.getInstance().getCorePlayer(m)))
+                                        .append("§a[ANNEHMEN]")
+                                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7§o/party accept " + this.leader.getName()).create()))
+                                        .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept " + this.leader.getName()))
+                                        .create()
                         );
                     }
                 }
@@ -71,14 +71,14 @@ public class Party {
     public void invite(final ProxiedPlayer p) {
         this.invites.add(p);
         p.sendMessage(
-            new ComponentBuilder("")
-                .append(TextComponent.fromLegacyText(BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.party", CoreSystem.getInstance().getCorePlayer(p))))
-                .append(TextComponent.fromLegacyText("§f"+this.leader.getName()+"§2 hat dich in seine Party eingeladen!\n"))
-                .append(TextComponent.fromLegacyText(BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.party", CoreSystem.getInstance().getCorePlayer(p))))
-                .append("§a[ANNEHMEN]")
-                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7§o/party accept "+this.leader.getName()).create()))
-                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept "+this.leader.getName()))
-                .create()
+                new ComponentBuilder("")
+                        .append(TextComponent.fromLegacyText(BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.party", CoreSystem.getInstance().getCorePlayer(p))))
+                        .append(TextComponent.fromLegacyText("§f" + this.leader.getName() + "§2 hat dich in seine Party eingeladen!\n"))
+                        .append(TextComponent.fromLegacyText(BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.party", CoreSystem.getInstance().getCorePlayer(p))))
+                        .append("§a[ANNEHMEN]")
+                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§7§o/party accept " + this.leader.getName()).create()))
+                        .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/party accept " + this.leader.getName()))
+                        .create()
         );
     }
 
@@ -114,7 +114,7 @@ public class Party {
             }
         } else if (this.member.contains(p)) {
             this.member.remove(p);
-            this.sendAll("§c"+p.getName()+" §4hat die Party verlassen");
+            this.sendAll("§c" + p.getName() + " §4hat die Party verlassen");
         }
     }
 
@@ -122,11 +122,11 @@ public class Party {
         parties.remove(this.leader.getName().toLowerCase(), this);
         this.leader = p;
         parties.put(this.leader.getName().toLowerCase(), this);
-        this.sendAll("§f"+p.getName()+" §7ist nun der neue Partyleader!");
+        this.sendAll("§f" + p.getName() + " §7ist nun der neue Partyleader!");
     }
 
     public void delete(final ProxiedPlayer by) {
-        this.sendAll("§4Die Party wurde von §c"+by.getName()+" §4aufgelöst!");
+        this.sendAll("§4Die Party wurde von §c" + by.getName() + " §4aufgelöst!");
         parties.remove(this.leader.getName().toLowerCase());
     }
 

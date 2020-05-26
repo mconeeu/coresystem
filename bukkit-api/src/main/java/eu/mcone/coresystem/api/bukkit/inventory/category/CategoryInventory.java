@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -33,6 +33,7 @@ public abstract class CategoryInventory extends CoreInventory {
     public static final ItemStack DOWN_ITEM = Skull.fromUrl("http://textures.minecraft.net/texture/fe3d755cecbb13a39e8e9354823a9a02a01dce0aca68ffd42e3ea9a9d29e2df2", 1).toItemBuilder().displayName("§f§lNach Unten").lore("", "§8» §f§nLinksklick§8 | §7§oMehr Anzeigen").create();
     public static final ItemStack LEFT_ITEM = Skull.fromUrl("http://textures.minecraft.net/texture/3ebf907494a935e955bfcadab81beafb90fb9be49c7026ba97d798d5f1a23", 1).toItemBuilder().displayName("§7Vorherige Seite").lore("", "§8» §f§nLinksklick§8 | §7§oMehr Anzeigen").create();
     public static final ItemStack RIGHT_ITEM = Skull.fromUrl("http://textures.minecraft.net/texture/1b6f1a25b6bc199946472aedb370522584ff6f4e83221e5946bd2e41b5ca13b", 1).toItemBuilder().displayName("§7Nächste Seite").lore("", "§8» §f§nLinksklick§8 | §7§oMehr Anzeigen").create();
+    public static final ItemStack REFRESH_ITEM = Skull.fromUrl("http://textures.minecraft.net/texture/e887cc388c8dcfcf1ba8aa5c3c102dce9cf7b1b63e786b34d4f1c3796d3e9d61", 1).toItemBuilder().displayName("§7Neu laden").lore("", "§8» §f§nLinksklick§8 | §7§oMehr Anzeigen").create();
 
     private final List<ItemStack> categories;
     private final List<CategoryInvItem> categoryInvItems;
@@ -71,7 +72,7 @@ public abstract class CategoryInventory extends CoreInventory {
         items.clear();
         inventory.clear();
         setPlaceholders();
-        
+
         final int categoryPages = calculateCategoryPages();
         final int categoryPage = getCategoryPageOfItem(currentCategoryItem);
         final List<ItemStack> categoryItems = getCategoryPageItems(categoryPages, categoryPage);
@@ -80,19 +81,19 @@ public abstract class CategoryInventory extends CoreInventory {
             ItemStack categoryItem = categoryItems.get(i);
 
             if (categoryItem.equals(UP_ITEM)) {
-                int catItemIndex = categoryPage-1 == 1 ? 0 : 1;
-                setItem(CATEGORY_SLOTS[i], categoryItem, e -> openCategoryInventory(getCategoryPageItems(categoryPages, categoryPage-1).get(catItemIndex), player));
+                int catItemIndex = categoryPage - 1 == 1 ? 0 : 1;
+                setItem(CATEGORY_SLOTS[i], categoryItem, e -> openCategoryInventory(getCategoryPageItems(categoryPages, categoryPage - 1).get(catItemIndex), player));
             } else if (categoryItem.equals(DOWN_ITEM)) {
-                setItem(CATEGORY_SLOTS[i], categoryItem, e -> openCategoryInventory(getCategoryPageItems(categoryPages, categoryPage+1).get(1), player));
+                setItem(CATEGORY_SLOTS[i], categoryItem, e -> openCategoryInventory(getCategoryPageItems(categoryPages, categoryPage + 1).get(1), player));
             } else if (categoryItem.equals(currentCategoryItem)) {
                 setItem(CATEGORY_SLOTS[i], ItemBuilder.wrap(categoryItem).enchantment(Enchantment.DAMAGE_ALL, 1).itemFlags(ItemFlag.HIDE_ENCHANTS).create());
-            } else  {
+            } else {
                 setItem(CATEGORY_SLOTS[i], categoryItem, e -> openCategoryInventory(categoryItem, player));
             }
         }
 
-        int startItem = ((itemPage-1) * 18);
-        for (int i = startItem, x = 11; i < startItem+18 && i < categoryInvItems.size(); i++, x++) {
+        int startItem = ((itemPage - 1) * 18);
+        for (int i = startItem, x = 11; i < startItem + 18 && i < categoryInvItems.size(); i++, x++) {
             if (x == 17) x = 20;
             else if (x == 26) x = 29;
 
@@ -103,7 +104,7 @@ public abstract class CategoryInventory extends CoreInventory {
         final int itemPages = (categoryInvItems.size() / 18) + (((categoryInvItems.size() % 18) > 0) ? 1 : 0);
         setItem(InventorySlot.ROW_6_SLOT_5, LEFT_ITEM, e -> {
             if (itemPage >= 2) {
-                openInventory(itemPage-1);
+                openInventory(itemPage - 1);
                 player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
             } else {
                 player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
@@ -111,7 +112,7 @@ public abstract class CategoryInventory extends CoreInventory {
         });
         setItem(InventorySlot.ROW_6_SLOT_6, RIGHT_ITEM, e -> {
             if (itemPage < itemPages) {
-                openInventory(itemPage+1);
+                openInventory(itemPage + 1);
                 player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
             } else {
                 player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
@@ -208,7 +209,7 @@ public abstract class CategoryInventory extends CoreInventory {
             }
 
             if (x == rowSize) {
-                if (rowSize == 4 && i+1 == categories.size()) {
+                if (rowSize == 4 && i + 1 == categories.size()) {
                     rowSize = 5;
                 } else {
                     x = 0;
@@ -259,9 +260,10 @@ public abstract class CategoryInventory extends CoreInventory {
         setItem(52, CoreInventory.PLACEHOLDER_ITEM);
         setItem(53, CoreInventory.PLACEHOLDER_ITEM);
     }
-    
+
     @AllArgsConstructor
-    @Getter @Setter
+    @Getter
+    @Setter
     private class CategoryInvItem {
         private ItemStack itemStack;
         private CoreItemEvent itemEvent;

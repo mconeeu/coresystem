@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -14,6 +14,7 @@ public final class LeatherArmorItem extends ExtendedItemBuilder<LeatherArmorMeta
 
     /**
      * creates new LeatherArmorItem instance with amount 1
+     *
      * @param armorType type of leather armor, must be of Material type LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS
      */
     public LeatherArmorItem(Material armorType) {
@@ -22,9 +23,10 @@ public final class LeatherArmorItem extends ExtendedItemBuilder<LeatherArmorMeta
 
     /**
      * creates new LeatherArmorItem instance
+     *
      * @param armorType type of leather armor, must be of Material type LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS
-     * @param amount amount of items in ItemStack
-     * @param color color of the armor item
+     * @param amount    amount of items in ItemStack
+     * @param color     color of the armor item
      */
     public LeatherArmorItem(Material armorType, int amount, Color color) {
         this(armorType, amount);
@@ -37,6 +39,7 @@ public final class LeatherArmorItem extends ExtendedItemBuilder<LeatherArmorMeta
 
     /**
      * wraps an existing ItemStack which must be of Material type LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS
+     *
      * @param armorItem ItemStack
      * @return new LeatherArmorItem instance
      * @throws ClassCastException if ItemStack has a conflicting Material
@@ -48,8 +51,9 @@ public final class LeatherArmorItem extends ExtendedItemBuilder<LeatherArmorMeta
 
     /**
      * creates new LeatherArmorItem instance
+     *
      * @param armorType type of leather armor, must be of Material type LEATHER_HELMET, LEATHER_CHESTPLATE, LEATHER_LEGGINGS, LEATHER_BOOTS
-     * @param amount amount of items in ItemStack
+     * @param amount    amount of items in ItemStack
      */
     public LeatherArmorItem(Material armorType, int amount) {
         super(new ItemStack(armorType, amount));
@@ -57,6 +61,7 @@ public final class LeatherArmorItem extends ExtendedItemBuilder<LeatherArmorMeta
 
     /**
      * Sets the color of the armor.
+     *
      * @param color the color to set. Setting it to null is equivalent to setting it to
      * @return this
      */
@@ -67,6 +72,7 @@ public final class LeatherArmorItem extends ExtendedItemBuilder<LeatherArmorMeta
 
     /**
      * Gets the color of the armor. If it has not been set otherwise, it will be ItemFactory.getDefaultLeatherColor().
+     *
      * @return this
      */
     public Color getColor() {

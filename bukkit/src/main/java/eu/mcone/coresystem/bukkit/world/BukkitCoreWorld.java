@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -36,7 +36,8 @@ import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter @Setter
+@Getter
+@Setter
 @DontObfuscate
 public class BukkitCoreWorld implements CoreWorld {
 
@@ -77,7 +78,7 @@ public class BukkitCoreWorld implements CoreWorld {
         if (getLocation(locationName) != null) {
             p.teleport(loc);
         } else {
-            throw new RuntimeCoreException("Could not teleport Player "+p.getName()+" to location "+locationName+". Location does not exist!");
+            throw new RuntimeCoreException("Could not teleport Player " + p.getName() + " to location " + locationName + ". Location does not exist!");
         }
     }
 

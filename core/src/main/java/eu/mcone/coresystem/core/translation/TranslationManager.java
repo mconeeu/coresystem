@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -82,7 +82,8 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
 
         try {
             collection.insertMany(keyDocuments, new InsertManyOptions().ordered(false));
-        } catch (MongoBulkWriteException ignored) {}
+        } catch (MongoBulkWriteException ignored) {
+        }
     }
 
     @Override
@@ -229,7 +230,7 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
     }
 
     private String[] getQueryCols(List<Language> languages) {
-        String[] cols = new String[languages.size()+2];
+        String[] cols = new String[languages.size() + 2];
 
         int i = 0;
         cols[i++] = "key";

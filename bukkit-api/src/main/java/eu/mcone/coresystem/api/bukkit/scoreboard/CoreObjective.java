@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -43,6 +43,7 @@ public abstract class CoreObjective {
     /**
      * change the displayname (headline) of the Objective
      * mind to updateScorebord() after this. Otherwise it will have no effect
+     *
      * @param name name
      * @return this
      */
@@ -53,6 +54,7 @@ public abstract class CoreObjective {
 
     /**
      * update the changes you've made and set the scoreboard to the player
+     *
      * @return this
      */
     public CoreObjective updateScoreboard() {
@@ -79,11 +81,14 @@ public abstract class CoreObjective {
      */
     public void unregister() {
         objective.unregister();
-    };
+    }
+
+    ;
 
 
     /**
      * get the bukkit Scoreboard object
+     *
      * @return bukkit scoreboard
      */
     public org.bukkit.scoreboard.Objective bukkit() {

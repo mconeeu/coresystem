@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
-package eu.mcone.coresystem.bungee.report;
+package eu.mcone.coresystem.api.core.overwatch.report;
 
 import lombok.Getter;
 
@@ -17,6 +17,7 @@ public enum ReportReason {
     NO_SLOWDOWN("No_Slowdown", 2),
     BUG_USING("Bug_Using", 1),
     TEAMING("Teaming", 1),
+
     DROHUNG("Drohung", 1),
     TEAM_TROLLING("Team_Trolling", 1),
     SPAWN_TRAPPING("Spawn_Trapping", 1),

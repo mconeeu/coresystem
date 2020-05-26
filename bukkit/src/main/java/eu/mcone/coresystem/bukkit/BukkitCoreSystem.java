@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -42,6 +42,7 @@ import eu.mcone.coresystem.bukkit.inventory.ProfileInventory;
 import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
 import eu.mcone.coresystem.bukkit.listener.*;
 import eu.mcone.coresystem.bukkit.npc.CoreNpcManager;
+import eu.mcone.coresystem.bukkit.overwatch.Overwatch;
 import eu.mcone.coresystem.bukkit.player.*;
 import eu.mcone.coresystem.bukkit.util.*;
 import eu.mcone.coresystem.bukkit.world.WorldManager;
@@ -91,6 +92,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private TranslationManager translationManager;
     @Getter
     private PermissionManager permissionManager;
+    @Getter
+    private Overwatch overwatch;
     @Getter
     private PluginManager pluginManager;
     @Getter
@@ -203,6 +206,9 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aLoading Permissions & Groups...");
         permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), database1);
 
+        sendConsoleMessage("§aStarting §eOverwatch §aSystem...");
+        overwatch = new Overwatch();
+
         sendConsoleMessage("§aStarting NickManager...");
         nickManager = new NickManager(this);
 
@@ -248,12 +254,15 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                     }
                 }
 
-                channelHandler.createSetRequest(p, "UNNICK");
+//                channelHandler.createSetRequest(p, "UNNICK");
+                channelHandler.createSetRequest(p, "REFRESHNICK");
 
                 CorePlayerListener.LOADING_SUCCESS_MSG.send(p);
                 p.removePotionEffect(PotionEffectType.BLINDNESS);
             });
         }
+
+        overwatch.getReportManager().sendOpenReports();
 
         super.onEnable();
         sendConsoleMessage("§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
@@ -275,6 +284,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                     t.showPlayer(p.bukkit());
                 }
             }
+
+            channelHandler.createSetRequest(p.bukkit(), "UNNICK");
         }
 
         npcManager.disable();
@@ -285,7 +296,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         try {
             mongoConnection.disconnect();
-        } catch (NoClassDefFoundError ignored) {}
+        } catch (NoClassDefFoundError ignored) {
+        }
 
         getServer().getMessenger().unregisterIncomingPluginChannel(this);
         getServer().getMessenger().unregisterOutgoingPluginChannel(this);
@@ -315,7 +327,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new VanishCMD(),
                 new ProfileCMD(),
                 new CaptureCMD(),
-                new VanishChatCMD()
+                new VanishChatCMD(),
+                new ReportCMD(overwatch)
         );
     }
 

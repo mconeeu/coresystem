@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -17,7 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Setter @Getter
+@Setter
+@Getter
 @NoArgsConstructor
 public class DefaultInventory extends BasicInventory {
 
@@ -41,12 +42,13 @@ public class DefaultInventory extends BasicInventory {
             items.put(entry.getKey(), new CoreItemStack(entry.getValue().getItemStack(), null));
         }
 
-        return new ModifyInventory(api, getGamemode(), uniqueItemStacks, items, getName(), getTitle(), getCategory(), getSize()) {};
+        return new ModifyInventory(api, getGamemode(), uniqueItemStacks, items, getName(), getTitle(), getCategory(), getSize()) {
+        };
     }
 
     @Override
     public String toString() {
-        return "DefaultInventory("+getGamemode()+"."+getCategory()+"."+getName()+")";
+        return "DefaultInventory(" + getGamemode() + "." + getCategory() + "." + getName() + ")";
     }
 
 }

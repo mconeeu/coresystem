@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017 - 2019 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+ * Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
  * You are not allowed to decompile the code
  */
 
@@ -9,7 +9,7 @@ import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.ban.BanManager;
+import eu.mcone.coresystem.bungee.overwatch.ban.BanManager;
 import eu.mcone.coresystem.bungee.command.RegisterCMD;
 import eu.mcone.coresystem.bungee.friend.Party;
 import eu.mcone.coresystem.bungee.player.BungeeCorePlayer;
@@ -29,7 +29,7 @@ public class CorePlayerListener implements Listener {
 
     @EventHandler
     public void onLogin(LoginEvent e) {
-        System.out.println("hostname: "+e.getConnection().getVirtualHost().getHostName());
+        System.out.println("hostname: " + e.getConnection().getVirtualHost().getHostName());
 
         if (e.getConnection().getVirtualHost().getHostName().equals("register.onegaming.group") || e.getConnection().getVirtualHost().getHostName().equals("register.mcone.eu")) {
             e.setCancelled(true);
