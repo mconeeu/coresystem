@@ -202,4 +202,7 @@ public interface GlobalOfflineCorePlayer {
      */
     void updateTrust();
 
+    void increaseCorrectReports();
+
+    void increaseWrongReports();
 }

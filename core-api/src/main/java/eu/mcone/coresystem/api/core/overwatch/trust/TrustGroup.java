@@ -10,20 +10,22 @@ import lombok.Getter;
 @Getter
 public enum TrustGroup {
 
-    //Difference: 25
-    HIGH(1, "§a§lHoch", 20),
-    //Difference: 50
-    NORMAL(2, "§7§lNormal", 15),
-    //Difference: 25
-    LOW(3, "§c§lNiedrig", 15);
+    HIGH(1, "§a§lHoch", 60, 100, 20), //60% - 100%
+    NORMAL(2, "§7§lNormal", 35, 60, 15), //35% - 60%
+    LOW(3, "§c§lNiedrig", 0, 35, 10); //0 - 35%
 
-    private transient final int rank;
-    private transient final String prefix;
-    private transient final int trustPoints;
+    private final int rank;
+    private final String prefix;
+    private final int trustPoints;
 
-    TrustGroup(int rank, String prefix, int trustPoints) {
+    private final int min;
+    private final int max;
+
+    TrustGroup(int rank, String prefix, int min, int max, int trustPoints) {
         this.rank = rank;
         this.prefix = prefix;
+        this.min = min;
+        this.max = max;
         this.trustPoints = trustPoints;
     }
 }

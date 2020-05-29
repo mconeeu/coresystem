@@ -7,23 +7,26 @@ package eu.mcone.coresystem.bungee.overwatch;
 
 import eu.mcone.coresystem.api.bungee.util.Messenger;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
-import eu.mcone.coresystem.bungee.overwatch.ban.BanManager;
+import eu.mcone.coresystem.bungee.overwatch.punish.PunishManager;
 import eu.mcone.coresystem.bungee.overwatch.report.ReportManager;
+import eu.mcone.coresystem.bungee.overwatch.trusted.TrustManager;
 import eu.mcone.coresystem.core.overwatch.GlobalOverwatch;
 import lombok.Getter;
 
 @Getter
-public class Overwatch extends GlobalOverwatch {
+public class Overwatch extends GlobalOverwatch implements eu.mcone.coresystem.api.bungee.overwatch.Overwatch {
 
     private final ReportManager reportManager;
-    private final BanManager banManager;
+    private final PunishManager punishManager;
+    private final TrustManager trustManager;
     private final Messenger messenger;
 
     public Overwatch(GlobalCoreSystem instance) {
         super(instance);
 
         reportManager = new ReportManager(this);
-        banManager = new BanManager();
+        punishManager = new PunishManager(this);
+        trustManager = new TrustManager(this);
         messenger = new Messenger("overwatch.prefix");
     }
 }

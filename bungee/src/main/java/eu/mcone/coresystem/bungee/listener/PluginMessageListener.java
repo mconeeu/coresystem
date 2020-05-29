@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bungee.listener;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.event.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
+import eu.mcone.coresystem.api.core.overwatch.report.AbstractReport;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.friend.Party;
@@ -104,6 +105,10 @@ public class PluginMessageListener implements Listener {
                         } else if (action.equalsIgnoreCase("REMOVE")) {
                             BungeeCoreSystem.getSystem().getOverwatch().getReportManager().removeTeamMember(in.readUTF());
                         }
+                    } else if (subch.equalsIgnoreCase("PUNISH")) {
+                        AbstractReport report = BungeeCoreSystem.getSystem().getOverwatch().getReportManager().getReport(in.readUTF());
+                        if (report != null)
+                            BungeeCoreSystem.getSystem().getOverwatch().getPunishManager().punishPlayer(report, UUID.fromString(in.readUTF()));
                     } else if (subch.equalsIgnoreCase("CMD")) {
                         String input = in.readUTF();
 

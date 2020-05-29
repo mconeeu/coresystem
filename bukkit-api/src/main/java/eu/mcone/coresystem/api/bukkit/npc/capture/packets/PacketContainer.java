@@ -16,7 +16,7 @@ import java.io.Serializable;
 @Getter
 public abstract class PacketContainer implements Serializable {
 
-    private PacketTyp packetType;
+    private final PacketTyp packetType;
     private EntityAction entityAction;
 
     @BsonCreator

@@ -5,19 +5,19 @@
 
 package eu.mcone.coresystem.bungee.player;
 
-import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.event.PermissionChangeEvent;
 import eu.mcone.coresystem.api.bungee.event.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.FriendData;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
+import eu.mcone.coresystem.api.core.overwatch.trust.TrustedUser;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.api.bungee.overwatch.punish.Punish;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.coresystem.api.core.overwatch.trust.TrustedUser;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import eu.mcone.networkmanager.core.api.database.Database;
 import lombok.Getter;
@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Filters.lte;
 import static com.mongodb.client.model.Updates.set;
 
 public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer, OfflineCorePlayer {
@@ -54,18 +53,21 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     public BungeeCorePlayer(CoreSystem instance, InetAddress address, UUID uuid, String name) {
         super(instance, address, uuid, name);
 
-        MongoDatabase db = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM);
-        Document muteEntry = db.getCollection("bungeesystem_bansystem_mute").find(eq("uuid", uuid.toString())).first();
-        if (muteEntry != null) {
-            this.muted = true;
-            this.muteTime = muteEntry.getLong("end");
+        Punish punish = BungeeCoreSystem.getSystem().getOverwatch().getPunishManager().getPunish(uuid);
+
+        if (punish != null) {
+            if (punish.isBanned()) {
+                this.banned = true;
+                this.banTime = punish.getBanEntry().getEnd();
+            }
+
+            if (punish.isMuted()) {
+                this.muted = true;
+                this.muteTime = punish.getMuteEntry().getEnd();
+            }
         }
-        Document banEntry = db.getCollection("bungeesystem_bansystem_ban").find(eq("uuid", uuid.toString())).first();
-        if (banEntry != null) {
-            this.banned = true;
-            this.banTime = banEntry.getLong("end");
-        }
-        Document pointsEntry = db.getCollection("bungeesystem_bansystem_points").find(eq("uuid", uuid.toString())).first();
+
+        Document pointsEntry = BungeeCoreSystem.getSystem().getOverwatch().getPunishManager().getPunishPointsCollection().find(eq("uuid", uuid.toString())).first();
         if (pointsEntry != null) {
             this.banPoints = pointsEntry.getInteger("banpoints");
             this.mutePoints = pointsEntry.getInteger("mutepoints");
@@ -88,7 +90,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
         if (muted && muteTime <= millis) {
             muted = false;
             ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () ->
-                    BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").deleteMany(lte("end", millis))
+                    BungeeCoreSystem.getSystem().getOverwatch().getPunishManager().unMute(uuid)
             );
         }
 
@@ -101,7 +103,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
         if (banned && banTime <= millis) {
             banned = false;
             ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () ->
-                    BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_ban").deleteMany(lte("end", millis))
+                    BungeeCoreSystem.getSystem().getOverwatch().getPunishManager().unBan(uuid)
             );
         }
 
@@ -163,5 +165,4 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
         BungeeCoreSystem.getSystem().getCorePlayers().remove(uuid);
         CoreSystem.getInstance().sendConsoleMessage("Unloaded Player " + name + "!");
     }
-
 }

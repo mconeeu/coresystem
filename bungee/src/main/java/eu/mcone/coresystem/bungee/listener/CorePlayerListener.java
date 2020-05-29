@@ -5,13 +5,15 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
+import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.CoreException;
+import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.overwatch.ban.BanManager;
 import eu.mcone.coresystem.bungee.command.RegisterCMD;
 import eu.mcone.coresystem.bungee.friend.Party;
+import eu.mcone.coresystem.api.bungee.overwatch.punish.Punish;
 import eu.mcone.coresystem.bungee.player.BungeeCorePlayer;
 import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.ProxyServer;
@@ -21,7 +23,6 @@ import net.md_5.bungee.api.event.LoginEvent;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import org.bson.Document;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -29,8 +30,6 @@ public class CorePlayerListener implements Listener {
 
     @EventHandler
     public void onLogin(LoginEvent e) {
-        System.out.println("hostname: " + e.getConnection().getVirtualHost().getHostName());
-
         if (e.getConnection().getVirtualHost().getHostName().equals("register.onegaming.group") || e.getConnection().getVirtualHost().getHostName().equals("register.mcone.eu")) {
             e.setCancelled(true);
 
@@ -65,25 +64,27 @@ public class CorePlayerListener implements Listener {
 
         BungeeCorePlayer p = new BungeeCorePlayer(BungeeCoreSystem.getInstance(), e.getConnection().getAddress().getAddress(), e.getConnection().getUniqueId(), e.getConnection().getName());
 
-        Document entry = BanManager.getBanEntry(p.getUuid());
-        if (entry != null) {
-            String team_member = entry.getString("team_member");
-            String grund = entry.getString("reason");
-            String template = entry.getString("template");
-            long banTime = entry.getLong("end");
-
-            e.setCancelled(true);
-            e.setCancelReason(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
-                    + "\n§7§oDu wurdest vom Netzwerk gebannt"
-                    + "\n§r"
-                    + "\n§7Gebannt von §8» §e" + team_member
-                    + "\n§7Grund §8» §c" + template + " §7/§c " + grund
-                    + "\n§7Gebannt für §8» " + BanManager.getEndeString(banTime)
-                    + "\n§r"
-                    + "\n§2Du hast die Möglichkeit auf einer der folgenden Plattformen einen Entbannungsantrag zu stellen:"
-                    + "\n§7TS-Server §8» §fts.mcone.eu"
-                    + "\n§7Homepage §8» §fwww.mcone.eu/unban")));
-            p.unregister();
+        Punish punish = BungeeCoreSystem.getSystem().getOverwatch().getPunishManager().getPunish(p.getUuid());
+        if (punish != null) {
+            if (punish.isBanned()) {
+                try {
+                    OfflineCorePlayer corePlayer = BungeeCoreSystem.getSystem().getOfflineCorePlayer(punish.getTeamMember());
+                    e.setCancelled(true);
+                    e.setCancelReason(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
+                            + "\n§7§oDu wurdest vom Netzwerk gebannt"
+                            + "\n§r"
+                            + "\n§7Gebannt von §8» §e" + corePlayer.getName()
+                            + "\n§7Grund §8» §c" + punish.getTemplate().getName() + " §7/§c " + punish.getReason()
+                            + "\n§7Gebannt für §8» " + BungeeCoreSystem.getSystem().getOverwatch().getPunishManager().getEndeString(punish.getBanEntry().getEnd())
+                            + "\n§r"
+                            + "\n§2Du hast die Möglichkeit auf einer der folgenden Plattformen einen Entbannungsantrag zu stellen:"
+                            + "\n§7TS-Server §8» §fts.mcone.eu"
+                            + "\n§7Homepage §8» §fwww.mcone.eu/unban")));
+                    p.unregister();
+                } catch (PlayerNotResolvedException exception) {
+                    exception.printStackTrace();
+                }
+            }
         }
 
         if (BungeeCoreSystem.getSystem().getPreferences().get("betaKeySystem", boolean.class)) {

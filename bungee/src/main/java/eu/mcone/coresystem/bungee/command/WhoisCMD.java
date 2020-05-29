@@ -5,11 +5,11 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import eu.mcone.coresystem.api.bungee.overwatch.punish.Punish;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.overwatch.ban.BanManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -47,27 +47,30 @@ public class WhoisCMD extends Command {
                             "\n";
                 }
 
-                String banInfo;
-                if (p.isBanned()) {
-                    banInfo = "\n§8» §7Gebannt: §f" + p.isBanned() +
-                            "\n§8» §7Bannzeit: " + BanManager.getEndeString(p.getBanTime()) +
-                            "\n§8» §7Bannpunkte: §f" + p.getBanPoints() +
-                            "\n";
-                } else {
-                    banInfo = "\n§8» §7Gebannt: §f" + p.isBanned() +
-                            "\n§8» §7Bannpunkte: §f" + p.getBanPoints() +
-                            "\n";
-                }
+                String banInfo = "";
+                String muteInfo = "";
+                Punish punish = BungeeCoreSystem.getSystem().getOverwatch().getPunishManager().getPunish(p.getUuid());
+                if (punish != null) {
+                    if (punish.isBanned()) {
+                        banInfo = "\n§8» §7Gebannt: §f" + p.isBanned() +
+                                "\n§8» §7Bannzeit: " + BungeeCoreSystem.getSystem().getOverwatch().getPunishManager().getEndeString(p.getBanTime()) +
+                                "\n§8» §7Bannpunkte: §f" + p.getBanPoints() +
+                                "\n";
+                    } else {
+                        banInfo = "\n§8» §7Gebannt: §f" + p.isBanned() +
+                                "\n§8» §7Bannpunkte: §f" + p.getBanPoints() +
+                                "\n";
+                    }
 
-                String muteInfo;
-                if (p.isBanned()) {
-                    muteInfo = "\n§8» §7Gemuted: §f" + p.isMuted() +
-                            "\n§8» §7Mutezeit: " + BanManager.getEndeString(p.getMuteTime()) +
-                            "\n§8» §7Mutepunkte: §f" + p.getMutePoints() +
-                            "\n";
-                } else {
-                    muteInfo = "\n§8» §7Gemuted: §f" + p.isMuted() +
-                            "\n§8» §7Mutepunkte: §f" + p.getMutePoints();
+                    if (punish.isMuted()) {
+                        muteInfo = "\n§8» §7Gemuted: §f" + p.isMuted() +
+                                "\n§8» §7Mutezeit: " + BungeeCoreSystem.getSystem().getOverwatch().getPunishManager().getEndeString(p.getMuteTime()) +
+                                "\n§8» §7Mutepunkte: §f" + p.getMutePoints() +
+                                "\n";
+                    } else {
+                        muteInfo = "\n§8» §7Gemuted: §f" + p.isMuted() +
+                                "\n§8» §7Mutepunkte: §f" + p.getMutePoints();
+                    }
                 }
 
                 BungeeCoreSystem.getInstance().getMessenger().send(sender, message.append(permInfo).append(general).append(banInfo).append(muteInfo).toString());

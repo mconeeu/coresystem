@@ -43,9 +43,9 @@ public class ReportInfoInventory extends CoreInventory {
                 setItem(InventorySlot.ROW_3_SLOT_4, new ItemBuilder(Material.INK_SACK, 1, 7).displayName("§7Nicht verfügbar").create());
             }
 
-            setItem(InventorySlot.ROW_3_SLOT_6, new ItemBuilder(Material.IRON_FENCE, 1).displayName("§cBestrafen").create(), e -> {
-                //TODO: Add Ban-System
-            });
+            setItem(InventorySlot.ROW_3_SLOT_6, new ItemBuilder(Material.IRON_FENCE, 1).displayName("§aBestrafen").lore(
+                    "§7Template §8» §e" + report.getReportReason().getTemplate().getName()
+            ).create(), e -> BukkitCoreSystem.getSystem().getChannelHandler().createSetRequest(player, "PUNISH", report.getReportID(), player.getUniqueId().toString()));
 
             setItem(InventorySlot.ROW_4_SLOT_5, new ItemBuilder(Material.DIAMOND_SWORD, 1).displayName("§7Stats").create(), e -> {
                 //TODO: Add stats inventory

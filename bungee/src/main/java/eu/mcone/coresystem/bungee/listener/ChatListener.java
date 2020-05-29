@@ -7,7 +7,6 @@ package eu.mcone.coresystem.bungee.listener;
 
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.overwatch.ban.BanManager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -48,7 +47,7 @@ public class ChatListener implements Listener {
         } else {
             if (cp.isMuted()) {
                 e.setCancelled(true);
-                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du bist noch für " + BanManager.getEndeString(cp.getMuteTime()) + "§4 gemutet!");
+                BungeeCoreSystem.getInstance().getOverwatch().getMessenger().send(p, "§7Du bist noch für " + BungeeCoreSystem.getSystem().getOverwatch().getPunishManager().getEndeString(cp.getMuteTime()) + "§7 gemutet!");
                 return;
             }
 

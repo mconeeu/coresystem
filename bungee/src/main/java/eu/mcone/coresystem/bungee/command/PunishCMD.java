@@ -6,8 +6,8 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.overwatch.ban.BanManager;
-import eu.mcone.coresystem.bungee.overwatch.ban.BanTemplate;
+import eu.mcone.coresystem.bungee.overwatch.Overwatch;
+import eu.mcone.coresystem.api.core.overwatch.punish.PunishTemplate;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -18,10 +18,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 
-public class BanCMD extends Command implements TabExecutor {
+public class PunishCMD extends Command implements TabExecutor {
 
-    public BanCMD() {
-        super("ban", "system.bungee.ban");
+    private final Overwatch overwatch;
+
+    public PunishCMD(Overwatch overwatch) {
+        super("punish", "overwatch.punish");
+        this.overwatch = overwatch;
     }
 
     public void execute(final CommandSender sender, final String[] args) {
@@ -33,7 +36,7 @@ public class BanCMD extends Command implements TabExecutor {
 
             if (args.length == 1) {
                 if (args[0].equalsIgnoreCase("help")) {
-                    BungeeCoreSystem.getInstance().getMessenger().send(p, "§2BannSystem Hilfe:" +
+                    overwatch.getMessenger().send(p, "§2BannSystem Hilfe:" +
                             "\n§8§m------§r §f§lTemplates §8§m------" +
                             "\n§8» §7CLIENTMODS §8- §eCM" +
                             "\n§8» §7ERSCHEINEN §8- §eES" +
@@ -41,6 +44,8 @@ public class BanCMD extends Command implements TabExecutor {
                             "\n§8» §7BETRUG §8- §eBT" +
                             "\n§8» §7BUGUSING §8- §eBU" +
                             "\n§8» §7RADIKALISMUS §8- §eRM" +
+                            "\n" +
+                            "\n§8» §7MOBBING §8- §eMB" +
                             "\n§8» §7BELEIDIGUNG §8- §eBL" +
                             "\n§8» §7DROHUNG §8- §eDH" +
                             "\n§8» §7SPAM §8- §eSP" +
@@ -53,75 +58,77 @@ public class BanCMD extends Command implements TabExecutor {
                             "\n§8§m--------------------" +
                             "\n§8» §7Alle Infos zum Bannsystem und zu den verschiedenen Templates findest du (bald) im Team Wiki: §fhttps://www.mcone.eu/dashboard/wiki.php");
                 } else {
-                    BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze §c/ban help");
+                    overwatch.getMessenger().send(p, "§4Bitte benutze §c/punish help");
                 }
             } else if (args.length == 2) {
                 UUID t = BungeeCoreSystem.getInstance().getPlayerUtils().fetchUuid(args[1]);
 
                 if (t != null) {
                     if (args[0].equalsIgnoreCase("unban")) {
-                        if (BanManager.isBanned(t)) {
-                            BanManager.unban(t);
-                            BungeeCoreSystem.getInstance().getMessenger().send(p, "§2Du hast den Spieler §f" + args[1] + "§2 entbannt!");
+                        if (overwatch.getPunishManager().isBanned(t)) {
+                            overwatch.getPunishManager().unBan(t);
+                            overwatch.getMessenger().send(p, "§2Du hast den Spieler §f" + args[1] + "§2 entbannt!");
                         } else {
-                            BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Der Spieler §c" + args[1] + "§4 ist nicht gebannt!");
+                            overwatch.getMessenger().send(p, "§4Der Spieler §c" + args[1] + "§4 ist nicht gebannt!");
                         }
                     } else if (args[0].equalsIgnoreCase("unmute")) {
-                        if (BanManager.isMuted(t)) {
-                            BanManager.unmute(t);
-                            BungeeCoreSystem.getInstance().getMessenger().send(p, "§2Du hast den Spieler §f" + args[1] + "§2 entmutet!");
+                        if (overwatch.getPunishManager().isMuted(t)) {
+                            overwatch.getPunishManager().unMute(t);
+                            overwatch.getMessenger().send(p, "§2Du hast den Spieler §f" + args[1] + "§2 entmutet!");
                         } else {
-                            BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Der Spieler §c" + args[1] + " §4ist nicht gemutet!");
+                            overwatch.getMessenger().send(p, "§4Der Spieler §c" + args[1] + " §4ist nicht gemutet!");
                         }
                     } else if (args[0].equalsIgnoreCase("check")) {
-                        if (BanManager.isBanned(t)) {
-                            BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Der Spieler §f" + args[1] + "§7 ist gebannt");
+                        if (overwatch.getPunishManager().isBanned(t) && overwatch.getPunishManager().isMuted(t)) {
+                            overwatch.getMessenger().send(p, "§7Der Spieler §f" + args[1] + "§7 ist gebannt und gemuted");
+                        } else if (overwatch.getPunishManager().isBanned(t)) {
+                            overwatch.getMessenger().send(p, "§7Der Spieler §f" + args[1] + "§7 ist gebannt");
+                        } else if (overwatch.getPunishManager().isMuted(t)) {
+                            overwatch.getMessenger().send(p, "§7Der Spieler §f" + args[1] + "§7 ist gemuted");
                         } else {
-                            BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Der Spieler §f" + args[1] + "§7 ist nicht gebannt");
-                        }
-
-                        if (BanManager.isMuted(t)) {
-                            BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Der Spieler §f" + args[1] + "§7 ist gemuted");
-                        } else {
-                            BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Der Spieler §f" + args[1] + "§7 ist nicht gemuted");
+                            overwatch.getMessenger().send(p, "§7Der Spieler §f" + args[1] + "§7 ist weder gebannt noch gemuted");
                         }
                     } else {
-                        BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze §c/ban help");
+                        overwatch.getMessenger().send(p, "§4Bitte benutze §c/ban help");
                     }
                 } else {
-                    BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Der Minecraftaccount §c" + args[1] + "§4 existiert nicht!");
+                    overwatch.getMessenger().send(p, "§4Der Minecraftaccount §c" + args[1] + "§4 existiert nicht!");
                 }
             } else if (args.length == 3) {
                 ProxiedPlayer t = ProxyServer.getInstance().getPlayer(args[0]);
-                BanTemplate template = BanTemplate.getTemplateByID(args[1]);
+                PunishTemplate template = PunishTemplate.getTemplateByID(args[1]);
                 String grund = args[2];
 
                 if (t == null) {
-                    BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Dieser Spieler ist nicht online!");
+                    overwatch.getMessenger().send(p, "§4Dieser Spieler ist nicht online!");
                 } else if (t == p) {
-                    BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Du kannst dich nicht selbst bannen");
+                    overwatch.getMessenger().send(p, "§7Du kannst dich nicht selbst bannen");
                 } else {
-                    if (!BanManager.isBanned(t.getUniqueId())) {
+                    if (!overwatch.getPunishManager().isBanned(t.getUniqueId())) {
                         if (t.hasPermission("group.team")) {
-                            BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du darfst keine Teammitglieder bannen!");
+                            overwatch.getMessenger().send(p, "§4Du darfst keine Teammitglieder bannen!");
                         } else {
                             if (template != null) {
-                                BanManager.ban(t.getUniqueId(), template, grund, p.getUniqueId());
+                                overwatch.getPunishManager().punishPlayer(t.getUniqueId(), template, grund, p.getUniqueId());
 
-                                BungeeCoreSystem.getInstance().getMessenger().send(p, "§2Du hast erfolgreich den Spieler §f" + t.getName() + "§2 gebannt!");
+                                overwatch.getMessenger().send(p, "§2Du hast erfolgreich den Spieler §f" + t.getName() + "§2 gebannt!");
                                 for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
                                     if (player.hasPermission("system.bungee.ban")) {
-                                        BungeeCoreSystem.getInstance().getMessenger().send(p, "§f" + p.getName() + "§7 hat den Spieler §c" + t.getName() + "§7 mit dem Template §o" + template.getName() + "§7 und dem Grund §e" + grund + "§7 gebannt!");
+                                        if (player != p) {
+                                            overwatch.getMessenger().send(p, "§f" + p.getName() + "§7 hat den Spieler §c" + t.getName() + "§7 mit dem Template §o" + template.getName() + "§7 und dem Grund §e" + grund + "§7 gebannt!");
+                                        }
                                     }
                                 }
                             } else {
-                                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du kannst ausschließlich diese Templates verwenden:" +
+                                overwatch.getMessenger().send(p, "§4Du kannst ausschließlich diese Templates verwenden:" +
                                         "\n§8» §7CLIENTMODS §8- §eCM" +
                                         "\n§8» §7ERSCHEINEN §8- §eES" +
                                         "\n§8» §7TEAMTROLLING §8- §eTT" +
                                         "\n§8» §7BETRUG §8- §eBT" +
                                         "\n§8» §7BUGUSING §8- §eBU" +
                                         "\n§8» §7RADIKALISMUS §8- §eRM" +
+                                        "\n" +
+                                        "\n§8» §7MOBBING §8- §eMB" +
                                         "\n§8» §7BELEIDIGUNG §8- §eBL" +
                                         "\n§8» §7DROHUNG §8- §eDH" +
                                         "\n§8» §7SPAM §8- §eSP" +
@@ -131,14 +138,14 @@ public class BanCMD extends Command implements TabExecutor {
                             }
                         }
                     } else {
-                        BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Dieser Spieler ist bereits gebannt!");
+                        overwatch.getMessenger().send(p, "§4Dieser Spieler ist bereits gebannt!");
                     }
                 }
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze §c/ban help");
+                overwatch.getMessenger().send(p, "§4Bitte benutze §c/punish help");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            overwatch.getMessenger().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 
@@ -156,7 +163,7 @@ public class BanCMD extends Command implements TabExecutor {
                     result.add(p.getName());
                 }
             } else {
-                for (BanTemplate t : BanTemplate.values()) {
+                for (PunishTemplate t : PunishTemplate.values()) {
                     result.add(t.getId());
                 }
             }

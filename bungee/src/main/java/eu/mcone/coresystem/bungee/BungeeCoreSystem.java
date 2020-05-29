@@ -23,17 +23,17 @@ import eu.mcone.coresystem.bungee.command.*;
 import eu.mcone.coresystem.bungee.friend.FriendSystem;
 import eu.mcone.coresystem.bungee.listener.*;
 import eu.mcone.coresystem.bungee.overwatch.Overwatch;
+import eu.mcone.coresystem.bungee.overwatch.replay.ReplayServerSessionHandler;
 import eu.mcone.coresystem.bungee.player.BungeeCorePlayer;
 import eu.mcone.coresystem.bungee.player.BungeeOfflineCorePlayer;
+import eu.mcone.coresystem.bungee.player.LabyModManager;
 import eu.mcone.coresystem.bungee.player.NickManager;
 import eu.mcone.coresystem.bungee.runnable.Broadcast;
 import eu.mcone.coresystem.bungee.runnable.OnlineTime;
 import eu.mcone.coresystem.bungee.runnable.PremiumCheck;
 import eu.mcone.coresystem.bungee.utils.ChannelHandler;
-import eu.mcone.coresystem.bungee.player.LabyModManager;
 import eu.mcone.coresystem.bungee.utils.bots.discord.DiscordControlBot;
 import eu.mcone.coresystem.bungee.utils.bots.teamspeak.TeamspeakVerifier;
-import eu.mcone.coresystem.bungee.overwatch.replay.ReplayServerSessionHandler;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
@@ -229,7 +229,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new PingCMD(),
                 new TeamChatCMD(),
                 new PermsCMD(getMongoDB()),
-                new BanCMD(),
+                new PunishCMD(overwatch),
                 new WhoisCMD(),
                 new RestartCMD(),
                 new MaintenanceCMD(),

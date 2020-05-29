@@ -5,15 +5,12 @@
 
 package eu.mcone.coresystem.api.bungee.overwatch;
 
-import eu.mcone.coresystem.api.bungee.overwatch.ban.BanManager;
 import eu.mcone.coresystem.api.bungee.overwatch.report.ReportManager;
 import eu.mcone.coresystem.api.bungee.util.Messenger;
 
 public interface Overwatch {
 
     ReportManager getReportManager();
-
-    BanManager getBanManager();
 
     Messenger getMessenger();
 }

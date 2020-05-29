@@ -10,7 +10,6 @@ import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.overwatch.ban.BanManager;
 import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -71,7 +70,7 @@ public class PremiumCMD extends Command implements TabExecutor {
                                 BungeeCoreSystem.getInstance().getMessenger().sendSimple(p, "");
                                 BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Der Spieler §f" + target);
                                 BungeeCoreSystem.getInstance().getMessenger().send(p, "§7hat den Rang §6" + rang);
-                                BungeeCoreSystem.getInstance().getMessenger().send(p, "§7noch " + BanManager.getEndeString(timestamp));
+                                BungeeCoreSystem.getInstance().getMessenger().send(p, "§7noch " + BungeeCoreSystem.getSystem().getOverwatch().getPunishManager().getEndeString(timestamp));
                             } else {
                                 BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Der Spieler §f" + target + " §7hat keinen auslaufenden Rang.");
                             }

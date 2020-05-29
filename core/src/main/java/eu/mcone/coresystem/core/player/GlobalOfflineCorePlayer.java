@@ -23,8 +23,7 @@ import java.text.NumberFormat;
 import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.combine;
-import static com.mongodb.client.model.Updates.set;
+import static com.mongodb.client.model.Updates.*;
 
 public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api.core.player.GlobalOfflineCorePlayer {
 
@@ -200,6 +199,18 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     @Override
     public void updateTrust() {
         ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", this.uuid.toString()), set("trust", trust));
+    }
+
+    @Override
+    public void increaseCorrectReports() {
+        trust.setCorrectReports(trust.getCorrectReports() + 1);
+        ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", this.uuid.toString()), inc("correctReports", 1));
+    }
+
+    @Override
+    public void increaseWrongReports() {
+        trust.setWrongReports(trust.getWrongReports() + 1);
+        ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", this.uuid.toString()), inc("wrongReports", 1));
     }
 
     @Override

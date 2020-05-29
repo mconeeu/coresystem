@@ -32,7 +32,7 @@ import java.util.UUID;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.combine;
 
-public class ReportManager extends GlobalReportManager {
+public class ReportManager extends GlobalReportManager implements eu.mcone.coresystem.api.bungee.overwatch.report.ReportManager {
 
     private final Overwatch overwatch;
 
@@ -156,6 +156,17 @@ public class ReportManager extends GlobalReportManager {
             report.setState(ReportState.CLOSED);
             report.addUpdate("Das Teammitglied " + player.getName() + " hat den Report geschlossen!");
             getReportsCollection().replaceOne(combine(eq("teamMember", player.getUniqueId()), eq("state", ReportState.IN_PROGRESS.toString())), report);
+
+            try {
+                for (UUID uuid : report.getReporter()) {
+                    OfflineCorePlayer corePlayer = BungeeCoreSystem.getSystem().getOfflineCorePlayer(uuid);
+                    corePlayer.increaseWrongReports();
+                    overwatch.getTrustManager().checkTrustLvl(uuid);
+                }
+            } catch (PlayerNotResolvedException e) {
+                e.printStackTrace();
+            }
+
             BungeeCoreSystem.getSystem().getChannelHandler().createInfoRequest(player, "REPORT", "CLOSE", report.getReportID());
         }
     }

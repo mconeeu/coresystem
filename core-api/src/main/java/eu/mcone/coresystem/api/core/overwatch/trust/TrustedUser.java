@@ -16,7 +16,7 @@ import java.io.Serializable;
 public class TrustedUser implements Serializable {
 
     private int correctReports;
-    private int failReports;
+    private int wrongReports;
     private TrustGroup group;
 
     public TrustedUser() {
@@ -25,17 +25,17 @@ public class TrustedUser implements Serializable {
 
     public TrustedUser(Document document) {
         correctReports = document.getInteger("correctReports");
-        failReports = document.getInteger("failReports");
+        wrongReports = document.getInteger("wrongReports");
         group = (!document.getString("group").isEmpty() ? TrustGroup.valueOf(document.getString("group")) : TrustGroup.NORMAL);
     }
 
     public TrustedUser(int correctReports, int failReports, TrustGroup group) {
         this.correctReports = correctReports;
-        this.failReports = failReports;
+        this.wrongReports = failReports;
         this.group = group;
     }
 
     public int getReports() {
-        return correctReports + failReports;
+        return correctReports + wrongReports;
     }
 }
