@@ -13,7 +13,7 @@ import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;

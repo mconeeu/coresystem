@@ -20,7 +20,7 @@ import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.inventory.ModificationCategoryInventory;
 import eu.mcone.coresystem.bukkit.inventory.ModificationGamemodeInventory;
 import eu.mcone.coresystem.bukkit.listener.InventoryModificationListener;
-import eu.mcone.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import org.bson.Document;
 import org.bson.codecs.pojo.PojoCodecProvider;

@@ -27,7 +27,10 @@ import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
-import eu.mcone.coresystem.api.bukkit.util.*;
+import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
+import eu.mcone.coresystem.api.bukkit.util.CoreProjectile;
+import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
+import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
@@ -52,8 +55,8 @@ import eu.mcone.coresystem.core.player.PlayerUtils;
 import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CoreCooldownSystem;
 import eu.mcone.coresystem.core.util.MoneyUtil;
-import eu.mcone.networkmanager.core.api.database.Database;
-import eu.mcone.networkmanager.core.database.MongoConnection;
+import group.onegaming.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.database.MongoConnection;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.Getter;
@@ -254,7 +257,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                     }
                 }
 
-//                channelHandler.createSetRequest(p, "UNNICK");
                 channelHandler.createSetRequest(p, "REFRESHNICK");
 
                 CorePlayerListener.LOADING_SUCCESS_MSG.send(p);
@@ -347,7 +349,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public MongoDatabase getMongoDB(eu.mcone.networkmanager.core.api.database.Database database) {
+    public MongoDatabase getMongoDB(Database database) {
         switch (database) {
             case SYSTEM:
                 return database1;

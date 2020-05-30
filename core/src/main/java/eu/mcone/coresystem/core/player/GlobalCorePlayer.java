@@ -9,7 +9,7 @@ import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.labymod.LabyModConnection;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -9,7 +9,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ClickEvent;

@@ -13,7 +13,7 @@ import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.GlobalOfflineCorePlayer;
-import eu.mcone.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import org.bson.Document;
 

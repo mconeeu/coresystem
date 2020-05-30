@@ -10,7 +10,7 @@ import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.utils.bots.discord.command.Help;
 import eu.mcone.coresystem.bungee.utils.bots.discord.command.utils.DiscordCommand;
 import eu.mcone.coresystem.bungee.utils.bots.discord.listener.EventListener;
-import eu.mcone.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;

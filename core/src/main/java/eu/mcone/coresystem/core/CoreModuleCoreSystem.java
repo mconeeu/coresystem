@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.core.util.MoneyUtil;
-import eu.mcone.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.api.database.Database;
 
 public interface CoreModuleCoreSystem {
 

@@ -15,7 +15,7 @@ import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.SkinNotFoundException;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.api.database.Database;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -29,7 +29,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.*;
+import static com.mongodb.client.model.Updates.combine;
+import static com.mongodb.client.model.Updates.set;
 
 public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUtils {
 

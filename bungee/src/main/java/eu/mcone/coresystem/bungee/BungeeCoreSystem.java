@@ -41,14 +41,15 @@ import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CoreCooldownSystem;
 import eu.mcone.coresystem.core.util.MoneyUtil;
 import eu.mcone.coresystem.core.util.PreferencesManager;
-import eu.mcone.networkmanager.core.api.database.Database;
-import eu.mcone.networkmanager.core.database.MongoConnection;
+import group.onegaming.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.database.MongoConnection;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 
 import javax.security.auth.login.LoginException;
@@ -136,7 +137,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                         MongoClientSettings.getDefaultCodecRegistry(),
                         CodecRegistries.fromProviders(
                                 new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY),
-                                PojoCodecProvider.builder().automatic(true).build()
+                                PojoCodecProvider.builder().conventions(Conventions.DEFAULT_CONVENTIONS).automatic(true).build()
                         )
                 )
                 .connect();

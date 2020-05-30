@@ -12,22 +12,14 @@ import eu.mcone.coresystem.api.core.overwatch.report.Report;
 import eu.mcone.coresystem.api.core.overwatch.report.ReportState;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.overwatch.GlobalOverwatch;
-import eu.mcone.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.api.database.Database;
 import lombok.Getter;
-import org.bson.UuidRepresentation;
-import org.bson.codecs.UuidCodecProvider;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.Conventions;
-import org.bson.codecs.pojo.PojoCodecProvider;
 
 import java.io.Serializable;
 import java.util.*;
 
-import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.combine;
-import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
-import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 public abstract class GlobalReportManager implements eu.mcone.coresystem.api.core.overwatch.report.GlobalReportManager, Serializable {
 
@@ -43,16 +35,8 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
     protected GlobalReportManager(GlobalOverwatch overwatch, GlobalCoreSystem instance) {
         this.overwatch = overwatch;
         this.instance = instance;
-        CodecRegistry codecRegistry = fromRegistries(getDefaultCodecRegistry(),
-                fromProviders(
-                        new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY),
-                        PojoCodecProvider.builder().conventions(Conventions.DEFAULT_CONVENTIONS).automatic(true).build()
-                )
-
-        );
-
-        liveReportsCollection = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).withCodecRegistry(codecRegistry).getCollection("overwatch_live_reports", LiveReport.class);
-        reportsCollection = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).withCodecRegistry(codecRegistry).getCollection("overwatch_reports", Report.class);
+        liveReportsCollection = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("overwatch_live_reports", LiveReport.class);
+        reportsCollection = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("overwatch_reports", Report.class);
     }
 
     /**
@@ -93,7 +77,7 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @return Report
      */
     public LiveReport getLiveReport(UUID reported) {
-        return getLiveReportsCollection().find(eq("reported", reported.toString())).first();
+        return getLiveReportsCollection().find(eq("reported", reported)).first();
     }
 
     /**
@@ -113,7 +97,7 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @return Report
      */
     public Report getReport(UUID reported) {
-        return getReportsCollection().find(eq("reported", reported.toString())).first();
+        return getReportsCollection().find(eq("reported", reported)).first();
     }
 
     /**
@@ -148,7 +132,7 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @return boolean
      */
     public boolean currentlyWorkingOnReport(UUID uuid) {
-        return getReportsCollection().find(combine(eq("teamMember", uuid.toString()), eq("state", ReportState.IN_PROGRESS.toString()))).first() != null;
+        return getReportsCollection().find(combine(eq("teamMember", uuid), eq("state", ReportState.IN_PROGRESS.toString()))).first() != null;
     }
 
     /**
@@ -158,7 +142,7 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @return Report
      */
     public Report getCurrentlyEditing(UUID uuid) {
-        return getReportsCollection().find(combine(eq("teamMember", uuid.toString()), eq("state", ReportState.IN_PROGRESS.toString()))).first();
+        return getReportsCollection().find(combine(eq("teamMember", uuid), eq("state", ReportState.IN_PROGRESS.toString()))).first();
     }
 
     /**
@@ -168,6 +152,6 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @return boolean
      */
     public boolean wasPlayerReported(UUID uuid) {
-        return getLiveReportsCollection().find(eq("reported", uuid.toString())).first() != null;
+        return getLiveReportsCollection().find(eq("reported", uuid)).first() != null;
     }
 }
