@@ -19,10 +19,8 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 
 public class CoreJsonConfig<T> {
@@ -113,10 +111,12 @@ public class CoreJsonConfig<T> {
      */
     public void reloadFile() throws CoreConfigException {
         try {
-            FileReader fr = new FileReader(file);
-            json = CoreSystem.getInstance().getJsonParser().parse(fr);
+            FileInputStream fis = new FileInputStream(file);
+            InputStreamReader reader = new InputStreamReader(fis, StandardCharsets.UTF_8);
+            json = CoreSystem.getInstance().getJsonParser().parse(reader);
 
-            fr.close();
+            reader.close();
+            fis.close();
         } catch (IOException e) {
             plugin.sendConsoleMessage("§cError reloading Config §f" + file.getName());
             throw new CoreConfigException("Cannot reload JsonConfig "+file.getName(), e);
@@ -128,10 +128,12 @@ public class CoreJsonConfig<T> {
      */
     public void save() {
         try {
-            FileWriter fw = new FileWriter(file, false);
+            FileOutputStream fos = new FileOutputStream(file);
+            Writer fw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
             PRETTY_GSON.toJson(json, fw);
 
             fw.close();
+            fos.close();
         } catch (IOException e) {
             plugin.sendConsoleMessage("§cError saving Config §f" + file.getName());
             throw new CoreConfigException("Cannot save JsonConfig "+file.getName(), e);

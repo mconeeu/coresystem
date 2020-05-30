@@ -25,10 +25,8 @@ import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -233,9 +231,11 @@ public class BukkitCoreWorld implements CoreWorld {
                 throw new FileNotFoundException("Config File could not be created!");
             }
 
-            FileWriter fw = new FileWriter(config, false);
+            FileOutputStream fos = new FileOutputStream(config);
+            Writer fw = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
             CoreJsonConfig.PRETTY_GSON.toJson(this, getClass(), fw);
             fw.close();
+            fos.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
