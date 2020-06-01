@@ -26,8 +26,8 @@ public class ServerSwitchListener implements Listener {
             CoreSystem.getInstance().getLabyModAPI().unsetCurrentServer(p);
         }
 
-        if (cp.getSettings().isAutoNick()) {
-            BungeeCoreSystem.getSystem().getNickManager().nick(p);
+        if (cp.isNicked()) {
+            BungeeCoreSystem.getSystem().getNickManager().serverSwitched(p);
         }
 
         PostLoginListener.updateTabHeader(p);

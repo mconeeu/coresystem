@@ -61,20 +61,11 @@ public class InfoPluginChannelListener implements PluginMessageListener {
                 }
                 case "NICK": {
                     Nick nick = new Nick(in.readUTF(), Group.valueOf(in.readUTF()), in.readUTF(), in.readUTF(), Integer.parseInt(in.readUTF()), Long.parseLong(in.readUTF()));
+                    NickEvent event = new NickEvent(cp, CoreSystem.getInstance().getNickManager().isAllowSkinChange());
+                    Bukkit.getPluginManager().callEvent(event);
 
-                    if (CoreSystem.getInstance().getNickManager().isAllowSkinChange()) {
-                        NickEvent event = new NickEvent(cp, true);
-                        Bukkit.getPluginManager().callEvent(event);
-
-                        if (!event.isCancelled())
-                            BukkitCoreSystem.getInstance().getNickManager().nick(p, nick);
-                    } else {
-                        NickEvent event = new NickEvent(cp, false);
-                        Bukkit.getPluginManager().callEvent(event);
-
-                        if (!event.isCancelled())
-                            BukkitCoreSystem.getInstance().getNickManager().nick(p, nick);
-                    }
+                    if (!event.isCancelled())
+                        BukkitCoreSystem.getInstance().getNickManager().nick(p, nick);
                     break;
                 }
                 case "UNNICK": {

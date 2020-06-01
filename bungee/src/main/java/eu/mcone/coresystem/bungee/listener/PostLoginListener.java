@@ -73,6 +73,10 @@ public class PostLoginListener implements Listener {
         ProxyServer.getInstance().getScheduler().schedule(BungeeCoreSystem.getInstance(), () -> {
             updateTabHeader(p);
 
+            if (cp.getSettings().isAutoNick()) {
+                BungeeCoreSystem.getInstance().getNickManager().nick(p);
+            }
+
             BungeeCoreSystem.getInstance().getLabyModAPI().sendPermissions(p, new HashMap<LabyModPermission, Boolean>() {{
                 put(LabyModPermission.IMPROVED_LAVA, true);
                 put(LabyModPermission.CROSSHAIR_SYNC, true);

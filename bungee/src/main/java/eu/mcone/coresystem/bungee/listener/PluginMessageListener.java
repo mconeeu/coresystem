@@ -120,10 +120,8 @@ public class PluginMessageListener implements Listener {
                         if (si != null && si.canAccess(p)) {
                             p.connect(si);
                         }
-                    } else if (subch.equalsIgnoreCase("UNNICK")) {
-                        BungeeCoreSystem.getInstance().getNickManager().destroy(p);
-                    } else if (subch.equalsIgnoreCase("REFRESHNICK")) {
-                        BungeeCoreSystem.getInstance().getNickManager().nick(p);
+                    } else if (subch.equalsIgnoreCase("REFRESH_NICKS")) {
+                        BungeeCoreSystem.getInstance().getNickManager().refreshNicks(p.getServer());
                     } else if (subch.equalsIgnoreCase("PLAYER_SETTINGS")) {
                         ProxyServer.getInstance().getPluginManager().callEvent(new PlayerSettingsChangeEvent(
                                 CoreSystem.getInstance().getCorePlayer(p),

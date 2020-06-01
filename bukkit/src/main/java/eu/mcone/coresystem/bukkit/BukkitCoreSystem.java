@@ -27,7 +27,10 @@ import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
-import eu.mcone.coresystem.api.bukkit.util.*;
+import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
+import eu.mcone.coresystem.api.bukkit.util.CoreProjectile;
+import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
+import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
@@ -254,14 +257,14 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                     }
                 }
 
-//                channelHandler.createSetRequest(p, "UNNICK");
-                channelHandler.createSetRequest(p, "REFRESHNICK");
-
                 CorePlayerListener.LOADING_SUCCESS_MSG.send(p);
                 p.removePotionEffect(PotionEffectType.BLINDNESS);
             });
         }
 
+        if (Bukkit.getOnlinePlayers().size() > 0) {
+            channelHandler.createSetRequest(Bukkit.getOnlinePlayers().iterator().next(), "REFRESH_NICKS");
+        }
         overwatch.getReportManager().sendOpenReports();
 
         super.onEnable();
@@ -284,8 +287,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                     t.showPlayer(p.bukkit());
                 }
             }
-
-            channelHandler.createSetRequest(p.bukkit(), "UNNICK");
         }
 
         npcManager.disable();

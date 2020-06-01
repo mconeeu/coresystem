@@ -12,6 +12,7 @@ import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
         reload();
     }
 
+    @Override
     public void reload() {
         nicks.clear();
 
@@ -57,22 +59,14 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
         }
     }
 
+    @Override
     public void nick(ProxiedPlayer p) {
         CorePlayer cp = instance.getCorePlayer(p);
         Nick nick = cp.getCurrentNick() != null ? cp.getCurrentNick() : getNick();
         nicks.put(nick, p);
 
         if (nick != null) {
-            CoreSystem.getInstance().getChannelHandler().createInfoRequest(p,
-                    "NICK",
-                    nick.getName(),
-                    nick.getGroup().toString(),
-                    nick.getSkinInfo().getValue(),
-                    nick.getSkinInfo().getSignature(),
-                    String.valueOf(nick.getCoins()),
-                    String.valueOf(nick.getOnlineTime())
-            );
-
+            sendNickRequest(p, nick);
             ((BungeeCorePlayer) cp).setCurrentNick(nick);
             ((BungeeCorePlayer) cp).setNicked(true);
         } else {
@@ -80,6 +74,7 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
         }
     }
 
+    @Override
     public void unnick(ProxiedPlayer p) {
         CorePlayer cp = instance.getCorePlayer(p);
         CoreSystem.getInstance().getChannelHandler().createInfoRequest(p, "UNNICK");
@@ -94,11 +89,40 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
         ((BungeeCorePlayer) cp).setNicked(false);
     }
 
+    @Override
+    public void refreshNicks(Server server) {
+        for (ProxiedPlayer p : server.getInfo().getPlayers()) {
+            serverSwitched(p);
+        }
+    }
+
+    @Override
+    public void serverSwitched(ProxiedPlayer p) {
+        CorePlayer cp = BungeeCoreSystem.getSystem().getCorePlayer(p);
+
+        if (cp.isNicked()) {
+            sendNickRequest(p, cp.getCurrentNick());
+        }
+    }
+
+    @Override
     public void destroy(ProxiedPlayer p) {
         CorePlayer cp = instance.getCorePlayer(p);
         nicks.put(cp.getCurrentNick(), null);
         ((BungeeCorePlayer) cp).setCurrentNick(null);
         ((BungeeCorePlayer) cp).setNicked(false);
+    }
+
+    private static void sendNickRequest(ProxiedPlayer p, Nick nick) {
+        CoreSystem.getInstance().getChannelHandler().createInfoRequest(p,
+                "NICK",
+                nick.getName(),
+                nick.getGroup().toString(),
+                nick.getSkinInfo().getValue(),
+                nick.getSkinInfo().getSignature(),
+                String.valueOf(nick.getCoins()),
+                String.valueOf(nick.getOnlineTime())
+        );
     }
 
 }

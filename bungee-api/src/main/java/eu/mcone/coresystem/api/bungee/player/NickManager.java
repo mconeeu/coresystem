@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.api.bungee.player;
 
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 
 public interface NickManager {
 
@@ -14,6 +15,10 @@ public interface NickManager {
     void nick(ProxiedPlayer player);
 
     void unnick(ProxiedPlayer player);
+
+    void refreshNicks(Server server);
+
+    void serverSwitched(ProxiedPlayer p);
 
     void destroy(ProxiedPlayer player);
 
