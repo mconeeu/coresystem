@@ -62,16 +62,20 @@ public class ReportCMD extends CorePlayerCommand {
                             Player reportedPlayer = Bukkit.getPlayer(reported);
 
                             if (reportedPlayer != null) {
-                                if (!(reportedPlayer.hasPermission("overwatch.report.ignore") || reportedPlayer.hasPermission("overwatch.report.*"))) {
-                                    LiveReport liveReport = overwatch.getReportManager().getLiveReport(reportedPlayer.getUniqueId());
+                                if (player != reportedPlayer) {
+                                    if (!(reportedPlayer.hasPermission("overwatch.report.ignore") || reportedPlayer.hasPermission("overwatch.report.*"))) {
+                                        LiveReport liveReport = overwatch.getReportManager().getLiveReport(reportedPlayer.getUniqueId());
 
-                                    if (liveReport != null && liveReport.getReporter().contains(player.getUniqueId())) {
-                                        overwatch.getMessenger().send(player, "§4Du hast den Spieler §f§l" + reportedPlayer.getName() + " §4bereits Reportet.");
+                                        if (liveReport != null && liveReport.getReporter().contains(player.getUniqueId())) {
+                                            overwatch.getMessenger().send(player, "§4Du hast den Spieler §f§l" + reportedPlayer.getName() + " §4bereits Reportet.");
+                                        } else {
+                                            new ReportInventory(player, reportedPlayer);
+                                        }
                                     } else {
-                                        new ReportInventory(player, reportedPlayer);
+                                        overwatch.getMessenger().send(player, "§4Du kannst keine §cTeammitglieder §4Reporten!");
                                     }
                                 } else {
-                                    overwatch.getMessenger().send(player, "§4Du kannst keine §cTeammitglieder §4Reporten!");
+                                    overwatch.getMessenger().send(player, "§4Du kannst dich nicht selbst reporten!");
                                 }
                             } else {
                                 overwatch.getMessenger().send(player, "§4Der Spieler §c" + reported + " §4konnte nicht gefunden werden!");
