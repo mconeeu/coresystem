@@ -18,7 +18,7 @@ import eu.mcone.coresystem.api.core.util.Zip;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.LocationCMD;
 import eu.mcone.coresystem.bukkit.command.WorldCMD;
-import eu.mcone.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.api.database.Database;
 import org.apache.commons.io.IOUtils;
 import org.bson.Document;
 import org.bson.types.Binary;

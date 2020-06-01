@@ -9,7 +9,7 @@ import com.mongodb.client.MongoCollection;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.overwatch.util.Statistic;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.api.database.Database;
 import lombok.Getter;
 
 import java.util.Calendar;

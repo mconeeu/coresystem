@@ -62,7 +62,7 @@ public class ReportCMD extends CorePlayerCommand {
                             Player reportedPlayer = Bukkit.getPlayer(reported);
 
                             if (reportedPlayer != null) {
-                                if (reportedPlayer.hasPermission("overwatch.report.ignore") || reportedPlayer.hasPermission("overwatch.report.*")) {
+                                if (!(reportedPlayer.hasPermission("overwatch.report.ignore") || reportedPlayer.hasPermission("overwatch.report.*"))) {
                                     LiveReport liveReport = overwatch.getReportManager().getLiveReport(reportedPlayer.getUniqueId());
 
                                     if (liveReport != null && liveReport.getReporter().contains(player.getUniqueId())) {

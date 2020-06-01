@@ -10,7 +10,7 @@ import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.player.FriendData;
-import eu.mcone.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.ProxyServer;
 import org.bson.Document;
 

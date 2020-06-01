@@ -7,10 +7,10 @@ package eu.mcone.coresystem.bukkit.player;
 
 import com.mongodb.client.MongoCollection;
 import eu.mcone.coresystem.api.bukkit.event.StatsChangeEvent;
-import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import org.bson.Document;
 import org.bukkit.Bukkit;

@@ -4,34 +4,26 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.ReplaceOptions;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.overwatch.punish.Punish;
-import eu.mcone.coresystem.api.core.overwatch.punish.PunishTemplate;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
+import eu.mcone.coresystem.api.core.overwatch.punish.PunishTemplate;
 import eu.mcone.coresystem.api.core.overwatch.report.AbstractReport;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.overwatch.Overwatch;
 import eu.mcone.coresystem.bungee.player.BungeeCorePlayer;
-import eu.mcone.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.bson.Document;
-import org.bson.UuidRepresentation;
-import org.bson.codecs.UuidCodecProvider;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.Conventions;
-import org.bson.codecs.pojo.PojoCodecProvider;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.*;
-import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
-import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 public class PunishManager implements eu.mcone.coresystem.api.bungee.overwatch.punish.PunishManager {
 
@@ -45,17 +37,10 @@ public class PunishManager implements eu.mcone.coresystem.api.bungee.overwatch.p
 
     public PunishManager(Overwatch overwatch) {
         this.overwatch = overwatch;
-        CodecRegistry codecRegistry = fromRegistries(getDefaultCodecRegistry(),
-                fromProviders(
-                        new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY),
-                        PojoCodecProvider.builder().conventions(Conventions.DEFAULT_CONVENTIONS).automatic(true).build()
-                )
 
-        );
-
-        this.punishCollection = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).withCodecRegistry(codecRegistry).getCollection("overwatch_punishments", Punish.class);
-        this.punishPointsCollection = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).withCodecRegistry(codecRegistry).getCollection("overwatch_punishment_points");
-        this.punishHistoryCollection = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).withCodecRegistry(codecRegistry).getCollection("overwatch_punishment_history", Punish.class);
+        this.punishCollection = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("overwatch_punishments", Punish.class);
+        this.punishPointsCollection = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("overwatch_punishment_points");
+        this.punishHistoryCollection = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("overwatch_punishment_history", Punish.class);
     }
 
     public void punishPlayer(AbstractReport report, UUID teamMember) {
@@ -88,7 +73,7 @@ public class PunishManager implements eu.mcone.coresystem.api.bungee.overwatch.p
             Punish punish = new Punish(reportedCorePlayer.getUuid(), teamMember, template, report.getReportReason().getName());
             if (banTime > millis && template.getBanPoints() > 0) {
                 punish.addBanEntry(banTime);
-                BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", reportedCorePlayer.getUuid().toString()), set("state", 3));
+                BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", reportedCorePlayer.getUuid()), set("state", 3));
 
                 if (p != null) {
                     p.disconnect(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
@@ -139,7 +124,7 @@ public class PunishManager implements eu.mcone.coresystem.api.bungee.overwatch.p
             }
 
             if (punish.getBanEntry() != null || punish.getMuteEntry() != null) {
-                punishCollection.replaceOne(eq("punished", reportedCorePlayer.getUuid().toString()), punish, new ReplaceOptions().upsert(true));
+                punishCollection.replaceOne(eq("punished", reportedCorePlayer.getUuid()), punish, new ReplaceOptions().upsert(true));
             }
         } catch (PlayerNotResolvedException e) {
             e.printStackTrace();
@@ -174,7 +159,7 @@ public class PunishManager implements eu.mcone.coresystem.api.bungee.overwatch.p
         Punish punish = new Punish(player, teamMember, template, reason);
         if (banTime > millis && template.getBanPoints() > 0) {
             punish.addBanEntry(banTime);
-            BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", player.toString()), set("state", 3));
+            BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", player), set("state", 3));
 
             if (p != null) {
                 p.disconnect(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
@@ -219,7 +204,7 @@ public class PunishManager implements eu.mcone.coresystem.api.bungee.overwatch.p
     }
 
     public void resetPoints(UUID uuid) {
-        punishPointsCollection.updateOne(eq("uuid", uuid.toString()), combine(
+        punishPointsCollection.updateOne(eq("uuid", uuid), combine(
                 new Document("banpoints", 0),
                 new Document("mutepoints", 0)
         ));
@@ -328,12 +313,12 @@ public class PunishManager implements eu.mcone.coresystem.api.bungee.overwatch.p
     }
 
     public boolean hasPoints(UUID uuid) {
-        return punishPointsCollection.find(eq("uuid", uuid.toString())).first() != null;
+        return punishPointsCollection.find(eq("uuid", uuid)).first() != null;
     }
 
     public Map<String, Integer> getPoints(UUID uuid) {
         Map<String, Integer> result = new HashMap<>();
-        Document entry = punishPointsCollection.find(eq("uuid", uuid.toString())).first();
+        Document entry = punishPointsCollection.find(eq("uuid", uuid)).first();
         if (entry != null) {
             result.put("ban", entry.getInteger("banpoints"));
             result.put("mute", entry.getInteger("mutepoints"));
@@ -345,7 +330,7 @@ public class PunishManager implements eu.mcone.coresystem.api.bungee.overwatch.p
     private void addPoints(UUID uuid, int banpoints, int mutepoints) {
         if (hasPoints(uuid)) {
             punishPointsCollection.updateOne(
-                    eq("uuid", uuid.toString()),
+                    eq("uuid", uuid),
                     combine(
                             inc("banpoints", banpoints),
                             inc("mutepoints", mutepoints)
@@ -353,7 +338,7 @@ public class PunishManager implements eu.mcone.coresystem.api.bungee.overwatch.p
             );
         } else {
             punishPointsCollection.insertOne(
-                    new Document("uuid", uuid.toString())
+                    new Document("uuid", uuid)
                             .append("banpoints", banpoints)
                             .append("mutepoints", mutepoints)
             );

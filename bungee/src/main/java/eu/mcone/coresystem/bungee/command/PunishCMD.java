@@ -80,13 +80,13 @@ public class PunishCMD extends Command implements TabExecutor {
                         }
                     } else if (args[0].equalsIgnoreCase("check")) {
                         if (overwatch.getPunishManager().isBanned(t) && overwatch.getPunishManager().isMuted(t)) {
-                            overwatch.getMessenger().send(p, "§7Der Spieler §f" + args[1] + "§7 ist gebannt und gemuted");
+                            overwatch.getMessenger().send(p, "§7Der Spieler §f" + args[1] + "§7 ist gebannt und gemuted.");
                         } else if (overwatch.getPunishManager().isBanned(t)) {
-                            overwatch.getMessenger().send(p, "§7Der Spieler §f" + args[1] + "§7 ist gebannt");
+                            overwatch.getMessenger().send(p, "§7Der Spieler §f" + args[1] + "§7 ist gebannt.");
                         } else if (overwatch.getPunishManager().isMuted(t)) {
-                            overwatch.getMessenger().send(p, "§7Der Spieler §f" + args[1] + "§7 ist gemuted");
+                            overwatch.getMessenger().send(p, "§7Der Spieler §f" + args[1] + "§7 ist gemuted.");
                         } else {
-                            overwatch.getMessenger().send(p, "§7Der Spieler §f" + args[1] + "§7 ist weder gebannt noch gemuted");
+                            overwatch.getMessenger().send(p, "§7Der Spieler §f" + args[1] + "§7 ist weder gebannt noch gemuted.");
                         }
                     } else {
                         overwatch.getMessenger().send(p, "§4Bitte benutze §c/ban help");
