@@ -257,7 +257,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                     }
                 }
 
-                channelHandler.createSetRequest(p, "REFRESHNICK");
+                channelHandler.createSetRequest(p, "REFRESH_NICK");
 
                 CorePlayerListener.LOADING_SUCCESS_MSG.send(p);
                 p.removePotionEffect(PotionEffectType.BLINDNESS);
