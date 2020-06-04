@@ -5,8 +5,8 @@
 
 import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.core.player.Group;
-import eu.mcone.networkmanager.core.api.database.Database;
-import eu.mcone.networkmanager.core.database.MongoConnection;
+import group.onegaming.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.database.MongoConnection;
 import org.bson.Document;
 
 import java.util.*;

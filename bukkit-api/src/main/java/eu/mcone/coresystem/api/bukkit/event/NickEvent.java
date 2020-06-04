@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.api.bukkit.event;
 
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.core.player.Nick;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -22,6 +23,7 @@ public final class NickEvent extends Event implements Cancellable {
 
     private final CorePlayer player;
     private final boolean skinChange;
+    private final Nick nick;
     @Setter
     private boolean cancelled;
 
