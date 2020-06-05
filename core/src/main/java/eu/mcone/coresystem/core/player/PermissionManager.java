@@ -90,9 +90,11 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
         Set<String> permissions = new HashSet<>(this.permissions.getOrDefault(uuid, Collections.emptySet()));
 
         for (Group g : groups) {
-            permissions.add("group." + g.getName());
+            permissions.add("group." + g.getName().toLowerCase());
             permissions.addAll(this.groups.getOrDefault(g, Collections.emptySet()));
+
             for (Group parent : getParents(g)) {
+                permissions.add("group." + g.getName().toLowerCase());
                 permissions.addAll(this.groups.get(parent));
             }
         }

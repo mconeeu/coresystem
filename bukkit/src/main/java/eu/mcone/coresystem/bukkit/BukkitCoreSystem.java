@@ -341,6 +341,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new CorePlayerListener(),
                 new CorePlayerUpdateListener(),
                 new LabyModListener(),
+                new ReloadListener(),
                 new SignChangeListener(),
                 new VanishListener(),
                 new ArmorListener()

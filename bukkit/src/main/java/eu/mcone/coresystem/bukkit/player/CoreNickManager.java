@@ -167,7 +167,15 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
         for (CorePlayer cp : BukkitCoreSystem.getSystem().getOnlineCorePlayers()) {
             if (cp.isNicked()) {
                 Player p = cp.bukkit();
-                setGameProfileName(((CraftPlayer) p).getProfile(), cp.getName());
+                GameProfile gp = ((CraftPlayer) p).getProfile();
+                SkinInfo skin = oldProfiles.getOrDefault(p.getUniqueId(), null);
+
+                if (skin != null) {
+                    gp.getProperties().removeAll("textures");
+                    gp.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
+                }
+
+                setGameProfileName(gp, cp.getName());
             }
         }
     }
