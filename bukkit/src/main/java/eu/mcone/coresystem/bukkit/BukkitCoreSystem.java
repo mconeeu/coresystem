@@ -100,7 +100,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private PluginManager pluginManager;
     @Getter
-    private NickManager nickManager;
+    private CoreNickManager nickManager;
     @Getter
     private ChannelHandler channelHandler;
     @Getter
@@ -213,7 +213,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         overwatch = new Overwatch();
 
         sendConsoleMessage("§aStarting NickManager...");
-        nickManager = new NickManager(this);
+        nickManager = new CoreNickManager(this);
 
         sendConsoleMessage("§aLoading Commands, Events, CoreInventories...");
         this.registerListener();
@@ -275,15 +275,13 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public void onDisable() {
+        nickManager.disable();
         packetManager.disable();
 
         for (CorePlayer p : getOnlineCorePlayers()) {
             ((BukkitCorePlayer) p).unregister();
             ((BukkitCorePlayer) p).unregisterAttachment();
 
-            if (p.isNicked()) {
-                nickManager.unnick(p.bukkit(), false);
-            }
             if (p.isVanished()) {
                 for (Player t : Bukkit.getOnlinePlayers()) {
                     t.showPlayer(p.bukkit());

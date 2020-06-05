@@ -24,7 +24,7 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickManager {
+public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.NickManager {
 
     private final BukkitCoreSystem instance;
     private final Map<UUID, SkinInfo> oldProfiles;
@@ -32,13 +32,13 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
     @Setter
     private boolean allowSkinChange = true;
 
-    public NickManager(BukkitCoreSystem instance) {
+    public CoreNickManager(BukkitCoreSystem instance) {
         this.instance = instance;
         this.oldProfiles = new HashMap<>();
     }
 
     @Override
-    public void nick(Player p, Nick nick) {
+    public void nick(Player p, Nick nick, boolean notify) {
         CorePlayer cp = instance.getCorePlayer(p);
 
         if (!cp.isNicked()) {
@@ -46,7 +46,9 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
             ((BukkitCorePlayer) cp).setNicked(true);
 
             setNick(p, nick.getName(), nick.getSkinInfo());
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Dein Nickname ist nun §a" + nick.getName());
+            if (notify) {
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Dein Nickname ist nun §a" + nick.getName());
+            }
         } else {
             BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du bist bereits genickt!");
         }
@@ -126,22 +128,20 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
         setNick(p, name, gp);
     }
 
-    private void setNick(Player p, String name, GameProfile gameProfile) {
+    public void setNick(Player p, String name, GameProfile gameProfile) {
         setGameProfileName(gameProfile, name);
 
-        Bukkit.getScheduler().runTask(CoreSystem.getInstance(), () -> {
-            List<Player> canSee = new ArrayList<>();
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                if (player.canSee(p)) {
-                    canSee.add(player);
-                    player.hidePlayer(p);
-                }
+        List<Player> canSee = new ArrayList<>();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.canSee(p)) {
+                canSee.add(player);
+                player.hidePlayer(p);
             }
-            for (Player player : canSee) {
-                player.showPlayer(p);
-                instance.getCorePlayer(player).getScoreboard().reload();
-            }
-        });
+        }
+        for (Player player : canSee) {
+            player.showPlayer(p);
+            instance.getCorePlayer(player).getScoreboard().reload();
+        }
 
         if (instance.getCorePlayer(p).getScoreboard() != null) {
             instance.getCorePlayer(p).getScoreboard().reload();
@@ -160,6 +160,15 @@ public class NickManager implements eu.mcone.coresystem.api.bukkit.player.NickMa
             nameField.set(gp, name);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public void disable() {
+        for (CorePlayer cp : BukkitCoreSystem.getSystem().getOnlineCorePlayers()) {
+            if (cp.isNicked()) {
+                Player p = cp.bukkit();
+                setGameProfileName(((CraftPlayer) p).getProfile(), cp.getName());
+            }
         }
     }
 
