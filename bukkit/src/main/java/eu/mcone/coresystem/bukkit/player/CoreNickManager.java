@@ -113,7 +113,14 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
             double maxHealth = p.getMaxHealth();
             double health = p.getHealth();
 
-            ep.playerConnection.sendPacket(new PacketPlayOutRespawn(0, ((CraftWorld) p.getWorld()).getHandle().getDifficulty(), ((CraftWorld) p.getWorld()).getHandle().worldData.getType(), WorldSettings.EnumGamemode.getById(p.getGameMode().getValue())));
+            ep.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(p.getEntityId()));
+            ep.playerConnection.sendPacket(new PacketPlayOutRespawn(
+                    p.getWorld().getEnvironment().getId(),
+                    ((CraftWorld) p.getWorld()).getHandle().getDifficulty(),
+                    ((CraftWorld) p.getWorld()).getHandle().worldData.getType(),
+                    WorldSettings.EnumGamemode.getById(p.getGameMode().getValue())
+            ));
+            ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ep));
 
             p.setFlying(flying);
             p.teleport(location);
@@ -122,8 +129,6 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
             p.setExp(xp);
             p.setMaxHealth(maxHealth);
             p.setHealth(health);
-
-            ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ep));
         }, 1);
 
         setNick(p, name, gp);
@@ -184,10 +189,13 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
     @SuppressWarnings("deprecation")
     public int getOtherDimension(World.Environment environment) {
         switch (environment) {
-            case THE_END: return World.Environment.NORMAL.getId();
-            case NORMAL: return World.Environment.NETHER.getId();
+            case THE_END:
+                return World.Environment.NORMAL.getId();
+            case NORMAL:
+                return World.Environment.NETHER.getId();
             case NETHER:
-            default: return World.Environment.THE_END.getId();
+            default:
+                return World.Environment.THE_END.getId();
         }
     }
 
