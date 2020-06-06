@@ -209,7 +209,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aLoading Permissions & Groups...");
         permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), database1);
 
-        sendConsoleMessage("§aStarting §eOverwatch §aSystem...");
+        sendConsoleMessage("§aStarting Overwatch §aSystem...");
         overwatch = new Overwatch();
 
         sendConsoleMessage("§aStarting NickManager...");
@@ -264,12 +264,15 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             });
         }
 
-        if (Bukkit.getOnlinePlayers().size() > 0) {
-            channelHandler.createSetRequest(Bukkit.getOnlinePlayers().iterator().next(), "REFRESH_NICKS");
-        }
         overwatch.getReportManager().sendOpenReports();
-
         super.onEnable();
+
+        Bukkit.getScheduler().runTask(this, () -> {
+            if (Bukkit.getOnlinePlayers().size() > 0) {
+                channelHandler.createSetRequest(Bukkit.getOnlinePlayers().iterator().next(), "REFRESH_NICKS");
+            }
+        });
+
         sendConsoleMessage("§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
     }
 

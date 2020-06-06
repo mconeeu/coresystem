@@ -11,14 +11,13 @@ import lombok.Setter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
 @Getter
 @NoArgsConstructor
 @BsonDiscriminator
-public abstract class AbstractReport implements Serializable {
+public abstract class AbstractReport {
 
     private String reportID;
     private long timestamp;

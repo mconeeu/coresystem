@@ -17,6 +17,7 @@ import lombok.Setter;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -177,6 +178,16 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
 
                 setGameProfileName(gp, cp.getName());
             }
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    public int getOtherDimension(World.Environment environment) {
+        switch (environment) {
+            case THE_END: return World.Environment.NORMAL.getId();
+            case NORMAL: return World.Environment.NETHER.getId();
+            case NETHER:
+            default: return World.Environment.THE_END.getId();
         }
     }
 

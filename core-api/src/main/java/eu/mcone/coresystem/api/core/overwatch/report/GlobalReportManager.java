@@ -5,21 +5,19 @@
 
 package eu.mcone.coresystem.api.core.overwatch.report;
 
-import com.mongodb.client.MongoCollection;
-
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 public interface GlobalReportManager {
 
-    MongoCollection<LiveReport> getLiveReportsCollection();
+    List<LiveReport> getLiveReports();
 
-    MongoCollection<Report> getReportsCollection();
+    Map<Integer, List<LiveReport>> getLiveReportsSortedByLevel();
 
-    Map<Integer, List<LiveReport>> getLiveReportsWhereLevel();
+    long getOpenReportsCount();
 
-    long countOpenReports();
+    long getLiveReportsCount();
 
     boolean isReportAlreadyTaken(String reportID);
 
@@ -32,6 +30,8 @@ public interface GlobalReportManager {
     LiveReport getLiveReport(String reportID);
 
     LiveReport getLiveReport(UUID reported);
+
+    List<Report> getReports(ReportState state);
 
     Report getReport(String reportID);
 

@@ -67,7 +67,7 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
     }
 
     public void sendOpenReports() {
-        long open = countOpenReports();
+        long open = getOpenReportsCount();
 
         if (open > 0) {
             for (CorePlayer corePlayer : CoreSystem.getInstance().getOnlineCorePlayers()) {
@@ -114,7 +114,7 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
     public boolean report(Player reporter, Player reported, ReportReason reportReason) {
         CorePlayer corePlayer = CoreSystem.getInstance().getCorePlayer(reporter);
 
-        LiveReport liveReport = getLiveReportsCollection().find(eq("reported", reported.getUniqueId())).first();
+        LiveReport liveReport = liveReportsCollection.find(eq("reported", reported.getUniqueId())).first();
 
         if (liveReport != null) {
             if (liveReport.getReporter().contains(reporter.getUniqueId())) {
@@ -143,16 +143,16 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
             CorePlayer corePlayer = BukkitCoreSystem.getSystem().getCorePlayer(player);
 
             LiveReport liveReport = toConfirm.get(player.getUniqueId());
-            LiveReport dbLiveReport = getLiveReportsCollection().find(eq("reportID", liveReport.getReportID())).first();
+            LiveReport dbLiveReport = liveReportsCollection.find(eq("reportID", liveReport.getReportID())).first();
 
             if (dbLiveReport == null) {
                 toConfirm.remove(player.getUniqueId());
-                getLiveReportsCollection().insertOne(liveReport);
+                liveReportsCollection.insertOne(liveReport);
                 BukkitCoreSystem.getSystem().getChannelHandler().createSetRequest(player, "REPORT", "NEW", liveReport.getReportID());
                 overwatch.getMessenger().send(player, "§7Du hast den Spieler §f§l" + reported.getName() + " §7erfolgreich für §f§l" + liveReport.getReportReason().getName() + " §7reported.");
             } else {
                 liveReport.addReporter(corePlayer);
-                getLiveReportsCollection().replaceOne(eq("reportID", liveReport.getReportID()), liveReport);
+                liveReportsCollection.replaceOne(eq("reportID", liveReport.getReportID()), liveReport);
                 BukkitCoreSystem.getSystem().getChannelHandler().createSetRequest(player, "REPORT", "UPDATE", liveReport.getReportID());
             }
 

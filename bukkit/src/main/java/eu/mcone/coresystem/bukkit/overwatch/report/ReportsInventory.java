@@ -24,8 +24,6 @@ import org.bukkit.inventory.ItemStack;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.mongodb.client.model.Filters.eq;
-
 public class ReportsInventory extends CoreInventory {
 
     @Getter
@@ -82,7 +80,7 @@ public class ReportsInventory extends CoreInventory {
 
     private void initReportTyp() {
         if (pages.containsKey(currentPage)) {
-            live = overwatch.getReportManager().getLiveReportsCollection().countDocuments() > 0;
+            live = overwatch.getReportManager().getLiveReportsCount() > 0;
         }
     }
 
@@ -214,7 +212,7 @@ public class ReportsInventory extends CoreInventory {
         int i = 0;
         int page = 1;
 
-        for (LiveReport liveReport : overwatch.getReportManager().getLiveReportsCollection().find()) {
+        for (LiveReport liveReport : overwatch.getReportManager().getLiveReports()) {
             liveReport.setLive(true);
 
             if (pages.containsKey(page)) {
@@ -245,7 +243,7 @@ public class ReportsInventory extends CoreInventory {
             }
         }
 
-        for (Report report : overwatch.getReportManager().getReportsCollection().find(eq("state", ReportState.OPEN.toString()))) {
+        for (Report report : overwatch.getReportManager().getReports(ReportState.OPEN)) {
             if (pages.containsKey(page)) {
                 if (pages.get(page).containsKey(report.getPriority())) {
                     pages.get(page).get(report.getPriority()).add(report);

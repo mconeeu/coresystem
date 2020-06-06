@@ -94,7 +94,7 @@ public class PermissionManager implements eu.mcone.coresystem.api.core.player.Pe
             permissions.addAll(this.groups.getOrDefault(g, Collections.emptySet()));
 
             for (Group parent : getParents(g)) {
-                permissions.add("group." + g.getName().toLowerCase());
+                permissions.add("group." + parent.getName().toLowerCase());
                 permissions.addAll(this.groups.get(parent));
             }
         }
