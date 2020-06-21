@@ -34,7 +34,7 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
 
     private static final MongoCollection<MotionCaptureData> MOTION_CAPTURE_COLLECTION = CoreSystem.getInstance().getMongoDB().withCodecRegistry(
             fromRegistries(getDefaultCodecRegistry(), fromProviders(PojoCodecProvider.builder().conventions(Conventions.DEFAULT_CONVENTIONS).automatic(true).build()))
-    ).getCollection("motion_capture1", MotionCaptureData.class);
+    ).getCollection("motion_capture", MotionCaptureData.class);
     private final HashMap<String, MotionCaptureData> motionCaptureDataMap;
 
     @Getter
@@ -45,12 +45,20 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
         motionCaptureScheduler = new MotionCaptureScheduler();
     }
 
+    /**
+     * Loads all motion captures from the database and stores it locally
+     */
     public void loadDatabase() {
         for (MotionCaptureData data : MOTION_CAPTURE_COLLECTION.find()) {
             motionCaptureDataMap.put(data.getName(), data);
         }
     }
 
+    /**
+     * save the give MotionRecorder in the database
+     * @param recorder MotionRecorder
+     * @return boolean
+     */
     public boolean saveMotionCapture(final MotionRecorder recorder) {
         try {
             if (MOTION_CAPTURE_COLLECTION.find(eq("name", recorder.getName())).first() == null) {
@@ -69,6 +77,11 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
         }
     }
 
+    /**
+     * Returns an MotionCaptureData for the given name
+     * @param name String (MotionCapture Name)
+     * @return MotionCaptureData
+     */
     public MotionCaptureData getMotionCapture(final String name) {
         try {
             MotionCaptureData data = MOTION_CAPTURE_COLLECTION.find(eq("name", name)).first();
@@ -90,15 +103,28 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
         }
     }
 
+    /**
+     * Deletes the MotionCapture where the given MotionCaptureData
+     * @param data MotionCaptureData -> getName()
+     */
     public void deleteMotionCapture(final MotionCaptureData data) {
         deleteMotionCapture(data.getName());
     }
 
+    /**
+     * Deletes the MotionCapture where the given name
+     * @param name MotionCapture name
+     */
     public void deleteMotionCapture(final String name) {
         motionCaptureDataMap.remove(name);
         MOTION_CAPTURE_COLLECTION.deleteOne(eq("name", name));
     }
 
+    /**
+     * checks if an MotionCapture with the give name exists
+     * @param name MotionCapture name
+     * @return boolean
+     */
     public boolean existsMotionCapture(final String name) {
         return MOTION_CAPTURE_COLLECTION.find(eq("name", name)).first() != null;
     }

@@ -36,7 +36,7 @@ public class PunishCMD extends Command implements TabExecutor {
 
             if (args.length == 1) {
                 if (args[0].equalsIgnoreCase("help")) {
-                    overwatch.getMessenger().send(p, "§2BannSystem Hilfe:" +
+                    overwatch.getMessenger().send(p, "§cPunish Hilfe:" +
                             "\n§8§m------§r §f§lTemplates §8§m------" +
                             "\n§8» §7CLIENTMODS §8- §eCM" +
                             "\n§8» §7ERSCHEINEN §8- §eES" +
@@ -51,12 +51,12 @@ public class PunishCMD extends Command implements TabExecutor {
                             "\n§8» §7SPAM §8- §eSP" +
                             "\n§8» §7WERBUNG §8- §eWB" +
                             "\n§8§m------§r §f§lBefehle §8§m------" +
-                            "\n§8» §c/ban unban <§cSpieler§c>" +
-                            "\n§8» §c/ban unmute <§cSpieler§c>" +
-                            "\n§8» §c/ban check <§cSpieler§c>" +
-                            "\n§8» §c/ban <§fSpieler§c> <§eTemplateID§c> <§fGrund§c>" +
+                            "\n§8» §c/punish unban <§cSpieler§c>" +
+                            "\n§8» §c/punish unmute <§cSpieler§c>" +
+                            "\n§8» §c/punish check <§cSpieler§c>" +
+                            "\n§8» §c/punish <§fSpieler§c> <§eTemplateID§c> <§fGrund§c>" +
                             "\n§8§m--------------------" +
-                            "\n§8» §7Alle Infos zum Bannsystem und zu den verschiedenen Templates findest du (bald) im Team Wiki: §fhttps://www.mcone.eu/dashboard/wiki.php");
+                            "\n§8» §7Alle Infos zum Punishsystem und zu den verschiedenen Templates findest du (bald) im Team Wiki: §fhttps://wiki.onegaming.group/coresystem");
                 } else {
                     overwatch.getMessenger().send(p, "§4Bitte benutze §c/punish help");
                 }
@@ -64,7 +64,7 @@ public class PunishCMD extends Command implements TabExecutor {
                 UUID t = BungeeCoreSystem.getInstance().getPlayerUtils().fetchUuid(args[1]);
 
                 if (t != null) {
-                    if (args[0].equalsIgnoreCase("unban")) {
+                    if (args[0].equalsIgnoreCase("unpunish")) {
                         if (overwatch.getPunishManager().isBanned(t)) {
                             overwatch.getPunishManager().unBan(t);
                             overwatch.getMessenger().send(p, "§2Du hast den Spieler §f" + args[1] + "§2 entbannt!");
@@ -89,7 +89,7 @@ public class PunishCMD extends Command implements TabExecutor {
                             overwatch.getMessenger().send(p, "§7Der Spieler §f" + args[1] + "§7 ist weder gebannt noch gemuted.");
                         }
                     } else {
-                        overwatch.getMessenger().send(p, "§4Bitte benutze §c/ban help");
+                        overwatch.getMessenger().send(p, "§4Bitte benutze §c/punish help");
                     }
                 } else {
                     overwatch.getMessenger().send(p, "§4Der Minecraftaccount §c" + args[1] + "§4 existiert nicht!");
@@ -134,7 +134,7 @@ public class PunishCMD extends Command implements TabExecutor {
                                         "\n§8» §7SPAM §8- §eSP" +
                                         "\n§8» §7WERBUNG §8- §eWB" +
                                         "\n§8§m--------------------" +
-                                        "\n§8» §7Alle Infos zum Bannsystem und zu den verschiedenen Templates findest du im Team Wiki: §fhttps://www.mcone.eu/dashboard/wiki.php");
+                                        "\n§8» §7Alle Infos zum Punishsystem und zu den verschiedenen Templates findest du im Team Wiki: §fhttps://wiki.onegaming.group/coresystem");
                             }
                         }
                     } else {
@@ -156,7 +156,7 @@ public class PunishCMD extends Command implements TabExecutor {
                 result.add(p.getName());
             }
 
-            result.addAll(Arrays.asList("unban", "unmute", "check"));
+            result.addAll(Arrays.asList("unpunish", "unmute", "check"));
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("unban") || args[0].equalsIgnoreCase("unmute") || args[0].equalsIgnoreCase("check")) {
                 for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
