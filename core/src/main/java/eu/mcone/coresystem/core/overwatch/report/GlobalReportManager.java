@@ -13,30 +13,48 @@ import eu.mcone.coresystem.api.core.overwatch.report.ReportState;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.overwatch.GlobalOverwatch;
 import group.onegaming.networkmanager.core.api.database.Database;
-import lombok.Getter;
+import org.bson.UuidRepresentation;
+import org.bson.codecs.UuidCodecProvider;
+import org.bson.codecs.pojo.Conventions;
+import org.bson.codecs.pojo.PojoCodecProvider;
 
 import java.io.Serializable;
 import java.util.*;
 
+import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.combine;
+import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
+import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 public abstract class GlobalReportManager implements eu.mcone.coresystem.api.core.overwatch.report.GlobalReportManager, Serializable {
 
-    private GlobalOverwatch overwatch;
-    private final GlobalCoreSystem instance;
-
-    @Getter
-    private final MongoCollection<LiveReport> liveReportsCollection;
-    @Getter
-    private final MongoCollection<Report> reportsCollection;
+    protected final MongoCollection<LiveReport> liveReportsCollection;
+    protected final MongoCollection<Report> reportsCollection;
 
     //TODO: Implementing Ban-/Mute Manager for the TrustedUser System
     protected GlobalReportManager(GlobalOverwatch overwatch, GlobalCoreSystem instance) {
-        this.overwatch = overwatch;
-        this.instance = instance;
-        liveReportsCollection = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("overwatch_live_reports", LiveReport.class);
-        reportsCollection = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("overwatch_reports", Report.class);
+        liveReportsCollection = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).withCodecRegistry(
+                fromRegistries(getDefaultCodecRegistry(), fromProviders(new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY), PojoCodecProvider.builder().conventions(Conventions.DEFAULT_CONVENTIONS).automatic(true).build()))
+        ).getCollection("overwatch_live_reports", LiveReport.class);
+        reportsCollection = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).withCodecRegistry(
+                fromRegistries(getDefaultCodecRegistry(), fromProviders(new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY), PojoCodecProvider.builder().conventions(Conventions.DEFAULT_CONVENTIONS).automatic(true).build()))
+        ).getCollection("overwatch_reports", Report.class);
+    }
+
+    /**
+     * Returns all LiveReports
+     *
+     * @return Map
+     */
+    @Override
+    public List<LiveReport> getLiveReports() {
+        List<LiveReport> result = new ArrayList<>();
+        for (LiveReport liveReport : liveReportsCollection.find()) {
+            result.add(liveReport);
+        }
+
+        return result;
     }
 
     /**
@@ -44,7 +62,8 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      *
      * @return Map
      */
-    public Map<Integer, List<LiveReport>> getLiveReportsWhereLevel() {
+    @Override
+    public Map<Integer, List<LiveReport>> getLiveReportsSortedByLevel() {
         Map<Integer, List<LiveReport>> sortedReports = new HashMap<>();
 
         for (LiveReport report : liveReportsCollection.find()) {
@@ -66,8 +85,9 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @param reportID UniqueID
      * @return LiveReport
      */
+    @Override
     public LiveReport getLiveReport(String reportID) {
-        return getLiveReportsCollection().find(eq("reportID", reportID)).first();
+        return liveReportsCollection.find(eq("reportID", reportID)).first();
     }
 
     /**
@@ -76,8 +96,24 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @param reported Team Member
      * @return Report
      */
+    @Override
     public LiveReport getLiveReport(UUID reported) {
-        return getLiveReportsCollection().find(eq("reported", reported)).first();
+        return liveReportsCollection.find(eq("reported", reported)).first();
+    }
+
+    /**
+     * Returns all Reports with a specific state
+     *
+     * @return Map
+     */
+    @Override
+    public List<Report> getReports(ReportState state) {
+        List<Report> result = new ArrayList<>();
+        for (Report report : reportsCollection.find(eq("state", state.toString()))) {
+            result.add(report);
+        }
+
+        return result;
     }
 
     /**
@@ -86,8 +122,9 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @param reportID UniqueID
      * @return LiveReport
      */
+    @Override
     public Report getReport(String reportID) {
-        return getReportsCollection().find(eq("reportID", reportID)).first();
+        return reportsCollection.find(eq("reportID", reportID)).first();
     }
 
     /**
@@ -96,8 +133,9 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @param reported Team Member
      * @return Report
      */
+    @Override
     public Report getReport(UUID reported) {
-        return getReportsCollection().find(eq("reported", reported)).first();
+        return reportsCollection.find(eq("reported", reported)).first();
     }
 
     /**
@@ -105,8 +143,19 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      *
      * @return open report as long
      */
-    public long countOpenReports() {
-        return getLiveReportsCollection().countDocuments() + getReportsCollection().countDocuments(eq("state", ReportState.OPEN.toString()));
+    @Override
+    public long getOpenReportsCount() {
+        return getLiveReportsCount() + reportsCollection.countDocuments(eq("state", ReportState.OPEN.toString()));
+    }
+
+    /**
+     * Counts all live Reports
+     *
+     * @return open report as long
+     */
+    @Override
+    public long getLiveReportsCount() {
+        return liveReportsCollection.countDocuments();
     }
 
     /**
@@ -115,8 +164,9 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @param reportID ReportID
      * @return boolean
      */
+    @Override
     public boolean isReportAlreadyTaken(String reportID) {
-        Report report = getReportsCollection().find(eq("reportID", reportID)).first();
+        Report report = reportsCollection.find(eq("reportID", reportID)).first();
 
         if (report != null) {
             return report.getTeamMember() != null;
@@ -131,8 +181,9 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @param uuid Team Member
      * @return boolean
      */
+    @Override
     public boolean currentlyWorkingOnReport(UUID uuid) {
-        return getReportsCollection().find(combine(eq("teamMember", uuid), eq("state", ReportState.IN_PROGRESS.toString()))).first() != null;
+        return reportsCollection.find(combine(eq("teamMember", uuid), eq("state", ReportState.IN_PROGRESS.toString()))).first() != null;
     }
 
     /**
@@ -141,8 +192,9 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @param uuid Team Member
      * @return Report
      */
+    @Override
     public Report getCurrentlyEditing(UUID uuid) {
-        return getReportsCollection().find(combine(eq("teamMember", uuid), eq("state", ReportState.IN_PROGRESS.toString()))).first();
+        return reportsCollection.find(combine(eq("teamMember", uuid), eq("state", ReportState.IN_PROGRESS.toString()))).first();
     }
 
     /**
@@ -151,7 +203,9 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @param uuid reported Player
      * @return boolean
      */
+    @Override
     public boolean wasPlayerReported(UUID uuid) {
-        return getLiveReportsCollection().find(eq("reported", uuid)).first() != null;
+        return liveReportsCollection.find(eq("reported", uuid)).first() != null;
     }
+
 }

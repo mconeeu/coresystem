@@ -26,30 +26,30 @@ public class ProfileInventory extends CoreInventory {
     private static int size;
     private static final List<ProfileInventoryModifier> MODIFIERS = new ArrayList<>();
 
-    public ProfileInventory(CorePlayer corePlayer) {
-        super("§8» §3§l" + corePlayer.getName() + "'" + (!corePlayer.getName().endsWith("s") && !corePlayer.getName().endsWith("S") ? "s" : "") + " Profil", corePlayer.bukkit(), (size > 0) ? size : InventorySlot.ROW_4, InventoryOption.FILL_EMPTY_SLOTS);
-        Player p = corePlayer.bukkit();
+    public ProfileInventory(CorePlayer cp) {
+        super("§8» §3§l" + cp.getName() + "'" + (!cp.getName().endsWith("s") && !cp.getName().endsWith("S") ? "s" : "") + " Profil", cp.bukkit(), (size > 0) ? size : InventorySlot.ROW_4, InventoryOption.FILL_EMPTY_SLOTS);
+        Player p = cp.bukkit();
 
-        double onlinetime = Math.floor(((double) corePlayer.getOnlinetime() / 60 / 60) * 100) / 100;
-        String status = corePlayer.getState().getName();
+        double onlinetime = Math.floor(((double) cp.getOnlinetime() / 60 / 60) * 100) / 100;
+        String status = cp.getState().getName();
 
-        if (corePlayer.isNicked()) {
-            setItem(InventorySlot.ROW_1_SLOT_5, new Skull(corePlayer.getNick().getName(), 1).toItemBuilder().displayName("§f§l" + corePlayer.getName()).lore(
-                    corePlayer.getMainGroup().getLabel(),
+        if (cp.isNicked()) {
+            setItem(InventorySlot.ROW_1_SLOT_5, Skull.fromMojangValue(cp.getNick().getSkinInfo().getValue(), 1).toItemBuilder().displayName("§f§l" + cp.getName()).lore(
+                    cp.getMainGroup().getLabel(),
                     "",
-                    "§7Nick: " + corePlayer.getNick().getGroup().getPrefix() + corePlayer.getNick().getName(),
-                    "§7Coins: §f" + corePlayer.getFormattedCoins(),
-                    "§7Emeralds: §f" + corePlayer.getFormattedEmeralds(),
+                    "§7Nick: " + cp.getNick().getGroup().getPrefix() + cp.getNick().getName(),
+                    "§7Coins: §f" + cp.getFormattedCoins(),
+                    "§7Emeralds: §f" + cp.getFormattedEmeralds(),
                     "§7Onlinetime: §f" + onlinetime + " Stunden",
                     "§7Status: " + status
                     ).create()
             );
         } else {
-            setItem(InventorySlot.ROW_1_SLOT_5, new Skull(corePlayer.getName(), 1).toItemBuilder().displayName("§f§l" + corePlayer.getName()).lore(
-                    corePlayer.getMainGroup().getLabel(),
+            setItem(InventorySlot.ROW_1_SLOT_5, Skull.fromMojangValue(cp.getSkin().getValue(), 1).toItemBuilder().displayName("§f§l" + cp.getName()).lore(
+                    cp.getMainGroup().getLabel(),
                     "",
-                    "§7Coins: §f" + corePlayer.getFormattedCoins(),
-                    "§7Emeralds: §f" + corePlayer.getFormattedEmeralds(),
+                    "§7Coins: §f" + cp.getFormattedCoins(),
+                    "§7Emeralds: §f" + cp.getFormattedEmeralds(),
                     "§7Onlinetime: §f" + onlinetime + " Stunden",
                     "§7Status: " + status
                     ).create()

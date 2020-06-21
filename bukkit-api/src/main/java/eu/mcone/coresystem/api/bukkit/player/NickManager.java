@@ -12,11 +12,11 @@ public interface NickManager {
 
     /**
      * nicks a player with a specific name and skin
-     *
-     * @param player Player
+     *  @param player Player
      * @param nick   nick
+     * @param notify
      */
-    void nick(Player player, Nick nick);
+    void nick(Player player, Nick nick, boolean notify);
 
     /**
      * unnicks a player

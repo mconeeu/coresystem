@@ -66,7 +66,7 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
         nicks.put(nick, p);
 
         if (nick != null) {
-            sendNickRequest(p, nick);
+            sendNickRequest(p, nick, true);
             ((BungeeCorePlayer) cp).setCurrentNick(nick);
             ((BungeeCorePlayer) cp).setNicked(true);
         } else {
@@ -101,7 +101,7 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
         CorePlayer cp = BungeeCoreSystem.getSystem().getCorePlayer(p);
 
         if (cp.isNicked()) {
-            sendNickRequest(p, cp.getCurrentNick());
+            sendNickRequest(p, cp.getCurrentNick(), false);
         }
     }
 
@@ -113,7 +113,7 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
         ((BungeeCorePlayer) cp).setNicked(false);
     }
 
-    private static void sendNickRequest(ProxiedPlayer p, Nick nick) {
+    private static void sendNickRequest(ProxiedPlayer p, Nick nick, boolean notify) {
         CoreSystem.getInstance().getChannelHandler().createInfoRequest(p,
                 "NICK",
                 nick.getName(),
@@ -121,7 +121,8 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
                 nick.getSkinInfo().getValue(),
                 nick.getSkinInfo().getSignature(),
                 String.valueOf(nick.getCoins()),
-                String.valueOf(nick.getOnlineTime())
+                String.valueOf(nick.getOnlineTime()),
+                Boolean.toString(notify)
         );
     }
 

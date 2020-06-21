@@ -55,7 +55,7 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
         CorePlayer corePlayer = BungeeCoreSystem.getSystem().getCorePlayer(player);
 
         if (corePlayer.hasPermission("overwatch.report.notification") || corePlayer.hasPermission("overwatch.report.*") && corePlayer.getSettings().isReceiveIncomingReports()) {
-            long open = countOpenReports();
+            long open = getOpenReportsCount();
             if (open > 0) {
                 if (open == 1) {
                     overwatch.getMessenger().send(player, "§7Es ist momentan §a1 §7Report §aoffen");
@@ -70,11 +70,11 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
         liveReportsCache.clear();
         openReportsCache.clear();
 
-        for (LiveReport liveReport : getLiveReportsCollection().find()) {
+        for (LiveReport liveReport : liveReportsCollection.find()) {
             liveReportsCache.put(liveReport.getReportID(), liveReport);
         }
 
-        for (Report report : getReportsCollection().find()) {
+        for (Report report : reportsCollection.find()) {
             if (report.getState().equals(ReportState.OPEN)) {
                 openReportsCache.put(report.getReportID(), report);
             }
@@ -82,12 +82,12 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
     }
 
     public void updateReportData(String id) {
-        LiveReport liveReport = getLiveReportsCollection().find(eq("reportID", id)).first();
+        LiveReport liveReport = liveReportsCollection.find(eq("reportID", id)).first();
 
         if (liveReport != null) {
             liveReportsCache.put(liveReport.getReportID(), liveReport);
         } else {
-            Report report = getReportsCollection().find(combine(eq("reportID", id), eq("state", ReportState.OPEN.toString()))).first();
+            Report report = reportsCollection.find(combine(eq("reportID", id), eq("state", ReportState.OPEN.toString()))).first();
             if (report != null) {
                 openReportsCache.put(report.getReportID(), report);
             }
@@ -100,7 +100,7 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
      * @param id ReportID
      */
     public void addLiveReportFromDB(String id) {
-        LiveReport liveReport = getLiveReportsCollection().find(eq("reportID", id)).first();
+        LiveReport liveReport = liveReportsCollection.find(eq("reportID", id)).first();
 
         if (liveReport != null) {
             liveReportsCache.put(liveReport.getReportID(), liveReport);
@@ -132,12 +132,12 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
     }
 
     public void removeTeamMember(String id) {
-        Report report = getReportsCollection().find(eq("reportID", id)).first();
+        Report report = reportsCollection.find(eq("reportID", id)).first();
 
         if (report != null) {
             report.setTeamMember(null);
             report.setState(ReportState.OPEN);
-            getReportsCollection().replaceOne(eq("reportID", id), report);
+            reportsCollection.replaceOne(eq("reportID", id), report);
             openReportsCache.put(id, report);
 
             for (CorePlayer corePlayer : BungeeCoreSystem.getInstance().getOnlineCorePlayers()) {
@@ -149,13 +149,13 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
     }
 
     public void closeReport(ProxiedPlayer player) {
-        Report report = getReportsCollection().find(combine(eq("teamMember", player.getUniqueId()), eq("state", ReportState.IN_PROGRESS.toString()))).first();
+        Report report = reportsCollection.find(combine(eq("teamMember", player.getUniqueId()), eq("state", ReportState.IN_PROGRESS.toString()))).first();
 
         if (report != null) {
             inProgress.remove(report.getTeamMember());
             report.setState(ReportState.CLOSED);
             report.addUpdate("Das Teammitglied " + player.getName() + " hat den Report geschlossen!");
-            getReportsCollection().replaceOne(combine(eq("teamMember", player.getUniqueId()), eq("state", ReportState.IN_PROGRESS.toString())), report);
+            reportsCollection.replaceOne(combine(eq("teamMember", player.getUniqueId()), eq("state", ReportState.IN_PROGRESS.toString())), report);
 
             try {
                 for (UUID uuid : report.getReporter()) {
@@ -179,21 +179,21 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
      */
     public boolean acceptReport(String id, ProxiedPlayer teamMember) {
         final Report acceptedReport;
-        final LiveReport liveReport = getLiveReportsCollection().find(eq("reportID", id)).first();
-        final Report dbReport = getReportsCollection().find(combine(eq("reportID", id), eq("state", ReportState.OPEN.toString()))).first();
+        final LiveReport liveReport = liveReportsCollection.find(eq("reportID", id)).first();
+        final Report dbReport = reportsCollection.find(combine(eq("reportID", id), eq("state", ReportState.OPEN.toString()))).first();
 
         if (dbReport == null) {
             if (liveReport != null) {
-                getLiveReportsCollection().deleteOne(eq("reportID", id));
+                liveReportsCollection.deleteOne(eq("reportID", id));
                 acceptedReport = liveReport.convertToReport(teamMember.getUniqueId());
-                getReportsCollection().insertOne(acceptedReport);
+                reportsCollection.insertOne(acceptedReport);
             } else {
                 overwatch.getMessenger().send(teamMember, "§4Es konnte kein §aOffener §4Report mit der ID §c" + id + " §4gefunden werden!");
                 return false;
             }
         } else if (dbReport.getTeamMember() == null) {
             if (liveReport != null) {
-                getLiveReportsCollection().deleteOne(eq("reportID", id));
+                liveReportsCollection.deleteOne(eq("reportID", id));
             }
 
             acceptedReport = dbReport;
@@ -209,7 +209,7 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
 
         acceptedReport.setTeamMember(teamMember.getUniqueId());
         acceptedReport.addUpdate("Das Teammitglied " + teamMember.getName() + " kümmert sich nun um den Report!");
-        getReportsCollection().replaceOne(eq("reportID", id), acceptedReport);
+        reportsCollection.replaceOne(eq("reportID", id), acceptedReport);
         inProgress.put(teamMember.getUniqueId(), id);
 
         try {

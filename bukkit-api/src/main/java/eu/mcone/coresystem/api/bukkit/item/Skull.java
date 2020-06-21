@@ -145,6 +145,20 @@ public final class Skull extends ExtendedItemBuilder<SkullMeta> {
     }
 
     /**
+     * create ItemBuilder for SkullItem by texture value
+     *
+     * @param value  mojang texture value
+     * @param amount amount of items in ItemStack
+     * @return new ItemBuilder
+     */
+    public static Skull fromMojangValue(String value, int amount) {
+        return new Skull(amount, new Property(
+                "textures",
+                Base64.isBase64(value) ? value : new String(Base64.encodeBase64(value.getBytes()))
+        ));
+    }
+
+    /**
      * wraps an existing ItemStack which must be of Material.SKULL in an Skull object
      *
      * @param skull ItemStack

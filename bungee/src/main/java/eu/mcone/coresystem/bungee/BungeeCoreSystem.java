@@ -169,7 +169,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aLoading Permissions & Groups...");
         permissionManager = new PermissionManager("Proxy", getMongoDB());
 
-        sendConsoleMessage("§aLoading §eOverwatch §aSystem...");
+        sendConsoleMessage("§aLoading Overwatch §aSystem...");
         overwatch = new Overwatch(this);
 
         sendConsoleMessage("§aLoading FriendSystem...");

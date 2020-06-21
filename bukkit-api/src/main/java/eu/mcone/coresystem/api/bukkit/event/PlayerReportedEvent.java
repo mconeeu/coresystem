@@ -17,7 +17,7 @@ import java.util.UUID;
 
 @Getter
 @RequiredArgsConstructor
-public class PlayerReportedEvent extends Event {
+public final class PlayerReportedEvent extends Event {
 
     @Getter
     private static final HandlerList handlerList = new HandlerList();

@@ -15,7 +15,7 @@ import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.player.BukkitCorePlayer;
 import eu.mcone.coresystem.bukkit.player.CorePermissibleBase;
-import eu.mcone.coresystem.bukkit.player.NickManager;
+import eu.mcone.coresystem.bukkit.player.CoreNickManager;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftHumanEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -109,7 +109,7 @@ public class CorePlayerListener implements Listener {
 
         p.setScoreboard(new MainScoreboard());
         p.registerPacketListener(bp);
-        ((NickManager) BukkitCoreSystem.getInstance().getNickManager()).setNicks(bp);
+        ((CoreNickManager) BukkitCoreSystem.getInstance().getNickManager()).setNicks(bp);
 
         for (CorePlayer cp : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
             if (cp.getScoreboard() != null) {

@@ -100,7 +100,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private PluginManager pluginManager;
     @Getter
-    private NickManager nickManager;
+    private CoreNickManager nickManager;
     @Getter
     private ChannelHandler channelHandler;
     @Getter
@@ -209,11 +209,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         sendConsoleMessage("§aLoading Permissions & Groups...");
         permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), database1);
 
-        sendConsoleMessage("§aStarting §eOverwatch §aSystem...");
+        sendConsoleMessage("§aStarting Overwatch §aSystem...");
         overwatch = new Overwatch();
 
         sendConsoleMessage("§aStarting NickManager...");
-        nickManager = new NickManager(this);
+        nickManager = new CoreNickManager(this);
 
         sendConsoleMessage("§aLoading Commands, Events, CoreInventories...");
         this.registerListener();
@@ -264,26 +264,27 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             });
         }
 
-        if (Bukkit.getOnlinePlayers().size() > 0) {
-            channelHandler.createSetRequest(Bukkit.getOnlinePlayers().iterator().next(), "REFRESH_NICKS");
-        }
         overwatch.getReportManager().sendOpenReports();
-
         super.onEnable();
+
+        Bukkit.getScheduler().runTask(this, () -> {
+            if (Bukkit.getOnlinePlayers().size() > 0) {
+                channelHandler.createSetRequest(Bukkit.getOnlinePlayers().iterator().next(), "REFRESH_NICKS");
+            }
+        });
+
         sendConsoleMessage("§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
     }
 
     @Override
     public void onDisable() {
+        nickManager.disable();
         packetManager.disable();
 
         for (CorePlayer p : getOnlineCorePlayers()) {
             ((BukkitCorePlayer) p).unregister();
             ((BukkitCorePlayer) p).unregisterAttachment();
 
-            if (p.isNicked()) {
-                nickManager.unnick(p.bukkit(), false);
-            }
             if (p.isVanished()) {
                 for (Player t : Bukkit.getOnlinePlayers()) {
                     t.showPlayer(p.bukkit());
@@ -343,6 +344,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new CorePlayerListener(),
                 new CorePlayerUpdateListener(),
                 new LabyModListener(),
+                new ReloadListener(),
                 new SignChangeListener(),
                 new VanishListener(),
                 new ArmorListener()
