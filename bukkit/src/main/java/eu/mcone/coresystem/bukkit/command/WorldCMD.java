@@ -70,7 +70,7 @@ public class WorldCMD extends CorePlayerCommand {
                         "\n§7§oname §8: §f§o{name}" +
                         "\n§7§oalias §8: §f§o{alias}" +
                         "\n§7§oseed §8: §f§o{seed}" +
-                        "\n§7§otype §8: §f{NORMAL, FLAT, LARGE_BIOMES, AMPLIFIED, CUSTOMIZED}" +
+                        "\n§7§oworldType §8: §f{NORMAL, FLAT, LARGE_BIOMES, AMPLIFIED, CUSTOMIZED}" +
                         "\n§7§oenvironment §8: §f{NORMAL, NETHER, THE_END}" +
                         "\n§7§odifficulty §8: §f{NORMAL, NETHER, THE_END}" +
                         "\n§7§ogenerator §8: §f§o{name}" +
@@ -175,7 +175,7 @@ public class WorldCMD extends CorePlayerCommand {
                                     "\n§7§oalias: §f" + w.getAlias() +
                                     "\n§7§ospawn-location: §f" + bw.getSpawnLocation() +
                                     "\n§7§oseed: §f" + bw.getSeed() +
-                                    "\n§7§otype: §f" + bw.getWorldType() +
+                                    "\n§7§oworldType: §f" + bw.getWorldType() +
                                     "\n§7§oenvironment: §f" + bw.getEnvironment() +
                                     "\n§7§odifficulty: §f" + bw.getDifficulty() +
                                     "\n§7§ogenerator: §f" + w.getGenerator() +
