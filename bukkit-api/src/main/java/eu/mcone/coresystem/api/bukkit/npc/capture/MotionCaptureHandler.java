@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture;
 
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
+import eu.mcone.coresystem.api.bukkit.codec.CodecRegistry;
 
 import java.util.List;
 
@@ -13,26 +14,24 @@ public interface MotionCaptureHandler {
 
     MotionCaptureScheduler getMotionCaptureScheduler();
 
+    CodecRegistry getCodecRegistry();
+
     void loadDatabase();
 
-    boolean saveMotionCapture(final MotionRecorder recorder);
+    boolean saveMotionCapture(MotionRecorder recorder);
 
-    MotionCaptureData getMotionCapture(final String name);
-
-    void deleteMotionCapture(final MotionCaptureData data);
+    MotionCapture getMotionCapture(final String name);
 
     void deleteMotionCapture(final String name);
 
     boolean existsMotionCapture(final String name);
 
-    List<MotionCaptureData> getMotionCaptures();
+    List<MotionCapture> getMotionCaptures();
 
     interface MotionCaptureScheduler {
-        void addNpcs(final PlayerNpc... playerNpcs);
+        void addNPCs(final PlayerNpc... playerNpcs);
 
         void addNpc(final PlayerNpc playerNpc);
-
-        void addNpc(final PlayerNpc playerNpc, final MotionCaptureData data);
 
         boolean removeNpc(final PlayerNpc npc);
 

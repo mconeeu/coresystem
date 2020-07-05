@@ -234,6 +234,14 @@ public abstract class CoreNPC<E extends Entity, T extends AbstractNpcData> exten
         return packet;
     }
 
+    public void rotateHead(float yaw) {
+        sendPackets(makeHeadRotationPacket(yaw));
+    }
+
+    public void rotate(float yaw, float pitch) {
+        sendPackets(new PacketPlayOutEntity.PacketPlayOutEntityLook(entity.getId(), (byte) yaw, (byte) pitch, true));
+    }
+
     protected PacketPlayOutAnimation makeAnimationPacket(NpcAnimation animation) {
         PacketPlayOutAnimation packet = new PacketPlayOutAnimation();
         ReflectionManager.setValue(packet, "a", entity.getId());

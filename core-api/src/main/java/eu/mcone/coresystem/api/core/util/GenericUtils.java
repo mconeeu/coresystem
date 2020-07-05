@@ -35,13 +35,14 @@ public class GenericUtils {
      * @param byteArray serialized object
      * @return Object
      */
-    public static Object deserialize(final byte[] byteArray) {
+
+    public static <T> T deserialize(Class<T> clazz, final byte[] byteArray) {
         try {
             ByteArrayInputStream bis = new ByteArrayInputStream(byteArray);
             ObjectInput in = new ObjectInputStream(bis);
             Object obj = in.readObject();
             in.close();
-            return obj;
+            return clazz.cast(obj);
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }

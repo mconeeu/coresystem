@@ -6,7 +6,6 @@
 package eu.mcone.coresystem.api.bukkit.npc.capture;
 
 import lombok.Getter;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class SimplePlayer {
+public abstract class Player {
     @Getter
     protected boolean playing = true;
 
@@ -25,7 +24,7 @@ public abstract class SimplePlayer {
 
     protected BukkitTask playingTask;
 
-    protected HashSet<Player> watcher = new HashSet<>();
+    protected HashSet<org.bukkit.entity.Player> watcher = new HashSet<>();
 
     public abstract void play();
 
@@ -61,23 +60,23 @@ public abstract class SimplePlayer {
         playingTask.cancel();
     }
 
-    public void addWatcher(final Player player) {
+    public void addWatcher(final org.bukkit.entity.Player player) {
         watcher.add(player);
     }
 
-    public void addWatcher(final Player... players) {
+    public void addWatcher(final org.bukkit.entity.Player... players) {
         watcher.addAll(Arrays.asList(players));
     }
 
-    public void removeWatcher(final Player player) {
+    public void removeWatcher(final org.bukkit.entity.Player player) {
         watcher.remove(player);
     }
 
-    public void removeWatcher(final Player... players) {
+    public void removeWatcher(final org.bukkit.entity.Player... players) {
         watcher.removeAll(Arrays.asList(players));
     }
 
-    public Collection<Player> getWatchers() {
+    public Collection<org.bukkit.entity.Player> getWatchers() {
         return new ArrayList<>(watcher);
     }
 

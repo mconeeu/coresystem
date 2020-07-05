@@ -13,6 +13,7 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.codec.CodecRegistry;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.ItemStackCodecProvider;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.LocationCodecProvider;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.gson.CraftItemStackTypeAdapter;
@@ -370,6 +371,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Override
     public MongoDatabase getMongoDB() {
         return database3;
+    }
+
+    @Override
+    public CodecRegistry createCodecRegistry(boolean listening) {
+        return new eu.mcone.coresystem.bukkit.codec.CodecRegistry(CoreSystem.getInstance(), listening);
     }
 
     public CorePlayer getCorePlayer(Player p) {

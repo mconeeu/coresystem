@@ -17,10 +17,19 @@ public enum NpcAnimation {
     MAGIC_CRITICAL_EFFECT(5);
 
     @Getter
-    private int id;
+    private final int id;
 
     NpcAnimation(int id) {
         this.id = id;
     }
 
+    public static NpcAnimation getAnimation(int id) {
+        for (NpcAnimation animation : values()) {
+            if (animation.getId() == id) {
+                return animation;
+            }
+        }
+
+        return null;
+    }
 }

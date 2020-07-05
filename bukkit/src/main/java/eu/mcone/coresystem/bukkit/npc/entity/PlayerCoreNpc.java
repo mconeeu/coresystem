@@ -10,7 +10,7 @@ import com.mojang.authlib.properties.Property;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.npc.NpcData;
-import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
+import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCapture;
 import eu.mcone.coresystem.api.bukkit.npc.data.PlayerNpcData;
 import eu.mcone.coresystem.api.bukkit.npc.entity.EntityProjectile;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
@@ -18,6 +18,7 @@ import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.bukkit.util.CoreProjectile;
+import eu.mcone.coresystem.api.bukkit.util.ReflectionManager;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.core.exception.MotionCaptureCurrentlyRunningException;
 import eu.mcone.coresystem.api.core.exception.NpcCreateException;
@@ -27,7 +28,6 @@ import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.npc.CoreNPC;
 import eu.mcone.coresystem.bukkit.npc.capture.MotionPlayer;
 import eu.mcone.coresystem.bukkit.npc.nms.EntityHumanNPC;
-import eu.mcone.coresystem.api.bukkit.util.ReflectionManager;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
@@ -142,13 +142,13 @@ public class PlayerCoreNpc extends CoreNPC<EntityHumanNPC, PlayerNpcData> implem
     }
 
     public void playMotionCapture(final String name) {
-        MotionCaptureData data = CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().getMotionCapture(name);
+        MotionCapture data = CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().getMotionCapture(name);
         if (data != null) {
             playMotionCapture(data);
         }
     }
 
-    public void playMotionCapture(final MotionCaptureData data) {
+    public void playMotionCapture(final MotionCapture data) {
         try {
             if (motionPlayer != null) {
                 if (motionPlayer.isPlaying()) {

@@ -7,6 +7,7 @@ package eu.mcone.coresystem.api.bukkit;
 
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
 import eu.mcone.coresystem.api.bukkit.channel.PacketManager;
+import eu.mcone.coresystem.api.bukkit.codec.CodecRegistry;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
@@ -57,6 +58,13 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return CorePacketManager instance
      */
     public abstract PacketManager getPacketManager();
+
+    /**
+     * creates a new codec registry object
+     * @param listening listening for codecs?
+     * @return new CodecRegistry instance
+     */
+    public abstract CodecRegistry createCodecRegistry(boolean listening);
 
     /**
      * returns the BCS NickManager

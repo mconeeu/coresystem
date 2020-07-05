@@ -8,7 +8,6 @@ package eu.mcone.coresystem.bukkit.command;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
-import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
@@ -17,15 +16,17 @@ import eu.mcone.coresystem.bukkit.npc.capture.MotionRecorder;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CaptureCMD extends CorePlayerCommand {
 
-    private boolean capture;
-    private MotionRecorder motionRecorder;
+    private final Map<Player, MotionRecorder> recording;
 
     public CaptureCMD() {
         super("capture", "system.bukkit.world.capture");
+        recording = new HashMap<>();
     }
 
     @Override
@@ -38,21 +39,21 @@ public class CaptureCMD extends CorePlayerCommand {
                 String npcName = args[2];
 
                 if (captureName != null) {
-                    MotionCaptureData data = CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().getMotionCapture(captureName);
-                    if (data != null) {
+                    eu.mcone.coresystem.api.bukkit.npc.capture.MotionCapture capture = CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().getMotionCapture(captureName);
+                    if (capture != null) {
                         if (npcName != null) {
                             CoreWorld w = cp.getWorld();
                             NPC npc = CoreSystem.getInstance().getNpcManager().getNPC(w, npcName);
 
                             if (npc != null) {
                                 if (npc instanceof PlayerNpc) {
-                                    if (w.getName().equalsIgnoreCase(data.getWorld())) {
+                                    if (w.getName().equalsIgnoreCase(capture.getWorld())) {
                                         PlayerNpc playerNpc = (PlayerNpc) npc;
-                                        playerNpc.playMotionCapture(data);
+                                        playerNpc.playMotionCapture(capture);
                                         p.teleport(playerNpc.getData().getLocation().bukkit());
                                         BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Die Aufnahme mit dem Namen §a" + captureName + " §2wird nun abgespielt!");
                                     } else {
-                                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die Welt des NPCS stimmt nicht mit der Welt der Aufnahme (§c" + data.getWorld() + "§4) überein!");
+                                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die Welt des NPCS stimmt nicht mit der Welt der Aufnahme (§c" + capture.getWorld() + "§4) überein!");
                                     }
                                 } else {
                                     BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Der NPC mit dem Namen §c" + npcName + "§4 ist kein PLAYER_NPC, animationen können nur für PLAYER_NPC gesetzt werden!");
@@ -78,13 +79,17 @@ public class CaptureCMD extends CorePlayerCommand {
                 String name = args[1];
 
                 if (name != null) {
-                    if (capture) {
+                    if (recording.containsKey(p)) {
                         CoreSystem.getInstance().getMessenger().send(p, "§cDu bist bereits in einer Aufnahme, speichere diese mit /npc record <name>");
                     } else {
-                        capture = true;
-                        motionRecorder = new MotionRecorder(p, name);
-                        motionRecorder.record();
-                        CoreSystem.getInstance().getMessenger().send(p, "§2Die Aufnahme wurde gestartet, all deine Bewegungen & Interaktionen werden nun aufgezeichnet!");
+                        if (!CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().existsMotionCapture(name)) {
+                            MotionRecorder recorder = new MotionRecorder(p, name);
+                            recorder.record();
+                            recording.put(p, recorder);
+                            CoreSystem.getInstance().getMessenger().send(p, "§2Die Aufnahme wurde gestartet, all deine Bewegungen & Interaktionen werden nun aufgezeichnet!");
+                        } else {
+                            CoreSystem.getInstance().getMessenger().send(p, "§cEs existiert bereits ein Capture mit diesem Namen!");
+                        }
                     }
                 } else {
                     CoreSystem.getInstance().getMessenger().send(p, "§cDu bist bereits in einer Aufnahme, speichere diese mit /npc capture start <name>");
@@ -94,14 +99,8 @@ public class CaptureCMD extends CorePlayerCommand {
             } else if (args[0].equalsIgnoreCase("delete")) {
                 String name = args[1];
                 if (name != null) {
-                    MotionCaptureData data = getCapture(name);
-
-                    if (data != null) {
-                        CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().deleteMotionCapture(data);
-                        CoreSystem.getInstance().getMessenger().send(p, "§2Die Aufnahme mit dem Namen §a" + name + " §2wurde erfolgreich gelöscht!");
-                    } else {
-                        CoreSystem.getInstance().getMessenger().send(p, "§cEs konnte keine Aufnahme unter dem Namen §4" + name + " §cgefunden werden!");
-                    }
+                    CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().deleteMotionCapture(name);
+                    CoreSystem.getInstance().getMessenger().send(p, "§2Die Aufnahme mit dem Namen §a" + name + " §2wurde erfolgreich gelöscht!");
                 } else {
                     CoreSystem.getInstance().getMessenger().send(p, "§cBitte benutze: §4/npc capture delete <name>");
                 }
@@ -214,11 +213,11 @@ public class CaptureCMD extends CorePlayerCommand {
             }
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("list")) {
-                List<MotionCaptureData> dataList = CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().getMotionCaptures();
+                List<eu.mcone.coresystem.api.bukkit.npc.capture.MotionCapture> dataList = CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().getMotionCaptures();
                 if (dataList.size() != 0) {
                     CoreSystem.getInstance().getMessenger().send(p, "§2Es sind folgende Aufnahmen verfügbar...");
 
-                    for (MotionCaptureData data : dataList) {
+                    for (eu.mcone.coresystem.api.bukkit.npc.capture.MotionCapture data : dataList) {
                         CoreSystem.getInstance().getMessenger().send(p, "§2Name: §a§l" + data.getName() + " §2Länge: §a§l" + data.getLength() + " §2Aufgenommen von: §a§l" + data.getCreator());
                     }
                 } else {
@@ -227,24 +226,19 @@ public class CaptureCMD extends CorePlayerCommand {
 
                 return true;
             } else if (args[0].equalsIgnoreCase("save")) {
-                if (capture) {
-                    if (motionRecorder != null) {
-                        motionRecorder.stopRecording();
-                        CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().saveMotionCapture(motionRecorder);
-                        capture = false;
-                        CoreSystem.getInstance().getMessenger().send(p, "§2Die Aufnahme wurde erfolgreich unter dem Namen §a" + motionRecorder.getName() + " §2gespeichert!");
-                        p.playSound(p.getLocation(), Sound.ANVIL_USE, 1, 1);
-                        return true;
-                    } else {
-                        CoreSystem.getInstance().getMessenger().send(p, "§cDu musst eine Aufnahme beginnen um diese speichern zu können!");
-                        p.playSound(p.getLocation(), Sound.ANVIL_BREAK, 1, 1);
-                        return false;
-                    }
+                if (recording.containsKey(p)) {
+                    MotionRecorder recorder = recording.get(p);
+                    recorder.stop();
+                    CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().saveMotionCapture(recorder);
+                    CoreSystem.getInstance().getMessenger().send(p, "§2Die Aufnahme wurde erfolgreich unter dem Namen §a" + recorder.getName() + " §2gespeichert!");
+                    p.playSound(p.getLocation(), Sound.ANVIL_USE, 1, 1);
+                    recording.remove(p);
+                    return true;
                 } else {
                     CoreSystem.getInstance().getMessenger().send(p, "§cDu musst eine Aufnahme beginnen um diese speichern zu können!");
+                    p.playSound(p.getLocation(), Sound.ANVIL_BREAK, 1, 1);
+                    return false;
                 }
-
-                return true;
             }
         }
 
@@ -261,13 +255,5 @@ public class CaptureCMD extends CorePlayerCommand {
         );
 
         return true;
-    }
-
-    private MotionCaptureData getCapture(final String name) {
-        if (CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().existsMotionCapture(name)) {
-            return CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().getMotionCapture(name);
-        } else {
-            return null;
-        }
     }
 }

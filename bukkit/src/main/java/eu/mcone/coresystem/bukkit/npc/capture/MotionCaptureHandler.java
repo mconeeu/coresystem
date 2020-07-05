@@ -7,67 +7,82 @@ package eu.mcone.coresystem.bukkit.npc.capture;
 
 import com.mongodb.client.MongoCollection;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.codec.CodecRegistry;
 import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationStateChangeEvent;
-import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionRecorder;
+import eu.mcone.coresystem.api.bukkit.npc.capture.codecs.*;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.core.exception.MotionCaptureAlreadyExistsException;
 import eu.mcone.coresystem.api.core.exception.MotionCaptureNotDefinedException;
 import eu.mcone.coresystem.api.core.exception.MotionCaptureNotFoundException;
 import lombok.Getter;
-import org.bson.codecs.pojo.Conventions;
-import org.bson.codecs.pojo.PojoCodecProvider;
+import net.minecraft.server.v1_8_R3.*;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static com.mongodb.client.model.Filters.eq;
-import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
-import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureHandler {
 
-    private static final MongoCollection<MotionCaptureData> MOTION_CAPTURE_COLLECTION = CoreSystem.getInstance().getMongoDB().withCodecRegistry(
-            fromRegistries(getDefaultCodecRegistry(), fromProviders(PojoCodecProvider.builder().conventions(Conventions.DEFAULT_CONVENTIONS).automatic(true).build()))
-    ).getCollection("motion_capture", MotionCaptureData.class);
-    private final HashMap<String, MotionCaptureData> motionCaptureDataMap;
+    private static final MongoCollection<Document> MOTION_CAPTURE_COLLECTION = CoreSystem.getInstance().getMongoDB().getCollection("motion_capture");
+
+    private final HashMap<String, MotionCapture> cache;
 
     @Getter
     private final MotionCaptureScheduler motionCaptureScheduler;
+    @Getter
+    private final CodecRegistry codecRegistry;
 
     public MotionCaptureHandler() {
-        motionCaptureDataMap = new HashMap<>();
+        cache = new HashMap<>();
         motionCaptureScheduler = new MotionCaptureScheduler();
+        codecRegistry = CoreSystem.getInstance().createCodecRegistry(false);
+
+        codecRegistry.registerCodec(PacketPlayInEntityAction.class, PlayInEntityActionCodec.class);
+        codecRegistry.registerCodec(PlayerItemHeldEvent.class, ItemSwitchEventCodec.class);
+        codecRegistry.registerCodec(PacketPlayInUseEntity.class, PlayInUseCodec.class);
+        codecRegistry.registerCodec(PacketPlayOutAnimation.class, PlayOutAnimationCodec.class);
+        codecRegistry.registerCodec(PlayerMoveEvent.class, PlayerMoveEventCodec.class);
     }
 
     /**
      * Loads all motion captures from the database and stores it locally
      */
     public void loadDatabase() {
-        for (MotionCaptureData data : MOTION_CAPTURE_COLLECTION.find()) {
-            motionCaptureDataMap.put(data.getName(), data);
+        for (Document document : MOTION_CAPTURE_COLLECTION.find()) {
+            cache.put(document.getString("name"), new MotionCapture(document, codecRegistry));
         }
     }
 
     /**
      * save the give MotionRecorder in the database
+     *
      * @param recorder MotionRecorder
      * @return boolean
      */
-    public boolean saveMotionCapture(final MotionRecorder recorder) {
+    public boolean saveMotionCapture(MotionRecorder recorder) {
         try {
-            if (MOTION_CAPTURE_COLLECTION.find(eq("name", recorder.getName())).first() == null) {
-                if (!recorder.isStopped()) {
-                    recorder.stopRecording();
-                }
+            if (!cache.containsKey(recorder.getName())) {
+                if (MOTION_CAPTURE_COLLECTION.find(eq("name", recorder.getName())).first() == null) {
+                    if (!recorder.isStopped()) {
+                        recorder.stop();
+                    }
 
-                MOTION_CAPTURE_COLLECTION.insertOne(new MotionCaptureData(recorder.getName(), recorder.getWorld(), recorder.getRecorded(), recorder.getRecorderName(), recorder.getPackets().size(), recorder.getPackets()));
-                return true;
+                    MotionCapture capture = new MotionCapture(recorder);
+                    cache.put(capture.getName(), capture);
+                    MOTION_CAPTURE_COLLECTION.insertOne(capture.toDocument());
+                    return true;
+                } else {
+                    throw new MotionCaptureAlreadyExistsException();
+                }
             } else {
                 throw new MotionCaptureAlreadyExistsException();
             }
@@ -79,49 +94,45 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
 
     /**
      * Returns an MotionCaptureData for the given name
+     *
      * @param name String (MotionCapture Name)
      * @return MotionCaptureData
      */
-    public MotionCaptureData getMotionCapture(final String name) {
+    public MotionCapture getMotionCapture(final String name) {
         try {
-            MotionCaptureData data = MOTION_CAPTURE_COLLECTION.find(eq("name", name)).first();
-
-            if (data != null) {
-                if (motionCaptureDataMap.containsKey(name)) {
-                    return motionCaptureDataMap.get(name);
-                } else {
-                    motionCaptureDataMap.put(name, data);
-                    return data;
-                }
+            if (cache.containsKey(name)) {
+                return cache.get(name);
             } else {
-                throw new MotionCaptureNotFoundException("Cannot found motion capture with the name " + name);
-            }
+                Document document = MOTION_CAPTURE_COLLECTION.find(eq("name", name)).first();
 
+                if (document != null) {
+                    MotionCapture capture = new MotionCapture(document, codecRegistry);
+                    cache.put(capture.getName(), capture);
+                    return capture;
+                } else {
+                    throw new MotionCaptureNotFoundException("Cannot find motion capture with the name " + name);
+                }
+            }
         } catch (MotionCaptureNotFoundException e) {
             e.printStackTrace();
-            return null;
         }
-    }
 
-    /**
-     * Deletes the MotionCapture where the given MotionCaptureData
-     * @param data MotionCaptureData -> getName()
-     */
-    public void deleteMotionCapture(final MotionCaptureData data) {
-        deleteMotionCapture(data.getName());
+        return null;
     }
 
     /**
      * Deletes the MotionCapture where the given name
+     *
      * @param name MotionCapture name
      */
     public void deleteMotionCapture(final String name) {
-        motionCaptureDataMap.remove(name);
+        cache.remove(name);
         MOTION_CAPTURE_COLLECTION.deleteOne(eq("name", name));
     }
 
     /**
      * checks if an MotionCapture with the give name exists
+     *
      * @param name MotionCapture name
      * @return boolean
      */
@@ -129,8 +140,8 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
         return MOTION_CAPTURE_COLLECTION.find(eq("name", name)).first() != null;
     }
 
-    public List<MotionCaptureData> getMotionCaptures() {
-        return new ArrayList<>(motionCaptureDataMap.values());
+    public List<eu.mcone.coresystem.api.bukkit.npc.capture.MotionCapture> getMotionCaptures() {
+        return new ArrayList<>(cache.values());
     }
 
     public static class MotionCaptureScheduler implements Listener, eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureHandler.MotionCaptureScheduler {
@@ -141,7 +152,7 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
             CoreSystem.getInstance().registerEvents(this);
         }
 
-        public void addNpcs(final PlayerNpc... playerNpcs) {
+        public void addNPCs(final PlayerNpc... playerNpcs) {
             for (PlayerNpc playernpc : playerNpcs) {
                 addNpc(playernpc);
             }
@@ -159,7 +170,7 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
             }
         }
 
-        public void addNpc(final PlayerNpc playerNpc, final MotionCaptureData data) {
+        public void addNpc(final PlayerNpc playerNpc, final MotionCapture data) {
             playerNpc.playMotionCapture(data);
             npcs.put(playerNpc.getData().getName(), playerNpc);
         }

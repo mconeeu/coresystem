@@ -6,12 +6,11 @@
 package eu.mcone.coresystem.api.bukkit.npc.entity;
 
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
-import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
-import eu.mcone.coresystem.api.bukkit.npc.capture.MotionPlayer;
+import eu.mcone.coresystem.api.bukkit.npc.capture.Player;
+import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCapture;
 import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import net.minecraft.server.v1_8_R3.MobEffect;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
@@ -26,7 +25,7 @@ public interface PlayerNpc extends NPC {
      */
     UUID getUuid();
 
-    MotionPlayer getMotionPlayer();
+    Player getMotionPlayer();
 
     /**
      * Sets a specific item in the NPCs inventory and makes it visible for other players
@@ -36,7 +35,7 @@ public interface PlayerNpc extends NPC {
      * @param item     item
      * @param players  players which should receive the item update (choose no players to send the update to all players and save the item in PlayerNpcData & core-config)
      */
-    void setEquipment(EquipmentPosition position, ItemStack item, Player... players);
+    void setEquipment(EquipmentPosition position, ItemStack item, org.bukkit.entity.Player... players);
 
     /**
      * Clears the Equipment content of the player
@@ -49,7 +48,7 @@ public interface PlayerNpc extends NPC {
      * @param skin    skin info
      * @param players players which should receive the skin update (choose no players to send the update to all players and save it in PlayerNpcData & core-config)
      */
-    void setSkin(SkinInfo skin, Player... players);
+    void setSkin(SkinInfo skin, org.bukkit.entity.Player... players);
 
     /**
      * returns the current skin of the NPC
@@ -70,7 +69,7 @@ public interface PlayerNpc extends NPC {
      */
     void setAwake();
 
-    void setCamera(Player player, boolean active);
+    void setCamera(org.bukkit.entity.Player player, boolean active);
 
     /**
      * Sends a packet to update the tablist name (if specific players are chosen, this update is temporary and will not be saved permanently to NpcData)
@@ -78,7 +77,7 @@ public interface PlayerNpc extends NPC {
      * @param name    tablist name
      * @param players players which should receive the tablist name update (choose no players to send the update to all players and save it in PlayerNpcData & core-config)
      */
-    void setTablistName(String name, Player... players);
+    void setTablistName(String name, org.bukkit.entity.Player... players);
 
     /**
      * Sends a add|remove packet for the NPC tablist name (if specific players are chosen, this setting is temporary and will not be saved permanently to NpcData)
@@ -86,7 +85,7 @@ public interface PlayerNpc extends NPC {
      * @param visible if the NPC name should be visible on tab
      * @param players players which should receive the name add|remove (choose no players to send the update to all players and save this setting in PlayerNpcData & core-config)
      */
-    void setVisibleOnTab(boolean visible, Player... players);
+    void setVisibleOnTab(boolean visible, org.bukkit.entity.Player... players);
 
     /**
      * Sends emote message to make the npc do an specific emote
@@ -94,25 +93,25 @@ public interface PlayerNpc extends NPC {
      * @param emoteId LabyMod Emote ID
      * @param players players which should receive the name add|remove (choose no players to send the update to all players and save this setting in PlayerNpcData & core-config)
      */
-    void playLabymodEmote(int emoteId, Player... players);
+    void playLabymodEmote(int emoteId, org.bukkit.entity.Player... players);
 
-    void playLabymodSticker(short stickerId, Player... players);
+    void playLabymodSticker(short stickerId, org.bukkit.entity.Player... players);
 
-    void setBow(boolean drawBow, Player... players);
+    void setBow(boolean drawBow, org.bukkit.entity.Player... players);
 
-    void fishingHook(boolean hook, Player... players);
+    void fishingHook(boolean hook, org.bukkit.entity.Player... players);
 
     void playMotionCapture(final String name);
 
-    void playMotionCapture(final MotionCaptureData data);
+    void playMotionCapture(final MotionCapture data);
 
-    void sneak(boolean sneak, Player... players);
+    void sneak(boolean sneak, org.bukkit.entity.Player... players);
 
     //Crashes the client, because float cannot be cast to byte (Minecraft Client error stacktrace)
-    void block(boolean block, Player... players);
+    void block(boolean block, org.bukkit.entity.Player... players);
 
-    void setItemInHand(final ItemStack item, final Player... players);
+    void setItemInHand(final ItemStack item, final org.bukkit.entity.Player... players);
 
-    void addPotionEffect(MobEffect effect, final Player... players);
+    void addPotionEffect(MobEffect effect, final org.bukkit.entity.Player... players);
 
 }

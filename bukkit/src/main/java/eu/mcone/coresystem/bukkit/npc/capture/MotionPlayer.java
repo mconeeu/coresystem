@@ -8,32 +8,27 @@ package eu.mcone.coresystem.bukkit.npc.capture;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationProgressEvent;
 import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationStateChangeEvent;
-import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureData;
-import eu.mcone.coresystem.api.bukkit.npc.capture.SimplePlayer;
-import eu.mcone.coresystem.api.bukkit.npc.capture.packets.*;
+import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCapture;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
-import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
-import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
+import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import lombok.Getter;
-import eu.mcone.coresystem.bukkit.npc.entity.PlayerCoreNpc;
-import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MotionPlayer extends SimplePlayer implements eu.mcone.coresystem.api.bukkit.npc.capture.MotionPlayer {
+public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Player {
     @Getter
-    public MotionCaptureData data;
+    public MotionCapture capture;
 
     protected PlayerNpc playerNpc;
 
-    public MotionPlayer(final PlayerNpc playerNpc, final MotionCaptureData data) {
+    public MotionPlayer(final PlayerNpc playerNpc, final MotionCapture capture) {
         this.playerNpc = playerNpc;
-        this.data = data;
+        this.capture = capture;
     }
 
     @Override
@@ -41,78 +36,20 @@ public class MotionPlayer extends SimplePlayer implements eu.mcone.coresystem.ap
         currentTick = new AtomicInteger(0);
         AtomicInteger packetsCount = new AtomicInteger(0);
         AtomicInteger currentProgress = new AtomicInteger(0);
+        Map<Integer, List<Codec<?>>> codecs = capture.getMotionChunk().getChunkData().getCodecs();
 
         Bukkit.getPluginManager().callEvent(new NpcAnimationStateChangeEvent(playerNpc, NpcAnimationStateChangeEvent.NpcAnimationState.START));
         playingTask = Bukkit.getScheduler().runTaskTimerAsynchronously(CoreSystem.getInstance(), () -> {
             if (playing) {
-                String tick = String.valueOf(currentTick.get());
+                int tick = currentTick.get();
 
-                if (packetsCount.get() < data.getMotionData().size() - 1) {
-                    if (data.getMotionData().containsKey(tick)) {
-                        for (PacketContainer wrapper : data.getMotionData().get(tick)) {
-                            if (wrapper instanceof EntityMovePacketContainer) {
-                                ((PlayerCoreNpc) playerNpc).setLocation(((EntityMovePacketContainer) wrapper).calculateLocation());
-                                playerNpc.teleport(((EntityMovePacketContainer) wrapper).calculateLocation());
-                            }
-
-                            if (wrapper instanceof EntitySneakPacketContainer) {
-                                EntitySneakPacketContainer sneakPacket = (EntitySneakPacketContainer) wrapper;
-                                if (sneakPacket.getEntityAction().equals(EntityAction.START_SNEAKING)) {
-                                    playerNpc.sneak(true);
-                                } else {
-                                    playerNpc.sneak(false);
-                                }
-                            }
-
-                            if (wrapper instanceof EntitySwitchItemPacketContainer) {
-                                playerNpc.setEquipment(EquipmentPosition.HAND, ((EntitySwitchItemPacketContainer) wrapper).constructItemStack());
-                            }
-
-                            if (wrapper instanceof EntityClickPacketContainer) {
-                                playerNpc.sendAnimation(NpcAnimation.SWING_ARM);
-                            }
-
-                            if (wrapper instanceof EntityButtonInteractPacketContainer) {
-                                BlockStateDirection FACING = BlockStateDirection.of("facing");
-                                EntityButtonInteractPacketContainer packet = (EntityButtonInteractPacketContainer) wrapper;
-                                Location location = packet.calculateLocation();
-                                WorldServer world = ((CraftWorld) location.getWorld()).getHandle();
-                                BlockPosition blockposition = new BlockPosition(location.getX(), location.getY(), location.getZ());
-                                IBlockData iblockdata = world.getType(blockposition);
-                                Block block = iblockdata.getBlock();
-
-                                block.interact(((CraftWorld) location.getWorld()).getHandle(), blockposition, iblockdata, null, iblockdata.get(FACING), (float) location.getX(), (float) location.getY(), (float) location.getZ());
-                            } else if (wrapper instanceof EntityOpenDoorPacketContainer) {
-                                EntityOpenDoorPacketContainer packet = (EntityOpenDoorPacketContainer) wrapper;
-                                Location location = packet.calculateLocation();
-                                BlockPosition blockposition = new BlockPosition(location.getX(), location.getY(), location.getZ());
-                                WorldServer world = ((CraftWorld) location.getWorld()).getHandle();
-                                IBlockData iblockdata = world.getType(blockposition);
-
-                                BlockStateBoolean OPEN = BlockStateBoolean.of("open");
-                                BlockStateEnum<BlockDoor.EnumDoorHalf> HALF = BlockStateEnum.of("half", BlockDoor.EnumDoorHalf.class);
-
-                                BlockPosition blockposition1 = iblockdata.get(HALF) == BlockDoor.EnumDoorHalf.LOWER ? blockposition : blockposition.down();
-                                IBlockData iblockdata1 = blockposition.equals(blockposition1) ? iblockdata : world.getType(blockposition1);
-
-                                iblockdata = iblockdata1.a(OPEN);
-                                world.setTypeAndData(blockposition1, iblockdata, 2);
-                                world.b(blockposition1, blockposition);
-                                world.a(iblockdata.get(OPEN) ? 1003 : 1006, blockposition, 0);
-
-                                if (packet.isDoorOpen()) {
-                                    location.getWorld().playSound(location, Sound.DOOR_OPEN, 1, 1);
-                                } else {
-                                    location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
-                                }
-                            }
-
-                            if (wrapper instanceof EntityDamagePacketContainer) {
-                                playerNpc.sendAnimation(NpcAnimation.TAKE_DAMAGE);
-                            }
+                if (packetsCount.get() < codecs.size() - 1) {
+                    if (codecs.containsKey(tick)) {
+                        for (Codec<?> codec : codecs.get(tick)) {
+                            codec.encode(playerNpc);
                         }
 
-                        int progress = (int) Math.round((100.00 / data.getMotionData().size()) * packetsCount.get());
+                        int progress = (int) Math.round((100.00 / codecs.size()) * packetsCount.get());
                         if (progress != currentProgress.get()) {
                             currentProgress.set(progress);
                             Bukkit.getPluginManager().callEvent(new NpcAnimationProgressEvent(playerNpc, this.currentTick.get(), progress));

@@ -120,6 +120,10 @@ public interface NPC extends PlayerListModeToggleable {
      */
     Vector getVector();
 
+    void rotateHead(float yaw);
+
+    void rotate(float yaw, float pitch);
+
     void sendPackets(Packet<?>... packets);
 
 }
