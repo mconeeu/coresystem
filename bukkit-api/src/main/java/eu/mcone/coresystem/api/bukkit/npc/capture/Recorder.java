@@ -17,7 +17,7 @@ public abstract class Recorder {
     protected long started;
     protected long stopped;
     protected int ticks;
-    protected boolean isStopped;
+    protected boolean stop;
 
     protected AtomicInteger savedPackets;
 

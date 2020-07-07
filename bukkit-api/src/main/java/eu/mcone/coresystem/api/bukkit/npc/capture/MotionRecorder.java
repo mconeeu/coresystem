@@ -18,7 +18,7 @@ public interface MotionRecorder {
 
     MotionChunk getChunk();
 
-    boolean isStopped();
+    boolean isStop();
 
     void stop();
 }

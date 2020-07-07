@@ -72,7 +72,7 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
         try {
             if (!cache.containsKey(recorder.getName())) {
                 if (MOTION_CAPTURE_COLLECTION.find(eq("name", recorder.getName())).first() == null) {
-                    if (!recorder.isStopped()) {
+                    if (!recorder.isStop()) {
                         recorder.stop();
                     }
 

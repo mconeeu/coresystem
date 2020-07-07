@@ -46,7 +46,7 @@ public class MotionRecorder extends Recorder implements eu.mcone.coresystem.api.
         }, 1L, 1L);
 
         CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().getCodecRegistry().registerCodecListener((codec, objects) -> {
-            if (!isStopped()) {
+            if (!isStop()) {
                 chunk.addPacket(ticks, codec);
                 savedPackets.getAndIncrement();
             }
