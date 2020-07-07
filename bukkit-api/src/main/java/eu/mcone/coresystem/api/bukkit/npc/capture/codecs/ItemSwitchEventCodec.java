@@ -5,7 +5,6 @@
 
 package eu.mcone.coresystem.api.bukkit.npc.capture.codecs;
 
-import com.google.common.io.ByteArrayDataOutput;
 import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.ItemStackTypeAdapterUtils;
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
@@ -20,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 @BsonDiscriminator
@@ -52,14 +52,14 @@ public class ItemSwitchEventCodec extends Codec<PlayerItemHeldEvent> {
     }
 
     @Override
-    public void onWrite(ByteArrayDataOutput out) {
+    public void onWriteObject(ObjectOutputStream out) throws IOException {
         out.writeUTF(material);
         out.writeInt(amount);
         out.writeUTF(enchantments);
     }
 
     @Override
-    public void onRead(ObjectInputStream in) throws IOException {
+    public void onReadObject(ObjectInputStream in) throws IOException {
         material = in.readUTF();
         amount = in.readInt();
         enchantments = in.readUTF();

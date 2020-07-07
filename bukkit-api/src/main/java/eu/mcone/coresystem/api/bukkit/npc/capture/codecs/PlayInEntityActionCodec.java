@@ -5,15 +5,15 @@
 
 package eu.mcone.coresystem.api.bukkit.npc.capture.codecs;
 
-import com.google.common.io.ByteArrayDataOutput;
-import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.bukkit.codec.Codec;
+import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayInEntityAction;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 public class PlayInEntityActionCodec extends Codec<PacketPlayInEntityAction> {
@@ -51,13 +51,13 @@ public class PlayInEntityActionCodec extends Codec<PacketPlayInEntityAction> {
     }
 
     @Override
-    public void onWrite(ByteArrayDataOutput out) throws IOException {
+    public void onWriteObject(ObjectOutputStream out) throws IOException {
         out.writeUTF(action);
         out.writeInt(index);
     }
 
     @Override
-    public void onRead(ObjectInputStream in) throws IOException {
+    public void onReadObject(ObjectInputStream in) throws IOException {
         action = in.readUTF();
         index = in.readInt();
     }

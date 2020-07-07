@@ -5,7 +5,6 @@
 
 package eu.mcone.coresystem.api.bukkit.npc.capture.codecs;
 
-import com.google.common.io.ByteArrayDataOutput;
 import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import lombok.Getter;
@@ -16,6 +15,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 @Getter
@@ -57,7 +57,7 @@ public class PlayerMoveEventCodec extends Codec<PlayerMoveEvent> {
     }
 
     @Override
-    public void onWrite(ByteArrayDataOutput out) {
+    public void onWriteObject(ObjectOutputStream out) throws IOException {
         out.writeDouble(x);
         out.writeDouble(y);
         out.writeDouble(z);
@@ -66,7 +66,7 @@ public class PlayerMoveEventCodec extends Codec<PlayerMoveEvent> {
     }
 
     @Override
-    public void onRead(ObjectInputStream in) throws IOException {
+    public void onReadObject(ObjectInputStream in) throws IOException {
         x = in.readDouble();
         y = in.readDouble();
         z = in.readDouble();

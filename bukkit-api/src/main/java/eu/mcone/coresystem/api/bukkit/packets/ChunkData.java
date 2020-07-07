@@ -4,17 +4,16 @@ import eu.mcone.coresystem.api.bukkit.codec.CodecRegistry;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Getter
 @NoArgsConstructor
-public abstract class ChunkData {
+public abstract class ChunkData implements Serializable {
 
-    private CodecRegistry codecRegistry;
+    private transient CodecRegistry codecRegistry;
 
     public ChunkData(CodecRegistry codecRegistry) {
         this.codecRegistry = codecRegistry;
     }
 
-    public abstract byte[] serialize();
-
-    public abstract void deserialize();
 }

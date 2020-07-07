@@ -5,10 +5,9 @@
 
 package eu.mcone.coresystem.api.bukkit.npc.capture.codecs;
 
-import com.google.common.io.ByteArrayDataOutput;
+import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
-import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
@@ -22,6 +21,7 @@ import org.bukkit.material.Door;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 @Getter
@@ -109,7 +109,7 @@ public class PlayInUseCodec extends Codec<PacketPlayInUseEntity> {
     }
 
     @Override
-    public void onWrite(ByteArrayDataOutput out) throws IOException {
+    public void onWriteObject(ObjectOutputStream out) throws IOException {
         out.writeDouble(x);
         out.writeDouble(y);
         out.writeDouble(z);
@@ -119,7 +119,7 @@ public class PlayInUseCodec extends Codec<PacketPlayInUseEntity> {
     }
 
     @Override
-    public void onRead(ObjectInputStream in) throws IOException {
+    public void onReadObject(ObjectInputStream in) throws IOException {
         x = in.readDouble();
         y = in.readDouble();
         z = in.readDouble();

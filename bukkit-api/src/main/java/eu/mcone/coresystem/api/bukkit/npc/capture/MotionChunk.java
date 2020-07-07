@@ -11,9 +11,5 @@ public interface MotionChunk {
 
     interface MotionChunkData {
         Map<Integer, List<Codec<?>>> getCodecs();
-
-        byte[] serialize();
-
-        void deserialize();
     }
 }

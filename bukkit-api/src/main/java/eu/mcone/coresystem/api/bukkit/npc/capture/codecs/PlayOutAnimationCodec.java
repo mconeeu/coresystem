@@ -5,10 +5,9 @@
 
 package eu.mcone.coresystem.api.bukkit.npc.capture.codecs;
 
-import com.google.common.io.ByteArrayDataOutput;
+import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
-import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import eu.mcone.coresystem.api.bukkit.util.ReflectionManager;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutAnimation;
@@ -16,6 +15,7 @@ import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 
 public class PlayOutAnimationCodec extends Codec<PacketPlayOutAnimation> {
@@ -46,12 +46,12 @@ public class PlayOutAnimationCodec extends Codec<PacketPlayOutAnimation> {
     }
 
     @Override
-    public void onWrite(ByteArrayDataOutput out) throws IOException {
+    public void onWriteObject(ObjectOutputStream out) throws IOException {
         out.writeUTF(animation.toString());
     }
 
     @Override
-    public void onRead(ObjectInputStream in) throws IOException {
+    public void onReadObject(ObjectInputStream in) throws IOException {
         animation = NpcAnimation.valueOf(in.readUTF());
     }
 

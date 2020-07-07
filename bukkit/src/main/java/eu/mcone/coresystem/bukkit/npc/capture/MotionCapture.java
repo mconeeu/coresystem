@@ -2,6 +2,7 @@ package eu.mcone.coresystem.bukkit.npc.capture;
 
 import eu.mcone.coresystem.api.bukkit.codec.CodecRegistry;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionRecorder;
+import eu.mcone.coresystem.api.core.util.GenericUtils;
 import lombok.Getter;
 import org.bson.Document;
 import org.bson.types.Binary;
@@ -46,6 +47,6 @@ public class MotionCapture implements eu.mcone.coresystem.api.bukkit.npc.capture
                 .append("recorded", recorded)
                 .append("world", world)
                 .append("length", length)
-                .append("chunk", motionChunk.getChunkData().serialize());
+                .append("chunk", GenericUtils.serialize(motionChunk.getChunkData()));
     }
 }
