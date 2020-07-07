@@ -14,16 +14,16 @@ public abstract class Recorder {
 
     protected final String recorderID;
     protected final String world;
-    protected long recorded;
+    protected long started;
+    protected long stopped;
     protected int ticks;
-    protected boolean stopped;
+    protected boolean isStopped;
 
     protected AtomicInteger savedPackets;
 
     public Recorder(String recorderID, String world) {
         this.recorderID = recorderID;
         this.world = world;
-        recorded = System.currentTimeMillis() / 1000;
         ticks = 0;
         savedPackets = new AtomicInteger();
     }

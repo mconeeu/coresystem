@@ -35,11 +35,13 @@ public class ItemSwitchEventCodec extends Codec<PlayerItemHeldEvent> {
     }
 
     @Override
-    public void decode(Player player, PlayerItemHeldEvent event) {
+    public Object[] decode(Player player, PlayerItemHeldEvent event) {
         ItemStack itemStack = event.getPlayer().getItemInHand();
         this.material = itemStack.getType().toString();
         this.amount = itemStack.getAmount();
         this.enchantments = ItemStackTypeAdapterUtils.serializeEnchantments(itemStack.getEnchantments());
+
+        return new Object[]{event.getPlayer()};
     }
 
     @Override

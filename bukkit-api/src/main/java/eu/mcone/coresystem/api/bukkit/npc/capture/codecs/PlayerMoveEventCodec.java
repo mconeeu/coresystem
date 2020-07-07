@@ -32,12 +32,14 @@ public class PlayerMoveEventCodec extends Codec<PlayerMoveEvent> {
     }
 
     @Override
-    public void decode(Player player, PlayerMoveEvent event) {
+    public Object[] decode(Player player, PlayerMoveEvent event) {
         this.x = event.getTo().getX();
         this.y = event.getTo().getY();
         this.z = event.getTo().getZ();
         this.yaw = event.getTo().getYaw();
         pitch = event.getTo().getPitch();
+
+        return new Object[] {player};
     }
 
     @Override

@@ -27,9 +27,11 @@ public class PlayInEntityActionCodec extends Codec<PacketPlayInEntityAction> {
     }
 
     @Override
-    public void decode(Player player, PacketPlayInEntityAction packet) {
+    public Object[] decode(Player player, PacketPlayInEntityAction packet) {
         action = packet.b().toString();
         index = packet.c();
+
+        return new Object[]{player};
     }
 
     @Override

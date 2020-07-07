@@ -27,12 +27,14 @@ public class PlayOutAnimationCodec extends Codec<PacketPlayOutAnimation> {
     }
 
     @Override
-    public void decode(Player player, PacketPlayOutAnimation packet) {
+    public Object[] decode(Player player, PacketPlayOutAnimation packet) {
         int id = ReflectionManager.getValue(packet, "b", Integer.class);
         NpcAnimation animation = NpcAnimation.getAnimation(id);
         if (animation != null) {
             this.animation = animation;
         }
+
+        return new Object[]{player};
     }
 
     @Override

@@ -19,7 +19,7 @@ public abstract class Codec<T> implements Serializable {
         this.typ = type;
     }
 
-    public abstract void decode(Player player, T packet);
+    public abstract Object[] decode(Player player, T packet);
 
     public abstract List<Packet<?>> encode(Object object);
 

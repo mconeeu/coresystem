@@ -43,8 +43,7 @@ public class GeneralCodecListener {
                     if (codecRegistry.hasCodec(packet)) {
                         try {
                             Codec codec = codecRegistry.getCodec(Packet.class, packet).newInstance();
-                            codec.decode(null, packet);
-                            callListeners(codec);
+                            callListeners(codec, codec.decode(player, packet));
                         } catch (InstantiationException | IllegalAccessException e) {
                             e.printStackTrace();
                         }
@@ -56,8 +55,7 @@ public class GeneralCodecListener {
                     if (codecRegistry.hasCodec(packet)) {
                         try {
                             Codec codec = codecRegistry.getCodec(Packet.class, packet).newInstance();
-                            codec.decode(null, packet);
-                            callListeners(codec);
+                            callListeners(codec, codec.decode(player, packet));
                         } catch (InstantiationException | IllegalAccessException e) {
                             e.printStackTrace();
                         }
@@ -83,8 +81,7 @@ public class GeneralCodecListener {
                         RegisteredListener registeredListener = new RegisteredListener(null, (listener, event) -> {
                             try {
                                 Codec codec = codecRegistry.getCodec(Event.class, event).newInstance();
-                                codec.decode(null, event);
-                                callListeners(codec);
+                                callListeners(codec, codec.decode(null, event));
                             } catch (InstantiationException | IllegalAccessException e) {
                                 e.printStackTrace();
                             }
@@ -110,9 +107,9 @@ public class GeneralCodecListener {
         return null;
     }
 
-    private void callListeners(Codec<?> codec) {
+    private void callListeners(Codec<?> codec, Object... args) {
         for (eu.mcone.coresystem.api.bukkit.codec.CodecListener listener : codecRegistry.getListeners()) {
-            listener.onCodec(codec);
+            listener.onCodec(codec, args);
         }
     }
 

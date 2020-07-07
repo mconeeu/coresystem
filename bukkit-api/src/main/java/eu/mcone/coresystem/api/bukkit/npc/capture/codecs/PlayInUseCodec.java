@@ -39,7 +39,7 @@ public class PlayInUseCodec extends Codec<PacketPlayInUseEntity> {
     }
 
     @Override
-    public void decode(Player player, PacketPlayInUseEntity packet) {
+    public Object[] decode(Player player, PacketPlayInUseEntity packet) {
         if (packet.a().equals(PacketPlayInUseEntity.EnumEntityUseAction.INTERACT_AT)) {
             Location blockLocation = new Location(player.getWorld(), packet.b().a, packet.b().b, packet.b().c);
 
@@ -60,6 +60,8 @@ public class PlayInUseCodec extends Codec<PacketPlayInUseEntity> {
             y = blockLocation.getY();
             z = blockLocation.getZ();
         }
+
+        return new Object[]{player};
     }
 
     @Override
