@@ -18,7 +18,8 @@ import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter @Setter
+@Getter
+@Setter
 public class PlayerNpcData extends AbstractNpcData {
 
     private String skinName = "MHF_Question", tablistName = "";
@@ -38,5 +39,4 @@ public class PlayerNpcData extends AbstractNpcData {
                 ", equipment=" + equipment +
                 '}';
     }
-
 }

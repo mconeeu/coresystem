@@ -58,7 +58,7 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
      */
     public void loadDatabase() {
         for (Document document : MOTION_CAPTURE_COLLECTION.find()) {
-            cache.put(document.getString("name"), new MotionCapture(document, codecRegistry));
+            cache.put(document.getString("name"), new MotionCapture(document));
         }
     }
 
@@ -106,7 +106,7 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
                 Document document = MOTION_CAPTURE_COLLECTION.find(eq("name", name)).first();
 
                 if (document != null) {
-                    MotionCapture capture = new MotionCapture(document, codecRegistry);
+                    MotionCapture capture = new MotionCapture(document);
                     cache.put(capture.getName(), capture);
                     return capture;
                 } else {

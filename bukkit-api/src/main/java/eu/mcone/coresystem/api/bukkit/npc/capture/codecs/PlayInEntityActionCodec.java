@@ -7,7 +7,6 @@ package eu.mcone.coresystem.api.bukkit.npc.capture.codecs;
 
 import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
-import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayInEntityAction;
 import org.bukkit.entity.Player;
 
@@ -35,17 +34,19 @@ public class PlayInEntityActionCodec extends Codec<PacketPlayInEntityAction> {
     }
 
     @Override
-    public List<Packet<?>> encode(Object object) {
-        if (object instanceof PlayerNpc) {
-            PlayerNpc npc = (PlayerNpc) object;
-            PacketPlayInEntityAction.EnumPlayerAction action = PacketPlayInEntityAction.EnumPlayerAction.valueOf(this.action);
-            switch (action) {
-                case START_SNEAKING:
-                    npc.sneak(true);
-                    break;
-                case STOP_SNEAKING:
-                    npc.sneak(false);
-                    break;
+    public List<Object> encode(Object... args) {
+        if (args.length == 1) {
+            if (args[0] instanceof PlayerNpc) {
+                PlayerNpc npc = (PlayerNpc) args[0];
+                PacketPlayInEntityAction.EnumPlayerAction action = PacketPlayInEntityAction.EnumPlayerAction.valueOf(this.action);
+                switch (action) {
+                    case START_SNEAKING:
+                        npc.sneak(true);
+                        break;
+                    case STOP_SNEAKING:
+                        npc.sneak(false);
+                        break;
+                }
             }
         }
 
@@ -62,10 +63,5 @@ public class PlayInEntityActionCodec extends Codec<PacketPlayInEntityAction> {
     public void onReadObject(ObjectInputStream in) throws IOException {
         action = in.readUTF();
         index = in.readInt();
-    }
-
-    @Override
-    public Class<PacketPlayInEntityAction> getCodecClass() {
-        return PacketPlayInEntityAction.class;
     }
 }

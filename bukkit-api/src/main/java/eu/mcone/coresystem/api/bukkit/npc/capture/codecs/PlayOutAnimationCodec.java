@@ -9,7 +9,6 @@ import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import eu.mcone.coresystem.api.bukkit.util.ReflectionManager;
-import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutAnimation;
 import org.bukkit.entity.Player;
 
@@ -38,10 +37,12 @@ public class PlayOutAnimationCodec extends Codec<PacketPlayOutAnimation> {
     }
 
     @Override
-    public List<Packet<?>> encode(Object object) {
-        if (object instanceof PlayerNpc) {
-            PlayerNpc npc = (PlayerNpc) object;
-            npc.sendAnimation(animation);
+    public List<Object> encode(Object... args) {
+        if (args.length == 1) {
+            if (args[0] instanceof PlayerNpc) {
+                PlayerNpc npc = (PlayerNpc) args[0];
+                npc.sendAnimation(animation);
+            }
         }
 
         return null;
@@ -55,10 +56,5 @@ public class PlayOutAnimationCodec extends Codec<PacketPlayOutAnimation> {
     @Override
     public void onReadObject(ObjectInputStream in) throws IOException {
         animation = NpcAnimation.valueOf(in.readUTF());
-    }
-
-    @Override
-    public Class<PacketPlayOutAnimation> getCodecClass() {
-        return PacketPlayOutAnimation.class;
     }
 }

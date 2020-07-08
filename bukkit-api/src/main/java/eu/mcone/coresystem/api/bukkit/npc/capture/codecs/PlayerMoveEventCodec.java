@@ -8,7 +8,6 @@ package eu.mcone.coresystem.api.bukkit.npc.capture.codecs;
 import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import lombok.Getter;
-import net.minecraft.server.v1_8_R3.Packet;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -39,20 +38,22 @@ public class PlayerMoveEventCodec extends Codec<PlayerMoveEvent> {
         this.yaw = event.getTo().getYaw();
         pitch = event.getTo().getPitch();
 
-        return new Object[] {player};
+        return new Object[]{player};
     }
 
     @Override
-    public List<Packet<?>> encode(Object object) {
-        if (object instanceof PlayerNpc) {
-            PlayerNpc npc = (PlayerNpc) object;
-            Location location = npc.getLocation();
-            location.setX(x);
-            location.setY(y);
-            location.setZ(z);
-            location.setYaw(yaw);
-            location.setPitch(pitch);
-            npc.teleport(location);
+    public List<Object> encode(Object... args) {
+        if (args.length == 1) {
+            if (args[0] instanceof PlayerNpc) {
+                PlayerNpc npc = (PlayerNpc) args[0];
+                Location location = npc.getLocation();
+                location.setX(x);
+                location.setY(y);
+                location.setZ(z);
+                location.setYaw(yaw);
+                location.setPitch(pitch);
+                npc.teleport(location);
+            }
         }
 
         return null;
@@ -74,10 +75,5 @@ public class PlayerMoveEventCodec extends Codec<PlayerMoveEvent> {
         z = in.readDouble();
         yaw = in.readFloat();
         pitch = in.readFloat();
-    }
-
-    @Override
-    public Class<PlayerMoveEvent> getCodecClass() {
-        return PlayerMoveEvent.class;
     }
 }

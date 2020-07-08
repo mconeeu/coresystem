@@ -6,7 +6,7 @@ public interface CodecRegistry {
 
     void listeningForCodecs(boolean listening);
 
-    void registerCodec(Class<?> clazz, Class<? extends Codec<?>> codec);
+    boolean registerCodec(Class<?> clazz, Class<? extends Codec<?>> codec);
 
     void registerCodecListener(CodecListener... listeners);
 

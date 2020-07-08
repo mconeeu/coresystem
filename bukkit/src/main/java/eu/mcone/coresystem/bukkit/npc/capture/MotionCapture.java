@@ -1,6 +1,5 @@
 package eu.mcone.coresystem.bukkit.npc.capture;
 
-import eu.mcone.coresystem.api.bukkit.codec.CodecRegistry;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionRecorder;
 import eu.mcone.coresystem.api.core.util.GenericUtils;
 import lombok.Getter;
@@ -32,13 +31,20 @@ public class MotionCapture implements eu.mcone.coresystem.api.bukkit.npc.capture
         this.motionChunk = motionRecorder.getChunk();
     }
 
-    public MotionCapture(Document document, CodecRegistry registry) {
+    public MotionCapture(Document document) {
         this.name = document.getString("name");
         this.creator = document.getString("creator");
         this.recorded = document.getLong("recorded");
         this.world = document.getString("world");
         this.length = document.getInteger("length");
-        this.motionChunk = new MotionChunk(registry, document.get("chunk", Binary.class).getData());
+
+        byte[] genericChunkData = document.get("chunk", Binary.class).getData();
+
+        if (genericChunkData != null) {
+            this.motionChunk = new MotionChunk(GenericUtils.deserialize(MotionChunk.MotionChunkData.class, genericChunkData));
+        } else {
+            throw new NullPointerException("Could not encode byte[] array to motion chunk data");
+        }
     }
 
     public Document toDocument() {

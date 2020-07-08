@@ -1,7 +1,6 @@
 package eu.mcone.coresystem.api.bukkit.codec;
 
 import lombok.Getter;
-import net.minecraft.server.v1_8_R3.Packet;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
@@ -13,6 +12,7 @@ import java.util.List;
 @Getter
 public abstract class Codec<T> implements Serializable {
 
+    private Class<T> codecClass;
     private String typ;
 
     public Codec(String type) {
@@ -21,10 +21,11 @@ public abstract class Codec<T> implements Serializable {
 
     public abstract Object[] decode(Player player, T packet);
 
-    public abstract List<Packet<?>> encode(Object object);
+    public abstract List<Object> encode(Object... args);
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         try {
+            out.writeUTF(codecClass.getSimpleName());
             out.writeUTF(typ);
             onWriteObject(out);
         } catch (IOException e) {
@@ -34,6 +35,7 @@ public abstract class Codec<T> implements Serializable {
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         try {
+            this.codecClass = (Class<T>) Class.forName(in.readUTF());
             this.typ = in.readUTF();
             onReadObject(in);
         } catch (IOException e) {
@@ -45,5 +47,7 @@ public abstract class Codec<T> implements Serializable {
 
     protected abstract void onReadObject(ObjectInputStream in) throws IOException, ClassNotFoundException;
 
-    public abstract Class<T> getCodecClass();
+    protected Class<T> getCodecClass() {
+        return codecClass;
+    }
 }

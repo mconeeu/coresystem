@@ -10,7 +10,6 @@ import eu.mcone.coresystem.api.bukkit.config.typeadapter.ItemStackTypeAdapterUti
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import lombok.Getter;
-import net.minecraft.server.v1_8_R3.Packet;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -45,11 +44,14 @@ public class ItemSwitchEventCodec extends Codec<PlayerItemHeldEvent> {
     }
 
     @Override
-    public List<Packet<?>> encode(Object object) {
-        if (object instanceof PlayerNpc) {
-            PlayerNpc npc = (PlayerNpc) object;
-            npc.setItemInHand(getItem());
+    public List<Object> encode(Object... args) {
+        if (args.length == 1) {
+            if (args[0] instanceof PlayerNpc) {
+                PlayerNpc npc = (PlayerNpc) args[0];
+                npc.setItemInHand(getItem());
+            }
         }
+
         return null;
     }
 
@@ -69,10 +71,5 @@ public class ItemSwitchEventCodec extends Codec<PlayerItemHeldEvent> {
 
     public ItemStack getItem() {
         return new ItemBuilder(Material.valueOf(material), amount).enchantments(ItemStackTypeAdapterUtils.getEnchantments(enchantments)).create();
-    }
-
-    @Override
-    public Class<PlayerItemHeldEvent> getCodecClass() {
-        return PlayerItemHeldEvent.class;
     }
 }

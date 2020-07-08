@@ -30,7 +30,7 @@ public class MotionRecorder extends Recorder implements eu.mcone.coresystem.api.
         super(player.getName(), player.getLocation().getWorld().getName());
         this.player = player;
         this.name = name;
-        this.chunk = new MotionChunk(CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().getCodecRegistry());
+        this.chunk = new MotionChunk();
         this.savedPackets = new AtomicInteger();
     }
 

@@ -1,12 +1,9 @@
 package eu.mcone.coresystem.bukkit.npc.capture;
 
 import eu.mcone.coresystem.api.bukkit.codec.Codec;
-import eu.mcone.coresystem.api.bukkit.codec.CodecRegistry;
 import eu.mcone.coresystem.api.bukkit.packets.Chunk;
-import eu.mcone.coresystem.api.core.util.GenericUtils;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,14 +15,12 @@ public class MotionChunk extends Chunk implements eu.mcone.coresystem.api.bukkit
 
     private final MotionChunkData chunkData;
 
-    public MotionChunk(CodecRegistry codecRegistry) {
-        super(codecRegistry);
-        chunkData = new MotionChunkData(codecRegistry);
+    public MotionChunk() {
+        chunkData = new MotionChunkData();
     }
 
-    public MotionChunk(CodecRegistry codecRegistry, byte[] genericData) {
-        super(codecRegistry);
-        this.chunkData = GenericUtils.deserialize(MotionChunkData.class, genericData);
+    public MotionChunk(MotionChunkData chunkData) {
+        this.chunkData = chunkData;
     }
 
     public void addPacket(int tick, Codec<?> codec) {
@@ -39,14 +34,17 @@ public class MotionChunk extends Chunk implements eu.mcone.coresystem.api.bukkit
     }
 
     @AllArgsConstructor
-    @NoArgsConstructor
     public static class MotionChunkData extends eu.mcone.coresystem.api.bukkit.packets.ChunkData implements eu.mcone.coresystem.api.bukkit.npc.capture.MotionChunk.MotionChunkData {
         @Getter
-        private Map<Integer, List<Codec<?>>> codecs;
+        private final Map<Integer, List<Codec<?>>> codecs;
 
-        public MotionChunkData(CodecRegistry codecRegistry) {
-            super(codecRegistry);
+        public MotionChunkData() {
             codecs = new HashMap<>();
+        }
+
+        @Override
+        public int getLength() {
+            return codecs.size();
         }
     }
 }

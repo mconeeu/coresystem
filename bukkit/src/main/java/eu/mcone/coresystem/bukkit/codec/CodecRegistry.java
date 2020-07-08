@@ -39,7 +39,7 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
         }
     }
 
-    public void registerCodec(Class<?> clazz, Class<? extends Codec<?>> codec) {
+    public boolean registerCodec(Class<?> clazz, Class<? extends Codec<?>> codec) {
         try {
             if (!existsCodec(codec)) {
                 if (Packet.class.isAssignableFrom(clazz) || Event.class.isAssignableFrom(clazz)) {
@@ -49,15 +49,20 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
                     if (codecListener.isListening()) {
                         codecListener.refresh();
                     }
+
+                    return true;
                 } else {
                     throw new UnsupportedDataTypeException("Unknown data typ " + clazz.getSimpleName());
                 }
             } else {
                 instance.sendConsoleMessage("§cCodec for class " + codec.getName() + " already registered!");
+                return false;
             }
         } catch (UnsupportedDataTypeException e) {
             e.printStackTrace();
         }
+
+        return false;
     }
 
     public void registerCodecListener(CodecListener... listeners) {
