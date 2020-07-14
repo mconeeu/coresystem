@@ -16,6 +16,7 @@ import org.bukkit.plugin.SimplePluginManager;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GeneralCodecListener {
@@ -42,8 +43,12 @@ public class GeneralCodecListener {
                 public void onPacketIn(Player player, Packet<?> packet) {
                     if (codecRegistry.hasCodec(packet)) {
                         try {
-                            Codec codec = codecRegistry.getCodec(Packet.class, packet).newInstance();
-                            callListeners(codec, codec.decode(player, packet));
+                            for (Class<?> codecClass : codecRegistry.getCodec(Packet.class, packet)) {
+                                Codec codec = (Codec) codecClass.newInstance();
+                                if (codec.decode(player, packet) != null) {
+                                    callListeners(codec, codec);
+                                }
+                            }
                         } catch (InstantiationException | IllegalAccessException e) {
                             e.printStackTrace();
                         }
@@ -54,8 +59,12 @@ public class GeneralCodecListener {
                 public void onPacketOut(Player player, Packet<?> packet) {
                     if (codecRegistry.hasCodec(packet)) {
                         try {
-                            Codec codec = codecRegistry.getCodec(Packet.class, packet).newInstance();
-                            callListeners(codec, codec.decode(player, packet));
+                            for (Class<?> codecClass : codecRegistry.getCodec(Packet.class, packet)) {
+                                Codec codec = (Codec) codecClass.newInstance();
+                                if (codec.decode(player, packet) != null) {
+                                    callListeners(codec, codec);
+                                }
+                            }
                         } catch (InstantiationException | IllegalAccessException e) {
                             e.printStackTrace();
                         }
@@ -71,7 +80,7 @@ public class GeneralCodecListener {
 
     public void refresh() {
         if (listening) {
-            for (Map.Entry<Class<?>, Class<? extends Codec<?>>> entry : codecRegistry.getCodecs(Event.class).entrySet()) {
+            for (Map.Entry<Class<?>, List<Class<? extends Codec<?, ?>>>> entry : codecRegistry.getCodecsByCodec(Event.class).entrySet()) {
                 Class<? extends Event> eventClass = (Class<? extends Event>) entry.getKey();
 
                 if (!listener.containsKey(eventClass)) {
@@ -80,8 +89,12 @@ public class GeneralCodecListener {
                     if (handlerList != null) {
                         RegisteredListener registeredListener = new RegisteredListener(null, (listener, event) -> {
                             try {
-                                Codec codec = codecRegistry.getCodec(Event.class, event).newInstance();
-                                callListeners(codec, codec.decode(null, event));
+                                for (Class<?> codecClass : codecRegistry.getCodec(Event.class, event)) {
+                                    Codec codec = (Codec) codecClass.newInstance();
+                                    if (codec.decode(null, event) != null) {
+                                        callListeners(codec, codec);
+                                    }
+                                }
                             } catch (InstantiationException | IllegalAccessException e) {
                                 e.printStackTrace();
                             }
@@ -107,7 +120,7 @@ public class GeneralCodecListener {
         return null;
     }
 
-    private void callListeners(Codec<?> codec, Object... args) {
+    private void callListeners(Codec<?, ?> codec, Object... args) {
         for (eu.mcone.coresystem.api.bukkit.codec.CodecListener listener : codecRegistry.getListeners()) {
             listener.onCodec(codec, args);
         }

@@ -19,11 +19,10 @@ import org.bukkit.inventory.ItemStack;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.List;
 
 @BsonDiscriminator
 @Getter
-public class ItemSwitchEventCodec extends Codec<PlayerItemHeldEvent> {
+public class ItemSwitchEventCodec extends Codec<PlayerItemHeldEvent, PlayerNpc> {
 
     private String material;
     private int amount;
@@ -44,15 +43,8 @@ public class ItemSwitchEventCodec extends Codec<PlayerItemHeldEvent> {
     }
 
     @Override
-    public List<Object> encode(Object... args) {
-        if (args.length == 1) {
-            if (args[0] instanceof PlayerNpc) {
-                PlayerNpc npc = (PlayerNpc) args[0];
-                npc.setItemInHand(getItem());
-            }
-        }
-
-        return null;
+    public void encode(PlayerNpc npc) {
+        npc.setItemInHand(getItem());
     }
 
     @Override

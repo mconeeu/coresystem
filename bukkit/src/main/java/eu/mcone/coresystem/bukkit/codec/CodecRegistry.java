@@ -14,7 +14,7 @@ import java.util.*;
 public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.CodecRegistry {
 
     private final CorePlugin instance;
-    private final Map<Class<?>, Class<? extends Codec<?>>> codecs;
+    private final Map<Class<?>, List<Class<? extends Codec<?, ?>>>> codecs;
     @Getter
     private final List<CodecListener> listeners;
     @Getter
@@ -39,11 +39,18 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
         }
     }
 
-    public boolean registerCodec(Class<?> clazz, Class<? extends Codec<?>> codec) {
+    public boolean registerCodec(Class<?> clazz, Class<? extends Codec<?, ?>> codec) {
         try {
             if (!existsCodec(codec)) {
                 if (Packet.class.isAssignableFrom(clazz) || Event.class.isAssignableFrom(clazz)) {
-                    codecs.put(clazz, codec);
+                    if (codecs.containsKey(clazz)) {
+                        codecs.get(clazz).add(codec);
+                    } else {
+                        codecs.put(clazz, new ArrayList<Class<? extends Codec<?, ?>>>() {{
+                            add(codec);
+                        }});
+                    }
+
                     instance.sendConsoleMessage("§aRegistering packet Codec §f" + codec.getName());
 
                     if (codecListener.isListening()) {
@@ -74,12 +81,14 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Class<? extends Codec<T>> getCodec(Class<?> typ, Object object) {
+    public List<Class<? extends Codec<?, ?>>> getCodec(Class<?> typ, Object object) {
         try {
             if (typ.equals(Packet.class) || typ.equals(Event.class)) {
-                for (Map.Entry<Class<?>, Class<? extends Codec<?>>> codec : codecs.entrySet()) {
-                    if (codec.getKey().getSimpleName().equalsIgnoreCase(object.getClass().getSimpleName()) && typ.isAssignableFrom(object.getClass())) {
-                        return (Class<? extends Codec<T>>) codec.getValue();
+                for (Map.Entry<Class<?>, List<Class<? extends Codec<?, ?>>>> codecList : codecs.entrySet()) {
+                    for (Class<? extends Codec<?, ?>> codec : codecList.getValue()) {
+                        if (codec.getSimpleName().equalsIgnoreCase(object.getClass().getSimpleName()) && typ.isAssignableFrom(object.getClass())) {
+                            return codecList.getValue();
+                        }
                     }
                 }
             } else {
@@ -92,20 +101,19 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
         return null;
     }
 
-    public Map<Class<?>, Class<? extends Codec<?>>> getCodecs(Class<?> typ) {
+    public Map<Class<?>, List<Class<? extends Codec<?, ?>>>> getCodecsByCodec(Class<?> encodeClass) {
         try {
-            if (typ.equals(Packet.class) || typ.equals(Event.class)) {
-                Map<Class<?>, Class<? extends Codec<?>>> found = new HashMap<>();
-                for (Map.Entry<Class<?>, Class<? extends Codec<?>>> codec : codecs.entrySet()) {
-                    if (typ.isAssignableFrom(codec.getKey())) {
-                        System.out.println(codec.getKey().getSimpleName());
+            if (encodeClass.equals(Packet.class) || encodeClass.equals(Event.class)) {
+                Map<Class<?>, List<Class<? extends Codec<?, ?>>>> found = new HashMap<>();
+                for (Map.Entry<Class<?>, List<Class<? extends Codec<?, ?>>>> codec : codecs.entrySet()) {
+                    if (encodeClass.isAssignableFrom(codec.getKey())) {
                         found.put(codec.getKey(), codec.getValue());
                     }
                 }
 
                 return found;
             } else {
-                throw new UnsupportedDataTypeException("Unknown data typ " + typ.getSimpleName());
+                throw new UnsupportedDataTypeException("Unknown data typ " + encodeClass.getSimpleName());
             }
         } catch (UnsupportedDataTypeException e) {
             e.printStackTrace();
@@ -114,20 +122,35 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
         return null;
     }
 
-    public Class<? extends Codec<?>> getCodecForClassName(String className) {
-        for (Class<? extends Codec<?>> codec : codecs.values()) {
-            if (codec.getSimpleName().equalsIgnoreCase(className)) {
-                return codec;
+    public Map<Class<?>, List<Class<? extends Codec<?, ?>>>> getCodecsByEncoder(Class<?> encoderClass) {
+        Map<Class<?>, List<Class<? extends Codec<?, ?>>>> found = new HashMap<>();
+        for (Map.Entry<Class<?>, List<Class<? extends Codec<?, ?>>>> codec : codecs.entrySet()) {
+            if (encoderClass.isAssignableFrom(codec.getKey())) {
+                found.put(codec.getKey(), codec.getValue());
+            }
+        }
+
+        return found;
+    }
+
+    public Class<? extends Codec<?, ?>> getCodecForClassName(String className) {
+        for (List<Class<? extends Codec<?, ?>>> codecList : codecs.values()) {
+            for (Class<? extends Codec<?, ?>> codec : codecList) {
+                if (codec.getSimpleName().equalsIgnoreCase(className)) {
+                    return codec;
+                }
             }
         }
 
         return null;
     }
 
-    public boolean existsCodec(Class<? extends Codec<?>> codec) {
-        for (Class<? extends Codec<?>> registered : this.codecs.values()) {
-            if (registered.getName().equalsIgnoreCase(codec.getName())) {
-                return true;
+    public boolean existsCodec(Class<? extends Codec<?, ?>> codec) {
+        for (List<Class<? extends Codec<?, ?>>> codecList : this.codecs.values()) {
+            for (Class<? extends Codec<?, ?>> codecs : codecList) {
+                if (codecs.getName().equalsIgnoreCase(codec.getName())) {
+                    return true;
+                }
             }
         }
 
@@ -135,7 +158,7 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
     }
 
     public boolean hasCodec(Object object) {
-        for (Map.Entry<Class<?>, Class<? extends Codec<?>>> codec : codecs.entrySet()) {
+        for (Map.Entry<Class<?>, List<Class<? extends Codec<?, ?>>>> codec : codecs.entrySet()) {
             if (codec.getKey().getSimpleName().equalsIgnoreCase(object.getClass().getSimpleName())) {
                 return true;
             }

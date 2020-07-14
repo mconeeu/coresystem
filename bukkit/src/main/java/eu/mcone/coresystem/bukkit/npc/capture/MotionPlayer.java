@@ -24,7 +24,7 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Pla
     @Getter
     public MotionCapture capture;
 
-    protected PlayerNpc playerNpc;
+    private PlayerNpc playerNpc;
 
     public MotionPlayer(final PlayerNpc playerNpc, final MotionCapture capture) {
         this.playerNpc = playerNpc;
@@ -36,7 +36,7 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Pla
         currentTick = new AtomicInteger(0);
         AtomicInteger packetsCount = new AtomicInteger(0);
         AtomicInteger currentProgress = new AtomicInteger(0);
-        Map<Integer, List<Codec<?>>> codecs = capture.getMotionChunk().getChunkData().getCodecs();
+        Map<Integer, List<Codec<?, ?>>> codecs = capture.getMotionChunk().getChunkData().getCodecs();
 
         Bukkit.getPluginManager().callEvent(new NpcAnimationStateChangeEvent(playerNpc, NpcAnimationStateChangeEvent.NpcAnimationState.START));
         playingTask = Bukkit.getScheduler().runTaskTimerAsynchronously(CoreSystem.getInstance(), () -> {
@@ -45,8 +45,10 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Pla
 
                 if (packetsCount.get() < codecs.size() - 1) {
                     if (codecs.containsKey(tick)) {
-                        for (Codec<?> codec : codecs.get(tick)) {
-                            codec.encode(playerNpc);
+                        for (Codec codec : codecs.get(tick)) {
+                            if (codec.getEncodeClass().equals(playerNpc.getClass())) {
+                                codec.encode(playerNpc);
+                            }
                         }
 
                         int progress = (int) Math.round((100.00 / codecs.size()) * packetsCount.get());

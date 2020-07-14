@@ -13,9 +13,8 @@ import org.bukkit.entity.Player;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.List;
 
-public class PlayInEntityActionCodec extends Codec<PacketPlayInEntityAction> {
+public class PlayInEntityActionCodec extends Codec<PacketPlayInEntityAction, PlayerNpc> {
 
     private String action;
     //Only used for horse jumps
@@ -34,23 +33,16 @@ public class PlayInEntityActionCodec extends Codec<PacketPlayInEntityAction> {
     }
 
     @Override
-    public List<Object> encode(Object... args) {
-        if (args.length == 1) {
-            if (args[0] instanceof PlayerNpc) {
-                PlayerNpc npc = (PlayerNpc) args[0];
-                PacketPlayInEntityAction.EnumPlayerAction action = PacketPlayInEntityAction.EnumPlayerAction.valueOf(this.action);
-                switch (action) {
-                    case START_SNEAKING:
-                        npc.sneak(true);
-                        break;
-                    case STOP_SNEAKING:
-                        npc.sneak(false);
-                        break;
-                }
-            }
+    public void encode(PlayerNpc npc) {
+        PacketPlayInEntityAction.EnumPlayerAction action = PacketPlayInEntityAction.EnumPlayerAction.valueOf(this.action);
+        switch (action) {
+            case START_SNEAKING:
+                npc.sneak(true);
+                break;
+            case STOP_SNEAKING:
+                npc.sneak(false);
+                break;
         }
-
-        return null;
     }
 
     @Override

@@ -6,7 +6,9 @@
 package eu.mcone.coresystem.api.bukkit.scoreboard;
 
 import com.google.common.base.Splitter;
+import eu.mcone.coresystem.api.bukkit.event.objectiv.CoreSidebarObjectiveUpdateEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -14,6 +16,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class CoreSidebarObjective extends CoreObjective {
 
@@ -64,14 +67,46 @@ public abstract class CoreSidebarObjective extends CoreObjective {
 
     @Override
     public void register(CorePlayer player, Scoreboard scoreboard, Objective objective) {
-        onRegister(player);
-        updateScoreboard();
+        CoreSidebarObjectiveEntry entry = new CoreSidebarObjectiveEntry();
+        onRegister(player, entry);
+
+        CoreSidebarObjectiveUpdateEvent e = new CoreSidebarObjectiveUpdateEvent(this, entry);
+        Bukkit.getPluginManager().callEvent(e);
+
+        if (!e.isCancelled()) {
+            if (entry.getTitle() != null) {
+                setDisplayName(entry.getTitle());
+            }
+            if (entry.getScores().size() > 0) {
+                for (Map.Entry<Integer, String> score : entry.getScores().entrySet()) {
+                    setScore(score.getKey(), score.getValue());
+                }
+            }
+
+            updateScoreboard();
+        }
     }
 
     @Override
     public void reload(CorePlayer player, Scoreboard scoreboard, Objective objective) {
-        onReload(player);
-        updateScoreboard();
+        CoreSidebarObjectiveEntry entry = new CoreSidebarObjectiveEntry();
+        onReload(player, entry);
+
+        CoreSidebarObjectiveUpdateEvent e = new CoreSidebarObjectiveUpdateEvent(this, entry);
+        Bukkit.getPluginManager().callEvent(e);
+
+        if (!e.isCancelled()) {
+            if (entry.getTitle() != null) {
+                setDisplayName(entry.getTitle());
+            }
+            if (entry.getScores().size() > 0) {
+                for (Map.Entry<Integer, String> score : entry.getScores().entrySet()) {
+                    setScore(score.getKey(), score.getValue());
+                }
+            }
+
+            updateScoreboard();
+        }
     }
 
     /**
@@ -80,7 +115,7 @@ public abstract class CoreSidebarObjective extends CoreObjective {
      * @param score   the score id
      * @param content text that should be shown (can be up to 32 chars)
      */
-    public void setScore(int score, String content) {
+    private void setScore(int score, String content) {
         Team team;
         String scoreName = getTeamName(score);
 
@@ -108,12 +143,12 @@ public abstract class CoreSidebarObjective extends CoreObjective {
     /**
      * method called when the scoreboard gets first set to a player
      */
-    protected abstract void onRegister(CorePlayer player);
+    protected abstract void onRegister(CorePlayer player, CoreSidebarObjectiveEntry objectiveEntry);
 
     /**
      * method called when the objective or the whole scoreboard gets reloaded
      */
-    protected abstract void onReload(CorePlayer player);
+    protected abstract void onReload(CorePlayer player, CoreSidebarObjectiveEntry objectiveEntry);
 
     @Override
     public void unregister() {

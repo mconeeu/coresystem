@@ -7,21 +7,21 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.List;
 
 @Getter
-public abstract class Codec<T> implements Serializable {
+public abstract class Codec<C, E> implements Serializable {
 
-    private Class<T> codecClass;
+    private Class<C> codecClass;
+    private Class<E> encodeClass;
     private String typ;
 
     public Codec(String type) {
         this.typ = type;
     }
 
-    public abstract Object[] decode(Player player, T packet);
+    public abstract Object[] decode(Player player, C packet);
 
-    public abstract List<Object> encode(Object... args);
+    public abstract void encode(E encode);
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         try {
@@ -35,7 +35,8 @@ public abstract class Codec<T> implements Serializable {
 
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         try {
-            this.codecClass = (Class<T>) Class.forName(in.readUTF());
+            this.codecClass = (Class<C>) Class.forName(in.readUTF());
+            this.encodeClass = (Class<E>) Class.forName(in.readUTF());
             this.typ = in.readUTF();
             onReadObject(in);
         } catch (IOException e) {
@@ -47,7 +48,11 @@ public abstract class Codec<T> implements Serializable {
 
     protected abstract void onReadObject(ObjectInputStream in) throws IOException, ClassNotFoundException;
 
-    protected Class<T> getCodecClass() {
+    public Class<C> getCodecClass() {
         return codecClass;
+    }
+
+    public Class<E> getEncodeClass() {
+        return encodeClass;
     }
 }

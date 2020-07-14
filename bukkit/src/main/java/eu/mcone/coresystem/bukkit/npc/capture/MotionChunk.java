@@ -23,11 +23,11 @@ public class MotionChunk extends Chunk implements eu.mcone.coresystem.api.bukkit
         this.chunkData = chunkData;
     }
 
-    public void addPacket(int tick, Codec<?> codec) {
+    public void addPacket(int tick, Codec<?, ?> codec) {
         if (chunkData.codecs.containsKey(tick)) {
             chunkData.codecs.get(tick).add(codec);
         } else {
-            chunkData.codecs.put(tick, new ArrayList<Codec<?>>() {{
+            chunkData.codecs.put(tick, new ArrayList<Codec<?, ?>>() {{
                 add(codec);
             }});
         }
@@ -36,7 +36,7 @@ public class MotionChunk extends Chunk implements eu.mcone.coresystem.api.bukkit
     @AllArgsConstructor
     public static class MotionChunkData extends eu.mcone.coresystem.api.bukkit.packets.ChunkData implements eu.mcone.coresystem.api.bukkit.npc.capture.MotionChunk.MotionChunkData {
         @Getter
-        private final Map<Integer, List<Codec<?>>> codecs;
+        private final Map<Integer, List<Codec<?, ?>>> codecs;
 
         public MotionChunkData() {
             codecs = new HashMap<>();

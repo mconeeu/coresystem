@@ -1,0 +1,27 @@
+package eu.mcone.coresystem.api.bukkit.event.objectiv;
+
+import eu.mcone.coresystem.api.bukkit.scoreboard.CoreSidebarObjectiveEntry;
+import eu.mcone.coresystem.api.bukkit.scoreboard.CoreSidebarObjective;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
+
+@Getter
+@RequiredArgsConstructor
+public class CoreSidebarObjectiveUpdateEvent extends Event implements Cancellable {
+
+    @Getter
+    private static final HandlerList handlerList = new HandlerList();
+
+    private final CoreSidebarObjective sidebarObjective;
+    private final CoreSidebarObjectiveEntry coreSidebarObjectiveEntry;
+    @Setter
+    private boolean cancelled = false;
+
+    public HandlerList getHandlers() {
+        return handlerList;
+    }
+}

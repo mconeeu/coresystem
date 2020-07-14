@@ -10,6 +10,6 @@ public interface MotionChunk {
     MotionChunkData getChunkData();
 
     interface MotionChunkData {
-        Map<Integer, List<Codec<?>>> getCodecs();
+        Map<Integer, List<Codec<?, ?>>> getCodecs();
     }
 }

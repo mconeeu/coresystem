@@ -15,10 +15,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.List;
 
 @Getter
-public class PlayerMoveEventCodec extends Codec<PlayerMoveEvent> {
+public class PlayerMoveEventCodec extends Codec<PlayerMoveEvent, PlayerNpc> {
 
     private double x;
     private double y;
@@ -42,21 +41,14 @@ public class PlayerMoveEventCodec extends Codec<PlayerMoveEvent> {
     }
 
     @Override
-    public List<Object> encode(Object... args) {
-        if (args.length == 1) {
-            if (args[0] instanceof PlayerNpc) {
-                PlayerNpc npc = (PlayerNpc) args[0];
-                Location location = npc.getLocation();
-                location.setX(x);
-                location.setY(y);
-                location.setZ(z);
-                location.setYaw(yaw);
-                location.setPitch(pitch);
-                npc.teleport(location);
-            }
-        }
-
-        return null;
+    public void encode(PlayerNpc npc) {
+        Location location = npc.getLocation();
+        location.setX(x);
+        location.setY(y);
+        location.setZ(z);
+        location.setYaw(yaw);
+        location.setPitch(pitch);
+        npc.teleport(location);
     }
 
     @Override

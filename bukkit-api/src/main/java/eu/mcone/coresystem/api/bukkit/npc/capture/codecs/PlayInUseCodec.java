@@ -22,10 +22,9 @@ import org.bukkit.material.Door;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.List;
 
 @Getter
-public class PlayInUseCodec extends Codec<PacketPlayInUseEntity> {
+public class PlayInUseCodec extends Codec<PacketPlayInUseEntity, PlayerNpc> {
 
     private double x;
     private double y;
@@ -65,47 +64,40 @@ public class PlayInUseCodec extends Codec<PacketPlayInUseEntity> {
     }
 
     @Override
-    public List<Object> encode(Object... args) {
-        if (args.length == 1) {
-            if (args[0] instanceof PlayerNpc) {
-                PlayerNpc npc = (PlayerNpc) args[0];
-                Location location = calculateLocation();
-                WorldServer world = ((CraftWorld) location.getWorld()).getHandle();
-                BlockPosition blockposition = new BlockPosition(location.getX(), location.getY(), location.getZ());
-                IBlockData iblockdata = world.getType(blockposition);
+    public void encode(PlayerNpc npc) {
+        Location location = calculateLocation();
+        WorldServer world = ((CraftWorld) location.getWorld()).getHandle();
+        BlockPosition blockposition = new BlockPosition(location.getX(), location.getY(), location.getZ());
+        IBlockData iblockdata = world.getType(blockposition);
 
-                switch (interactWith) {
-                    case BUTTON:
-                        BlockStateDirection FACING = BlockStateDirection.of("facing");
-                        Block block = iblockdata.getBlock();
+        switch (interactWith) {
+            case BUTTON:
+                BlockStateDirection FACING = BlockStateDirection.of("facing");
+                Block block = iblockdata.getBlock();
 
-                        block.interact(((CraftWorld) location.getWorld()).getHandle(), blockposition, iblockdata, null, iblockdata.get(FACING), (float) location.getX(), (float) location.getY(), (float) location.getZ());
-                        break;
-                    case DOOR:
-                        BlockStateBoolean OPEN = BlockStateBoolean.of("open");
-                        BlockStateEnum<BlockDoor.EnumDoorHalf> HALF = BlockStateEnum.of("half", BlockDoor.EnumDoorHalf.class);
+                block.interact(((CraftWorld) location.getWorld()).getHandle(), blockposition, iblockdata, null, iblockdata.get(FACING), (float) location.getX(), (float) location.getY(), (float) location.getZ());
+                break;
+            case DOOR:
+                BlockStateBoolean OPEN = BlockStateBoolean.of("open");
+                BlockStateEnum<BlockDoor.EnumDoorHalf> HALF = BlockStateEnum.of("half", BlockDoor.EnumDoorHalf.class);
 
-                        BlockPosition blockposition1 = iblockdata.get(HALF) == BlockDoor.EnumDoorHalf.LOWER ? blockposition : blockposition.down();
-                        IBlockData iblockdata1 = blockposition.equals(blockposition1) ? iblockdata : world.getType(blockposition1);
+                BlockPosition blockposition1 = iblockdata.get(HALF) == BlockDoor.EnumDoorHalf.LOWER ? blockposition : blockposition.down();
+                IBlockData iblockdata1 = blockposition.equals(blockposition1) ? iblockdata : world.getType(blockposition1);
 
-                        iblockdata = iblockdata1.a(OPEN);
-                        world.setTypeAndData(blockposition1, iblockdata, 2);
-                        world.b(blockposition1, blockposition);
-                        world.a(iblockdata.get(OPEN) ? 1003 : 1006, blockposition, 0);
+                iblockdata = iblockdata1.a(OPEN);
+                world.setTypeAndData(blockposition1, iblockdata, 2);
+                world.b(blockposition1, blockposition);
+                world.a(iblockdata.get(OPEN) ? 1003 : 1006, blockposition, 0);
 
-                        if (action) {
-                            location.getWorld().playSound(location, Sound.DOOR_OPEN, 1, 1);
-                        } else {
-                            location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
-                        }
-                        break;
+                if (action) {
+                    location.getWorld().playSound(location, Sound.DOOR_OPEN, 1, 1);
+                } else {
+                    location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
                 }
-
-                npc.sendAnimation(NpcAnimation.SWING_ARM);
-            }
+                break;
         }
 
-        return null;
+        npc.sendAnimation(NpcAnimation.SWING_ARM);
     }
 
     public Location calculateLocation() {

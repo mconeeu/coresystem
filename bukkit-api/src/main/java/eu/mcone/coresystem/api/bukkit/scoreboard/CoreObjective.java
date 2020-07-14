@@ -13,6 +13,7 @@ import org.bukkit.scoreboard.Scoreboard;
 
 public abstract class CoreObjective {
 
+    @Getter
     protected final String name;
     protected final String criteria;
     protected org.bukkit.scoreboard.Scoreboard scoreboard;
@@ -82,9 +83,6 @@ public abstract class CoreObjective {
     public void unregister() {
         objective.unregister();
     }
-
-    ;
-
 
     /**
      * get the bukkit Scoreboard object

@@ -7,6 +7,7 @@ package eu.mcone.coresystem.api.bukkit.world;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonIgnore;
@@ -24,10 +25,13 @@ public final class CoreLocation implements Serializable {
     private transient Location bukkit;
 
     @Getter
+    @Setter
     private String world;
     @Getter
+    @Setter
     private double x, y, z;
     @Getter
+    @Setter
     private float yaw, pitch;
 
     @BsonCreator

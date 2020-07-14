@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.api.bukkit.scoreboard;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.event.objectiv.CoreObjectiveCreateEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -56,8 +57,12 @@ public abstract class CoreScoreboard {
     }
 
     public void setNewObjective(CoreObjective objective) {
-        if (objectives.get(objective.getSlot()) != null) objectives.get(objective.getSlot()).unregister();
-        objectives.put(objective.getSlot(), objective.set(player, scoreboard));
+        CoreObjectiveCreateEvent ce = new CoreObjectiveCreateEvent(objective);
+
+        if (!ce.isCancelled()) {
+            if (objectives.get(objective.getSlot()) != null) objectives.get(objective.getSlot()).unregister();
+            objectives.put(objective.getSlot(), objective.set(player, scoreboard));
+        }
     }
 
     public void unregister() {
