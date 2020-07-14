@@ -115,7 +115,7 @@ public abstract class CoreSidebarObjective extends CoreObjective {
      * @param score   the score id
      * @param content text that should be shown (can be up to 32 chars)
      */
-    private void setScore(int score, String content) {
+    public void setScore(int score, String content) {
         Team team;
         String scoreName = getTeamName(score);
 
