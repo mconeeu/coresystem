@@ -27,7 +27,8 @@ public abstract class Codec<C, E> implements Serializable {
 
     private void writeObject(ObjectOutputStream out) throws IOException {
         try {
-            out.writeUTF(codecClass.getSimpleName());
+            out.writeUTF(codecClass.getName());
+            out.writeUTF(encodeClass.getName());
             out.writeUTF(typ);
             onWriteObject(out);
         } catch (IOException e) {

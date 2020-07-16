@@ -107,13 +107,15 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private Map<UUID, BungeeCorePlayer> corePlayers;
 
+    public BungeeCoreSystem() {
+        //Sentry error logging
+        Sentry.init("https://60310ff9f7874486af14718c51e62a80@o267551.ingest.sentry.io/5341158");
+    }
+
     public void onEnable() {
         try {
             system = this;
             setInstance(this);
-
-            //Sentry error logging
-            Sentry.init("https://60310ff9f7874486af14718c51e62a80@o267551.ingest.sentry.io/5341158");
 
             corePlayers = new HashMap<>();
             plugins = new HashMap<>();

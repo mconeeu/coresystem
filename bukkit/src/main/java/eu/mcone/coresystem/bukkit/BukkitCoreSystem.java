@@ -135,14 +135,16 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Setter
     private boolean customEnderchestEnabled = false;
 
+    public BukkitCoreSystem() {
+        //Sentry error logging
+        Sentry.init("https://60310ff9f7874486af14718c51e62a80@o267551.ingest.sentry.io/5341158");
+    }
+
     @Override
     public void onEnable() {
         try {
             setInstance(this);
             system = this;
-
-            //Sentry error logging
-            Sentry.init("https://2edb2eff2d724190bb5be92f90cbcbfd@o267551.ingest.sentry.io/5341153");
 
             Bukkit.getConsoleSender().sendMessage("§f\n" +
                     "      __  _____________  _   ________                                                    \n" +

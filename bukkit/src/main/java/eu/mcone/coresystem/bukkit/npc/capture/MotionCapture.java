@@ -43,7 +43,7 @@ public class MotionCapture implements eu.mcone.coresystem.api.bukkit.npc.capture
         if (genericChunkData != null) {
             this.motionChunk = new MotionChunk(GenericUtils.deserialize(MotionChunk.MotionChunkData.class, genericChunkData));
         } else {
-            throw new NullPointerException("Could not encode byte[] array to motion chunk data");
+            throw new NullPointerException("Could not encode byte array to motion chunk data");
         }
     }
 
