@@ -85,10 +85,8 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
         try {
             if (typ.equals(Packet.class) || typ.equals(Event.class)) {
                 for (Map.Entry<Class<?>, List<Class<? extends Codec<?, ?>>>> codecList : codecs.entrySet()) {
-                    for (Class<? extends Codec<?, ?>> codec : codecList.getValue()) {
-                        if (codec.getSimpleName().equalsIgnoreCase(object.getClass().getSimpleName()) && typ.isAssignableFrom(object.getClass())) {
-                            return codecList.getValue();
-                        }
+                    if (codecList.getKey().getSimpleName().equalsIgnoreCase(object.getClass().getSimpleName()) && typ.isAssignableFrom(object.getClass())) {
+                        return codecList.getValue();
                     }
                 }
             } else {

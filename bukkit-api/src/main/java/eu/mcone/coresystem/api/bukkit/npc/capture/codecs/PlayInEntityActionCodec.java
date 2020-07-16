@@ -21,7 +21,7 @@ public class PlayInEntityActionCodec extends Codec<PacketPlayInEntityAction, Pla
     private int index;
 
     public PlayInEntityActionCodec() {
-        super("ENTITY_ACTION");
+        super("ENTITY_ACTION", PacketPlayInEntityAction.class, PlayerNpc.class);
     }
 
     @Override

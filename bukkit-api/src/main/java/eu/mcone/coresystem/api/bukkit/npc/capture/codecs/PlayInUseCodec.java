@@ -34,7 +34,7 @@ public class PlayInUseCodec extends Codec<PacketPlayInUseEntity, PlayerNpc> {
     private PlayInUseAction interactWith;
 
     public PlayInUseCodec() {
-        super("INTERACT");
+        super("INTERACT", PacketPlayInUseEntity.class, PlayerNpc.class);
     }
 
     @Override

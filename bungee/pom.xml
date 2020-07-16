@@ -164,5 +164,12 @@
             <version>3.8.3_460</version>
             <scope>compile</scope>
         </dependency>
+
+        <!-- Sentry Error Logging -->
+        <dependency>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry-log4j2</artifactId>
+            <version>1.7.30</version>
+        </dependency>
     </dependencies>
 </project>

@@ -43,10 +43,13 @@ public class GeneralCodecListener {
                 public void onPacketIn(Player player, Packet<?> packet) {
                     if (codecRegistry.hasCodec(packet)) {
                         try {
-                            for (Class<?> codecClass : codecRegistry.getCodec(Packet.class, packet)) {
-                                Codec codec = (Codec) codecClass.newInstance();
-                                if (codec.decode(player, packet) != null) {
-                                    callListeners(codec, codec);
+                            List<Class<? extends Codec<?, ?>>> codecs = codecRegistry.getCodec(Packet.class, packet);
+                            if (codecs != null) {
+                                for (Class<?> codecClass : codecs) {
+                                    Codec codec = (Codec) codecClass.newInstance();
+                                    if (codec.decode(player, packet) != null) {
+                                        callListeners(codec, codec);
+                                    }
                                 }
                             }
                         } catch (InstantiationException | IllegalAccessException e) {
@@ -59,10 +62,13 @@ public class GeneralCodecListener {
                 public void onPacketOut(Player player, Packet<?> packet) {
                     if (codecRegistry.hasCodec(packet)) {
                         try {
-                            for (Class<?> codecClass : codecRegistry.getCodec(Packet.class, packet)) {
-                                Codec codec = (Codec) codecClass.newInstance();
-                                if (codec.decode(player, packet) != null) {
-                                    callListeners(codec, codec);
+                            List<Class<? extends Codec<?, ?>>> codecs = codecRegistry.getCodec(Packet.class, packet);
+                            if (codecs != null) {
+                                for (Class<?> codecClass : codecs) {
+                                    Codec codec = (Codec) codecClass.newInstance();
+                                    if (codec.decode(player, packet) != null) {
+                                        callListeners(codec, codec);
+                                    }
                                 }
                             }
                         } catch (InstantiationException | IllegalAccessException e) {
@@ -89,10 +95,13 @@ public class GeneralCodecListener {
                     if (handlerList != null) {
                         RegisteredListener registeredListener = new RegisteredListener(null, (listener, event) -> {
                             try {
-                                for (Class<?> codecClass : codecRegistry.getCodec(Event.class, event)) {
-                                    Codec codec = (Codec) codecClass.newInstance();
-                                    if (codec.decode(null, event) != null) {
-                                        callListeners(codec, codec);
+                                List<Class<? extends Codec<?, ?>>> codecs = codecRegistry.getCodec(Event.class, event);
+                                if (codecs != null) {
+                                    for (Class<?> codecClass : codecs) {
+                                        Codec codec = (Codec) codecClass.newInstance();
+                                        if (codec.decode(null, event) != null) {
+                                            callListeners(codec, codec);
+                                        }
                                     }
                                 }
                             } catch (InstantiationException | IllegalAccessException e) {

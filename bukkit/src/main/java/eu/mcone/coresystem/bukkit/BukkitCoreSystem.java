@@ -60,6 +60,7 @@ import group.onegaming.networkmanager.core.api.database.Database;
 import group.onegaming.networkmanager.core.database.MongoConnection;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.sentry.Sentry;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
@@ -136,178 +137,191 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public void onEnable() {
-        setInstance(this);
-        system = this;
+        try {
+            setInstance(this);
+            system = this;
 
-        Bukkit.getConsoleSender().sendMessage("§f\n" +
-                "      __  _____________  _   ________                                                    \n" +
-                "     /  |/  / ____/ __ \\/ | / / ____/                                                    \n" +
-                "    / /|_/ / /   / / / /  |/ / __/                                                       \n" +
-                "   / /  / / /___/ /_/ / /|  / /___                                                       \n" +
-                "  /_/ _/_/\\____/\\____/_/_|_/_____/______               _____            __               \n" +
-                "     / __ )__  __/ /__/ /__(_) /_/ ____/___  ________ / ___/__  _______/ /____  ____ ___ \n" +
-                "    / __  / / / / //_/ //_/ / __/ /   / __ \\/ ___/ _ \\\\__ \\/ / / / ___/ __/ _ \\/ __ `__ \\\n" +
-                "   / /_/ / /_/ / ,< / ,< / / /_/ /___/ /_/ / /  /  __/__/ / /_/ (__  ) /_/  __/ / / / / /\n" +
-                "  /_____/\\__,_/_/|_/_/|_/_/\\__/\\____/\\____/_/   \\___/____/\\__, /____/\\__/\\___/_/ /_/ /_/ \n" +
-                "                                                         /____/  \n"
-        );
+            //Sentry error logging
+            Sentry.init("https://2edb2eff2d724190bb5be92f90cbcbfd@o267551.ingest.sentry.io/5341153");
 
-        mongoConnection = new MongoConnection("db.mcone.eu", "admin", "Ze7OCxrVI30wmJU38TX9UmpoL8RnLPogmV3sIljcD2HQkth86bzr6JRiaDxabdt8", "admin", 27017)
-                .codecRegistry(
-                        MongoClientSettings.getDefaultCodecRegistry(),
-                        CodecRegistries.fromProviders(
-                                new ItemStackCodecProvider(),
-                                new LocationCodecProvider(),
-                                new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY),
-                                PojoCodecProvider.builder().conventions(Collections.singletonList(Conventions.ANNOTATION_CONVENTION)).automatic(true).build()
-                        )
-                )
-                .connect();
+            Bukkit.getConsoleSender().sendMessage("§f\n" +
+                    "      __  _____________  _   ________                                                    \n" +
+                    "     /  |/  / ____/ __ \\/ | / / ____/                                                    \n" +
+                    "    / /|_/ / /   / / / /  |/ / __/                                                       \n" +
+                    "   / /  / / /___/ /_/ / /|  / /___                                                       \n" +
+                    "  /_/ _/_/\\____/\\____/_/_|_/_____/______               _____            __               \n" +
+                    "     / __ )__  __/ /__/ /__(_) /_/ ____/___  ________ / ___/__  _______/ /____  ____ ___ \n" +
+                    "    / __  / / / / //_/ //_/ / __/ /   / __ \\/ ___/ _ \\\\__ \\/ / / / ___/ __/ _ \\/ __ `__ \\\n" +
+                    "   / /_/ / /_/ / ,< / ,< / / /_/ /___/ /_/ / /  /  __/__/ / /_/ (__  ) /_/  __/ / / / / /\n" +
+                    "  /_____/\\__,_/_/|_/_/|_/_/\\__/\\____/\\____/_/   \\___/____/\\__, /____/\\__/\\___/_/ /_/ /_/ \n" +
+                    "                                                         /____/  \n"
+            );
 
-        database1 = mongoConnection.getDatabase(Database.SYSTEM);
-        database2 = mongoConnection.getDatabase(Database.STATS);
-        database3 = mongoConnection.getDatabase(Database.DATA);
-        database4 = mongoConnection.getDatabase(Database.CLOUD);
+            mongoConnection = new MongoConnection("db.mcone.eu", "admin", "Ze7OCxrVI30wmJU38TX9UmpoL8RnLPogmV3sIljcD2HQkth86bzr6JRiaDxabdt8", "admin", 27017)
+                    .codecRegistry(
+                            MongoClientSettings.getDefaultCodecRegistry(),
+                            CodecRegistries.fromProviders(
+                                    new ItemStackCodecProvider(),
+                                    new LocationCodecProvider(),
+                                    new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY),
+                                    PojoCodecProvider.builder().conventions(Collections.singletonList(Conventions.ANNOTATION_CONVENTION)).automatic(true).build()
+                            )
+                    )
+                    .connect();
 
-        packetManager = new CorePacketManager();
-        pluginManager = new PluginManager();
-        moneyUtil = new MoneyUtil(this, database1) {
-            @Override
-            protected void fireEvent(GlobalCorePlayer player, Currency currency) {
-                Bukkit.getServer().getPluginManager().callEvent(new MoneyChangeEvent((CorePlayer) player, currency));
-            }
-        };
-        channelHandler = new ChannelHandler();
-        playerUtils = new PlayerUtils(this);
-        gson = new GsonBuilder()
-                .registerTypeAdapter(Location.class, new LocationTypeAdapter())
-                .registerTypeAdapter(ItemStack.class, new CraftItemStackTypeAdapter())
-                .registerTypeAdapter(CraftItemStack.class, new CraftItemStackTypeAdapter())
-                .create();
-        jsonParser = new JsonParser();
+            database1 = mongoConnection.getDatabase(Database.SYSTEM);
+            database2 = mongoConnection.getDatabase(Database.STATS);
+            database3 = mongoConnection.getDatabase(Database.DATA);
+            database4 = mongoConnection.getDatabase(Database.CLOUD);
 
-        cloudsystemAvailable = checkIfCloudSystemAvailable();
-        sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
+            packetManager = new CorePacketManager();
+            pluginManager = new PluginManager();
+            moneyUtil = new MoneyUtil(this, database1) {
+                @Override
+                protected void fireEvent(GlobalCorePlayer player, Currency currency) {
+                    Bukkit.getServer().getPluginManager().callEvent(new MoneyChangeEvent((CorePlayer) player, currency));
+                }
+            };
+            channelHandler = new ChannelHandler();
+            playerUtils = new PlayerUtils(this);
+            gson = new GsonBuilder()
+                    .registerTypeAdapter(Location.class, new LocationTypeAdapter())
+                    .registerTypeAdapter(ItemStack.class, new CraftItemStackTypeAdapter())
+                    .registerTypeAdapter(CraftItemStack.class, new CraftItemStackTypeAdapter())
+                    .create();
+            jsonParser = new JsonParser();
 
-        sendConsoleMessage("§aLoading Translations...");
-        translationManager = new TranslationManager(this, "bukkitsystem");
+            cloudsystemAvailable = checkIfCloudSystemAvailable();
+            sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
 
-        sendConsoleMessage("§aInitializing LabyModManager...");
-        labyModAPI = new LabyModManager();
+            sendConsoleMessage("§aLoading Translations...");
+            translationManager = new TranslationManager(this, "bukkitsystem");
 
-        sendConsoleMessage("§aStarting WorldManager...");
-        worldManager = new WorldManager(this);
+            sendConsoleMessage("§aInitializing LabyModManager...");
+            labyModAPI = new LabyModManager();
 
-        sendConsoleMessage("§aStarting NpcManager...");
-        npcManager = new CoreNpcManager(this);
+            sendConsoleMessage("§aStarting WorldManager...");
+            worldManager = new WorldManager(this);
 
-        sendConsoleMessage("§aStarting HologramManager...");
-        hologramManager = new CoreHologramManager(this);
+            sendConsoleMessage("§aStarting NpcManager...");
+            npcManager = new CoreNpcManager(this);
 
-        sendConsoleMessage("§aStarting AFK-Manager...");
-        afkManager = new CoreAfkManager();
+            sendConsoleMessage("§aStarting HologramManager...");
+            hologramManager = new CoreHologramManager(this);
 
-        sendConsoleMessage("§aLoading Permissions & Groups...");
-        permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), database1);
+            sendConsoleMessage("§aStarting AFK-Manager...");
+            afkManager = new CoreAfkManager();
 
-        sendConsoleMessage("§aStarting Overwatch §aSystem...");
-        overwatch = new Overwatch();
+            sendConsoleMessage("§aLoading Permissions & Groups...");
+            permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), database1);
 
-        sendConsoleMessage("§aStarting NickManager...");
-        nickManager = new CoreNickManager(this);
+            sendConsoleMessage("§aStarting Overwatch §aSystem...");
+            overwatch = new Overwatch();
 
-        sendConsoleMessage("§aLoading Commands, Events, CoreInventories...");
-        this.registerListener();
-        this.registerCommands();
-        corePlayers = new HashMap<>();
+            sendConsoleMessage("§aStarting NickManager...");
+            nickManager = new CoreNickManager(this);
 
-        sendConsoleMessage("§aRegistering BungeeCord Messaging Channel...");
-        getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        getServer().getMessenger().registerOutgoingPluginChannel(this, "WDL|CONTROL");
-        getServer().getMessenger().registerIncomingPluginChannel(this, "mcone:return", new ReturnPluginChannelListener());
-        getServer().getMessenger().registerIncomingPluginChannel(this, "mcone:info", new InfoPluginChannelListener());
-        getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordReturnPluginChannelListener());
-        getServer().getMessenger().registerIncomingPluginChannel(this, "WDL|INIT", new AntiWorldDownloader());
+            sendConsoleMessage("§aLoading Commands, Events, CoreInventories...");
+            this.registerListener();
+            this.registerCommands();
+            corePlayers = new HashMap<>();
 
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            CorePlayerListener.LOADING_MSG.send(p);
-            p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 0));
-            CorePlayerListener.setCorePermissibleBase(p);
+            sendConsoleMessage("§aRegistering BungeeCord Messaging Channel...");
+            getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+            getServer().getMessenger().registerOutgoingPluginChannel(this, "WDL|CONTROL");
+            getServer().getMessenger().registerIncomingPluginChannel(this, "mcone:return", new ReturnPluginChannelListener());
+            getServer().getMessenger().registerIncomingPluginChannel(this, "mcone:info", new InfoPluginChannelListener());
+            getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordReturnPluginChannelListener());
+            getServer().getMessenger().registerIncomingPluginChannel(this, "WDL|INIT", new AntiWorldDownloader());
 
-            getServer().getScheduler().runTask(this, () -> {
-                Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
-                CorePlayerLoadedEvent e = new CorePlayerLoadedEvent(CorePlayerLoadedEvent.Reason.RELOAD, new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(
-                        this,
-                        p.getAddress().getAddress(),
-                        new SkinInfo(
-                                p.getName(),
-                                textures.getValue(),
-                                textures.getSignature(),
-                                SkinInfo.SkinType.PLAYER
-                        ),
-                        p
-                ), p);
-                getServer().getPluginManager().callEvent(e);
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                CorePlayerListener.LOADING_MSG.send(p);
+                p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 0));
+                CorePlayerListener.setCorePermissibleBase(p);
 
-                if (!e.isHidden()) {
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        if (player != p) {
-                            player.showPlayer(p);
-                            p.showPlayer(player);
+                getServer().getScheduler().runTask(this, () -> {
+                    Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
+                    CorePlayerLoadedEvent e = new CorePlayerLoadedEvent(CorePlayerLoadedEvent.Reason.RELOAD, new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(
+                            this,
+                            p.getAddress().getAddress(),
+                            new SkinInfo(
+                                    p.getName(),
+                                    textures.getValue(),
+                                    textures.getSignature(),
+                                    SkinInfo.SkinType.PLAYER
+                            ),
+                            p
+                    ), p);
+                    getServer().getPluginManager().callEvent(e);
+
+                    if (!e.isHidden()) {
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            if (player != p) {
+                                player.showPlayer(p);
+                                p.showPlayer(player);
+                            }
                         }
                     }
-                }
 
-                channelHandler.createSetRequest(p, "REFRESH_NICK");
+                    channelHandler.createSetRequest(p, "REFRESH_NICK");
 
-                CorePlayerListener.LOADING_SUCCESS_MSG.send(p);
-                p.removePotionEffect(PotionEffectType.BLINDNESS);
-            });
-        }
-
-        overwatch.getReportManager().sendOpenReports();
-        super.onEnable();
-
-        Bukkit.getScheduler().runTask(this, () -> {
-            if (Bukkit.getOnlinePlayers().size() > 0) {
-                channelHandler.createSetRequest(Bukkit.getOnlinePlayers().iterator().next(), "REFRESH_NICKS");
+                    CorePlayerListener.LOADING_SUCCESS_MSG.send(p);
+                    p.removePotionEffect(PotionEffectType.BLINDNESS);
+                });
             }
-        });
 
-        sendConsoleMessage("§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
+            overwatch.getReportManager().sendOpenReports();
+            super.onEnable();
+
+            Bukkit.getScheduler().runTask(this, () -> {
+                if (Bukkit.getOnlinePlayers().size() > 0) {
+                    channelHandler.createSetRequest(Bukkit.getOnlinePlayers().iterator().next(), "REFRESH_NICKS");
+                }
+            });
+
+            sendConsoleMessage("§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
+        } catch (Exception e) {
+            Sentry.capture(e);
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onDisable() {
-        nickManager.disable();
-        packetManager.disable();
+        try {
+            nickManager.disable();
+            packetManager.disable();
 
-        for (CorePlayer p : getOnlineCorePlayers()) {
-            ((BukkitCorePlayer) p).unregister();
-            ((BukkitCorePlayer) p).unregisterAttachment();
+            for (CorePlayer p : getOnlineCorePlayers()) {
+                ((BukkitCorePlayer) p).unregister();
+                ((BukkitCorePlayer) p).unregisterAttachment();
 
-            if (p.isVanished()) {
-                for (Player t : Bukkit.getOnlinePlayers()) {
-                    t.showPlayer(p.bukkit());
+                if (p.isVanished()) {
+                    for (Player t : Bukkit.getOnlinePlayers()) {
+                        t.showPlayer(p.bukkit());
+                    }
                 }
             }
+
+            npcManager.disable();
+            hologramManager.disable();
+            afkManager.disable();
+            labyModAPI.disable();
+            pluginManager.disable();
+
+            try {
+                mongoConnection.disconnect();
+            } catch (NoClassDefFoundError ignored) {
+            }
+
+            getServer().getMessenger().unregisterIncomingPluginChannel(this);
+            getServer().getMessenger().unregisterOutgoingPluginChannel(this);
+
+            sendConsoleMessage("§cPlugin disabled!");
+        } catch (Exception e) {
+            Sentry.capture(e);
+            e.printStackTrace();
         }
-
-        npcManager.disable();
-        hologramManager.disable();
-        afkManager.disable();
-        labyModAPI.disable();
-        pluginManager.disable();
-
-        try {
-            mongoConnection.disconnect();
-        } catch (NoClassDefFoundError ignored) {
-        }
-
-        getServer().getMessenger().unregisterIncomingPluginChannel(this);
-        getServer().getMessenger().unregisterOutgoingPluginChannel(this);
-
-        sendConsoleMessage("§cPlugin disabled!");
     }
 
     private void registerCommands() {

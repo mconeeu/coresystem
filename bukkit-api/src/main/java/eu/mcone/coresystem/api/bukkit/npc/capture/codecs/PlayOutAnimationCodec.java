@@ -21,7 +21,7 @@ public class PlayOutAnimationCodec extends Codec<PacketPlayOutAnimation, PlayerN
     private NpcAnimation animation;
 
     public PlayOutAnimationCodec() {
-        super("DAMAGE");
+        super("DAMAGE", PacketPlayOutAnimation.class, PlayerNpc.class);
     }
 
     @Override

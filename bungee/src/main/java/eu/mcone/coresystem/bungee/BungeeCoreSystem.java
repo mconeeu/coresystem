@@ -43,6 +43,7 @@ import eu.mcone.coresystem.core.util.MoneyUtil;
 import eu.mcone.coresystem.core.util.PreferencesManager;
 import group.onegaming.networkmanager.core.api.database.Database;
 import group.onegaming.networkmanager.core.database.MongoConnection;
+import io.sentry.Sentry;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -107,122 +108,137 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private Map<UUID, BungeeCorePlayer> corePlayers;
 
     public void onEnable() {
-        system = this;
-        setInstance(this);
-        corePlayers = new HashMap<>();
-        plugins = new HashMap<>();
+        try {
+            system = this;
+            setInstance(this);
 
-        Logger root = Logger.getLogger("");
-        root.setLevel(Level.CONFIG);
+            //Sentry error logging
+            Sentry.init("https://60310ff9f7874486af14718c51e62a80@o267551.ingest.sentry.io/5341158");
 
-        for (Handler handler : root.getHandlers()) handler.setLevel(Level.ALL);
+            corePlayers = new HashMap<>();
+            plugins = new HashMap<>();
 
-        getProxy().getConsole().sendMessage(new TextComponent(TextComponent.fromLegacyText("\n" +
-                "      __  _____________  _   ________                                                          \n" +
-                "     /  |/  / ____/ __ \\/ | / / ____/                                                          \n" +
-                "    / /|_/ / /   / / / /  |/ / __/                                                             \n" +
-                "   / /  / / /___/ /_/ / /|  / /___                                                             \n" +
-                "  /_/ _/_/\\____/\\____/_/ |_/_____/      ______               _____            __               \n" +
-                "     / __ )__  ______  ____ ____  ___  / ____/___  ________ / ___/__  _______/ /____  ____ ___ \n" +
-                "    / __  / / / / __ \\/ __ `/ _ \\/ _ \\/ /   / __ \\/ ___/ _ \\\\__ \\/ / / / ___/ __/ _ \\/ __ `__ \\\n" +
-                "   / /_/ / /_/ / / / / /_/ /  __/  __/ /___/ /_/ / /  /  __/__/ / /_/ (__  ) /_/  __/ / / / / /\n" +
-                "  /_____/\\__,_/_/ /_/\\__, /\\___/\\___/\\____/\\____/_/   \\___/____/\\__, /____/\\__/\\___/_/ /_/ /_/ \n" +
-                "                    /____/                                     /____/\n")));
+            Logger root = Logger.getLogger("");
+            root.setLevel(Level.CONFIG);
 
-        gson = new Gson();
-        jsonParser = new JsonParser();
+            for (Handler handler : root.getHandlers()) handler.setLevel(Level.ALL);
 
-        mongoConnection = new MongoConnection("db.mcone.eu", "admin", "Ze7OCxrVI30wmJU38TX9UmpoL8RnLPogmV3sIljcD2HQkth86bzr6JRiaDxabdt8", "admin", 27017)
-                .codecRegistry(
-                        MongoClientSettings.getDefaultCodecRegistry(),
-                        CodecRegistries.fromProviders(
-                                new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY),
-                                PojoCodecProvider.builder().conventions(Conventions.DEFAULT_CONVENTIONS).automatic(true).build()
-                        )
-                )
-                .connect();
+            getProxy().getConsole().sendMessage(new TextComponent(TextComponent.fromLegacyText("\n" +
+                    "      __  _____________  _   ________                                                          \n" +
+                    "     /  |/  / ____/ __ \\/ | / / ____/                                                          \n" +
+                    "    / /|_/ / /   / / / /  |/ / __/                                                             \n" +
+                    "   / /  / / /___/ /_/ / /|  / /___                                                             \n" +
+                    "  /_/ _/_/\\____/\\____/_/ |_/_____/      ______               _____            __               \n" +
+                    "     / __ )__  ______  ____ ____  ___  / ____/___  ________ / ___/__  _______/ /____  ____ ___ \n" +
+                    "    / __  / / / / __ \\/ __ `/ _ \\/ _ \\/ /   / __ \\/ ___/ _ \\\\__ \\/ / / / ___/ __/ _ \\/ __ `__ \\\n" +
+                    "   / /_/ / /_/ / / / / /_/ /  __/  __/ /___/ /_/ / /  /  __/__/ / /_/ (__  ) /_/  __/ / / / / /\n" +
+                    "  /_____/\\__,_/_/ /_/\\__, /\\___/\\___/\\____/\\____/_/   \\___/____/\\__, /____/\\__/\\___/_/ /_/ /_/ \n" +
+                    "                    /____/                                     /____/\n")));
 
-        cooldownSystem = new CoreCooldownSystem();
-        channelHandler = new ChannelHandler();
-        preferences = new PreferencesManager(getMongoDB(), new HashMap<String, Object>() {{
-            put("maintenance", false);
-            put("betaKeySystem", false);
-        }});
+            gson = new Gson();
+            jsonParser = new JsonParser();
 
-        serverSessionHandler = new ReplayServerSessionHandler();
-        playerUtils = new PlayerUtils(this);
-        moneyUtil = new MoneyUtil(this, getMongoDB()) {
-            @Override
-            protected void fireEvent(GlobalCorePlayer player, Currency currency) {
-                getProxy().getPluginManager().callEvent(new MoneyChangeEvent((CorePlayer) player, currency));
+            mongoConnection = new MongoConnection("db.mcone.eu", "admin", "Ze7OCxrVI30wmJU38TX9UmpoL8RnLPogmV3sIljcD2HQkth86bzr6JRiaDxabdt8", "admin", 27017)
+                    .codecRegistry(
+                            MongoClientSettings.getDefaultCodecRegistry(),
+                            CodecRegistries.fromProviders(
+                                    new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY),
+                                    PojoCodecProvider.builder().conventions(Conventions.DEFAULT_CONVENTIONS).automatic(true).build()
+                            )
+                    )
+                    .connect();
+
+            cooldownSystem = new CoreCooldownSystem();
+            channelHandler = new ChannelHandler();
+            preferences = new PreferencesManager(getMongoDB(), new HashMap<String, Object>() {{
+                put("maintenance", false);
+                put("betaKeySystem", false);
+            }});
+
+            serverSessionHandler = new ReplayServerSessionHandler();
+            playerUtils = new PlayerUtils(this);
+            moneyUtil = new MoneyUtil(this, getMongoDB()) {
+                @Override
+                protected void fireEvent(GlobalCorePlayer player, Currency currency) {
+                    getProxy().getPluginManager().callEvent(new MoneyChangeEvent((CorePlayer) player, currency));
+                }
+            };
+
+            cloudsystemAvailable = checkIfCloudSystemAvailable();
+            sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
+
+            sendConsoleMessage("§aLoading Translations...");
+            translationManager = new TranslationManager(this, "bungeesystem");
+            translationManager.loadAdditionalLanguages(Language.values());
+            translationManager.loadAdditionalCategories("bukkitsystem");
+
+            sendConsoleMessage("§aLoading Permissions & Groups...");
+            permissionManager = new PermissionManager("Proxy", getMongoDB());
+
+            sendConsoleMessage("§aLoading Overwatch §aSystem...");
+            overwatch = new Overwatch(this);
+
+            sendConsoleMessage("§aLoading FriendSystem...");
+            friendSystem = new FriendSystem();
+
+            sendConsoleMessage("§aInitializing LabyModManager...");
+            labyModAPI = new LabyModManager(this);
+
+            if (!Boolean.parseBoolean(System.getProperty("DisableTsQuery"))) {
+                sendConsoleMessage("§aLoading TeamSpeakQuery...");
+                teamspeakVerifier = new TeamspeakVerifier();
+            } else {
+                sendConsoleMessage("§cTeamSpeakQuery disabled by JVM Argument");
             }
-        };
 
-        cloudsystemAvailable = checkIfCloudSystemAvailable();
-        sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
-
-        sendConsoleMessage("§aLoading Translations...");
-        translationManager = new TranslationManager(this, "bungeesystem");
-        translationManager.loadAdditionalLanguages(Language.values());
-        translationManager.loadAdditionalCategories("bukkitsystem");
-
-        sendConsoleMessage("§aLoading Permissions & Groups...");
-        permissionManager = new PermissionManager("Proxy", getMongoDB());
-
-        sendConsoleMessage("§aLoading Overwatch §aSystem...");
-        overwatch = new Overwatch(this);
-
-        sendConsoleMessage("§aLoading FriendSystem...");
-        friendSystem = new FriendSystem();
-
-        sendConsoleMessage("§aInitializing LabyModManager...");
-        labyModAPI = new LabyModManager(this);
-
-        if (!Boolean.parseBoolean(System.getProperty("DisableTsQuery"))) {
-            sendConsoleMessage("§aLoading TeamSpeakQuery...");
-            teamspeakVerifier = new TeamspeakVerifier();
-        } else {
-            sendConsoleMessage("§cTeamSpeakQuery disabled by JVM Argument");
-        }
-
-        if (!Boolean.parseBoolean(System.getProperty("DisableDiscordQuery"))) {
-            sendConsoleMessage("§aLoading DiscordQuery...");
-            try {
-                discordControlBot = new DiscordControlBot();
-            } catch (LoginException e) {
-                e.printStackTrace();
+            if (!Boolean.parseBoolean(System.getProperty("DisableDiscordQuery"))) {
+                sendConsoleMessage("§aLoading DiscordQuery...");
+                try {
+                    discordControlBot = new DiscordControlBot();
+                } catch (LoginException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                sendConsoleMessage("§cDiscordQuery disabled by JVM Argument");
             }
-        } else {
-            sendConsoleMessage("§cDiscordQuery disabled by JVM Argument");
+
+            sendConsoleMessage("§aLoading Nicksystem...");
+            nickManager = new NickManager(this);
+
+            sendConsoleMessage("§aRegistering Commands, Events & Scheduler...");
+            registerCommand();
+            registerEvents();
+            loadSchedulers();
+
+            sendConsoleMessage("§aRegistering Plugin Messaging Channel...");
+            getProxy().registerChannel("MC_ONE_RETURN");
+            getProxy().registerChannel("MC_ONE_INFO");
+
+            sendConsoleMessage("§aVersion: §f" + this.getDescription().getVersion() + "§a enabled!");
+        } catch (Exception e) {
+            Sentry.capture(e);
+            e.printStackTrace();
         }
-
-        sendConsoleMessage("§aLoading Nicksystem...");
-        nickManager = new NickManager(this);
-
-        sendConsoleMessage("§aRegistering Commands, Events & Scheduler...");
-        registerCommand();
-        registerEvents();
-        loadSchedulers();
-
-        sendConsoleMessage("§aRegistering Plugin Messaging Channel...");
-        getProxy().registerChannel("MC_ONE_RETURN");
-        getProxy().registerChannel("MC_ONE_INFO");
-
-        sendConsoleMessage("§aVersion: §f" + this.getDescription().getVersion() + "§a enabled!");
     }
 
     public void onDisable() {
-        if (teamspeakVerifier != null) teamspeakVerifier.close();
-        if (discordControlBot != null) discordControlBot.shutdown();
-        for (CorePlayer p : getOnlineCorePlayers()) {
-            ((eu.mcone.coresystem.core.player.GlobalCorePlayer) p).setState(PlayerState.OFFLINE);
-        }
-
         try {
-            mongoConnection.disconnect();
-        } catch (NoClassDefFoundError ignored) {
+            if (teamspeakVerifier != null) teamspeakVerifier.close();
+            if (discordControlBot != null) discordControlBot.shutdown();
+            for (CorePlayer p : getOnlineCorePlayers()) {
+                ((eu.mcone.coresystem.core.player.GlobalCorePlayer) p).setState(PlayerState.OFFLINE);
+            }
+
+            try {
+                mongoConnection.disconnect();
+            } catch (NoClassDefFoundError ignored) {
+            }
+            sendConsoleMessage("§cPlugin disabled!");
+
+        } catch (Exception e) {
+            Sentry.capture(e);
+            e.printStackTrace();
         }
-        sendConsoleMessage("§cPlugin disabled!");
     }
 
     private void registerCommand() {

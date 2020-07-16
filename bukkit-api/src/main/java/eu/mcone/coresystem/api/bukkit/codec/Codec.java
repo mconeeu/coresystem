@@ -15,8 +15,10 @@ public abstract class Codec<C, E> implements Serializable {
     private Class<E> encodeClass;
     private String typ;
 
-    public Codec(String type) {
+    public Codec(String type, Class<C> c, Class<E> e) {
         this.typ = type;
+        this.codecClass = c;
+        this.encodeClass = e;
     }
 
     public abstract Object[] decode(Player player, C packet);

@@ -29,7 +29,7 @@ public class ItemSwitchEventCodec extends Codec<PlayerItemHeldEvent, PlayerNpc> 
     private String enchantments;
 
     public ItemSwitchEventCodec() {
-        super("SWITCH_ITEM");
+        super("SWITCH_ITEM", PlayerItemHeldEvent.class, PlayerNpc.class);
     }
 
     @Override
