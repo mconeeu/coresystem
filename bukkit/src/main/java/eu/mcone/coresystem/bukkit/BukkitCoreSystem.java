@@ -137,7 +137,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     public BukkitCoreSystem() {
         //Sentry error logging
-        Sentry.init("https://60310ff9f7874486af14718c51e62a80@o267551.ingest.sentry.io/5341158");
+        Sentry.init("https://2edb2eff2d724190bb5be92f90cbcbfd@o267551.ingest.sentry.io/5341153");
     }
 
     @Override

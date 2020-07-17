@@ -150,6 +150,22 @@ public abstract class CoreSidebarObjective extends CoreObjective {
      */
     protected abstract void onReload(CorePlayer player, CoreSidebarObjectiveEntry objectiveEntry);
 
+    /**
+     * Updates one or multiple line of a scoreboard
+     *
+     * @param updateCoreSidebarObjective
+     */
+    public void update(UpdateCoreSidebarObjective updateCoreSidebarObjective) {
+        CoreSidebarObjectiveEntry entry = new CoreSidebarObjectiveEntry();
+        updateCoreSidebarObjective.update(entry);
+
+        if (entry.getScores().size() > 0) {
+            for (Map.Entry<Integer, String> score : entry.getScores().entrySet()) {
+                setScore(score.getKey(), score.getValue());
+            }
+        }
+    }
+
     @Override
     public void unregister() {
         super.unregister();
