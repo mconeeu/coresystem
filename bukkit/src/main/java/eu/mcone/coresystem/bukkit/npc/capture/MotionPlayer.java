@@ -24,7 +24,7 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Pla
     @Getter
     public MotionCapture capture;
 
-    private PlayerNpc playerNpc;
+    private final PlayerNpc playerNpc;
 
     public MotionPlayer(final PlayerNpc playerNpc, final MotionCapture capture) {
         this.playerNpc = playerNpc;
@@ -46,7 +46,7 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Pla
                 if (packetsCount.get() < codecs.size() - 1) {
                     if (codecs.containsKey(tick)) {
                         for (Codec codec : codecs.get(tick)) {
-                            if (codec.getEncodeClass().equals(playerNpc.getClass())) {
+                            if (codec.getEncodeClass().equals(PlayerNpc.class)) {
                                 codec.encode(playerNpc);
                             }
                         }

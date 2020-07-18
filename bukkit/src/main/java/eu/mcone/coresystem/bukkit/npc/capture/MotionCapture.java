@@ -1,6 +1,7 @@
 package eu.mcone.coresystem.bukkit.npc.capture;
 
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionRecorder;
+import eu.mcone.coresystem.api.core.util.CompressUtils;
 import eu.mcone.coresystem.api.core.util.GenericUtils;
 import lombok.Getter;
 import org.bson.Document;
@@ -41,7 +42,7 @@ public class MotionCapture implements eu.mcone.coresystem.api.bukkit.npc.capture
         byte[] genericChunkData = document.get("chunk", Binary.class).getData();
 
         if (genericChunkData != null) {
-            this.motionChunk = new MotionChunk(GenericUtils.deserialize(MotionChunk.MotionChunkData.class, genericChunkData));
+            this.motionChunk = new MotionChunk(GenericUtils.deserialize(MotionChunk.MotionChunkData.class, CompressUtils.unCompress(genericChunkData)));
         } else {
             throw new NullPointerException("Could not encode byte array to motion chunk data");
         }
@@ -53,6 +54,6 @@ public class MotionCapture implements eu.mcone.coresystem.api.bukkit.npc.capture
                 .append("recorded", recorded)
                 .append("world", world)
                 .append("length", length)
-                .append("chunk", GenericUtils.serialize(motionChunk.getChunkData()));
+                .append("chunk", CompressUtils.compress(GenericUtils.serialize(motionChunk.getChunkData())));
     }
 }
