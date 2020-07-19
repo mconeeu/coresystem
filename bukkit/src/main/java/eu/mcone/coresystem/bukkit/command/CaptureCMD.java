@@ -49,9 +49,13 @@ public class CaptureCMD extends CorePlayerCommand {
                                 if (npc instanceof PlayerNpc) {
                                     if (w.getName().equalsIgnoreCase(capture.getWorld())) {
                                         PlayerNpc playerNpc = (PlayerNpc) npc;
-                                        playerNpc.playMotionCapture(capture);
-                                        p.teleport(playerNpc.getData().getLocation().bukkit());
-                                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Die Aufnahme mit dem Namen §a" + captureName + " §2wird nun abgespielt!");
+                                        if (playerNpc.playMotionCapture(capture)) {
+                                            p.teleport(playerNpc.getData().getLocation().bukkit());
+                                            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Die Aufnahme mit dem Namen §a" + captureName + " §2wird nun abgespielt!");
+                                        } else {
+                                            p.teleport(playerNpc.getData().getLocation().bukkit());
+                                            BukkitCoreSystem.getInstance().getMessenger().send(p, "§cDer Npc Spielt bereits ein Motion capture ab!");
+                                        }
                                     } else {
                                         BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die Welt des NPCS stimmt nicht mit der Welt der Aufnahme (§c" + capture.getWorld() + "§4) überein!");
                                     }

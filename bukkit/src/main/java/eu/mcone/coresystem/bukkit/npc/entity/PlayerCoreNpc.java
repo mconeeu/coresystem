@@ -20,7 +20,6 @@ import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.bukkit.util.CoreProjectile;
 import eu.mcone.coresystem.api.bukkit.util.ReflectionManager;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
-import eu.mcone.coresystem.api.core.exception.MotionCaptureCurrentlyRunningException;
 import eu.mcone.coresystem.api.core.exception.NpcCreateException;
 import eu.mcone.coresystem.api.core.exception.SkinNotFoundException;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
@@ -141,28 +140,28 @@ public class PlayerCoreNpc extends CoreNPC<EntityHumanNPC, PlayerNpcData> implem
         }
     }
 
-    public void playMotionCapture(final String name) {
+    public boolean playMotionCapture(final String name) {
         MotionCapture data = CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().getMotionCapture(name);
         if (data != null) {
-            playMotionCapture(data);
+            return playMotionCapture(data);
         }
+
+        return false;
     }
 
-    public void playMotionCapture(final MotionCapture data) {
-        try {
-            if (motionPlayer != null) {
-                if (motionPlayer.isPlaying()) {
-                    throw new MotionCaptureCurrentlyRunningException();
-                } else {
-                    motionPlayer = new MotionPlayer(this, data);
-                    motionPlayer.play();
-                }
+    public boolean playMotionCapture(final MotionCapture data) {
+        if (motionPlayer != null) {
+            if (motionPlayer.isPlaying()) {
+                return false;
             } else {
                 motionPlayer = new MotionPlayer(this, data);
                 motionPlayer.play();
+                return true;
             }
-        } catch (MotionCaptureCurrentlyRunningException e) {
-            e.printStackTrace();
+        } else {
+            motionPlayer = new MotionPlayer(this, data);
+            motionPlayer.play();
+            return true;
         }
     }
 

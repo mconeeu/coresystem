@@ -10,6 +10,7 @@ import eu.mcone.coresystem.api.bukkit.npc.capture.Recorder;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -47,8 +48,15 @@ public class MotionRecorder extends Recorder implements eu.mcone.coresystem.api.
 
         CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().getCodecRegistry().registerCodecListener((codec, objects) -> {
             if (!isStop()) {
-                chunk.addPacket(ticks, codec);
-                savedPackets.getAndIncrement();
+                if (codec.getCodecClass().equals(PlayerMoveEvent.class)) {
+                    if (ticks % 2 == 0) {
+                        chunk.addPacket(ticks, codec);
+                        savedPackets.getAndIncrement();
+                    }
+                } else {
+                    chunk.addPacket(ticks, codec);
+                    savedPackets.getAndIncrement();
+                }
             }
         });
     }

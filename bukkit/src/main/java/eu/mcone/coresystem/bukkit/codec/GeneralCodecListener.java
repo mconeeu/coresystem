@@ -146,5 +146,7 @@ public class GeneralCodecListener {
                 handlerList.unregister(entry.getValue());
             }
         }
+
+        listener.clear();
     }
 }

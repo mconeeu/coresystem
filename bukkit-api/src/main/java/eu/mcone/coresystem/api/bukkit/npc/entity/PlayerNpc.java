@@ -101,9 +101,9 @@ public interface PlayerNpc extends NPC {
 
     void fishingHook(boolean hook, org.bukkit.entity.Player... players);
 
-    void playMotionCapture(final String name);
+    boolean playMotionCapture(final String name);
 
-    void playMotionCapture(final MotionCapture data);
+    boolean playMotionCapture(final MotionCapture data);
 
     void sneak(boolean sneak, org.bukkit.entity.Player... players);
 
