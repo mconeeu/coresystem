@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class GeneralCodecListener {
 
     private final CodecRegistry codecRegistry;
@@ -47,8 +48,9 @@ public class GeneralCodecListener {
                             if (codecs != null) {
                                 for (Class<?> codecClass : codecs) {
                                     Codec codec = (Codec) codecClass.newInstance();
-                                    if (codec.decode(player, packet) != null) {
-                                        callListeners(codec, codec);
+                                    Object[] args = codec.decode(player, packet);
+                                    if (args != null) {
+                                        callListeners(codec, args);
                                     }
                                 }
                             }
@@ -66,8 +68,9 @@ public class GeneralCodecListener {
                             if (codecs != null) {
                                 for (Class<?> codecClass : codecs) {
                                     Codec codec = (Codec) codecClass.newInstance();
-                                    if (codec.decode(player, packet) != null) {
-                                        callListeners(codec, codec);
+                                    Object[] args = codec.decode(player, packet);
+                                    if (args != null) {
+                                        callListeners(codec, args);
                                     }
                                 }
                             }
@@ -99,8 +102,9 @@ public class GeneralCodecListener {
                                 if (codecs != null) {
                                     for (Class<?> codecClass : codecs) {
                                         Codec codec = (Codec) codecClass.newInstance();
-                                        if (codec.decode(null, event) != null) {
-                                            callListeners(codec, codec);
+                                        Object[] args = codec.decode(null, event);
+                                        if (args != null) {
+                                            callListeners(codec, args);
                                         }
                                     }
                                 }
@@ -129,7 +133,7 @@ public class GeneralCodecListener {
         return null;
     }
 
-    private void callListeners(Codec<?, ?> codec, Object... args) {
+    private void callListeners(Codec<?, ?> codec, Object[] args) {
         for (eu.mcone.coresystem.api.bukkit.codec.CodecListener listener : codecRegistry.getListeners()) {
             listener.onCodec(codec, args);
         }

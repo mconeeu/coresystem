@@ -4,6 +4,7 @@ import eu.mcone.coresystem.api.bukkit.scoreboard.CoreObjective;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -16,6 +17,7 @@ public class CoreObjectiveCreateEvent extends Event implements Cancellable {
     private static final HandlerList handlerList = new HandlerList();
 
     private final CoreObjective sidebarObjective;
+    private final Player player;
     @Setter
     private boolean cancelled = false;
 

@@ -70,7 +70,7 @@ public abstract class CoreSidebarObjective extends CoreObjective {
         CoreSidebarObjectiveEntry entry = new CoreSidebarObjectiveEntry();
         onRegister(player, entry);
 
-        CoreSidebarObjectiveUpdateEvent e = new CoreSidebarObjectiveUpdateEvent(this, entry);
+        CoreSidebarObjectiveUpdateEvent e = new CoreSidebarObjectiveUpdateEvent(this, entry, player.bukkit());
         Bukkit.getPluginManager().callEvent(e);
 
         if (!e.isCancelled()) {
@@ -92,7 +92,7 @@ public abstract class CoreSidebarObjective extends CoreObjective {
         CoreSidebarObjectiveEntry entry = new CoreSidebarObjectiveEntry();
         onReload(player, entry);
 
-        CoreSidebarObjectiveUpdateEvent e = new CoreSidebarObjectiveUpdateEvent(this, entry);
+        CoreSidebarObjectiveUpdateEvent e = new CoreSidebarObjectiveUpdateEvent(this, entry, player.bukkit());
         Bukkit.getPluginManager().callEvent(e);
 
         if (!e.isCancelled()) {

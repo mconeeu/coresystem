@@ -10,7 +10,6 @@ import eu.mcone.coresystem.api.bukkit.config.typeadapter.ItemStackTypeAdapterUti
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import lombok.Getter;
-import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -20,7 +19,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-@BsonDiscriminator
 @Getter
 public class ItemSwitchEventCodec extends Codec<PlayerItemHeldEvent, PlayerNpc> {
 
@@ -34,12 +32,18 @@ public class ItemSwitchEventCodec extends Codec<PlayerItemHeldEvent, PlayerNpc> 
 
     @Override
     public Object[] decode(Player player, PlayerItemHeldEvent event) {
-        ItemStack itemStack = event.getPlayer().getItemInHand();
-        this.material = itemStack.getType().toString();
-        this.amount = itemStack.getAmount();
-        this.enchantments = ItemStackTypeAdapterUtils.serializeEnchantments(itemStack.getEnchantments());
+        ItemStack previousItem = event.getPlayer().getInventory().getItem(event.getPreviousSlot());
+        ItemStack newItem = event.getPlayer().getInventory().getItem(event.getNewSlot());
 
-        return new Object[]{event.getPlayer()};
+        if (previousItem != null && newItem != null) {
+            ItemStack itemStack = event.getPlayer().getItemInHand();
+            this.material = itemStack.getType().toString();
+            this.amount = itemStack.getAmount();
+            this.enchantments = ItemStackTypeAdapterUtils.serializeEnchantments(itemStack.getEnchantments());
+            return new Object[]{event.getPlayer()};
+        } else {
+            return null;
+        }
     }
 
     @Override
