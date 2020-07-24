@@ -14,7 +14,6 @@ import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Currency;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.utils.bots.teamspeak.TeamspeakVerifier;
 import eu.mcone.coresystem.core.player.GlobalOfflineCorePlayer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -74,9 +73,6 @@ public class CorePlayerUpdateListener implements Listener {
             if (p != null) {
                 ((GlobalOfflineCorePlayer) p).setGroupSet(e.getGroups());
                 p.reloadPermissions();
-
-                TeamspeakVerifier tsv = BungeeCoreSystem.getSystem().getTeamspeakVerifier();
-                if (tsv != null) tsv.updateLink(p, null);
 
                 CoreSystem.getInstance().getChannelHandler().createInfoRequest(
                         p.bungee(),

@@ -51,7 +51,7 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
                         }});
                     }
 
-                    instance.sendConsoleMessage("§aRegistering packet Codec §f" + codec.getName());
+                    instance.sendConsoleMessage("§2Registering packet Codec " + codec.getSimpleName());
 
                     if (codecListener.isListening()) {
                         codecListener.refresh();
@@ -62,8 +62,7 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
                     throw new UnsupportedDataTypeException("Unknown data typ " + clazz.getSimpleName());
                 }
             } else {
-                instance.sendConsoleMessage("§cCodec for class " + codec.getName() + " already registered!");
-                return false;
+                throw new IllegalStateException("§cCodec for class " + codec.getSimpleName() + " already registered!");
             }
         } catch (UnsupportedDataTypeException e) {
             e.printStackTrace();

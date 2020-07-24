@@ -5,7 +5,7 @@
 
 package eu.mcone.coresystem.api.core.exception;
 
-public class MotionCaptureAlreadyExistsException extends Exception {
+public class MotionCaptureAlreadyExistsException extends RuntimeCoreException {
 
     public MotionCaptureAlreadyExistsException() {
         super();

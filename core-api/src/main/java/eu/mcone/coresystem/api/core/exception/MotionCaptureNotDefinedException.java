@@ -5,7 +5,7 @@
 
 package eu.mcone.coresystem.api.core.exception;
 
-public class MotionCaptureNotDefinedException extends Exception {
+public class MotionCaptureNotDefinedException extends RuntimeCoreException {
 
     public MotionCaptureNotDefinedException() {
         super();

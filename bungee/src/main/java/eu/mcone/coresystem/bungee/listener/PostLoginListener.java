@@ -9,7 +9,6 @@ import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.labymod.LabyModPermission;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import eu.mcone.coresystem.bungee.utils.bots.teamspeak.TeamspeakVerifier;
 import group.onegaming.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.Title;
@@ -87,8 +86,6 @@ public class PostLoginListener implements Listener {
             }});
 
             CoreSystem.getInstance().getLabyModAPI().setCurrentServer(p, p.getServer().getInfo().getName());
-            TeamspeakVerifier tsv = BungeeCoreSystem.getSystem().getTeamspeakVerifier();
-            if (cp.isTeamspeakIdLinked() && tsv != null) tsv.updateLink(cp, null);
         }, 1, TimeUnit.SECONDS);
     }
 

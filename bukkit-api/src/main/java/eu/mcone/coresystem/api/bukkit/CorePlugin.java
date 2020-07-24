@@ -14,7 +14,10 @@ import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
 import eu.mcone.coresystem.api.bukkit.util.Messenger;
 import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import eu.mcone.coresystem.api.core.exception.CoreException;
+import io.sentry.SentryClient;
+import io.sentry.SentryClientFactory;
 import lombok.Getter;
+import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -37,16 +40,26 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin,
     private final ChatColor pluginColor;
     @Getter
     private final Messenger messenger;
+    @Getter
+    protected final SentryClient sentryClient;
 
     protected CorePlugin(Gamemode pluginGamemode, String prefixTranslation) {
-        this(pluginGamemode, pluginGamemode.getName().toLowerCase(), pluginGamemode.getColor(), prefixTranslation);
+        this(pluginGamemode, prefixTranslation, null);
+    }
+
+    protected CorePlugin(Gamemode pluginGamemode, String prefixTranslation, String sentryDsn) {
+        this(pluginGamemode, pluginGamemode.getName().toLowerCase(), pluginGamemode.getColor(), prefixTranslation, sentryDsn);
     }
 
     protected CorePlugin(String pluginName, ChatColor pluginColor, String prefixTranslation) {
-        this(Gamemode.UNDEFINED, pluginName, pluginColor, prefixTranslation);
+        this(pluginName, pluginColor, prefixTranslation, null);
     }
 
-    private CorePlugin(Gamemode pluginGamemode, String pluginName, ChatColor pluginColor, String prefixTranslation) {
+    protected CorePlugin(String pluginName, ChatColor pluginColor, String prefixTranslation, String sentryDsn) {
+        this(Gamemode.UNDEFINED, pluginName, pluginColor, prefixTranslation, sentryDsn);
+    }
+
+    private CorePlugin(Gamemode pluginGamemode, String pluginName, ChatColor pluginColor, String prefixTranslation, String sentryDsn) {
         if (pluginGamemode == null) {
             throw new NullPointerException("Gamemode must not be null!");
         }
@@ -56,6 +69,23 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin,
         this.consolePrefix = "§8[" + pluginColor + pluginName + "§8] §7";
         this.pluginColor = pluginColor;
         this.messenger = new Messenger(prefixTranslation);
+
+        if (sentryDsn != null && Boolean.parseBoolean(System.getProperty("EnableSentry"))) {
+            sendConsoleMessage("§aInitialzing Sentry...");
+            this.sentryClient = SentryClientFactory.sentryClient(sentryDsn);
+            this.sentryClient.setServerName(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"));
+            this.sentryClient.setRelease(getDescription().getVersion());
+            this.sentryClient.addTag("Server version", getServer().getVersion());
+            this.sentryClient.addTag("Server IP", getServer().getIp());
+            this.sentryClient.addTag("Server Port", String.valueOf(getServer().getPort()));
+            this.sentryClient.addTag("Server View distance", String.valueOf(getServer().getViewDistance()));
+            this.sentryClient.addTag("Server MOTD", getServer().getMotd());
+            this.sentryClient.addTag("Plugin dependencies", getDescription().getDepend().toString());
+            this.sentryClient.addTag("Plugin soft dependencies", getDescription().getSoftDepend().toString());
+            this.sentryClient.addTag("Max Players", String.valueOf(getServer().getMaxPlayers()));
+        } else {
+            this.sentryClient = null;
+        }
     }
 
     @Override
@@ -149,6 +179,21 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin,
 
         if (list != null && !list.isEmpty()) {
             CoreSystem.getInstance().getTranslationManager().registerKeys(pluginName, list);
+        }
+    }
+
+    public boolean hasSentryClient() {
+        return sentryClient != null;
+    }
+
+    public void withErrorLogging(Runnable runnable) {
+        try {
+            runnable.run();
+        } catch (Exception e) {
+            if (sentryClient != null) {
+                sentryClient.sendException(e);
+            }
+            throw e;
         }
     }
 

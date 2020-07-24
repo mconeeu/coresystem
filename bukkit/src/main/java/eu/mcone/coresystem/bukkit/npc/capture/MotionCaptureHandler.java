@@ -14,9 +14,10 @@ import eu.mcone.coresystem.api.bukkit.npc.capture.codecs.*;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.core.exception.MotionCaptureAlreadyExistsException;
 import eu.mcone.coresystem.api.core.exception.MotionCaptureNotDefinedException;
-import eu.mcone.coresystem.api.core.exception.MotionCaptureNotFoundException;
 import lombok.Getter;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.PacketPlayInEntityAction;
+import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
+import net.minecraft.server.v1_8_R3.PacketPlayOutAnimation;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -69,26 +70,21 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
      * @return boolean
      */
     public boolean saveMotionCapture(MotionRecorder recorder) {
-        try {
-            if (!cache.containsKey(recorder.getName())) {
-                if (MOTION_CAPTURE_COLLECTION.find(eq("name", recorder.getName())).first() == null) {
-                    if (!recorder.isStop()) {
-                        recorder.stop();
-                    }
-
-                    MotionCapture capture = new MotionCapture(recorder);
-                    cache.put(capture.getName(), capture);
-                    MOTION_CAPTURE_COLLECTION.insertOne(capture.toDocument());
-                    return true;
-                } else {
-                    throw new MotionCaptureAlreadyExistsException();
+        if (!cache.containsKey(recorder.getName())) {
+            if (MOTION_CAPTURE_COLLECTION.find(eq("name", recorder.getName())).first() == null) {
+                if (!recorder.isStop()) {
+                    recorder.stop();
                 }
+
+                MotionCapture capture = new MotionCapture(recorder);
+                cache.put(capture.getName(), capture);
+                MOTION_CAPTURE_COLLECTION.insertOne(capture.toDocument());
+                return true;
             } else {
                 throw new MotionCaptureAlreadyExistsException();
             }
-        } catch (MotionCaptureAlreadyExistsException e) {
-            e.printStackTrace();
-            return false;
+        } else {
+            throw new MotionCaptureAlreadyExistsException();
         }
     }
 
@@ -98,26 +94,20 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
      * @param name String (MotionCapture Name)
      * @return MotionCaptureData
      */
-    public MotionCapture getMotionCapture(final String name) {
-        try {
-            if (cache.containsKey(name)) {
-                return cache.get(name);
+    public MotionCapture getMotionCapture(final String name) throws MotionCaptureNotDefinedException {
+        if (cache.containsKey(name)) {
+            return cache.get(name);
+        } else {
+            Document document = MOTION_CAPTURE_COLLECTION.find(eq("name", name)).first();
+
+            if (document != null) {
+                MotionCapture capture = new MotionCapture(document);
+                cache.put(capture.getName(), capture);
+                return capture;
             } else {
-                Document document = MOTION_CAPTURE_COLLECTION.find(eq("name", name)).first();
-
-                if (document != null) {
-                    MotionCapture capture = new MotionCapture(document);
-                    cache.put(capture.getName(), capture);
-                    return capture;
-                } else {
-                    throw new MotionCaptureNotFoundException("Cannot find motion capture with the name " + name);
-                }
+                throw new MotionCaptureNotDefinedException("Cannot find motion capture with the name " + name);
             }
-        } catch (MotionCaptureNotFoundException e) {
-            e.printStackTrace();
         }
-
-        return null;
     }
 
     /**

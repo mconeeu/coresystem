@@ -10,7 +10,7 @@
     <parent>
         <artifactId>mcone-coresystem</artifactId>
         <groupId>eu.mcone.coresystem</groupId>
-        <version>10.8.1-SNAPSHOT</version>
+        <version>10.8.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -46,6 +46,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
                     <shadedArtifactAttached>false</shadedArtifactAttached>
                 </configuration>
             </plugin>
@@ -84,92 +85,52 @@
             <id>mcone-systems</id>
             <url>https://repo.onegaming.group/repository/mcone-systems/</url>
         </repository>
-
-        <!--  DISCORD REPOS -->
-        <repository>
-            <id>jcenter</id>
-            <url>https://jcenter.bintray.com</url>
-        </repository>
     </repositories>
 
     <dependencies>
-        <!-- MCONE Depen's  -->
-        <dependency>
+        <dependency> <!-- Core Code -->
             <groupId>eu.mcone.coresystem</groupId>
             <artifactId>core</artifactId>
-            <version>10.8.1-SNAPSHOT</version>
+            <version>10.8.2-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
+        <dependency> <!-- Core Code -->
+            <groupId>eu.mcone.coresystem</groupId>
+            <artifactId>bungee-api</artifactId>
+            <version>10.8.2-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency> <!-- MC ONE Cloud -->
             <groupId>eu.mcone.cloud</groupId>
             <artifactId>plugin-api-bungee</artifactId>
             <version>2.1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>eu.mcone.coresystem</groupId>
-            <artifactId>bungee-api</artifactId>
-            <version>10.8.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- Bungeecord Depend -->
-        <dependency>
+        <dependency> <!-- BungeeCord -->
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-api</artifactId>
-            <version>1.13-SNAPSHOT</version>
+            <version>1.16-R0.2-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
-
-        <!-- Bungeecord Chat Depend -->
-        <dependency>
+        <dependency> <!-- BungeeCord Javadocs -->
             <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-chat</artifactId>
-            <version>1.13-SNAPSHOT</version>
-            <type>jar</type>
+            <artifactId>bungeecord-api</artifactId>
+            <version>1.16-R0.2-SNAPSHOT</version>
+            <type>javadoc</type>
             <scope>provided</scope>
         </dependency>
-
-        <!-- Bungeecord Event Depend -->
-        <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-event</artifactId>
-            <version>1.13-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Bungeecord Protool Depend -->
-        <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-protocol</artifactId>
-            <version>1.13-SNAPSHOT</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Teamspeak API Depend -->
-        <dependency>
-            <groupId>com.github.theholywaffle</groupId>
-            <artifactId>teamspeak3-api</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
+        <dependency> <!-- SLF4J JUL Logger binder (used for mongodb) -->
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.7.28</version>
             <scope>compile</scope>
         </dependency>
-
-        <!-- Discord API Depend -->
-        <dependency>
-            <groupId>net.dv8tion</groupId>
-            <artifactId>JDA</artifactId>
-            <version>3.8.3_460</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!-- Sentry Error Logging -->
-        <dependency>
+        <dependency> <!-- Sentry Error Logging -->
             <groupId>io.sentry</groupId>
-            <artifactId>sentry-log4j2</artifactId>
+            <artifactId>sentry</artifactId>
             <version>1.7.30</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

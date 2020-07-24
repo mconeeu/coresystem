@@ -60,7 +60,6 @@ import group.onegaming.networkmanager.core.api.database.Database;
 import group.onegaming.networkmanager.core.database.MongoConnection;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.sentry.Sentry;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
@@ -135,14 +134,9 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Setter
     private boolean customEnderchestEnabled = false;
 
-    public BukkitCoreSystem() {
-        //Sentry error logging
-        Sentry.init("https://2edb2eff2d724190bb5be92f90cbcbfd@o267551.ingest.sentry.io/5341153");
-    }
-
     @Override
     public void onEnable() {
-        try {
+        withErrorLogging(() -> {
             setInstance(this);
             system = this;
 
@@ -282,15 +276,12 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             });
 
             sendConsoleMessage("§aVersion §f" + this.getDescription().getVersion() + "§a enabled!");
-        } catch (Exception e) {
-            Sentry.capture(e);
-            e.printStackTrace();
-        }
+        });
     }
 
     @Override
     public void onDisable() {
-        try {
+        withErrorLogging(() -> {
             nickManager.disable();
             packetManager.disable();
 
@@ -313,17 +304,13 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
             try {
                 mongoConnection.disconnect();
-            } catch (NoClassDefFoundError ignored) {
-            }
+            } catch (NoClassDefFoundError ignored) {}
 
             getServer().getMessenger().unregisterIncomingPluginChannel(this);
             getServer().getMessenger().unregisterOutgoingPluginChannel(this);
 
             sendConsoleMessage("§cPlugin disabled!");
-        } catch (Exception e) {
-            Sentry.capture(e);
-            e.printStackTrace();
-        }
+        });
     }
 
     private void registerCommands() {
@@ -362,6 +349,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new CorePlayerUpdateListener(),
                 new LabyModListener(),
                 new ReloadListener(),
+                new SentryListener(),
                 new SignChangeListener(),
                 new VanishListener(),
                 new ArmorListener()

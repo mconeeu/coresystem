@@ -32,8 +32,6 @@ import eu.mcone.coresystem.bungee.runnable.Broadcast;
 import eu.mcone.coresystem.bungee.runnable.OnlineTime;
 import eu.mcone.coresystem.bungee.runnable.PremiumCheck;
 import eu.mcone.coresystem.bungee.utils.ChannelHandler;
-import eu.mcone.coresystem.bungee.utils.bots.discord.DiscordControlBot;
-import eu.mcone.coresystem.bungee.utils.bots.teamspeak.TeamspeakVerifier;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
@@ -43,9 +41,9 @@ import eu.mcone.coresystem.core.util.MoneyUtil;
 import eu.mcone.coresystem.core.util.PreferencesManager;
 import group.onegaming.networkmanager.core.api.database.Database;
 import group.onegaming.networkmanager.core.database.MongoConnection;
-import io.sentry.Sentry;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.config.ListenerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
@@ -53,12 +51,8 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 
-import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem {
 
@@ -86,10 +80,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private NickManager nickManager;
     @Getter
-    private TeamspeakVerifier teamspeakVerifier = null;
-    @Getter
-    private DiscordControlBot discordControlBot = null;
-    @Getter
     private ChannelHandler channelHandler;
     @Getter
     private ReplayServerSessionHandler serverSessionHandler;
@@ -107,23 +97,26 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private Map<UUID, BungeeCorePlayer> corePlayers;
 
-    public BungeeCoreSystem() {
-        //Sentry error logging
-        Sentry.init("https://60310ff9f7874486af14718c51e62a80@o267551.ingest.sentry.io/5341158");
-    }
-
     public void onEnable() {
-        try {
+        withErrorLogging(() -> {
             system = this;
             setInstance(this);
 
             corePlayers = new HashMap<>();
             plugins = new HashMap<>();
 
-            Logger root = Logger.getLogger("");
-            root.setLevel(Level.CONFIG);
-
-            for (Handler handler : root.getHandlers()) handler.setLevel(Level.ALL);
+            if (sentryClient != null) {
+                ListenerInfo listener = getProxy().getConfig().getListeners().iterator().next();
+                sentryClient.setServerName("Proxy");
+                sentryClient.setRelease(getDescription().getVersion());
+                sentryClient.addTag("Server version", getProxy().getVersion());
+                sentryClient.addTag("Server Port", listener.getHost().getAddress().toString());
+                sentryClient.addTag("Server MOTD", listener.getMotd());
+                sentryClient.addTag("Server Foced Hosts", listener.getForcedHosts().toString());
+                sentryClient.addTag("Plugin dependencies", getDescription().getDepends().toString());
+                sentryClient.addTag("Plugin soft dependencies", getDescription().getSoftDepends().toString());
+                sentryClient.addTag("Max Players", String.valueOf(listener.getMaxPlayers()));
+            }
 
             getProxy().getConsole().sendMessage(new TextComponent(TextComponent.fromLegacyText("\n" +
                     "      __  _____________  _   ________                                                          \n" +
@@ -186,24 +179,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             sendConsoleMessage("§aInitializing LabyModManager...");
             labyModAPI = new LabyModManager(this);
 
-            if (!Boolean.parseBoolean(System.getProperty("DisableTsQuery"))) {
-                sendConsoleMessage("§aLoading TeamSpeakQuery...");
-                teamspeakVerifier = new TeamspeakVerifier();
-            } else {
-                sendConsoleMessage("§cTeamSpeakQuery disabled by JVM Argument");
-            }
-
-            if (!Boolean.parseBoolean(System.getProperty("DisableDiscordQuery"))) {
-                sendConsoleMessage("§aLoading DiscordQuery...");
-                try {
-                    discordControlBot = new DiscordControlBot();
-                } catch (LoginException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                sendConsoleMessage("§cDiscordQuery disabled by JVM Argument");
-            }
-
             sendConsoleMessage("§aLoading Nicksystem...");
             nickManager = new NickManager(this);
 
@@ -217,30 +192,21 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             getProxy().registerChannel("MC_ONE_INFO");
 
             sendConsoleMessage("§aVersion: §f" + this.getDescription().getVersion() + "§a enabled!");
-        } catch (Exception e) {
-            Sentry.capture(e);
-            e.printStackTrace();
-        }
+        });
     }
 
     public void onDisable() {
-        try {
-            if (teamspeakVerifier != null) teamspeakVerifier.close();
-            if (discordControlBot != null) discordControlBot.shutdown();
+        withErrorLogging(() -> {
             for (CorePlayer p : getOnlineCorePlayers()) {
                 ((eu.mcone.coresystem.core.player.GlobalCorePlayer) p).setState(PlayerState.OFFLINE);
             }
 
             try {
                 mongoConnection.disconnect();
-            } catch (NoClassDefFoundError ignored) {
-            }
-            sendConsoleMessage("§cPlugin disabled!");
+            } catch (NoClassDefFoundError ignored) {}
 
-        } catch (Exception e) {
-            Sentry.capture(e);
-            e.printStackTrace();
-        }
+            sendConsoleMessage("§cPlugin disabled!");
+        });
     }
 
     private void registerCommand() {
@@ -279,8 +245,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
                 new PremiumCMD(),
                 new YoutubeCMD(),
-                new TsCMD(),
-                new DiscordCMD(),
                 new BugreportCMD()
         );
     }
@@ -299,6 +263,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new ServerConnectListener(),
                 new ServerKickListener(),
                 new ServerSwitchListener(),
+                new SentryListener(),
                 new TabCompleteListener()
         );
     }

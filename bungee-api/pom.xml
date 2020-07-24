@@ -10,7 +10,7 @@
     <parent>
         <artifactId>mcone-coresystem</artifactId>
         <groupId>eu.mcone.coresystem</groupId>
-        <version>10.8.1-SNAPSHOT</version>
+        <version>10.8.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -32,30 +32,29 @@
     </repositories>
 
     <dependencies>
-        <dependency>
+        <dependency> <!-- Core APIs -->
             <groupId>eu.mcone.coresystem</groupId>
             <artifactId>core-api</artifactId>
-            <version>10.8.1-SNAPSHOT</version>
+            <version>10.8.2-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
+        <dependency> <!-- MC ONE Cloud -->
             <groupId>eu.mcone.cloud</groupId>
             <artifactId>plugin-api-bungee</artifactId>
             <version>2.1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <dependency> <!-- BungeeCord -->
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-api</artifactId>
-            <version>1.13-SNAPSHOT</version>
+            <version>1.16-R0.2-SNAPSHOT</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-chat</artifactId>
-            <version>1.13-SNAPSHOT</version>
-            <type>jar</type>
+        <dependency> <!-- Sentry Error Logging -->
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry</artifactId>
+            <version>1.7.30</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
