@@ -37,7 +37,7 @@ public class PlayerMoveEventCodec extends Codec<PlayerMoveEvent, PlayerNpc> {
         this.yaw = event.getTo().getYaw();
         pitch = event.getTo().getPitch();
 
-        return new Object[]{player};
+        return new Object[]{event.getPlayer()};
     }
 
     @Override

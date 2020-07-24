@@ -57,7 +57,7 @@ public abstract class CoreScoreboard {
     }
 
     public void setNewObjective(CoreObjective objective) {
-        CoreObjectiveCreateEvent ce = new CoreObjectiveCreateEvent(objective);
+        CoreObjectiveCreateEvent ce = new CoreObjectiveCreateEvent(objective, player.bukkit());
 
         if (!ce.isCancelled()) {
             if (objectives.get(objective.getSlot()) != null) objectives.get(objective.getSlot()).unregister();
