@@ -14,6 +14,7 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 public class PacketInListenerImpl extends MessageToMessageDecoder<Packet<?>> {
 
@@ -24,7 +25,11 @@ public class PacketInListenerImpl extends MessageToMessageDecoder<Packet<?>> {
         this.player = player;
         this.pipeline = ((CraftPlayer) player).getHandle().playerConnection.networkManager.channel.pipeline();
 
-        pipeline.addAfter("decoder", "PacketInjector", this);
+        try {
+            pipeline.addAfter("decoder", "PacketInjector", this);
+        } catch (NoSuchElementException e) {
+            BukkitCoreSystem.getSystem().sendConsoleMessage("§cCould not set PacketListener for "+player.getName()+". Missing decoder!");
+        }
     }
 
     @Override

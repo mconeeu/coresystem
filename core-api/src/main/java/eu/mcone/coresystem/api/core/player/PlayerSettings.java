@@ -20,7 +20,7 @@ public final class PlayerSettings {
     private boolean enableFriendRequests = true, autoNick = false;
     private Language language = Language.GERMAN;
     private Sender privateMessages = Sender.FRIENDS, partyInvites = Sender.ALL;
-    private boolean receiveIncomingReports = true;
+    private boolean receiveIncomingReports = true, inventoryAnimations = true;
 
     public enum Sender {
         ALL, FRIENDS, NOBODY
