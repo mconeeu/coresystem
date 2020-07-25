@@ -6,11 +6,11 @@
 package eu.mcone.coresystem.bukkit.npc.capture;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationProgressEvent;
 import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationStateChangeEvent;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCapture;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
-import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -41,34 +41,36 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Pla
         Bukkit.getPluginManager().callEvent(new NpcAnimationStateChangeEvent(playerNpc, NpcAnimationStateChangeEvent.NpcAnimationState.START));
         playingTask = Bukkit.getScheduler().runTaskTimerAsynchronously(CoreSystem.getInstance(), () -> {
             if (playing) {
-                int tick = currentTick.get();
+                if (Bukkit.getOnlinePlayers().size() != 0) {
+                    int tick = currentTick.get();
 
-                if (packetsCount.get() < codecs.size() - 1) {
-                    if (codecs.containsKey(tick)) {
-                        for (Codec codec : codecs.get(tick)) {
-                            if (codec.getEncodeClass().equals(PlayerNpc.class)) {
-                                codec.encode(playerNpc);
+                    if (packetsCount.get() < codecs.size() - 1) {
+                        if (codecs.containsKey(tick)) {
+                            for (Codec codec : codecs.get(tick)) {
+                                if (CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().getCodecRegistry().getEncoderClass(codec.getEncoderID()).equals(PlayerNpc.class)) {
+                                    codec.encode(playerNpc);
+                                }
                             }
+
+                            int progress = (int) Math.round((100.00 / codecs.size()) * packetsCount.get());
+                            if (progress != currentProgress.get()) {
+                                currentProgress.set(progress);
+                                Bukkit.getPluginManager().callEvent(new NpcAnimationProgressEvent(playerNpc, this.currentTick.get(), progress));
+                            }
+
+                            packetsCount.getAndIncrement();
                         }
 
-                        int progress = (int) Math.round((100.00 / codecs.size()) * packetsCount.get());
-                        if (progress != currentProgress.get()) {
-                            currentProgress.set(progress);
-                            Bukkit.getPluginManager().callEvent(new NpcAnimationProgressEvent(playerNpc, this.currentTick.get(), progress));
+                        if (forward) {
+                            this.currentTick.getAndIncrement();
+                        } else if (backward) {
+                            this.currentTick.getAndDecrement();
                         }
-
-                        packetsCount.getAndIncrement();
+                    } else {
+                        playing = false;
+                        playingTask.cancel();
+                        Bukkit.getPluginManager().callEvent(new NpcAnimationStateChangeEvent(playerNpc, NpcAnimationStateChangeEvent.NpcAnimationState.END));
                     }
-
-                    if (forward) {
-                        this.currentTick.getAndIncrement();
-                    } else if (backward) {
-                        this.currentTick.getAndDecrement();
-                    }
-                } else {
-                    playing = false;
-                    playingTask.cancel();
-                    Bukkit.getPluginManager().callEvent(new NpcAnimationStateChangeEvent(playerNpc, NpcAnimationStateChangeEvent.NpcAnimationState.END));
                 }
             }
         }, 1L, 1L);

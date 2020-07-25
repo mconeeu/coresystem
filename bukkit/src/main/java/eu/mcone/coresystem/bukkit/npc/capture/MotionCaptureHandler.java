@@ -10,18 +10,20 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.codec.CodecRegistry;
 import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationStateChangeEvent;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionRecorder;
-import eu.mcone.coresystem.api.bukkit.npc.capture.codecs.*;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.core.exception.MotionCaptureAlreadyExistsException;
 import eu.mcone.coresystem.api.core.exception.MotionCaptureNotDefinedException;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.core.CoreModuleCoreSystem;
+import group.onegaming.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.PacketPlayInEntityAction;
-import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
 import net.minecraft.server.v1_8_R3.PacketPlayOutAnimation;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
@@ -30,10 +32,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.set;
 
 public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.capture.MotionCaptureHandler {
 
-    private static final MongoCollection<Document> MOTION_CAPTURE_COLLECTION = CoreSystem.getInstance().getMongoDB().getCollection("motion_capture");
+    private static final MongoCollection<Document> MOTION_CAPTURE_COLLECTION = ((CoreModuleCoreSystem) BukkitCoreSystem.getInstance()).getMongoDB(Database.SYSTEM).getCollection("motion_capture");
 
     private final HashMap<String, MotionCapture> cache;
 
@@ -47,11 +50,13 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
         motionCaptureScheduler = new MotionCaptureScheduler();
         codecRegistry = CoreSystem.getInstance().createCodecRegistry(false);
 
-        codecRegistry.registerCodec(PacketPlayInEntityAction.class, PlayInEntityActionCodec.class);
-        codecRegistry.registerCodec(PlayerItemHeldEvent.class, ItemSwitchEventCodec.class);
-        codecRegistry.registerCodec(PacketPlayInUseEntity.class, PlayInUseCodec.class);
-        codecRegistry.registerCodec(PacketPlayOutAnimation.class, PlayOutAnimationCodec.class);
-        codecRegistry.registerCodec(PlayerMoveEvent.class, PlayerMoveEventCodec.class);
+        codecRegistry.registerCodec((byte) 1, eu.mcone.coresystem.api.bukkit.npc.capture.codecs.PlayerMoveEventCodec.class, PlayerMoveEvent.class, (byte) 2, PlayerNpc.class);
+        codecRegistry.registerCodec((byte) 2, eu.mcone.coresystem.api.bukkit.npc.capture.codecs.PlayInUseCodec.class, PlayerInteractEvent.class, (byte) 2, PlayerNpc.class);
+        codecRegistry.registerCodec((byte) 3, eu.mcone.coresystem.api.bukkit.npc.capture.codecs.ItemSwitchEventCodec.class, PlayerItemHeldEvent.class, (byte) 2, PlayerNpc.class);
+        codecRegistry.registerCodec((byte) 4, eu.mcone.coresystem.api.bukkit.npc.capture.codecs.PlayInEntityActionCodec.class, PacketPlayInEntityAction.class, (byte) 2, PlayerNpc.class);
+        codecRegistry.registerCodec((byte) 5, eu.mcone.coresystem.api.bukkit.npc.capture.codecs.PlayOutAnimationCodec.class, PacketPlayOutAnimation.class, (byte) 2, PlayerNpc.class);
+
+        loadDatabase();
     }
 
     /**
@@ -59,8 +64,16 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
      */
     public void loadDatabase() {
         for (Document document : MOTION_CAPTURE_COLLECTION.find()) {
-            cache.put(document.getString("name"), new MotionCapture(document));
+            cache.put(document.getString("name"), new MotionCapture(this, document));
         }
+    }
+
+    public boolean migrateChunk(String name, byte[] codecs) {
+        if (MOTION_CAPTURE_COLLECTION.find(eq("name", name)).first() != null) {
+            MOTION_CAPTURE_COLLECTION.updateOne(eq("name", name), set("chunk", codecs));
+        }
+
+        return false;
     }
 
     /**
@@ -70,21 +83,26 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
      * @return boolean
      */
     public boolean saveMotionCapture(MotionRecorder recorder) {
-        if (!cache.containsKey(recorder.getName())) {
-            if (MOTION_CAPTURE_COLLECTION.find(eq("name", recorder.getName())).first() == null) {
-                if (!recorder.isStop()) {
-                    recorder.stop();
-                }
+        try {
+            if (!cache.containsKey(recorder.getName())) {
+                if (MOTION_CAPTURE_COLLECTION.find(eq("name", recorder.getName())).first() == null) {
+                    if (!recorder.isStop()) {
+                        recorder.stop();
+                    }
 
-                MotionCapture capture = new MotionCapture(recorder);
-                cache.put(capture.getName(), capture);
-                MOTION_CAPTURE_COLLECTION.insertOne(capture.toDocument());
-                return true;
+                    MotionCapture capture = new MotionCapture(recorder);
+                    cache.put(capture.getName(), capture);
+                    MOTION_CAPTURE_COLLECTION.insertOne(capture.toDocument());
+                    return true;
+                } else {
+                    throw new MotionCaptureAlreadyExistsException();
+                }
             } else {
                 throw new MotionCaptureAlreadyExistsException();
             }
-        } else {
-            throw new MotionCaptureAlreadyExistsException();
+        } catch (MotionCaptureAlreadyExistsException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
@@ -101,7 +119,7 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
             Document document = MOTION_CAPTURE_COLLECTION.find(eq("name", name)).first();
 
             if (document != null) {
-                MotionCapture capture = new MotionCapture(document);
+                MotionCapture capture = new MotionCapture(this, document);
                 cache.put(capture.getName(), capture);
                 return capture;
             } else {

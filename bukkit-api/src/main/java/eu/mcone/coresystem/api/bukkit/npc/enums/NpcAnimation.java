@@ -9,21 +9,21 @@ import lombok.Getter;
 
 public enum NpcAnimation {
 
-    SWING_ARM(0),
-    TAKE_DAMAGE(1),
-    LEAVE_BED(2),
-    EAT_FOOD(3),
-    CRITICAL_EFFECT(4),
-    MAGIC_CRITICAL_EFFECT(5);
+    SWING_ARM((byte) 0),
+    TAKE_DAMAGE((byte) 1),
+    LEAVE_BED((byte) 2),
+    EAT_FOOD((byte) 3),
+    CRITICAL_EFFECT((byte) 4),
+    MAGIC_CRITICAL_EFFECT((byte) 5);
 
     @Getter
-    private final int id;
+    private final byte id;
 
-    NpcAnimation(int id) {
+    NpcAnimation(byte id) {
         this.id = id;
     }
 
-    public static NpcAnimation getAnimation(int id) {
+    public static NpcAnimation getAnimation(byte id) {
         for (NpcAnimation animation : values()) {
             if (animation.getId() == id) {
                 return animation;

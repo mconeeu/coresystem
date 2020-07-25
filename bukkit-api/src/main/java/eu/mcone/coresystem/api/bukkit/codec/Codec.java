@@ -1,61 +1,49 @@
 package eu.mcone.coresystem.api.bukkit.codec;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 
-@Getter
+@NoArgsConstructor
+@Setter
 public abstract class Codec<C, E> implements Serializable {
+    @Getter
+    private byte codecID;
+    @Getter
+    private byte encoderID;
 
-    private Class<C> codecClass;
-    private Class<E> encodeClass;
-    private String typ;
-
-    public Codec(String type, Class<C> c, Class<E> e) {
-        this.typ = type;
-        this.codecClass = c;
-        this.encodeClass = e;
+    public Codec(byte codecID, byte encoderID) {
+        this.codecID = codecID;
+        this.encoderID = encoderID;
     }
 
     public abstract Object[] decode(Player player, C packet);
 
     public abstract void encode(E encode);
 
-    private void writeObject(ObjectOutputStream out) throws IOException {
+    public void writeObject(DataOutputStream out) {
         try {
-            out.writeUTF(codecClass.getName());
-            out.writeUTF(encodeClass.getName());
-            out.writeUTF(typ);
+            out.writeByte(encoderID);
             onWriteObject(out);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        try {
-            this.codecClass = (Class<C>) Class.forName(in.readUTF());
-            this.encodeClass = (Class<E>) Class.forName(in.readUTF());
-            this.typ = in.readUTF();
-            onReadObject(in);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void readObject(DataInputStream in) throws IOException, ClassNotFoundException {
+        this.encoderID = in.readByte();
+        onReadObject(in);
     }
 
-    protected abstract void onWriteObject(ObjectOutputStream out) throws IOException;
+    protected abstract void onWriteObject(DataOutputStream out) throws IOException;
 
-    protected abstract void onReadObject(ObjectInputStream in) throws IOException, ClassNotFoundException;
+    protected abstract void onReadObject(DataInputStream in) throws IOException, ClassNotFoundException;
 
-    public Class<C> getCodecClass() {
-        return codecClass;
-    }
-
-    public Class<E> getEncodeClass() {
-        return encodeClass;
+    public void migrate(DataInputStream in, DataOutputStream out) throws IOException {
+        encoderID = in.readByte();
+        out.writeByte(encoderID);
     }
 }

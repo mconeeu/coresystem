@@ -2,6 +2,7 @@ package eu.mcone.coresystem.bukkit.codec;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.codec.Codec;
+import eu.mcone.coresystem.api.bukkit.codec.CodecListener;
 import eu.mcone.coresystem.api.bukkit.util.PacketListener;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.Packet;
@@ -44,7 +45,7 @@ public class GeneralCodecListener {
                 public void onPacketIn(Player player, Packet<?> packet) {
                     if (codecRegistry.hasCodec(packet)) {
                         try {
-                            List<Class<? extends Codec<?, ?>>> codecs = codecRegistry.getCodec(Packet.class, packet);
+                            List<Class<? extends Codec<?, ?>>> codecs = codecRegistry.getCodecsByTrigger(packet.getClass());
                             if (codecs != null) {
                                 for (Class<?> codecClass : codecs) {
                                     Codec codec = (Codec) codecClass.newInstance();
@@ -64,7 +65,7 @@ public class GeneralCodecListener {
                 public void onPacketOut(Player player, Packet<?> packet) {
                     if (codecRegistry.hasCodec(packet)) {
                         try {
-                            List<Class<? extends Codec<?, ?>>> codecs = codecRegistry.getCodec(Packet.class, packet);
+                            List<Class<? extends Codec<?, ?>>> codecs = codecRegistry.getCodecsByTrigger(packet.getClass());
                             if (codecs != null) {
                                 for (Class<?> codecClass : codecs) {
                                     Codec codec = (Codec) codecClass.newInstance();
@@ -89,7 +90,7 @@ public class GeneralCodecListener {
 
     public void refresh() {
         if (listening) {
-            for (Map.Entry<Class<?>, List<Class<? extends Codec<?, ?>>>> entry : codecRegistry.getCodecsByCodec(Event.class).entrySet()) {
+            for (Map.Entry<Class<?>, List<Class<? extends Codec<?, ?>>>> entry : codecRegistry.getCodecsByTriggerTyp(Event.class).entrySet()) {
                 Class<? extends Event> eventClass = (Class<? extends Event>) entry.getKey();
 
                 if (!listener.containsKey(eventClass)) {
@@ -98,14 +99,11 @@ public class GeneralCodecListener {
                     if (handlerList != null) {
                         RegisteredListener registeredListener = new RegisteredListener(null, (listener, event) -> {
                             try {
-                                List<Class<? extends Codec<?, ?>>> codecs = codecRegistry.getCodec(Event.class, event);
-                                if (codecs != null) {
-                                    for (Class<?> codecClass : codecs) {
-                                        Codec codec = (Codec) codecClass.newInstance();
-                                        Object[] args = codec.decode(null, event);
-                                        if (args != null) {
-                                            callListeners(codec, args);
-                                        }
+                                for (Class<? extends Codec<?, ?>> codecClass : entry.getValue()) {
+                                    Codec codec = codecClass.newInstance();
+                                    Object[] args = codec.decode(null, event);
+                                    if (args != null) {
+                                        callListeners(codec, args);
                                     }
                                 }
                             } catch (InstantiationException | IllegalAccessException e) {
@@ -134,7 +132,7 @@ public class GeneralCodecListener {
     }
 
     private void callListeners(Codec<?, ?> codec, Object[] args) {
-        for (eu.mcone.coresystem.api.bukkit.codec.CodecListener listener : codecRegistry.getListeners()) {
+        for (CodecListener listener : codecRegistry.getListeners()) {
             listener.onCodec(codec, args);
         }
     }

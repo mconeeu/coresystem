@@ -12,12 +12,12 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 
 @Getter
 public class PlayerMoveEventCodec extends Codec<PlayerMoveEvent, PlayerNpc> {
+
+    public static final byte CODEC_VERSION = 1;
 
     private double x;
     private double y;
@@ -26,7 +26,7 @@ public class PlayerMoveEventCodec extends Codec<PlayerMoveEvent, PlayerNpc> {
     private float pitch;
 
     public PlayerMoveEventCodec() {
-        super("MOVE", PlayerMoveEvent.class, PlayerNpc.class);
+        super((byte) 1, (byte) 2);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class PlayerMoveEventCodec extends Codec<PlayerMoveEvent, PlayerNpc> {
     }
 
     @Override
-    public void onWriteObject(ObjectOutputStream out) throws IOException {
+    public void onWriteObject(DataOutputStream out) throws IOException {
         out.writeDouble(x);
         out.writeDouble(y);
         out.writeDouble(z);
@@ -61,11 +61,22 @@ public class PlayerMoveEventCodec extends Codec<PlayerMoveEvent, PlayerNpc> {
     }
 
     @Override
-    public void onReadObject(ObjectInputStream in) throws IOException {
+    public void onReadObject(DataInputStream in) throws IOException {
         x = in.readDouble();
         y = in.readDouble();
         z = in.readDouble();
         yaw = in.readFloat();
         pitch = in.readFloat();
+    }
+
+    @Override
+    public String toString() {
+        return "PlayerMoveEventCodec{" +
+                "x=" + x +
+                ", y=" + y +
+                ", z=" + z +
+                ", yaw=" + yaw +
+                ", pitch=" + pitch +
+                '}';
     }
 }

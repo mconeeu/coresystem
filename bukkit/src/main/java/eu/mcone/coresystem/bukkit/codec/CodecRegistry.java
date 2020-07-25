@@ -3,6 +3,7 @@ package eu.mcone.coresystem.bukkit.codec;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import eu.mcone.coresystem.api.bukkit.codec.CodecListener;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.Packet;
 import org.bukkit.event.Event;
@@ -15,6 +16,8 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
 
     private final CorePlugin instance;
     private final Map<Class<?>, List<Class<? extends Codec<?, ?>>>> codecs;
+    private final Map<Byte, Class<? extends Codec<?, ?>>> codecIDs;
+    private final Map<Byte, Class<?>> encoderIDs;
     @Getter
     private final List<CodecListener> listeners;
     @Getter
@@ -23,6 +26,8 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
     public CodecRegistry(CorePlugin instance, boolean listening) {
         this.instance = instance;
         codecs = new HashMap<>();
+        codecIDs = new HashMap<>();
+        encoderIDs = new HashMap<>();
         listeners = new ArrayList<>();
         codecListener = new GeneralCodecListener(this);
 
@@ -39,19 +44,24 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
         }
     }
 
-    public boolean registerCodec(Class<?> clazz, Class<? extends Codec<?, ?>> codec) {
+    public boolean registerCodec(byte codecID, Class<? extends Codec<?, ?>> codecClass, Class<?> triggerClass, byte encoderID, Class<?> encoder) {
         try {
-            if (!existsCodec(codec)) {
-                if (Packet.class.isAssignableFrom(clazz) || Event.class.isAssignableFrom(clazz)) {
-                    if (codecs.containsKey(clazz)) {
-                        codecs.get(clazz).add(codec);
+            if (!existsCodec(codecClass)) {
+                if (Packet.class.isAssignableFrom(triggerClass) || Event.class.isAssignableFrom(triggerClass)) {
+                    if (!encoderIDs.containsKey(encoderID)) {
+                        encoderIDs.put(encoderID, encoder);
+                    }
+
+                    if (codecs.containsKey(triggerClass)) {
+                        codecs.get(triggerClass).add(codecClass);
                     } else {
-                        codecs.put(clazz, new ArrayList<Class<? extends Codec<?, ?>>>() {{
-                            add(codec);
+                        codecIDs.put(codecID, codecClass);
+                        codecs.put(triggerClass, new ArrayList<Class<? extends Codec<?, ?>>>() {{
+                            add(codecClass);
                         }});
                     }
 
-                    instance.sendConsoleMessage("§2Registering packet Codec " + codec.getSimpleName());
+                    instance.sendConsoleMessage("§aRegistering packet Codec §f" + codecClass.getSimpleName());
 
                     if (codecListener.isListening()) {
                         codecListener.refresh();
@@ -59,13 +69,14 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
 
                     return true;
                 } else {
-                    throw new UnsupportedDataTypeException("Unknown data typ " + clazz.getSimpleName());
+                    throw new UnsupportedDataTypeException("Unknown data typ " + triggerClass.getSimpleName());
                 }
             } else {
-                throw new IllegalStateException("§cCodec for class " + codec.getSimpleName() + " already registered!");
+                instance.sendConsoleMessage("§cCodec for class " + codecClass.getName() + " already registered!");
+                return false;
             }
         } catch (UnsupportedDataTypeException e) {
-            e.printStackTrace();
+            BukkitCoreSystem.getInstance().sendConsoleMessage("Could not find encoderID in class " + encoder.getSimpleName() + " StackTrace: " + e.getMessage());
         }
 
         return false;
@@ -79,17 +90,43 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
         this.listeners.removeAll(Arrays.asList(listeners));
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Class<? extends Codec<?, ?>>> getCodec(Class<?> typ, Object object) {
-        try {
-            if (typ.equals(Packet.class) || typ.equals(Event.class)) {
-                for (Map.Entry<Class<?>, List<Class<? extends Codec<?, ?>>>> codecList : codecs.entrySet()) {
-                    if (codecList.getKey().getSimpleName().equalsIgnoreCase(object.getClass().getSimpleName()) && typ.isAssignableFrom(object.getClass())) {
-                        return codecList.getValue();
+    public Class<?> getEncoderClass(byte ID) {
+        return encoderIDs.get(ID);
+    }
+
+    public Class<?> getTriggerClass(byte ID) {
+        Class<? extends Codec<?, ?>> codec = getCodecByID(ID);
+
+        if (codec != null) {
+            for (Map.Entry<Class<?>, List<Class<? extends Codec<?, ?>>>> entry : codecs.entrySet()) {
+                for (Class<? extends Codec<?, ?>> codecEntry : entry.getValue()) {
+                    if (codecEntry == codec) {
+                        return entry.getKey();
                     }
                 }
+            }
+        }
+
+        return null;
+    }
+
+    public Class<? extends Codec<?, ?>> getCodecByID(byte ID) {
+        return codecIDs.getOrDefault(ID, null);
+    }
+
+    public Map<Class<?>, List<Class<? extends Codec<?, ?>>>> getCodecsByTriggerTyp(Class<?> triggerTyp) {
+        try {
+            if (triggerTyp.equals(Packet.class) || triggerTyp.equals(Event.class)) {
+                Map<Class<?>, List<Class<? extends Codec<?, ?>>>> found = new HashMap<>();
+                for (Map.Entry<Class<?>, List<Class<? extends Codec<?, ?>>>> codecEntry : codecs.entrySet()) {
+                    if (triggerTyp.isAssignableFrom(codecEntry.getKey())) {
+                        found.put(codecEntry.getKey(), codecEntry.getValue());
+                    }
+                }
+
+                return found;
             } else {
-                throw new UnsupportedDataTypeException("Unknown data typ " + typ.getSimpleName());
+                throw new UnsupportedDataTypeException("Unknown data typ " + triggerTyp.getSimpleName());
             }
         } catch (UnsupportedDataTypeException e) {
             e.printStackTrace();
@@ -98,19 +135,18 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
         return null;
     }
 
-    public Map<Class<?>, List<Class<? extends Codec<?, ?>>>> getCodecsByCodec(Class<?> encodeClass) {
+    public List<Class<? extends Codec<?, ?>>> getCodecsByTrigger(Class<?> trigger) {
         try {
-            if (encodeClass.equals(Packet.class) || encodeClass.equals(Event.class)) {
-                Map<Class<?>, List<Class<? extends Codec<?, ?>>>> found = new HashMap<>();
+            if (Packet.class.isAssignableFrom(trigger) || Event.class.isAssignableFrom(trigger)) {
                 for (Map.Entry<Class<?>, List<Class<? extends Codec<?, ?>>>> codec : codecs.entrySet()) {
-                    if (encodeClass.isAssignableFrom(codec.getKey())) {
-                        found.put(codec.getKey(), codec.getValue());
+                    if (trigger.isAssignableFrom(codec.getKey())) {
+                        return codec.getValue();
                     }
                 }
 
-                return found;
+                return null;
             } else {
-                throw new UnsupportedDataTypeException("Unknown data typ " + encodeClass.getSimpleName());
+                throw new UnsupportedDataTypeException("Unknown data typ " + trigger.getSimpleName());
             }
         } catch (UnsupportedDataTypeException e) {
             e.printStackTrace();
@@ -162,5 +198,15 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
         }
 
         return false;
+    }
+
+    public static byte getCodecVersion(Class<?> clazz) {
+        try {
+            return clazz.getField("CODEC_VERSION").getByte(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 }

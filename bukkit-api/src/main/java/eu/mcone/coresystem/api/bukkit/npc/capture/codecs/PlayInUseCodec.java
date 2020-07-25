@@ -10,62 +10,64 @@ import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.material.Button;
 import org.bukkit.material.Door;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 @Getter
-public class PlayInUseCodec extends Codec<PacketPlayInUseEntity, PlayerNpc> {
+public class PlayInUseCodec extends Codec<PlayerInteractEvent, PlayerNpc> {
+
+    public static final byte CODEC_VERSION = 1;
 
     private double x;
     private double y;
     private double z;
-    private String worldName;
     private boolean action;
     private PlayInUseAction interactWith;
 
     public PlayInUseCodec() {
-        super("INTERACT", PacketPlayInUseEntity.class, PlayerNpc.class);
+        super((byte) 2, (byte) 2);
     }
 
     @Override
-    public Object[] decode(Player player, PacketPlayInUseEntity packet) {
-        if (packet.a().equals(PacketPlayInUseEntity.EnumEntityUseAction.INTERACT_AT)) {
-            Location blockLocation = new Location(player.getWorld(), packet.b().a, packet.b().b, packet.b().c);
-
-            if (blockLocation.getBlock().getType().equals(Material.WOOD_BUTTON) || blockLocation.getBlock().getType().equals(Material.STONE_BUTTON)) {
-                org.bukkit.block.BlockState blockState = blockLocation.getBlock().getState();
+    public Object[] decode(Player player, PlayerInteractEvent interactEvent) {
+        if (interactEvent.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+            org.bukkit.block.Block block = interactEvent.getClickedBlock();
+            if (block.getType().equals(Material.WOOD_BUTTON) || block.getType().equals(Material.STONE_BUTTON)) {
+                org.bukkit.block.BlockState blockState = block.getState();
                 action = ((Button) blockState.getData()).isPowered();
                 interactWith = PlayInUseAction.BUTTON;
-            } else if (blockLocation.getBlock().getType().toString().contains("_DOOR")) {
-                org.bukkit.block.BlockState blockState = blockLocation.getBlock().getState();
+            } else if (block.getType().toString().contains("_DOOR")) {
+                org.bukkit.block.BlockState blockState = block.getState();
                 action = ((Door) blockState.getData()).isOpen();
                 interactWith = PlayInUseAction.DOOR;
             } else {
                 interactWith = PlayInUseAction.BLOCK;
             }
 
-            worldName = player.getName();
-            x = blockLocation.getX();
-            y = blockLocation.getY();
-            z = blockLocation.getZ();
+            x = block.getX();
+            y = block.getY();
+            z = block.getZ();
+        } else {
+            interactWith = PlayInUseAction.AIR;
         }
 
-        return new Object[]{player};
+        return new Object[]{interactEvent.getPlayer()};
     }
 
     @Override
     public void encode(PlayerNpc npc) {
-        Location location = calculateLocation();
+        Location location = calculateLocation(npc);
         WorldServer world = ((CraftWorld) location.getWorld()).getHandle();
         BlockPosition blockposition = new BlockPosition(location.getX(), location.getY(), location.getZ());
         IBlockData iblockdata = world.getType(blockposition);
@@ -100,27 +102,36 @@ public class PlayInUseCodec extends Codec<PacketPlayInUseEntity, PlayerNpc> {
         npc.sendAnimation(NpcAnimation.SWING_ARM);
     }
 
-    public Location calculateLocation() {
-        return new Location(Bukkit.getWorld(worldName), x, y, z, 0, 0);
+    public Location calculateLocation(PlayerNpc npc) {
+        return new Location(npc.getLocation().getWorld(), x, y, z, 0, 0);
     }
 
     @Override
-    public void onWriteObject(ObjectOutputStream out) throws IOException {
+    public void onWriteObject(DataOutputStream out) throws IOException {
         out.writeDouble(x);
         out.writeDouble(y);
         out.writeDouble(z);
-        out.writeUTF(worldName);
         out.writeBoolean(action);
-        out.writeUTF(interactWith.toString());
+        out.writeByte(interactWith.getId());
     }
 
     @Override
-    public void onReadObject(ObjectInputStream in) throws IOException {
+    public void onReadObject(DataInputStream in) throws IOException {
         x = in.readDouble();
         y = in.readDouble();
         z = in.readDouble();
-        worldName = in.readUTF();
         action = in.readBoolean();
-        PlayInUseAction.valueOf(in.readUTF());
+        interactWith = PlayInUseAction.getByID(in.readByte());
+    }
+
+    @Override
+    public String toString() {
+        return "PlayInUseCodec{" +
+                "x=" + x +
+                ", y=" + y +
+                ", z=" + z +
+                ", action=" + action +
+                ", interactWith=" + interactWith +
+                '}';
     }
 }

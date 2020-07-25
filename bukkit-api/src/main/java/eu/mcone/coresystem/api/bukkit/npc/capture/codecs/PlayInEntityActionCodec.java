@@ -7,26 +7,30 @@ package eu.mcone.coresystem.api.bukkit.npc.capture.codecs;
 
 import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
+import lombok.Getter;
 import net.minecraft.server.v1_8_R3.PacketPlayInEntityAction;
 import org.bukkit.entity.Player;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
+@Getter
 public class PlayInEntityActionCodec extends Codec<PacketPlayInEntityAction, PlayerNpc> {
 
-    private String action;
+    public static final byte CODEC_VERSION = 1;
+
+    private EnumPlayerAction action;
     //Only used for horse jumps
     private int index;
 
     public PlayInEntityActionCodec() {
-        super("ENTITY_ACTION", PacketPlayInEntityAction.class, PlayerNpc.class);
+        super((byte) 4, (byte) 2);
     }
 
     @Override
     public Object[] decode(Player player, PacketPlayInEntityAction packet) {
-        action = packet.b().toString();
+        action = EnumPlayerAction.valueOf(packet.b().toString());
         index = packet.c();
 
         return new Object[]{player};
@@ -34,7 +38,6 @@ public class PlayInEntityActionCodec extends Codec<PacketPlayInEntityAction, Pla
 
     @Override
     public void encode(PlayerNpc npc) {
-        PacketPlayInEntityAction.EnumPlayerAction action = PacketPlayInEntityAction.EnumPlayerAction.valueOf(this.action);
         switch (action) {
             case START_SNEAKING:
                 npc.sneak(true);
@@ -46,14 +49,22 @@ public class PlayInEntityActionCodec extends Codec<PacketPlayInEntityAction, Pla
     }
 
     @Override
-    public void onWriteObject(ObjectOutputStream out) throws IOException {
-        out.writeUTF(action);
-        out.writeInt(index);
+    public void onWriteObject(DataOutputStream out) throws IOException {
+        out.writeByte(action.getId());
+        out.writeByte(index);
     }
 
     @Override
-    public void onReadObject(ObjectInputStream in) throws IOException {
-        action = in.readUTF();
-        index = in.readInt();
+    public void onReadObject(DataInputStream in) throws IOException {
+        action = EnumPlayerAction.getActionWhereID(in.readByte());
+        index = in.readByte();
+    }
+
+    @Override
+    public String toString() {
+        return "PlayInEntityActionCodec{" +
+                "action=" + action +
+                ", index=" + index +
+                '}';
     }
 }

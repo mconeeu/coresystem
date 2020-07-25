@@ -1,10 +1,18 @@
 package eu.mcone.coresystem.bukkit.npc.capture;
 
+import eu.mcone.coresystem.api.bukkit.codec.DeserializeCallback;
+import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionRecorder;
 import eu.mcone.coresystem.api.core.util.GenericUtils;
+import eu.mcone.coresystem.bukkit.codec.CodecInputStream;
+import eu.mcone.coresystem.bukkit.npc.capture.sys.MotionChunk;
 import lombok.Getter;
 import org.bson.Document;
 import org.bson.types.Binary;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MotionCapture implements eu.mcone.coresystem.api.bukkit.npc.capture.MotionCapture {
 
@@ -20,7 +28,7 @@ public class MotionCapture implements eu.mcone.coresystem.api.bukkit.npc.capture
     private final int length;
 
     @Getter
-    private final eu.mcone.coresystem.api.bukkit.npc.capture.MotionChunk motionChunk;
+    private eu.mcone.coresystem.api.bukkit.npc.capture.MotionChunk motionChunk;
 
     public MotionCapture(MotionRecorder motionRecorder) {
         this.name = motionRecorder.getName();
@@ -31,7 +39,16 @@ public class MotionCapture implements eu.mcone.coresystem.api.bukkit.npc.capture
         this.motionChunk = motionRecorder.getChunk();
     }
 
-    public MotionCapture(Document document) {
+    public MotionCapture(MotionCapture motionCapture, eu.mcone.coresystem.bukkit.npc.capture.sys.MotionChunk chunk) {
+        this.name = motionCapture.getName();
+        this.creator = motionCapture.getCreator();
+        this.recorded = motionCapture.getRecorded();
+        this.world = motionCapture.getWorld();
+        this.length = motionCapture.getLength();
+        this.motionChunk = chunk;
+    }
+
+    public MotionCapture(MotionCaptureHandler motionCaptureHandler, Document document) {
         this.name = document.getString("name");
         this.creator = document.getString("creator");
         this.recorded = document.getLong("recorded");
@@ -41,7 +58,30 @@ public class MotionCapture implements eu.mcone.coresystem.api.bukkit.npc.capture
         byte[] genericChunkData = document.get("chunk", Binary.class).getData();
 
         if (genericChunkData != null) {
-            this.motionChunk = new MotionChunk(GenericUtils.deserialize(MotionChunk.MotionChunkData.class, genericChunkData));
+            CodecInputStream inputStream = new CodecInputStream(motionCaptureHandler.getCodecRegistry());
+            boolean migrated = false;
+            Map<Integer, byte[]> mapData = GenericUtils.deserialize(HashMap.class, genericChunkData);
+
+            if (mapData != null) {
+                Map<Integer, List<Codec<?, ?>>> codecs = new HashMap<>();
+
+                DeserializeCallback callback;
+                for (Map.Entry<Integer, byte[]> mapDataEntry : mapData.entrySet()) {
+                    callback = inputStream.deserialize(mapDataEntry.getValue());
+                    codecs.put(mapDataEntry.getKey(), callback.getCodecs());
+
+                    if (callback.getMigrated() > 0 && Boolean.parseBoolean(System.getProperty("SaveCodecMigrations"))) {
+                        mapData.put(mapDataEntry.getKey(), callback.getMigratedCodecs());
+                        migrated = true;
+                    }
+                }
+
+                if (migrated) {
+                    motionCaptureHandler.migrateChunk(name, GenericUtils.serialize(mapData));
+                }
+
+                this.motionChunk = new eu.mcone.coresystem.bukkit.npc.capture.sys.MotionChunk(new MotionChunk.MotionChunkData(codecs));
+            }
         } else {
             throw new NullPointerException("Could not encode byte array to motion chunk data");
         }
@@ -53,6 +93,6 @@ public class MotionCapture implements eu.mcone.coresystem.api.bukkit.npc.capture
                 .append("recorded", recorded)
                 .append("world", world)
                 .append("length", length)
-                .append("chunk", GenericUtils.serialize(motionChunk.getChunkData()));
+                .append("chunk", motionChunk.getChunkData().serialize());
     }
 }
