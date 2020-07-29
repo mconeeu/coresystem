@@ -1,14 +1,10 @@
-package eu.mcone.coresystem.bukkit.codec;
+package eu.mcone.coresystem.api.bukkit.codec;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.codec.DeserializeCallback;
-import eu.mcone.coresystem.api.bukkit.codec.Codec;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-
-import static eu.mcone.coresystem.bukkit.codec.CodecRegistry.getCodecVersion;
 
 public class CodecInputStream {
 
@@ -35,7 +31,7 @@ public class CodecInputStream {
                 while (codecID != -1) {
                     Class<? extends Codec<?, ?>> codecClass = codecRegistry.getCodecByID((byte) codecID);
                     byte version = dataInputStream.readByte();
-                    byte codecVersion = getCodecVersion(codecClass);
+                    byte codecVersion = CodecRegistry.getCodecVersion(codecClass);
                     Codec<?, ?> codec = codecClass.newInstance();
 
                     codec.setCodecID((byte) codecID);

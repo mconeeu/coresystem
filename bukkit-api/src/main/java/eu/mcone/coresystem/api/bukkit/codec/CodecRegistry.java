@@ -30,4 +30,14 @@ public interface CodecRegistry {
     boolean existsCodec(Class<? extends Codec<?, ?>> codec);
 
     boolean hasCodec(Object object);
+
+    static byte getCodecVersion(Class<?> clazz) {
+        try {
+            return clazz.getField("CODEC_VERSION").getByte(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
 }

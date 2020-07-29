@@ -1,13 +1,13 @@
-package eu.mcone.coresystem.bukkit.codec;
+package eu.mcone.coresystem.api.bukkit.codec;
 
-import eu.mcone.coresystem.api.bukkit.codec.Codec;
-
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 
-import static eu.mcone.coresystem.bukkit.codec.CodecRegistry.getCodecVersion;
 
-public class CodecOutputStream {
+public class CodecOutputStream implements Serializable {
 
     public CodecOutputStream() {
     }
@@ -18,8 +18,7 @@ public class CodecOutputStream {
             DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
 
             for (Codec<?, ?> codec : codecs) {
-                byte version = getCodecVersion(codec.getClass());
-                System.out.println(codec.toString());
+                byte version = CodecRegistry.getCodecVersion(codec.getClass());
 
                 if (version != 0) {
                     dataOutputStream.writeByte(codec.getCodecID());
@@ -30,9 +29,7 @@ public class CodecOutputStream {
                 }
             }
 
-            byte[] length = byteArrayOutputStream.toByteArray();
-            System.out.println("Serialized length: " + length.length);
-            return length;
+            return byteArrayOutputStream.toByteArray();
         } catch (IOException e) {
             e.printStackTrace();
         }

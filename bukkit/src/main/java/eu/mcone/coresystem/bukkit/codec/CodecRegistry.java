@@ -48,6 +48,11 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
         try {
             if (!existsCodec(codecClass)) {
                 if (Packet.class.isAssignableFrom(triggerClass) || Event.class.isAssignableFrom(triggerClass)) {
+                    if (codecIDs.containsKey(codecID)) {
+                        instance.sendConsoleMessage("§cCodec id " + codecID + " already registered, codec class " + codecIDs.get(codecID).getSimpleName());
+                        return false;
+                    }
+
                     if (!encoderIDs.containsKey(encoderID)) {
                         encoderIDs.put(encoderID, encoder);
                     }
@@ -198,15 +203,5 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
         }
 
         return false;
-    }
-
-    public static byte getCodecVersion(Class<?> clazz) {
-        try {
-            return clazz.getField("CODEC_VERSION").getByte(null);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            e.printStackTrace();
-        }
-
-        return 0;
     }
 }

@@ -8,7 +8,6 @@ package eu.mcone.coresystem.bukkit.npc.capture;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.codec.CodecRegistry;
 import eu.mcone.coresystem.api.bukkit.npc.capture.Recorder;
-import eu.mcone.coresystem.bukkit.npc.capture.sys.MotionChunk;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -24,7 +23,7 @@ public class MotionRecorder extends Recorder implements eu.mcone.coresystem.api.
     @Getter
     private final String name;
     @Getter
-    private final eu.mcone.coresystem.bukkit.npc.capture.sys.MotionChunk chunk;
+    private final MotionChunk chunk;
     @Getter
     protected long recorded;
     private BukkitTask task;
