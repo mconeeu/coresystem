@@ -173,10 +173,10 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
                 Player p = bukkit();
 
                 if (vanish) {
+                    BukkitCoreSystem.getSystem().getVanishManager().recalculateVanishes();
+
                     for (Player t : Bukkit.getOnlinePlayers()) {
-                        if (!t.hasPermission("system.bukkit.vanish.see") && t != p) {
-                            t.hidePlayer(p);
-                        } else {
+                        if (t.hasPermission("system.bukkit.vanish.see") || t == p) {
                             CoreScoreboard sb = CoreSystem.getInstance().getCorePlayer(t).getScoreboard();
 
                             if (sb instanceof MainScoreboard) {
@@ -188,10 +188,11 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
                     p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
                     BukkitCoreSystem.getInstance().getMessenger().send(bukkit(), "§2Du bist nun im §aVanish Modus§2!");
                 } else {
-                    for (Player t : Bukkit.getOnlinePlayers()) {
-                        t.showPlayer(p);
+                    BukkitCoreSystem.getSystem().getVanishManager().recalculateVanishes();
 
+                    for (Player t : Bukkit.getOnlinePlayers()) {
                         CoreScoreboard sb = CoreSystem.getInstance().getCorePlayer(t).getScoreboard();
+
                         if (sb instanceof MainScoreboard) {
                             sb.reload();
                         }

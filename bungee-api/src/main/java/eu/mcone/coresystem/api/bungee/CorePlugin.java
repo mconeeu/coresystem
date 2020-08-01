@@ -37,6 +37,7 @@ public abstract class CorePlugin extends Plugin implements GlobalCorePlugin {
         this.messenger = new Messenger(prefixTranslation);
 
         if (sentryDsn != null && Boolean.parseBoolean(System.getProperty("EnableSentry"))) {
+            sendConsoleMessage("§aInitialzing Sentry...");
             this.sentryClient = SentryClientFactory.sentryClient(sentryDsn);
         } else {
             this.sentryClient = null;

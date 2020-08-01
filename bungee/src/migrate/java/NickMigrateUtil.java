@@ -5,7 +5,6 @@
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoCollection;
-import eu.mcone.coresystem.api.core.player.Group;
 import group.onegaming.networkmanager.core.api.database.Database;
 import group.onegaming.networkmanager.core.database.MongoConnection;
 import org.bson.Document;
@@ -14,9 +13,8 @@ import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.pojo.PojoCodecProvider;
 
-import java.util.Random;
-
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.*;
 
 public class NickMigrateUtil {
 
@@ -35,29 +33,15 @@ public class NickMigrateUtil {
                 )
         ).connect();
 
-        MongoCollection<Document> old = con.getDatabase(Database.SYSTEM).getCollection("bungeesystem_nicks_old");
-        MongoCollection<Document> skins = con.getDatabase(Database.SYSTEM).getCollection("bungeesystem_textures");
         MongoCollection<Document> nicks = con.getDatabase(Database.SYSTEM).getCollection("nicks");
 
-        Random random = new Random();
-        for (Document doc : old.find()) {
-            System.out.println("migrating nick "+doc.getString("name"));
-            Document skin = skins.find(
-                    eq("name", doc.getString("texture"))
-            ).first();
-
-            if (skin == null) {
-                System.out.println("could not find texture "+doc.getString("texture"));
-            } else {
-                nicks.insertOne(
-                        new Document("name", doc.getString("name"))
-                                .append("group", (random.nextInt(1) == 0 ? Group.SPIELER : Group.PREMIUM).toString())
-                                .append("texture_value", skin.getString("texture_value"))
-                                .append("texture_signature", skin.getString("texture_signature"))
-                                .append("coins", random.nextInt(100) + 50)
-                                .append("onlineTime", random.nextInt(1000) + 10)
-                );
-            }
+        for (Document document : nicks.find()) {
+            nicks.updateOne(eq(document.getObjectId("_id")), combine(
+                    set("online_time", (long) document.getInteger("onlinetime")),
+                    set("nick_uuid", document.getString("nickUuid")),
+                    unset("onlinetime"),
+                    unset("nickUuid")
+            ));
         }
     }
 

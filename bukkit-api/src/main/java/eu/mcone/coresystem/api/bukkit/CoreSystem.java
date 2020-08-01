@@ -17,6 +17,7 @@ import eu.mcone.coresystem.api.bukkit.player.*;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
 import eu.mcone.coresystem.api.bukkit.util.*;
+import eu.mcone.coresystem.api.bukkit.vanish.VanishManager;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.WorldManager;
@@ -40,7 +41,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
                 "bukkitsystem",
                 ChatColor.WHITE,
                 "system.prefix.server",
-                "https://2edb2eff2d724190bb5be92f90cbcbfd@o267551.ingest.sentry.io/5341153"
+                "https://2edb2eff2d724190bb5be92f90cbcbfd@o267551.ingest.sentry.io/5341153?stacktrace.app.packages=eu.mcone.coresystem"
         );
     }
 
@@ -100,6 +101,8 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return AfkManager instance
      */
     public abstract AfkManager getAfkManager();
+
+    public abstract VanishManager getVanishManager();
 
     /**
      * returns the bukkit Labymod API

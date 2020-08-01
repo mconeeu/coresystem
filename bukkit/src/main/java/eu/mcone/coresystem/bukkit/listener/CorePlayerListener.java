@@ -88,12 +88,10 @@ public class CorePlayerListener implements Listener {
             CorePlayerLoadedEvent e = new CorePlayerLoadedEvent(loadReason, BukkitCoreSystem.getInstance().getCorePlayer(p), p);
             Bukkit.getPluginManager().callEvent(e);
 
-            if (!e.isHidden()) {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (player != p) {
-                        player.showPlayer(p);
-                        p.showPlayer(player);
-                    }
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player != p) {
+                    BukkitCoreSystem.getSystem().getVanishManager().showIfShouldBeSeen(player, p);
+                    BukkitCoreSystem.getSystem().getVanishManager().showIfShouldBeSeen(p, player);
                 }
             }
 

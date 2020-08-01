@@ -13,6 +13,7 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.io.Serializable;
 import java.util.Random;
+import java.util.UUID;
 
 @BsonDiscriminator
 @AllArgsConstructor
@@ -21,14 +22,16 @@ public class Nick implements Serializable {
 
     private static final Random NICK_RANDOM = new Random();
 
+    private final UUID uuid;
     private final String name;
     private final Group group;
     private final SkinInfo skinInfo;
     private final int coins;
     private final long onlineTime;
 
-    public Nick(String name, SkinInfo skin) {
+    public Nick(UUID uuid, String name, SkinInfo skin) {
         this(
+                uuid,
                 name,
                 NICK_RANDOM.nextInt(1) == 0 ? Group.SPIELER : Group.PREMIUM,
                 skin,
@@ -38,9 +41,10 @@ public class Nick implements Serializable {
     }
 
     @BsonCreator
-    public Nick(@BsonProperty("name") String name,  @BsonProperty("group") Group group, @BsonProperty("texture_value") String textureValue,
-                @BsonProperty("texture_signature") String textureSignature, @BsonProperty("coins") int coins, @BsonProperty("onlineTime") long onlineTime) {
+    public Nick(@BsonProperty("nick_uuid") String uuid, @BsonProperty("name") String name, @BsonProperty("group") Group group, @BsonProperty("texture_value") String textureValue,
+                @BsonProperty("texture_signature") String textureSignature, @BsonProperty("coins") int coins, @BsonProperty("online_time") long onlineTime) {
         this(
+                UUID.fromString(uuid),
                 name,
                 group,
                 new SkinInfo("nick_" + name, textureValue, textureSignature, SkinInfo.SkinType.CUSTOM),
@@ -59,4 +63,5 @@ public class Nick implements Serializable {
                 ", onlineTime=" + onlineTime +
                 '}';
     }
+
 }

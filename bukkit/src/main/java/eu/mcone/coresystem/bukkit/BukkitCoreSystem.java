@@ -49,6 +49,7 @@ import eu.mcone.coresystem.bukkit.npc.CoreNpcManager;
 import eu.mcone.coresystem.bukkit.overwatch.Overwatch;
 import eu.mcone.coresystem.bukkit.player.*;
 import eu.mcone.coresystem.bukkit.util.*;
+import eu.mcone.coresystem.bukkit.vanish.CoreVanishManager;
 import eu.mcone.coresystem.bukkit.world.WorldManager;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.PermissionManager;
@@ -118,6 +119,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private PlayerUtils playerUtils;
     @Getter
     private MoneyUtil moneyUtil;
+    @Getter
+    private CoreVanishManager vanishManager;
     @Getter
     private Gson gson;
     @Getter
@@ -217,6 +220,9 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             sendConsoleMessage("§aStarting NickManager...");
             nickManager = new CoreNickManager(this);
 
+            sendConsoleMessage("§aStarting VanishManager...");
+            vanishManager = new CoreVanishManager(this);
+
             sendConsoleMessage("§aLoading Commands, Events, CoreInventories...");
             this.registerListener();
             this.registerCommands();
@@ -250,12 +256,10 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                     ), p);
                     getServer().getPluginManager().callEvent(e);
 
-                    if (!e.isHidden()) {
-                        for (Player player : Bukkit.getOnlinePlayers()) {
-                            if (player != p) {
-                                player.showPlayer(p);
-                                p.showPlayer(player);
-                            }
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        if (player != p) {
+                            BukkitCoreSystem.getSystem().getVanishManager().showIfShouldBeSeen(player, p);
+                            BukkitCoreSystem.getSystem().getVanishManager().showIfShouldBeSeen(p, player);
                         }
                     }
 
@@ -351,7 +355,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new ReloadListener(),
                 new SentryListener(),
                 new SignChangeListener(),
-                new VanishListener(),
                 new ArmorListener()
         );
     }

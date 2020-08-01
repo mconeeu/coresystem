@@ -9,6 +9,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.bukkit.util.ReflectionManager;
 import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
@@ -46,7 +47,7 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
             ((BukkitCorePlayer) cp).setNick(nick);
             ((BukkitCorePlayer) cp).setNicked(true);
 
-            setNick(p, nick.getName(), nick.getSkinInfo());
+            setNick(p, nick.getName(), nick.getUuid(), nick.getSkinInfo());
             if (notify) {
                 BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Dein Nickname ist nun §a" + nick.getName());
             }
@@ -80,10 +81,10 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
             ((BukkitCorePlayer) cp).setNicked(false);
 
             if (!bypassSkin) {
-                setNick(p, cp.getName(), oldProfiles.get(p.getUniqueId()));
+                setNick(p, cp.getName(), cp.getUuid(), oldProfiles.get(p.getUniqueId()));
                 oldProfiles.remove(p.getUniqueId());
             } else {
-                setNick(p, cp.getName(), ((CraftPlayer) p).getProfile());
+                setNick(p, ((CraftPlayer) p).getProfile(), cp.getName(), cp.getUuid());
             }
             BukkitCoreSystem.getInstance().getMessenger().send(p, "Du bist nun nicht mehr genickt!");
         } else {
@@ -92,16 +93,17 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
     }
 
     @SuppressWarnings("deprecation")
-    private void setNick(Player p, String name, eu.mcone.coresystem.api.core.player.SkinInfo skin) {
+    private void setNick(Player p, String name, UUID uuid, eu.mcone.coresystem.api.core.player.SkinInfo skin) {
         EntityPlayer ep = ((CraftPlayer) p).getHandle();
 
-        GameProfile gp = ((CraftPlayer) p).getProfile();
+        GameProfile gp = ((CraftPlayer) p).getProfile(), customGp = new GameProfile(p.getUniqueId(), name);
         for (Property pr : gp.getProperties().values()) {
             if (pr.getName().equalsIgnoreCase("textures"))
                 oldProfiles.put(p.getUniqueId(), instance.getPlayerUtils().constructSkinInfo(name, pr.getValue(), pr.getSignature()));
         }
         gp.getProperties().removeAll("textures");
         gp.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
+        customGp.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
 
         ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, ep));
 
@@ -120,7 +122,12 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
                     ((CraftWorld) p.getWorld()).getHandle().worldData.getType(),
                     WorldSettings.EnumGamemode.getById(p.getGameMode().getValue())
             ));
-            ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ep));
+            PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo();
+            ReflectionManager.setValue(packet, "a", PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER);
+            ReflectionManager.setValue(packet, "b", new ArrayList<>(Collections.singleton(
+                    packet.new PlayerInfoData(customGp, 0, WorldSettings.EnumGamemode.SURVIVAL, ep.getPlayerListName())
+            )));
+            ep.playerConnection.sendPacket(packet);
 
             p.setFlying(flying);
             p.teleport(location);
@@ -131,19 +138,20 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
             p.setHealth(health);
         }, 1);
 
-        setNick(p, name, gp);
+        setNick(p, gp, name, uuid);
     }
 
-    public void setNick(Player p, String name, GameProfile gameProfile) {
-        setGameProfileName(gameProfile, name);
+    public void setNick(Player p, GameProfile gp, String name, UUID uuid) {
+        setGameProfileName(gp, name, uuid);
 
         List<Player> canSee = new ArrayList<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (player.canSee(p)) {
+            if (player.canSee(p) && player != p) {
                 canSee.add(player);
                 player.hidePlayer(p);
             }
         }
+
         for (Player player : canSee) {
             player.showPlayer(p);
             instance.getCorePlayer(player).getScoreboard().reload();
@@ -154,16 +162,20 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
         }
     }
 
-    public static void setGameProfileName(GameProfile gp, String name) {
+    public static void setGameProfileName(GameProfile gp, String name, UUID uuid) {
         try {
-            final Field nameField = gp.getClass().getDeclaredField("name");
+            final Field nameField = gp.getClass().getDeclaredField("name"), uuidField = gp.getClass().getDeclaredField("id");
             nameField.setAccessible(true);
+            uuidField.setAccessible(true);
+
             int modifiers = nameField.getModifiers();
-            final Field modifierField = nameField.getClass().getDeclaredField("modifiers");
+            final Field modifierField = Field.class.getDeclaredField("modifiers");
             modifiers &= 0xFFFFFFEF;
             modifierField.setAccessible(true);
             modifierField.setInt(nameField, modifiers);
+
             nameField.set(gp, name);
+            uuidField.set(gp, uuid);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -181,7 +193,7 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
                     gp.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
                 }
 
-                setGameProfileName(gp, cp.getName());
+                setGameProfileName(gp, cp.getName(), cp.getUuid());
             }
         }
     }

@@ -60,7 +60,7 @@ public class InfoPluginChannelListener implements PluginMessageListener {
                     break;
                 }
                 case "NICK": {
-                    Nick nick = new Nick(in.readUTF(), Group.valueOf(in.readUTF()), in.readUTF(), in.readUTF(), Integer.parseInt(in.readUTF()), Long.parseLong(in.readUTF()));
+                    Nick nick = new Nick(in.readUTF(), in.readUTF(), Group.valueOf(in.readUTF()), in.readUTF(), in.readUTF(), Integer.parseInt(in.readUTF()), Long.parseLong(in.readUTF()));
                     boolean notify = Boolean.parseBoolean(in.readUTF());
                     NickEvent event = new NickEvent(cp, CoreSystem.getInstance().getNickManager().isAllowSkinChange(), nick);
                     Bukkit.getPluginManager().callEvent(event);

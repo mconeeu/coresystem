@@ -116,6 +116,7 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
     private static void sendNickRequest(ProxiedPlayer p, Nick nick, boolean notify) {
         CoreSystem.getInstance().getChannelHandler().createInfoRequest(p,
                 "NICK",
+                nick.getUuid().toString(),
                 nick.getName(),
                 nick.getGroup().toString(),
                 nick.getSkinInfo().getValue(),
