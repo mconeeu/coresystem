@@ -4,8 +4,7 @@ import eu.mcone.coresystem.api.bukkit.codec.DeserializeCallback;
 import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionRecorder;
 import eu.mcone.coresystem.api.core.util.GenericUtils;
-import eu.mcone.coresystem.bukkit.codec.CodecInputStream;
-import eu.mcone.coresystem.bukkit.npc.capture.sys.MotionChunk;
+import eu.mcone.coresystem.api.bukkit.codec.CodecInputStream;
 import lombok.Getter;
 import org.bson.Document;
 import org.bson.types.Binary;
@@ -39,7 +38,7 @@ public class MotionCapture implements eu.mcone.coresystem.api.bukkit.npc.capture
         this.motionChunk = motionRecorder.getChunk();
     }
 
-    public MotionCapture(MotionCapture motionCapture, eu.mcone.coresystem.bukkit.npc.capture.sys.MotionChunk chunk) {
+    public MotionCapture(MotionCapture motionCapture, MotionChunk chunk) {
         this.name = motionCapture.getName();
         this.creator = motionCapture.getCreator();
         this.recorded = motionCapture.getRecorded();
@@ -80,7 +79,7 @@ public class MotionCapture implements eu.mcone.coresystem.api.bukkit.npc.capture
                     motionCaptureHandler.migrateChunk(name, GenericUtils.serialize(mapData));
                 }
 
-                this.motionChunk = new eu.mcone.coresystem.bukkit.npc.capture.sys.MotionChunk(new MotionChunk.MotionChunkData(codecs));
+                this.motionChunk = new MotionChunk(new MotionChunk.MotionChunkData(codecs));
             }
         } else {
             throw new NullPointerException("Could not encode byte array to motion chunk data");
