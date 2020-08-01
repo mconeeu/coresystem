@@ -27,22 +27,24 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Pla
     private final PlayerNpc playerNpc;
 
     public MotionPlayer(final PlayerNpc playerNpc, final MotionCapture capture) {
+        super();
+
         this.playerNpc = playerNpc;
         this.capture = capture;
     }
 
     @Override
     public void play() {
-        currentTick = new AtomicInteger(0);
+        tick = new AtomicInteger(0);
         AtomicInteger packetsCount = new AtomicInteger(0);
         AtomicInteger currentProgress = new AtomicInteger(0);
         Map<Integer, List<Codec<?, ?>>> codecs = capture.getMotionChunk().getChunkData().getCodecs();
 
         Bukkit.getPluginManager().callEvent(new NpcAnimationStateChangeEvent(playerNpc, NpcAnimationStateChangeEvent.NpcAnimationState.START));
-        playingTask = Bukkit.getScheduler().runTaskTimerAsynchronously(CoreSystem.getInstance(), () -> {
+        task = Bukkit.getScheduler().runTaskTimerAsynchronously(CoreSystem.getInstance(), () -> {
             if (playing) {
                 if (Bukkit.getOnlinePlayers().size() != 0) {
-                    int tick = currentTick.get();
+                    int tick = this.tick.get();
 
                     if (packetsCount.get() < codecs.size() - 1) {
                         if (codecs.containsKey(tick)) {
@@ -55,20 +57,20 @@ public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Pla
                             int progress = (int) Math.round((100.00 / codecs.size()) * packetsCount.get());
                             if (progress != currentProgress.get()) {
                                 currentProgress.set(progress);
-                                Bukkit.getPluginManager().callEvent(new NpcAnimationProgressEvent(playerNpc, this.currentTick.get(), progress));
+                                Bukkit.getPluginManager().callEvent(new NpcAnimationProgressEvent(playerNpc, this.tick.get(), progress));
                             }
 
                             packetsCount.getAndIncrement();
                         }
 
                         if (forward) {
-                            this.currentTick.getAndIncrement();
-                        } else if (backward) {
-                            this.currentTick.getAndDecrement();
+                            this.tick.getAndIncrement();
+                        } else {
+                            this.tick.getAndDecrement();
                         }
                     } else {
                         playing = false;
-                        playingTask.cancel();
+                        task.cancel();
                         Bukkit.getPluginManager().callEvent(new NpcAnimationStateChangeEvent(playerNpc, NpcAnimationStateChangeEvent.NpcAnimationState.END));
                     }
                 }

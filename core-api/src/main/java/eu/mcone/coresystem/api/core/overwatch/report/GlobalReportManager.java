@@ -11,30 +11,30 @@ import java.util.UUID;
 
 public interface GlobalReportManager {
 
-    List<LiveReport> getLiveReports();
+    List<Report> getReports(int skip, int limit);
 
-    Map<Integer, List<LiveReport>> getLiveReportsSortedByLevel();
+    Map<Integer, List<Report>> getOpenReportsSortedByLevel();
 
-    long getOpenReportsCount();
+    Report getReport(String ID);
 
-    long getLiveReportsCount();
+    List<Report> getReports(UUID reported);
 
-    boolean isReportAlreadyTaken(String reportID);
+    List<Report> getReports(ReportState state, int skip, int limit);
+
+    List<Report> getReports(UUID reported, ReportState state);
+
+    long countOpenReports();
+
+    long countReports();
+
+    boolean isReportAlreadyTaken(String ID);
 
     boolean currentlyWorkingOnReport(UUID uuid);
 
-    AbstractReport getCurrentlyEditing(UUID uuid);
+    boolean existsReport(String ID);
+
+    Report getCurrentlyEditing(UUID uuid);
 
     boolean wasPlayerReported(UUID uuid);
-
-    LiveReport getLiveReport(String reportID);
-
-    LiveReport getLiveReport(UUID reported);
-
-    List<Report> getReports(ReportState state);
-
-    Report getReport(String reportID);
-
-    Report getReport(UUID reported);
 
 }

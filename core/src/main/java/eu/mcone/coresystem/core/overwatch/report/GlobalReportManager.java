@@ -7,11 +7,9 @@ package eu.mcone.coresystem.core.overwatch.report;
 
 import com.mongodb.client.MongoCollection;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
-import eu.mcone.coresystem.api.core.overwatch.report.LiveReport;
 import eu.mcone.coresystem.api.core.overwatch.report.Report;
 import eu.mcone.coresystem.api.core.overwatch.report.ReportState;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
-import eu.mcone.coresystem.core.overwatch.GlobalOverwatch;
 import group.onegaming.networkmanager.core.api.database.Database;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
@@ -22,21 +20,16 @@ import java.io.Serializable;
 import java.util.*;
 
 import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.combine;
+import static com.mongodb.client.model.Filters.*;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 public abstract class GlobalReportManager implements eu.mcone.coresystem.api.core.overwatch.report.GlobalReportManager, Serializable {
 
-    protected final MongoCollection<LiveReport> liveReportsCollection;
     protected final MongoCollection<Report> reportsCollection;
 
     //TODO: Implementing Ban-/Mute Manager for the TrustedUser System
-    protected GlobalReportManager(GlobalOverwatch overwatch, GlobalCoreSystem instance) {
-        liveReportsCollection = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).withCodecRegistry(
-                fromRegistries(getDefaultCodecRegistry(), fromProviders(new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY), PojoCodecProvider.builder().conventions(Conventions.DEFAULT_CONVENTIONS).automatic(true).build()))
-        ).getCollection("overwatch_live_reports", LiveReport.class);
+    protected GlobalReportManager(GlobalCoreSystem instance) {
         reportsCollection = ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).withCodecRegistry(
                 fromRegistries(getDefaultCodecRegistry(), fromProviders(new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY), PojoCodecProvider.builder().conventions(Conventions.DEFAULT_CONVENTIONS).automatic(true).build()))
         ).getCollection("overwatch_reports", Report.class);
@@ -48,13 +41,13 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @return Map
      */
     @Override
-    public List<LiveReport> getLiveReports() {
-        List<LiveReport> result = new ArrayList<>();
-        for (LiveReport liveReport : liveReportsCollection.find()) {
-            result.add(liveReport);
+    public List<Report> getReports(int skip, int limit) {
+        List<Report> reports = new ArrayList<>();
+        for (Report report : reportsCollection.find().skip(skip).limit(limit)) {
+            reports.add(report);
         }
 
-        return result;
+        return reports;
     }
 
     /**
@@ -63,14 +56,14 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @return Map
      */
     @Override
-    public Map<Integer, List<LiveReport>> getLiveReportsSortedByLevel() {
-        Map<Integer, List<LiveReport>> sortedReports = new HashMap<>();
+    public Map<Integer, List<Report>> getOpenReportsSortedByLevel() {
+        Map<Integer, List<Report>> sortedReports = new HashMap<>();
 
-        for (LiveReport report : liveReportsCollection.find()) {
+        for (Report report : reportsCollection.find(eq("state", ReportState.OPEN.toString()))) {
             if (sortedReports.containsKey(report.getPriority().getLevel())) {
                 sortedReports.get(report.getPriority().getLevel()).add(report);
             } else {
-                sortedReports.put(report.getPriority().getLevel(), new ArrayList<LiveReport>() {{
+                sortedReports.put(report.getPriority().getLevel(), new ArrayList<Report>() {{
                     add(report);
                 }});
             }
@@ -82,12 +75,12 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
     /**
      * Returns a live Report object for the specified report ID
      *
-     * @param reportID UniqueID
+     * @param ID UniqueID
      * @return LiveReport
      */
     @Override
-    public LiveReport getLiveReport(String reportID) {
-        return liveReportsCollection.find(eq("reportID", reportID)).first();
+    public Report getReport(String ID) {
+        return reportsCollection.find(eq("iD", ID)).first();
     }
 
     /**
@@ -97,8 +90,13 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @return Report
      */
     @Override
-    public LiveReport getLiveReport(UUID reported) {
-        return liveReportsCollection.find(eq("reported", reported)).first();
+    public List<Report> getReports(UUID reported) {
+        List<Report> reports = new ArrayList<>();
+        for (Report report : reportsCollection.find(eq("reported", reported))) {
+            reports.add(report);
+        }
+
+        return reports;
     }
 
     /**
@@ -107,24 +105,13 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @return Map
      */
     @Override
-    public List<Report> getReports(ReportState state) {
+    public List<Report> getReports(ReportState state, int skip, int limit) {
         List<Report> result = new ArrayList<>();
-        for (Report report : reportsCollection.find(eq("state", state.toString()))) {
+        for (Report report : reportsCollection.find(eq("state", state.toString())).skip(skip).limit(limit)) {
             result.add(report);
         }
 
         return result;
-    }
-
-    /**
-     * Returns a Report object for the specified report ID
-     *
-     * @param reportID UniqueID
-     * @return LiveReport
-     */
-    @Override
-    public Report getReport(String reportID) {
-        return reportsCollection.find(eq("reportID", reportID)).first();
     }
 
     /**
@@ -134,8 +121,13 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @return Report
      */
     @Override
-    public Report getReport(UUID reported) {
-        return reportsCollection.find(eq("reported", reported)).first();
+    public List<Report> getReports(UUID reported, ReportState state) {
+        List<Report> reports = new ArrayList<>();
+        for (Report report : reportsCollection.find(and(eq("reported", reported), eq("state", state.toString())))) {
+            reports.add(report);
+        }
+
+        return reports;
     }
 
     /**
@@ -144,35 +136,29 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @return open report as long
      */
     @Override
-    public long getOpenReportsCount() {
-        return getLiveReportsCount() + reportsCollection.countDocuments(eq("state", ReportState.OPEN.toString()));
+    public long countOpenReports() {
+        return reportsCollection.countDocuments(eq("state", ReportState.OPEN.toString()));
     }
 
     /**
-     * Counts all live Reports
+     * Counts all currently OPEN Reports
      *
      * @return open report as long
      */
     @Override
-    public long getLiveReportsCount() {
-        return liveReportsCollection.countDocuments();
+    public long countReports() {
+        return reportsCollection.countDocuments();
     }
 
     /**
      * Checks if the report is already taken
      *
-     * @param reportID ReportID
+     * @param ID ReportID
      * @return boolean
      */
     @Override
-    public boolean isReportAlreadyTaken(String reportID) {
-        Report report = reportsCollection.find(eq("reportID", reportID)).first();
-
-        if (report != null) {
-            return report.getTeamMember() != null;
-        }
-
-        return false;
+    public boolean isReportAlreadyTaken(String ID) {
+        return reportsCollection.find(and(eq("iD", ID), exists("member", true))).first() != null;
     }
 
     /**
@@ -183,7 +169,11 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      */
     @Override
     public boolean currentlyWorkingOnReport(UUID uuid) {
-        return reportsCollection.find(combine(eq("teamMember", uuid), eq("state", ReportState.IN_PROGRESS.toString()))).first() != null;
+        return reportsCollection.find(and(eq("member", uuid), eq("state", ReportState.IN_PROGRESS.toString()))).first() != null;
+    }
+
+    public boolean existsReport(String ID) {
+        return reportsCollection.find(eq("iD", ID)).first() != null;
     }
 
     /**
@@ -194,7 +184,7 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      */
     @Override
     public Report getCurrentlyEditing(UUID uuid) {
-        return reportsCollection.find(combine(eq("teamMember", uuid), eq("state", ReportState.IN_PROGRESS.toString()))).first();
+        return reportsCollection.find(and(eq("member", uuid), eq("state", ReportState.IN_PROGRESS.toString()))).first();
     }
 
     /**
@@ -205,7 +195,7 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      */
     @Override
     public boolean wasPlayerReported(UUID uuid) {
-        return liveReportsCollection.find(eq("reported", uuid)).first() != null;
+        return reportsCollection.find(eq("reported", uuid)).first() != null;
     }
 
 }

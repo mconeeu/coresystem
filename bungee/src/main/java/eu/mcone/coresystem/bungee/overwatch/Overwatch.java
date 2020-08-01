@@ -7,11 +7,17 @@ package eu.mcone.coresystem.bungee.overwatch;
 
 import eu.mcone.coresystem.api.bungee.util.Messenger;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
+import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.bungee.command.OverwatchCMD;
+import eu.mcone.coresystem.bungee.command.ReportCMD;
 import eu.mcone.coresystem.bungee.overwatch.punish.PunishManager;
 import eu.mcone.coresystem.bungee.overwatch.report.ReportManager;
 import eu.mcone.coresystem.bungee.overwatch.trusted.TrustManager;
 import eu.mcone.coresystem.core.overwatch.GlobalOverwatch;
 import lombok.Getter;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+import java.util.HashSet;
 
 @Getter
 public class Overwatch extends GlobalOverwatch implements eu.mcone.coresystem.api.bungee.overwatch.Overwatch {
@@ -21,6 +27,8 @@ public class Overwatch extends GlobalOverwatch implements eu.mcone.coresystem.ap
     private final TrustManager trustManager;
     private final Messenger messenger;
 
+    private final HashSet<ProxiedPlayer> loggedIn;
+
     public Overwatch(GlobalCoreSystem instance) {
         super(instance);
 
@@ -28,5 +36,23 @@ public class Overwatch extends GlobalOverwatch implements eu.mcone.coresystem.ap
         punishManager = new PunishManager(this);
         trustManager = new TrustManager(this);
         messenger = new Messenger("overwatch.prefix");
+        loggedIn = new HashSet<>();
+
+        BungeeCoreSystem.getSystem().registerCommands(
+                new ReportCMD(this),
+                new OverwatchCMD(this)
+        );
+    }
+
+    public void login(ProxiedPlayer player) {
+        loggedIn.add(player);
+    }
+
+    public void logout(ProxiedPlayer player) {
+        loggedIn.remove(player);
+    }
+
+    public boolean isLoggedIn(ProxiedPlayer player) {
+        return loggedIn.contains(player);
     }
 }

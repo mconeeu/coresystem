@@ -15,72 +15,66 @@ import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class Player {
+
     @Getter
     protected boolean playing = true;
-
-    protected AtomicInteger currentTick;
     protected boolean forward = true;
-    protected boolean backward = false;
+    protected AtomicInteger tick;
 
-    protected BukkitTask playingTask;
+    protected HashSet<org.bukkit.entity.Player> viewer;
 
-    protected HashSet<org.bukkit.entity.Player> watcher = new HashSet<>();
+    protected BukkitTask task;
+
+    public Player() {
+        tick = new AtomicInteger();
+        viewer = new HashSet<>();
+    }
 
     public abstract void play();
 
     public void restart() {
         if (playing) {
-            currentTick = new AtomicInteger(0);
+            tick = new AtomicInteger(0);
         } else {
             playing = true;
             play();
         }
     }
 
-    public void stopPlaying() {
-        playing = false;
+    public void playing(boolean playing) {
+        this.playing = playing;
     }
 
-    public void startPlaying() {
-        playing = true;
-    }
-
-    public void backward() {
-        forward = false;
-        backward = true;
-    }
-
-    public void forward() {
-        forward = true;
-        backward = false;
+    public void forward(boolean forward) {
+        this.forward = forward;
     }
 
     public void stop() {
         playing = false;
-        playingTask.cancel();
+        task.cancel();
     }
 
-    public void addWatcher(final org.bukkit.entity.Player player) {
-        watcher.add(player);
+    public void addViewer(final org.bukkit.entity.Player player) {
+        viewer.add(player);
     }
 
-    public void addWatcher(final org.bukkit.entity.Player... players) {
-        watcher.addAll(Arrays.asList(players));
+    public void addViewer(final org.bukkit.entity.Player... players) {
+        viewer.addAll(Arrays.asList(players));
     }
 
-    public void removeWatcher(final org.bukkit.entity.Player player) {
-        watcher.remove(player);
+    public void removeViewer(final org.bukkit.entity.Player player) {
+        viewer.remove(player);
     }
 
-    public void removeWatcher(final org.bukkit.entity.Player... players) {
-        watcher.removeAll(Arrays.asList(players));
+    public void removeViewer(final org.bukkit.entity.Player... players) {
+        viewer.removeAll(Arrays.asList(players));
     }
 
-    public Collection<org.bukkit.entity.Player> getWatchers() {
-        return new ArrayList<>(watcher);
+    public Collection<org.bukkit.entity.Player> getViewer() {
+        return new ArrayList<>(viewer);
     }
 
-    public int getCurrentTick() {
-        return currentTick.get();
+    public int getTick() {
+        return tick.get();
     }
 }

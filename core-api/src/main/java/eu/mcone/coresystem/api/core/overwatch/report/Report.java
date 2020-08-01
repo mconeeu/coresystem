@@ -5,61 +5,130 @@
 
 package eu.mcone.coresystem.api.core.overwatch.report;
 
+import eu.mcone.coresystem.api.core.util.IDUtils;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
+import org.bson.codecs.pojo.annotations.BsonIgnore;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
-@NoArgsConstructor
 @BsonDiscriminator
-public class Report extends AbstractReport {
+public class Report {
+
+    private final String ID;
+    private final long timestamp;
 
     @Setter
-    private UUID teamMember;
-    private String server;
-    @Setter
-    private String actionID;
+    private UUID member;
+    private final UUID reported;
+    private final List<UUID> reporter;
+
+    private final Map<String, String> updates;
+
+    private final ReportReason reason;
     @Setter
     private ReportState state;
-    private Map<String, String> updates;
+    private int points;
+    //TODO: Implement her the game history (HistoryID)
+    @Setter
+    private String server;
+    @Setter
+    private String punishID;
+    @Setter
+    private String replayID;
+    @Setter
+    private String chatLogID;
 
-    public Report(String reportID, UUID teamMember, UUID reported, List<UUID> reporter, ReportReason reportReason, String server, long timestamp, Map<String, String> updates, int reportPoints) {
-        super(reportID, timestamp, reported, reporter, reportReason, reportPoints);
-        this.teamMember = teamMember;
-        this.server = server;
-        this.state = ReportState.IN_PROGRESS;
-        this.updates = updates;
+    public Report(UUID reported, UUID reporter, ReportReason reason, int points) {
+        this.ID = IDUtils.generateID();
+        this.timestamp = System.currentTimeMillis() / 1000;
+        this.reported = reported;
+        this.reporter = new ArrayList<UUID>() {{
+            add(reporter);
+        }};
+
+        this.updates = new HashMap<>();
+
+        this.reason = reason;
+        this.points = points;
+        this.state = ReportState.OPEN;
+    }
+
+    public Report(UUID reported, UUID reporter, ReportReason reason, int points, String replayID) {
+        this.ID = IDUtils.generateID();
+        this.timestamp = System.currentTimeMillis() / 1000;
+        this.reported = reported;
+        this.reporter = new ArrayList<UUID>() {{
+            add(reporter);
+        }};
+
+        this.updates = new HashMap<>();
+
+        this.reason = reason;
+        this.points = points;
+        this.state = ReportState.OPEN;
+        this.replayID = replayID;
     }
 
     @BsonCreator
-    public Report(@BsonProperty("reportID") String reportID, @BsonProperty("timestamp") long timestamp, @BsonProperty("reported") UUID reported, @BsonProperty("reporter") List<UUID> reporter,
-                  @BsonProperty("reportReason") ReportReason reportReason, @BsonProperty("teamMember") UUID teamMember, @BsonProperty("server") String server,
-                  @BsonProperty("actionID") String actionID, @BsonProperty("state") ReportState state,
-                  @BsonProperty("updates") Map<String, String> updates, @BsonProperty("reportPoints") int reportPoints) {
-        super(reportID, timestamp, reported, reporter, reportReason, reportPoints);
-        this.teamMember = teamMember;
-        this.server = server;
-        this.actionID = actionID;
-        this.state = state;
+    public Report(@BsonProperty("iD") String ID,
+                  @BsonProperty("timestamp") long timestamp,
+                  @BsonProperty("member") UUID member,
+                  @BsonProperty("reported") UUID reported,
+                  @BsonProperty("reporter") List<UUID> reporter,
+                  @BsonProperty("updates") Map<String, String> updates,
+                  @BsonProperty("reason") ReportReason reason,
+                  @BsonProperty("state") ReportState state,
+                  @BsonProperty("points") int points,
+                  @BsonProperty("server") String server,
+                  @BsonProperty("punishID") String punishID,
+                  @BsonProperty("replayID") String replayID,
+                  @BsonProperty("chatLogID") String chatLogID) {
+        this.ID = ID;
+        this.timestamp = timestamp;
+        this.member = member;
+        this.reported = reported;
+        this.reporter = reporter;
         this.updates = updates;
+        this.reason = reason;
+        this.state = state;
+        this.points = points;
+        this.server = server;
+        this.punishID = punishID;
+        this.replayID = replayID;
+        this.chatLogID = chatLogID;
     }
 
-    public Report(UUID teamMember, LiveReport liveReport) {
-        super(liveReport.getReportID(), liveReport.getTimestamp(), liveReport.getReported(), liveReport.getReporter(), liveReport.getReportReason(), liveReport.getReportPoints());
-        this.teamMember = teamMember;
-        this.server = liveReport.getServer();
-        this.state = ReportState.IN_PROGRESS;
-        this.updates = new HashMap<>();
+//    @BsonIgnore
+//    public ReportState getState() {
+//        return ReportState.valueOf(state);
+//    }
+//
+//    @BsonIgnore
+//    public void setState(ReportState state) {
+//        this.state = state.toString();
+//    }
+
+    @BsonIgnore
+    public void addPoints(int reportPoints) {
+        this.points += reportPoints;
     }
 
+    @BsonIgnore
+    public ReportPriority getPriority() {
+        return ReportPriority.getLevelWherePoints(points);
+    }
+
+    @BsonIgnore
+    public void addReporter(UUID uuid) {
+        reporter.add(uuid);
+    }
+
+    @BsonIgnore
     public Report addUpdate(String update) {
         updates.put(String.valueOf(System.currentTimeMillis() / 1000), update);
         return this;

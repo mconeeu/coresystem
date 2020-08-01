@@ -6,7 +6,6 @@
 package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
-import eu.mcone.coresystem.api.core.overwatch.report.LiveReport;
 import eu.mcone.coresystem.api.core.overwatch.report.Report;
 import eu.mcone.coresystem.bukkit.overwatch.Overwatch;
 import eu.mcone.coresystem.bukkit.overwatch.report.ReportInfoInventory;
@@ -29,7 +28,21 @@ public class ReportCMD extends CorePlayerCommand {
         if (args.length >= 1) {
             if (!(args[0].equalsIgnoreCase("accept") || args[0].equalsIgnoreCase("close"))) {
                 if (args[0].equalsIgnoreCase("help")) {
-                    return false;
+                    if (player.hasPermission("overwatch.report.general") || player.hasPermission("overwatch.report.*")) {
+                        overwatch.getMessenger().send(player, "§4Bitte benutze: " +
+                                "\n§c/report <Spieler> §4oder " +
+                                "\n§c/report accept <id> §4oder " +
+                                "\n§c/report close §4oder " +
+                                "\n§c/report info §4oder " +
+                                "\n§c/report list"
+                        );
+                    } else {
+                        overwatch.getMessenger().send(player, "§4Bitte benutze: " +
+                                "\n§c/report <Spieler>"
+                        );
+                    }
+
+                    return true;
                 } else if (args[0].equalsIgnoreCase("list")) {
                     if (player.hasPermission("overwatch.report.general") || player.hasPermission("overwatch.report.*")) {
                         new ReportsInventory(overwatch, player);
@@ -64,13 +77,7 @@ public class ReportCMD extends CorePlayerCommand {
                             if (reportedPlayer != null) {
                                 if (player != reportedPlayer) {
                                     if (!(reportedPlayer.hasPermission("overwatch.report.ignore") || reportedPlayer.hasPermission("overwatch.report.*"))) {
-                                        LiveReport liveReport = overwatch.getReportManager().getLiveReport(reportedPlayer.getUniqueId());
-
-                                        if (liveReport != null && liveReport.getReporter().contains(player.getUniqueId())) {
-                                            overwatch.getMessenger().send(player, "§4Du hast den Spieler §f§l" + reportedPlayer.getName() + " §4bereits Reportet.");
-                                        } else {
-                                            new ReportInventory(player, reportedPlayer);
-                                        }
+                                        new ReportInventory(player, reportedPlayer);
                                     } else {
                                         overwatch.getMessenger().send(player, "§4Du kannst keine §cTeammitglieder §4Reporten!");
                                     }
@@ -88,20 +95,6 @@ public class ReportCMD extends CorePlayerCommand {
                     }
                 }
             }
-        }
-
-        if (player.hasPermission("overwatch.report.general") || player.hasPermission("overwatch.report.*")) {
-            overwatch.getMessenger().send(player, "§4Bitte benutze: " +
-                    "\n§c/report <Spieler> §4oder " +
-                    "\n§c/report accept <id> §4oder " +
-                    "\n§c/report close §4oder " +
-                    "\n§c/report info §4oder " +
-                    "\n§c/report list"
-            );
-        } else {
-            overwatch.getMessenger().send(player, "§4Bitte benutze: " +
-                    "\n§c/report <Spieler>"
-            );
         }
 
         return true;

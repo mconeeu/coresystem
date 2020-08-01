@@ -11,13 +11,13 @@ import lombok.Getter;
 public enum ReportPriority {
 
     //Difference: 10
-    EXTREME(1, "§4§lExtrem", "§4", 90, 100),
+    EXTREME(4, "§4§lExtrem", "§4", 90, 100),
     //Difference: 30
-    HIGH(2, "§c§lHoch", "§c", 60, 90),
+    HIGH(3, "§c§lHoch", "§c", 60, 90),
     //Difference: 30
-    MEDIUM(3, "§e§lMittel", "§e", 30, 60),
+    MEDIUM(2, "§e§lMittel", "§e", 30, 60),
     //Difference: 30
-    NORMAL(4, "§7§lNormal", "§7", 0, 30);
+    NORMAL(1, "§7§lNormal", "§7", 0, 30);
 
     private final int level;
     private final String prefix;
@@ -45,7 +45,7 @@ public enum ReportPriority {
         return null;
     }
 
-    public static ReportPriority getWherePointsLevel(int points) {
+    public static ReportPriority getLevelWherePoints(int points) {
         for (ReportPriority priority : values()) {
             if (points > EXTREME.getMax()) {
                 return EXTREME;
@@ -54,6 +54,6 @@ public enum ReportPriority {
             }
         }
 
-        return null;
+        return ReportPriority.NORMAL;
     }
 }

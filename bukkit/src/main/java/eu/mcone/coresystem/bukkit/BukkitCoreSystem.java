@@ -270,7 +270,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 });
             }
 
-            overwatch.getReportManager().sendOpenReports();
             super.onEnable();
 
             Bukkit.getScheduler().runTask(this, () -> {
@@ -308,7 +307,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
             try {
                 mongoConnection.disconnect();
-            } catch (NoClassDefFoundError ignored) {}
+            } catch (NoClassDefFoundError ignored) {
+            }
 
             getServer().getMessenger().unregisterIncomingPluginChannel(this);
             getServer().getMessenger().unregisterOutgoingPluginChannel(this);
@@ -339,8 +339,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new VanishCMD(),
                 new ProfileCMD(),
                 new CaptureCMD(),
-                new VanishChatCMD(),
-                new ReportCMD(overwatch)
+                new VanishChatCMD()
         );
     }
 

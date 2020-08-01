@@ -40,6 +40,20 @@ public enum PunishTemplate {
         this.mutePoints = mutePoints;
     }
 
+    public List<PunishTyp> getTypes() {
+        ArrayList<PunishTyp> types = new ArrayList<>();
+
+        if (banPoints != 0) {
+            types.add(PunishTyp.BAN);
+        }
+
+        if (mutePoints != 0) {
+            types.add(PunishTyp.MUTE);
+        }
+
+        return types;
+    }
+
     public static PunishTemplate getTemplateByID(String id) {
         for (PunishTemplate r : values()) {
             if (r.getId().equals(id)) {
@@ -49,25 +63,8 @@ public enum PunishTemplate {
         return null;
     }
 
-    public static List<PunishTemplate> getMuteTemplates() {
-        return new ArrayList<PunishTemplate>() {{
-            add(WERBUNG);
-            add(SPAM);
-            add(BELEIDIGUNG);
-            add(DROHUNG);
-            add(MOBBING);
-            add(RADIKALISMUS);
-        }};
-    }
-
-    public static List<PunishTemplate> getBanTemplates() {
-        return new ArrayList<PunishTemplate>() {{
-            add(ERSCHEINEN);
-            add(TEAM_TROLLING);
-            add(BELEIDIGUNG);
-            add(BUGUSING);
-            add(BETRUG);
-            add(RADIKALISMUS);
-        }};
+    public enum PunishTyp {
+        MUTE,
+        BAN
     }
 }

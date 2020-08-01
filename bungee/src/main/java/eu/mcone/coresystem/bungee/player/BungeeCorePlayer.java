@@ -17,6 +17,7 @@ import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.bungee.overwatch.punish.PunishManager;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import group.onegaming.networkmanager.core.api.database.Database;
@@ -54,7 +55,6 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
         super(instance, address, uuid, name);
 
         Punish punish = BungeeCoreSystem.getSystem().getOverwatch().getPunishManager().getPunish(uuid);
-
         if (punish != null) {
             if (punish.isBanned()) {
                 this.banned = true;
@@ -67,7 +67,7 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
             }
         }
 
-        Document pointsEntry = BungeeCoreSystem.getSystem().getOverwatch().getPunishManager().getPunishPointsCollection().find(eq("uuid", uuid.toString())).first();
+        Document pointsEntry = PunishManager.PUNISH_POINTS_COLLECTION.find(eq("uuid", uuid.toString())).first();
         if (pointsEntry != null) {
             this.banPoints = pointsEntry.getInteger("banpoints");
             this.mutePoints = pointsEntry.getInteger("mutepoints");

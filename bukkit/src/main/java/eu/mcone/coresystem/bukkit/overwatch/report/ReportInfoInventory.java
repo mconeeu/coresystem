@@ -13,6 +13,7 @@ import eu.mcone.coresystem.api.bukkit.item.Skull;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.overwatch.report.Report;
+import eu.mcone.coresystem.api.core.overwatch.report.ReportState;
 import eu.mcone.coresystem.api.core.player.PlayerState;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Material;
@@ -35,22 +36,23 @@ public class ReportInfoInventory extends CoreInventory {
                             "§7Status: §f" + reported.getState().getName()
                     ).getItemStack());
 
-            if (reported.getState().equals(PlayerState.ONLINE) || reported.getState().equals(PlayerState.AFK)) {
-                setItem(InventorySlot.ROW_3_SLOT_4, new ItemBuilder(Material.ENDER_PEARL, 1).displayName("§eNachspringen").create(), e -> {
-                    //TODO: Connect the player to the SERVER
-                });
-            } else {
-                setItem(InventorySlot.ROW_3_SLOT_4, new ItemBuilder(Material.INK_SACK, 1, 7).displayName("§7Nicht verfügbar").create());
-            }
+            if (report.getState().equals(ReportState.OPEN) || report.getState().equals(ReportState.IN_PROGRESS)) {
+                if (reported.getState().equals(PlayerState.ONLINE) || reported.getState().equals(PlayerState.AFK)) {
+                    setItem(InventorySlot.ROW_3_SLOT_4, new ItemBuilder(Material.ENDER_PEARL, 1).displayName("§eNachspringen").create(), e -> {
+                        //TODO: Connect the player to the SERVER
+                    });
+                } else {
+                    setItem(InventorySlot.ROW_3_SLOT_4, new ItemBuilder(Material.INK_SACK, 1, 7).displayName("§7Nicht verfügbar").create());
+                }
 
-            setItem(InventorySlot.ROW_3_SLOT_6, new ItemBuilder(Material.IRON_FENCE, 1).displayName("§aBestrafen").lore(
-                    "§7Template §8» §e" + report.getReportReason().getTemplate().getName()
-            ).create(), e -> BukkitCoreSystem.getSystem().getChannelHandler().createSetRequest(player, "PUNISH", report.getReportID(), player.getUniqueId().toString()));
+                setItem(InventorySlot.ROW_3_SLOT_6, new ItemBuilder(Material.IRON_FENCE, 1).displayName("§aBestrafen").lore(
+                        "§7Template §8» §e" + report.getReason().getTemplate().getName()
+                ).create(), e -> BukkitCoreSystem.getSystem().getChannelHandler().createSetRequest(player, "PUNISH", report.getID(), player.getUniqueId().toString()));
+            }
 
             setItem(InventorySlot.ROW_4_SLOT_5, new ItemBuilder(Material.DIAMOND_SWORD, 1).displayName("§7Stats").create(), e -> {
                 //TODO: Add stats inventory
             });
-
 
             openInventory();
         } catch (PlayerNotResolvedException e) {

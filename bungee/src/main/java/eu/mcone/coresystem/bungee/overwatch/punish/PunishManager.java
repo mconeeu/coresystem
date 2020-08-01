@@ -7,10 +7,12 @@ import eu.mcone.coresystem.api.bungee.overwatch.punish.Punish;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.overwatch.punish.PunishTemplate;
-import eu.mcone.coresystem.api.core.overwatch.report.AbstractReport;
+import eu.mcone.coresystem.api.core.overwatch.report.Report;
+import eu.mcone.coresystem.api.core.overwatch.report.ReportState;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.overwatch.Overwatch;
 import eu.mcone.coresystem.bungee.player.BungeeCorePlayer;
+import eu.mcone.coresystem.bungee.player.BungeeOfflineCorePlayer;
 import group.onegaming.networkmanager.core.api.database.Database;
 import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
@@ -19,6 +21,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import org.bson.Document;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -29,182 +32,178 @@ public class PunishManager implements eu.mcone.coresystem.api.bungee.overwatch.p
 
     private final Overwatch overwatch;
     @Getter
-    private final MongoCollection<Punish> punishCollection;
+    public static final MongoCollection<Punish> PUNISH_COLLECTION = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("overwatch_punishments", Punish.class);
     @Getter
-    private final MongoCollection<Document> punishPointsCollection;
+    public static final MongoCollection<Document> PUNISH_POINTS_COLLECTION = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("overwatch_punishment_points");
     @Getter
-    private final MongoCollection<Punish> punishHistoryCollection;
+    public static final MongoCollection<Punish> PUNISH_HISTORY_COLLECTION = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("overwatch_punishment_history", Punish.class);
 
     public PunishManager(Overwatch overwatch) {
         this.overwatch = overwatch;
-
-        this.punishCollection = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("overwatch_punishments", Punish.class);
-        this.punishPointsCollection = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("overwatch_punishment_points");
-        this.punishHistoryCollection = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("overwatch_punishment_history", Punish.class);
     }
 
-    public void punishPlayer(AbstractReport report, UUID teamMember) {
+    public void punishPlayer(Report report, UUID member) {
         try {
             OfflineCorePlayer reportedCorePlayer = CoreSystem.getInstance().getOfflineCorePlayer(report.getReported());
-
-            long millis = System.currentTimeMillis() / 1000;
-            PunishTemplate template = report.getReportReason().getTemplate();
-            String templateName = template.getName();
-            addPoints(reportedCorePlayer.getUuid(), template.getBanPoints(), template.getMutePoints());
-
-            Map<String, Integer> points = getPoints(reportedCorePlayer.getUuid());
-            int banpoints = points.get("ban");
-            int mutepoints = points.get("mute");
-
-            long banTime = millis + getBanTimestampByPoints(banpoints);
-            long muteTime = millis + getMuteTimestampByPoints(mutepoints);
-
-
-            ProxiedPlayer p = ProxyServer.getInstance().getPlayer(reportedCorePlayer.getUuid());
-            ProxiedPlayer t = ProxyServer.getInstance().getPlayer(teamMember);
-            String tName;
-
-            if (t != null) {
-                tName = t.getName();
-            } else {
-                tName = "System";
-            }
-
-            Punish punish = new Punish(reportedCorePlayer.getUuid(), teamMember, template, report.getReportReason().getName());
-            if (banTime > millis && template.getBanPoints() > 0) {
-                punish.addBanEntry(banTime);
-                BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", reportedCorePlayer.getUuid()), set("state", 3));
-
-                if (p != null) {
-                    p.disconnect(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
-                            + "\n§7§oDu wurdest vom Netzwerk gebannt"
-                            + "\n§r"
-                            + "\n§7Gebannt von §8» §e" + tName
-                            + "\n§7Grund §8» §c" + templateName + " §7/§c " + report.getReportReason().getName()
-                            + "\n§7Gebannt für §8» " + getEndeString(banTime)
-                            + "\n§r"
-                            + "\n§2Du hast die Möglichkeit auf einer der folgenden Plattformen einen Entbannungsantrag zu stellen:"
-                            + "\n§7TS-Server §8» §fts.mcone.eu"
-                            + "\n§7Homepage §8» §fwww.mcone.eu/unban")));
-                }
-
-                overwatch.getMessenger().send(t, "§7Du hast den Spieler §aerfolgreich bestraft §8(§7Gebannt für §e" + getEndeString(banTime) + "§8)");
-            }
-
-            if (muteTime > millis && template.getMutePoints() > 0) {
-                punish.addMuteEntry(muteTime, "");
-
-                if (p != null) {
-                    BungeeCorePlayer cp = ((BungeeCorePlayer) CoreSystem.getInstance().getCorePlayer(p));
-                    cp.setMuteTime(muteTime);
-                    cp.setMuted(true);
-
-                    overwatch.getMessenger().sendSimple(p, "\n§8§m----------------§r§8 §eOverwatch §8§m-----------------"
-                            + "\n§f§lMC ONE §3Minecraftnetzwerk"
-                            + "\n§7§oDu wurdest gemuted"
-                            + "\n§r"
-                            + "\n§7Gemuted von §8» §e" + tName
-                            + "\n§7Grund §8» §c" + template.getName() + " §7/§c " + report.getReportReason().getName()
-                            + "\n§7Gemutet für §8» " + getEndeString(muteTime)
-                            + "\n§r"
-                            + "\n§2Du hast die Möglichkeit auf einer der folgenden Plattformen einen Entbannungsantrag zu stellen:"
-                            + "\n§7TS-Server §8» §fts.mcone.eu"
-                            + "\n§7Homepage §8» §fhttps://www.mcone.eu/unban"
-                            + "\n§8§m----------------------------------------\n");
-
-                    overwatch.getMessenger().send(t, "§7Du hast den Spieler §aerfolgreich bestraft §8(§7Gemutet für §e" + getEndeString(muteTime) + "§8)");
-                }
-            }
-
-            OfflineCorePlayer trustedUser;
-            for (UUID uuid : report.getReporter()) {
-                trustedUser = BungeeCoreSystem.getSystem().getOfflineCorePlayer(uuid);
-                trustedUser.increaseCorrectReports();
-                overwatch.getTrustManager().checkTrustLvl(uuid);
-            }
-
-            if (punish.getBanEntry() != null || punish.getMuteEntry() != null) {
-                punishCollection.replaceOne(eq("punished", reportedCorePlayer.getUuid()), punish, new ReplaceOptions().upsert(true));
-            }
+            PunishTemplate template = report.getReason().getTemplate();
+            Punish punish = new Punish(reportedCorePlayer.getUuid(), member, template, report.getReason().getName());
+            report.setPunishID(punish.getPunishID());
+            report.addUpdate(reportedCorePlayer.getName() + " wurde mit dem template " + template.getName() + " bestraft.");
+            report.setState(ReportState.CLOSED);
+            overwatch.getReportManager().updateDBEntry(report);
+            punish(punish, report.getReported(), member, template, report.getReason().getName(), report.getReplayID(), null, report.getReporter());
         } catch (PlayerNotResolvedException e) {
             e.printStackTrace();
         }
     }
 
-    public void punishPlayer(UUID player, PunishTemplate template, String reason, UUID teamMember) {
-        CoreSystem.getInstance().sendConsoleMessage("Banning user with uuid \"" + player.toString() + "\" with template \"" + template.getName() + "\" with reason \"" + reason + "\" by team member with uuid \"" + teamMember.toString() + "\"");
-        long millis = System.currentTimeMillis() / 1000;
+    public void punishPlayer(UUID target, PunishTemplate template, String reason, String chatLogID, UUID member) {
+        CoreSystem.getInstance().sendConsoleMessage("Banning user with uuid \"" + target.toString() + "\" with template \"" + template.getName() + "\" with reason \"" + reason + "\" by team member with uuid \"" + member.toString() + "\"");
+        punish(new Punish(target, member, template, reason), target, member, template, reason, null, chatLogID, null);
+    }
 
-        String templateName = template.getName();
-        addPoints(player, template.getBanPoints(), template.getMutePoints());
+    private void punish(Punish punish, UUID target, UUID member, PunishTemplate template, String reason, String replayID, String chatLogID, List<UUID> reporter) {
+        List<PunishTemplate.PunishTyp> types = template.getTypes();
 
-        Map<String, Integer> points = getPoints(player);
-        int banpoints = points.get("ban");
-        int mutepoints = points.get("mute");
+        if (types.size() != 0) {
+            long millis = System.currentTimeMillis() / 1000;
 
-        long banTime = millis + getBanTimestampByPoints(banpoints);
-        long muteTime = millis + getMuteTimestampByPoints(mutepoints);
+            addPoints(target, template.getBanPoints(), template.getMutePoints());
+            Map<String, Integer> points = getPoints(target);
 
+            BungeeCorePlayer targetBungeePlayer = (BungeeCorePlayer) BungeeCoreSystem.getSystem().getCorePlayer(target);
+            ProxiedPlayer memberBungeePlayer = ProxyServer.getInstance().getPlayer(member);
 
-        ProxiedPlayer p = ProxyServer.getInstance().getPlayer(player);
-        ProxiedPlayer t = ProxyServer.getInstance().getPlayer(teamMember);
-        String tName;
+            String memberName;
+            String targetName = target.toString();
 
-        if (t != null) {
-            tName = t.getName();
+            if (memberBungeePlayer != null) {
+                memberName = memberBungeePlayer.getName();
+            } else {
+                memberName = "System";
+            }
+
+            if (types.contains(PunishTemplate.PunishTyp.BAN)) {
+                long banTime = millis + getBanTimestampByPoints(points.get("ban"));
+
+                if (banTime > millis) {
+                    punish.addBanEntry(banTime, replayID);
+                    BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", target), set("state", 3));
+
+                    if (targetBungeePlayer != null) {
+                        targetName = targetBungeePlayer.getName();
+                        targetBungeePlayer.bungee().disconnect(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
+                                + "\n§7§oDu wurdest vom Netzwerk gebannt"
+                                + "\n§r"
+                                + "\n§7Gebannt von §8» §e" + memberName
+                                + "\n§7Grund §8» §c" + template.getName() + " §7/§c " + reason
+                                + "\n§7Gebannt für §8» " + getEndeString(banTime)
+                                + (replayID != null ? "\n§7RpelayID: " + replayID : "")
+                                + "\n§r"
+                                + "\n§2Du hast die Möglichkeit auf einer der folgenden Plattformen einen Entbannungsantrag zu stellen:"
+                                + "\n§7TS-Server §8» §fts.mcone.eu"
+                                + "\n§7Homepage §8» §fwww.mcone.eu/unban")));
+                    } else {
+                        try {
+                            BungeeOfflineCorePlayer offlineCorePlayer = (BungeeOfflineCorePlayer) BungeeCoreSystem.getSystem().getOfflineCorePlayer(target);
+                            targetName = offlineCorePlayer.getName();
+
+                            offlineCorePlayer.setBanned(true);
+                            offlineCorePlayer.setBanTime(banTime);
+                            offlineCorePlayer.updatePunishmentAsync();
+                        } catch (PlayerNotResolvedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    overwatch.getMessenger().send(memberBungeePlayer, "§7Du hast den Spieler §aerfolgreich bestraft §8(§7Gebannt für §e" + getEndeString(banTime) + "§8)");
+                }
+            }
+
+            if (types.contains(PunishTemplate.PunishTyp.MUTE)) {
+                long muteTime = millis + getMuteTimestampByPoints(points.get("mute"));
+
+                if (muteTime > millis) {
+                    punish.addMuteEntry(muteTime, chatLogID);
+
+                    if (targetBungeePlayer != null) {
+                        targetName = targetBungeePlayer.getName();
+                        targetBungeePlayer.setMuteTime(muteTime);
+                        targetBungeePlayer.setMuted(true);
+
+                        overwatch.getMessenger().sendSimple(targetBungeePlayer.bungee(), "\n§8§m----------------§r§8 §eOverwatch §8§m-----------------"
+                                + "\n§f§lMC ONE §3Minecraftnetzwerk"
+                                + "\n§7§oDu wurdest gemuted"
+                                + "\n§r"
+                                + "\n§7Gemuted von §8» §e" + memberName
+                                + "\n§7Grund §8» §c" + template.getName() + " §7/§c " + reason
+                                + "\n§7Gemutet für §8» " + getEndeString(muteTime)
+                                + (chatLogID != null ? "\n§7ChatLogID: " + chatLogID : "")
+                                + "\n§r"
+                                + "\n§2Du hast die Möglichkeit auf einer der folgenden Plattformen einen Entbannungsantrag zu stellen:"
+                                + "\n§7TS-Server §8» §fts.mcone.eu"
+                                + "\n§7Homepage §8» §fhttps://www.mcone.eu/unban"
+                                + "\n§8§m----------------------------------------\n");
+
+                        overwatch.getMessenger().send(memberBungeePlayer, "§7Du hast den Spieler §aerfolgreich bestraft §8(§7Gemutet für §e" + getEndeString(muteTime) + "§8)");
+                    } else {
+                        try {
+                            BungeeOfflineCorePlayer offlineCorePlayer = (BungeeOfflineCorePlayer) BungeeCoreSystem.getSystem().getOfflineCorePlayer(target);
+                            targetName = offlineCorePlayer.getName();
+
+                            offlineCorePlayer.setMuteTime(muteTime);
+                            offlineCorePlayer.setMuted(true);
+                            offlineCorePlayer.updatePunishmentAsync();
+                        } catch (PlayerNotResolvedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+
+            String action;
+            if (types.contains(PunishTemplate.PunishTyp.BAN) && types.contains(PunishTemplate.PunishTyp.MUTE)) {
+                action = "gebannt & gemutet";
+            } else {
+                if (types.contains(PunishTemplate.PunishTyp.BAN)) {
+                    action = "gebannt";
+                } else {
+                    action = "gemutet";
+                }
+            }
+
+            for (ProxiedPlayer player : overwatch.getLoggedIn()) {
+                overwatch.getMessenger().send(player, "§a" + memberName + " §7hat den Spieler §c" + targetName + " §7für §f" + template.getName() + " §7" + action + ".");
+            }
+
+            if (reporter != null) {
+                OfflineCorePlayer trustedUser;
+                for (UUID uuid : reporter) {
+                    try {
+                        trustedUser = BungeeCoreSystem.getSystem().getOfflineCorePlayer(uuid);
+                        trustedUser.increaseCorrectReports();
+                        overwatch.getTrustManager().checkTrustLvl(uuid);
+                    } catch (PlayerNotResolvedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            if (memberBungeePlayer != null) {
+                BungeeCoreSystem.getSystem().getChannelHandler().createInfoRequest(memberBungeePlayer, "INVENTORY", "CLOSE");
+            }
+
+            if (punish.getBanEntry() != null || punish.getMuteEntry() != null) {
+                System.out.println("INSERT");
+                PUNISH_COLLECTION.replaceOne(eq("punished", target), punish, new ReplaceOptions().upsert(true));
+            }
         } else {
-            tName = "System";
-        }
-
-        Punish punish = new Punish(player, teamMember, template, reason);
-        if (banTime > millis && template.getBanPoints() > 0) {
-            punish.addBanEntry(banTime);
-            BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", player), set("state", 3));
-
-            if (p != null) {
-                p.disconnect(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
-                        + "\n§7§oDu wurdest vom Netzwerk gebannt"
-                        + "\n§r"
-                        + "\n§7Gebannt von §8» §e" + tName
-                        + "\n§7Grund §8» §c" + templateName + " §7/§c " + reason
-                        + "\n§7Gebannt für §8» " + getEndeString(banTime)
-                        + "\n§r"
-                        + "\n§2Du hast die Möglichkeit auf einer der folgenden Plattformen einen Entbannungsantrag zu stellen:"
-                        + "\n§7TS-Server §8» §fts.mcone.eu"
-                        + "\n§7Homepage §8» §fwww.mcone.eu/unban")));
-            }
-        }
-
-        if (muteTime > millis && template.getMutePoints() > 0) {
-            punish.addMuteEntry(muteTime, "TEST");
-
-            if (p != null) {
-                BungeeCorePlayer cp = ((BungeeCorePlayer) CoreSystem.getInstance().getCorePlayer(p));
-                cp.setMuteTime(muteTime);
-                cp.setMuted(true);
-
-                overwatch.getMessenger().sendSimple(p, "\n§8§m----------------§r§8 §eOverwatch §8§m-----------------"
-                        + "\n§f§lMC ONE §3Minecraftnetzwerk"
-                        + "\n§7§oDu wurdest gemuted"
-                        + "\n§r"
-                        + "\n§7Gemuted von §8» §e" + tName
-                        + "\n§7Grund §8» §c" + template.getName() + " §7/§c " + reason
-                        + "\n§7Gemutet für §8» " + getEndeString(muteTime)
-                        + "\n§r"
-                        + "\n§2Du hast die Möglichkeit auf einer der folgenden Plattformen einen Entbannungsantrag zu stellen:"
-                        + "\n§7TS-Server §8» §fts.mcone.eu"
-                        + "\n§7Homepage §8» §fhttps://www.mcone.eu/unban"
-                        + "\n§8§m----------------------------------------\n");
-            }
-        }
-
-        if (punish.getBanEntry() != null || punish.getMuteEntry() != null) {
-            punishCollection.replaceOne(eq("punished", player), punish, new ReplaceOptions().upsert(true));
+            BungeeCoreSystem.getSystem().sendConsoleMessage("§4Could find punish typ for template " + template.getName());
         }
     }
 
     public void resetPoints(UUID uuid) {
-        punishPointsCollection.updateOne(eq("uuid", uuid), combine(
+        PUNISH_POINTS_COLLECTION.updateOne(eq("uuid", uuid), combine(
                 new Document("banpoints", 0),
                 new Document("mutepoints", 0)
         ));
@@ -222,8 +221,8 @@ public class PunishManager implements eu.mcone.coresystem.api.bungee.overwatch.p
                 }
             }
 
-            punishCollection.deleteOne(eq("punished", uuid));
-            punishHistoryCollection.insertOne(punish);
+            PUNISH_COLLECTION.deleteOne(eq("punished", uuid));
+            PUNISH_HISTORY_COLLECTION.insertOne(punish);
         }
     }
 
@@ -235,13 +234,13 @@ public class PunishManager implements eu.mcone.coresystem.api.bungee.overwatch.p
                 if (punish.getBanEntry() != null && punish.getMuteEntry() != null) {
                     punish.unMute();
                     punish.unBan();
-                    punishCollection.deleteOne(eq("punished", uuid));
+                    PUNISH_COLLECTION.deleteOne(eq("punished", uuid));
                 } else if (punish.getBanEntry() != null) {
                     punish.unBan();
                 }
 
-                punishCollection.deleteOne(eq("punished", uuid));
-                punishHistoryCollection.insertOne(punish);
+                PUNISH_COLLECTION.deleteOne(eq("punished", uuid));
+                PUNISH_HISTORY_COLLECTION.insertOne(punish);
             }
         }
     }
@@ -264,8 +263,8 @@ public class PunishManager implements eu.mcone.coresystem.api.bungee.overwatch.p
                     p.setMuteTime(0);
                 }
 
-                punishCollection.deleteOne(eq("punished", uuid));
-                punishHistoryCollection.insertOne(punish);
+                PUNISH_COLLECTION.deleteOne(eq("punished", uuid));
+                PUNISH_HISTORY_COLLECTION.insertOne(punish);
             }
         }
     }
@@ -309,16 +308,16 @@ public class PunishManager implements eu.mcone.coresystem.api.bungee.overwatch.p
     }
 
     public Punish getPunish(UUID uuid) {
-        return punishCollection.find(eq("punished", uuid)).first();
+        return PUNISH_COLLECTION.find(eq("punished", uuid)).first();
     }
 
     public boolean hasPoints(UUID uuid) {
-        return punishPointsCollection.find(eq("uuid", uuid)).first() != null;
+        return PUNISH_POINTS_COLLECTION.find(eq("uuid", uuid)).first() != null;
     }
 
     public Map<String, Integer> getPoints(UUID uuid) {
         Map<String, Integer> result = new HashMap<>();
-        Document entry = punishPointsCollection.find(eq("uuid", uuid)).first();
+        Document entry = PUNISH_POINTS_COLLECTION.find(eq("uuid", uuid)).first();
         if (entry != null) {
             result.put("ban", entry.getInteger("banpoints"));
             result.put("mute", entry.getInteger("mutepoints"));
@@ -329,7 +328,7 @@ public class PunishManager implements eu.mcone.coresystem.api.bungee.overwatch.p
 
     private void addPoints(UUID uuid, int banpoints, int mutepoints) {
         if (hasPoints(uuid)) {
-            punishPointsCollection.updateOne(
+            PUNISH_POINTS_COLLECTION.updateOne(
                     eq("uuid", uuid),
                     combine(
                             inc("banpoints", banpoints),
@@ -337,7 +336,7 @@ public class PunishManager implements eu.mcone.coresystem.api.bungee.overwatch.p
                     )
             );
         } else {
-            punishPointsCollection.insertOne(
+            PUNISH_POINTS_COLLECTION.insertOne(
                     new Document("uuid", uuid)
                             .append("banpoints", banpoints)
                             .append("mutepoints", mutepoints)

@@ -5,17 +5,5 @@
 
 package eu.mcone.coresystem.api.core.overwatch;
 
-import eu.mcone.coresystem.api.core.overwatch.util.Statistic;
-
 public interface GlobalOverwatch {
-
-    Statistic getStatistic();
-
-    void addBan();
-
-    void addReport();
-
-    void addMute();
-
-    void addBotAttacks(int botAttacks);
 }
