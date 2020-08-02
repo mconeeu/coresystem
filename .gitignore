@@ -15,6 +15,7 @@ nbactions.xml
 
 # maven
 target/
+local/
 dependency-reduced-pom.xml
 
 # OS X

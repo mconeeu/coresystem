@@ -23,26 +23,28 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public abstract class CategoryInventory extends CoreInventory {
 
     private static final int[] CATEGORY_SLOTS = new int[]{InventorySlot.ROW_1_SLOT_1, InventorySlot.ROW_2_SLOT_1, InventorySlot.ROW_3_SLOT_1, InventorySlot.ROW_4_SLOT_1, InventorySlot.ROW_5_SLOT_1, InventorySlot.ROW_6_SLOT_1};
 
+    public static final int MAX_PAGE_SIZE = 18;
     public static final ItemStack UP_ITEM = Skull.fromUrl("http://textures.minecraft.net/texture/a156b31cbf8f774547dc3f9713a770ecc5c727d967cb0093f26546b920457387", 1).toItemBuilder().displayName("§f§lNach Oben").lore("", "§8» §f§nLinksklick§8 | §7§oMehr Anzeigen").create();
     public static final ItemStack DOWN_ITEM = Skull.fromUrl("http://textures.minecraft.net/texture/fe3d755cecbb13a39e8e9354823a9a02a01dce0aca68ffd42e3ea9a9d29e2df2", 1).toItemBuilder().displayName("§f§lNach Unten").lore("", "§8» §f§nLinksklick§8 | §7§oMehr Anzeigen").create();
     public static final ItemStack LEFT_ITEM = Skull.fromUrl("http://textures.minecraft.net/texture/3ebf907494a935e955bfcadab81beafb90fb9be49c7026ba97d798d5f1a23", 1).toItemBuilder().displayName("§7Vorherige Seite").lore("", "§8» §f§nLinksklick§8 | §7§oMehr Anzeigen").create();
     public static final ItemStack RIGHT_ITEM = Skull.fromUrl("http://textures.minecraft.net/texture/1b6f1a25b6bc199946472aedb370522584ff6f4e83221e5946bd2e41b5ca13b", 1).toItemBuilder().displayName("§7Nächste Seite").lore("", "§8» §f§nLinksklick§8 | §7§oMehr Anzeigen").create();
     public static final ItemStack REFRESH_ITEM = Skull.fromUrl("http://textures.minecraft.net/texture/e887cc388c8dcfcf1ba8aa5c3c102dce9cf7b1b63e786b34d4f1c3796d3e9d61", 1).toItemBuilder().displayName("§7Neu laden").lore("", "§8» §f§nLinksklick§8 | §7§oMehr Anzeigen").create();
 
-    private final List<ItemStack> categories;
+    private final LinkedList<ItemStack> categories;
     private final List<CategoryInvItem> categoryInvItems;
     private ItemStack currentCategoryItem;
 
     public CategoryInventory(String title, Player player, ItemStack currentCategoryItem) {
         super(title, player, InventorySlot.ROW_6);
 
-        this.categories = new ArrayList<>();
+        this.categories = new LinkedList<>();
         this.categoryInvItems = new ArrayList<>();
         this.currentCategoryItem = currentCategoryItem;
     }
@@ -50,7 +52,7 @@ public abstract class CategoryInventory extends CoreInventory {
     CategoryInventory(String title, Player player, InventoryOption... options) {
         super(title, player, InventorySlot.ROW_6, options);
 
-        this.categories = new ArrayList<>();
+        this.categories = new LinkedList<>();
         this.categoryInvItems = new ArrayList<>();
     }
 
@@ -92,8 +94,10 @@ public abstract class CategoryInventory extends CoreInventory {
             }
         }
 
-        int startItem = ((itemPage - 1) * 18);
-        for (int i = startItem, x = 11; i < startItem + 18 && i < categoryInvItems.size(); i++, x++) {
+        int startItem = ((itemPage - 1) * MAX_PAGE_SIZE), endItem = startItem + MAX_PAGE_SIZE;
+        int allItemsSize = setPaginatedItems(startItem, endItem, categoryInvItems);
+
+        for (int i = startItem, x = 11; i < endItem && i < allItemsSize; i++, x++) {
             if (x == 17) x = 20;
             else if (x == 26) x = 29;
 
@@ -101,7 +105,7 @@ public abstract class CategoryInventory extends CoreInventory {
             setItem(x, item.getItemStack(), item.getItemEvent());
         }
 
-        final int itemPages = (categoryInvItems.size() / 18) + (((categoryInvItems.size() % 18) > 0) ? 1 : 0);
+        final int itemPages = (allItemsSize / MAX_PAGE_SIZE) + (((allItemsSize % MAX_PAGE_SIZE) > 0) ? 1 : 0);
         setItem(InventorySlot.ROW_6_SLOT_5, LEFT_ITEM, e -> {
             if (itemPage >= 2) {
                 openInventory(itemPage - 1);
@@ -120,6 +124,10 @@ public abstract class CategoryInventory extends CoreInventory {
         });
 
         return super.openInventory();
+    }
+
+    public int setPaginatedItems(int skip, int limit, List<CategoryInvItem> items) {
+        return categoryInvItems.size();
     }
 
     @Override
@@ -264,7 +272,7 @@ public abstract class CategoryInventory extends CoreInventory {
     @AllArgsConstructor
     @Getter
     @Setter
-    private class CategoryInvItem {
+    public static class CategoryInvItem {
         private ItemStack itemStack;
         private CoreItemEvent itemEvent;
     }

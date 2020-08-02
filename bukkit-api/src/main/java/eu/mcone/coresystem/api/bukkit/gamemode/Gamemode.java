@@ -18,7 +18,7 @@ public enum Gamemode {
     TRASHWARS("TW", "Trashwars", ChatColor.GREEN, Material.IRON_PICKAXE),
     TTT("TTT", "Trouble in Terrorist Town", ChatColor.RED, Material.LEATHER_CHESTPLATE),
     GAMBLE("GM", "Gamble", ChatColor.GOLD, Material.DIAMOND),
-    ONE_ATTACK("OA", "One Attack", ChatColor.BLUE, Material.DIAMOND_SWORD),
+    ONE_ATTACK("OA", "One Attack", ChatColor.BLUE, Material.IRON_SWORD),
     BUILD("BU", "Build", ChatColor.YELLOW, Material.GRASS),
     UNDEFINED("UD", "undefined", ChatColor.DARK_GRAY, Material.COAL);
 
@@ -38,6 +38,16 @@ public enum Gamemode {
 
     public String getLabel() {
         return ChatColor.BOLD.toString() + color.toString() + name;
+    }
+
+    public static Gamemode getGamemodeByMaterial(Material material) {
+        for (Gamemode gamemode : values()) {
+            if (gamemode.getItem().equals(material)) {
+                return gamemode;
+            }
+        }
+
+        return null;
     }
 
 }
