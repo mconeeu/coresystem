@@ -88,20 +88,12 @@ public class InfoPluginChannelListener implements PluginMessageListener {
                     Bukkit.dispatchCommand(p, in.readUTF());
                     break;
                 }
-                case "REPORT": {
+                case "INVENTORY": {
                     String action = in.readUTF();
 
-                    if (action.equalsIgnoreCase("ACCEPT")) {
-                        String subAction = in.readUTF();
-
-                        if (subAction.equalsIgnoreCase("CANCELED")) {
-                            if (p != null) {
-                                player.closeInventory();
-                            }
-                        } else {
-                        }
+                    if (action.equalsIgnoreCase("CLOSE")) {
+                        p.closeInventory();
                     }
-
                     break;
                 }
             }

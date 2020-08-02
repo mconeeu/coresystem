@@ -9,7 +9,6 @@ import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
-import eu.mcone.coresystem.api.core.overwatch.report.LiveReport;
 import eu.mcone.coresystem.api.core.overwatch.report.Report;
 import eu.mcone.coresystem.api.core.overwatch.report.ReportState;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
@@ -24,72 +23,60 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
+import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Updates.combine;
 
 public class ReportManager extends GlobalReportManager implements eu.mcone.coresystem.api.bungee.overwatch.report.ReportManager {
 
     private final Overwatch overwatch;
 
-    @Getter
-    private final Map<String, LiveReport> liveReportsCache;
-    @Getter
-    private final Map<String, Report> openReportsCache;
+    private final Map<String, Report> openReports;
     @Getter
     private final Map<UUID, String> inProgress;
+    @Getter
+    private final HashSet<UUID> loggedIn;
 
     public ReportManager(Overwatch overwatch) {
-        super(overwatch, BungeeCoreSystem.getInstance());
+        super(BungeeCoreSystem.getInstance());
         this.overwatch = overwatch;
-        liveReportsCache = new HashMap<>();
-        openReportsCache = new HashMap<>();
+        openReports = new HashMap<>();
         inProgress = new HashMap<>();
+        loggedIn = new HashSet<>();
     }
 
     public void sendOpenReports(ProxiedPlayer player) {
         CorePlayer corePlayer = BungeeCoreSystem.getSystem().getCorePlayer(player);
 
-        if (corePlayer.hasPermission("overwatch.report.notification") || corePlayer.hasPermission("overwatch.report.*") && corePlayer.getSettings().isReceiveIncomingReports()) {
-            long open = getOpenReportsCount();
+        if (corePlayer.hasPermission("overwatch.report") && overwatch.isLoggedIn(player)) {
+            long open = countOpenReports();
             if (open > 0) {
                 if (open == 1) {
                     overwatch.getMessenger().send(player, "§7Es ist momentan §a1 §7Report §aoffen");
                 } else {
                     overwatch.getMessenger().send(player, "§7Es sind momentan §f§l" + open + " §cReports §aoffen");
                 }
+            } else {
+                overwatch.getMessenger().send(player, "§7Momentan sind keine Reports §aoffen");
             }
         }
     }
 
-    public void updateCaches() {
-        liveReportsCache.clear();
-        openReportsCache.clear();
+    public void updateCache() {
+        openReports.clear();
 
-        for (LiveReport liveReport : liveReportsCollection.find()) {
-            liveReportsCache.put(liveReport.getReportID(), liveReport);
-        }
-
-        for (Report report : reportsCollection.find()) {
-            if (report.getState().equals(ReportState.OPEN)) {
-                openReportsCache.put(report.getReportID(), report);
-            }
+        for (Report report : reportsCollection.find(eq("state", ReportState.OPEN.toString()))) {
+            openReports.put(report.getID(), report);
         }
     }
 
     public void updateReportData(String id) {
-        LiveReport liveReport = liveReportsCollection.find(eq("reportID", id)).first();
+        if (existsReport(id)) {
+            Report report = reportsCollection.find(and(eq("iD", id), eq("state", ReportState.OPEN.toString()))).first();
 
-        if (liveReport != null) {
-            liveReportsCache.put(liveReport.getReportID(), liveReport);
-        } else {
-            Report report = reportsCollection.find(combine(eq("reportID", id), eq("state", ReportState.OPEN.toString()))).first();
             if (report != null) {
-                openReportsCache.put(report.getReportID(), report);
+                openReports.put(report.getID(), report);
             }
         }
     }
@@ -99,26 +86,26 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
      *
      * @param id ReportID
      */
-    public void addLiveReportFromDB(String id) {
-        LiveReport liveReport = liveReportsCollection.find(eq("reportID", id)).first();
+    public void addReport(String id) {
+        Report report = getReport(id);
 
-        if (liveReport != null) {
-            liveReportsCache.put(liveReport.getReportID(), liveReport);
-            ProxiedPlayer reporter = ProxyServer.getInstance().getPlayer(liveReport.getReporter().get(0));
-            ProxiedPlayer reported = ProxyServer.getInstance().getPlayer(liveReport.getReported());
+        if (report != null) {
+            openReports.put(report.getID(), report);
+            ProxiedPlayer reporter = ProxyServer.getInstance().getPlayer(report.getReporter().get(0));
+            ProxiedPlayer reported = ProxyServer.getInstance().getPlayer(report.getReported());
 
             for (CorePlayer corePlayer : BungeeCoreSystem.getInstance().getOnlineCorePlayers()) {
-                if (corePlayer.hasPermission("overwatch.report.notification") || corePlayer.hasPermission("overwatch.report.*") && corePlayer.getSettings().isReceiveIncomingReports()) {
-                    overwatch.getMessenger().send(corePlayer.bungee(), "§7Der Spieler §e" + reporter.getName() + " §7hat §e" + reported.getName() + " §7reportet §8(§7ID: §e" + liveReport.getReportID() + "§8). §7Grund: §c" + liveReport.getReportReason().getName() + " §7Priorität: §c" + liveReport.getPriority().getPrefix());
+                if (corePlayer.hasPermission("overwatch.report") && overwatch.isLoggedIn(corePlayer.bungee())) {
+                    overwatch.getMessenger().send(corePlayer.bungee(), "§7Der Spieler §e" + reporter.getName() + " §7hat §e" + reported.getName() + " §7reportet §8(§7ID: §e" + report.getID() + "§8). §7Grund: §c" + report.getReason().getName() + " §7Priorität: §c" + report.getPriority().getPrefix());
                     overwatch.getMessenger().send(corePlayer.bungee(),
                             new ComponentBuilder("[ANNEHMEN]")
                                     .color(ChatColor.GREEN)
                                     .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§2Zum Server...").create()))
-                                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/report accept " + liveReport.getReportID()))
+                                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/report accept " + report.getID()))
                                     .create()
                     );
 
-                    int open = (liveReportsCache.size() + openReportsCache.size()) - 1;
+                    int open = (openReports.size() + openReports.size()) - 1;
                     if (open > 0) {
                         if (open > 1) {
                             overwatch.getMessenger().send(corePlayer.bungee(), "§7Es sind noch §e§l" + open + " §7Reports offen.");
@@ -132,30 +119,37 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
     }
 
     public void removeTeamMember(String id) {
-        Report report = reportsCollection.find(eq("reportID", id)).first();
+        if (existsReport(id)) {
+            Report report = reportsCollection.find(eq("iD", id)).first();
 
-        if (report != null) {
-            report.setTeamMember(null);
-            report.setState(ReportState.OPEN);
-            reportsCollection.replaceOne(eq("reportID", id), report);
-            openReportsCache.put(id, report);
+            if (report != null) {
+                inProgress.remove(report.getMember());
+                report.setMember(null);
+                report.setState(ReportState.OPEN);
 
-            for (CorePlayer corePlayer : BungeeCoreSystem.getInstance().getOnlineCorePlayers()) {
-                if (corePlayer.hasPermission("overwatch.report.notification") && corePlayer.getSettings().isReceiveIncomingReports()) {
-                    overwatch.getMessenger().send(corePlayer.bungee(), "§7Es ist ein neuer Report verfügbar §8(§f§l" + liveReportsCache.size() + openReportsCache.size() + " §fVerfügbar§8)");
+                reportsCollection.replaceOne(eq("iD", id), report);
+
+                for (CorePlayer corePlayer : BungeeCoreSystem.getInstance().getOnlineCorePlayers()) {
+                    if (corePlayer.hasPermission("overwatch.report.notification") && overwatch.isLoggedIn(corePlayer.bungee())) {
+                        overwatch.getMessenger().send(corePlayer.bungee(), "§7Es ist ein neuer Report verfügbar §8(§f§l" + countOpenReports() + " §fVerfügbar§8)");
+                    }
                 }
             }
         }
     }
 
     public void closeReport(ProxiedPlayer player) {
-        Report report = reportsCollection.find(combine(eq("teamMember", player.getUniqueId()), eq("state", ReportState.IN_PROGRESS.toString()))).first();
+        Report report = reportsCollection.find(and(eq("member", player.getUniqueId()), eq("state", ReportState.IN_PROGRESS.toString()))).first();
 
         if (report != null) {
-            inProgress.remove(report.getTeamMember());
+            inProgress.remove(report.getMember());
             report.setState(ReportState.CLOSED);
             report.addUpdate("Das Teammitglied " + player.getName() + " hat den Report geschlossen!");
-            reportsCollection.replaceOne(combine(eq("teamMember", player.getUniqueId()), eq("state", ReportState.IN_PROGRESS.toString())), report);
+
+            reportsCollection.replaceOne(and(
+                    eq("member", player.getUniqueId()),
+                    eq("state", ReportState.IN_PROGRESS.toString())
+            ), report);
 
             try {
                 for (UUID uuid : report.getReporter()) {
@@ -167,80 +161,93 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
                 e.printStackTrace();
             }
 
-            BungeeCoreSystem.getSystem().getChannelHandler().createInfoRequest(player, "REPORT", "CLOSE", report.getReportID());
+            BungeeCoreSystem.getSystem().getChannelHandler().createInfoRequest(player, "REPORT", "CLOSE", report.getID());
         }
     }
 
     /**
      * Accepts a live report
      *
-     * @param id         ReportID
-     * @param teamMember The Team Member
+     * @param id     ReportID
+     * @param member The Team Member
      */
-    public boolean acceptReport(String id, ProxiedPlayer teamMember) {
-        final Report acceptedReport;
-        final LiveReport liveReport = liveReportsCollection.find(eq("reportID", id)).first();
-        final Report dbReport = reportsCollection.find(combine(eq("reportID", id), eq("state", ReportState.OPEN.toString()))).first();
+    public boolean acceptReport(String id, ProxiedPlayer member) {
+        final Report report = reportsCollection.find(and(eq("iD", id), eq("state", ReportState.OPEN.toString()))).first();
 
-        if (dbReport == null) {
-            if (liveReport != null) {
-                liveReportsCollection.deleteOne(eq("reportID", id));
-                acceptedReport = liveReport.convertToReport(teamMember.getUniqueId());
-                reportsCollection.insertOne(acceptedReport);
-            } else {
-                overwatch.getMessenger().send(teamMember, "§4Es konnte kein §aOffener §4Report mit der ID §c" + id + " §4gefunden werden!");
-                return false;
-            }
-        } else if (dbReport.getTeamMember() == null) {
-            if (liveReport != null) {
-                liveReportsCollection.deleteOne(eq("reportID", id));
-            }
-
-            acceptedReport = dbReport;
-        } else if (dbReport.getTeamMember().equals(teamMember.getUniqueId())) {
-            overwatch.getMessenger().send(teamMember, "§4Du bearbeitest diesen Report bereits!");
-            BungeeCoreSystem.getInstance().getChannelHandler().createInfoRequest(teamMember, "REPORT", "ACCEPT", "CANCELED");
+        if (inProgress.containsKey(member.getUniqueId())) {
+            overwatch.getMessenger().send(member, "§cDu bearbeitest bereits einen Report (ID: " + inProgress.get(member.getUniqueId()) + " )");
             return false;
         } else {
-            overwatch.getMessenger().send(teamMember, "§4Es konnte kein Report mit der ID §c" + id + " §4gefunden werden!");
-            BungeeCoreSystem.getInstance().getChannelHandler().createInfoRequest(teamMember, "REPORT", "ACCEPT", "CANCELED");
-            return false;
-        }
+            if (report != null) {
+                if (report.getMember() != null) {
+                    if (report.getMember().equals(member.getUniqueId())) {
+                        overwatch.getMessenger().send(member, "§4Du bearbeitest diesen Report bereits!");
+                    } else {
+                        try {
+                            OfflineCorePlayer corePlayer = BungeeCoreSystem.getSystem().getOfflineCorePlayer(member.getUniqueId());
 
-        acceptedReport.setTeamMember(teamMember.getUniqueId());
-        acceptedReport.addUpdate("Das Teammitglied " + teamMember.getName() + " kümmert sich nun um den Report!");
-        reportsCollection.replaceOne(eq("reportID", id), acceptedReport);
-        inProgress.put(teamMember.getUniqueId(), id);
+                            if (corePlayer != null) {
+                                overwatch.getMessenger().send(member, "§4Das Teammitglied " + corePlayer.getMainGroup().getFormattingCode() + corePlayer.getName() + " bearbeitet diesem Report bereits!");
+                            } else {
+                                overwatch.getMessenger().send(member, "§4Ein anderes Teammitglied bearbeitet diesen Report bereits!");
+                            }
+                        } catch (PlayerNotResolvedException e) {
+                            e.printStackTrace();
+                        }
+                    }
 
-        try {
-            CorePlayer corePlayer = CoreSystem.getInstance().getCorePlayer(acceptedReport.getReported());
-            OfflineCorePlayer offlineCorePlayer = CoreSystem.getInstance().getOfflineCorePlayer(acceptedReport.getReported());
+                    return false;
+                } else {
+                    report.setMember(member.getUniqueId());
+                    report.setState(ReportState.IN_PROGRESS);
+                    report.addUpdate("Das Teammitglied " + member.getName() + " kümmert sich nun um den Report!");
+                    reportsCollection.replaceOne(eq("iD", id), report);
+                    inProgress.put(member.getUniqueId(), id);
 
-            overwatch.getMessenger().sendSimple(teamMember, "" +
-                    "\n§8§m----------------§r§8 §eOverwatch §8§m----------------" +
-                    "\n§8[§7§l!§8] §7Du kümmerst dich nun um den Report mit der ID §f" + id + "§2." +
-                    "\n§8[§7§l!§8] §7Schließe den Report mit §f/report close" +
-                    "\n§8[§7§l!§8] §7Reportet um: §e" + new SimpleDateFormat("HH:mm").format(new Date(acceptedReport.getTimestamp() * 1000)) + "" +
-                    "\n§8[§7§l!§8] §7Grund: §e" + acceptedReport.getReportReason().getName() + "" +
-                    "\n§8[§7§l!§8] §7Server: §e" + acceptedReport.getServer() + "" +
-                    "\n§8[§7§l!§8] §7Reporteter Spieler: §e" + (corePlayer != null ? (corePlayer.isNicked() ? corePlayer.getName() + "§8(§5genickt§8)" : corePlayer.getName()) : offlineCorePlayer.getName()) + "" +
-                    "\n§8§m----------------------------------------" +
-                    "\n");
+                    try {
+                        CorePlayer corePlayer = CoreSystem.getInstance().getCorePlayer(report.getReported());
+                        OfflineCorePlayer offlineCorePlayer = CoreSystem.getInstance().getOfflineCorePlayer(report.getReported());
 
+                        overwatch.getMessenger().sendSimple(member, "" +
+                                "\n§8§m----------------§r§8 §eOverwatch §8§m----------------" +
+                                "\n§8[§7§l!§8] §7Du kümmerst dich nun um den Report mit der ID §f" + id + "§2." +
+                                "\n§8[§7§l!§8] §7Schließe den Report mit §f/report close" +
+                                "\n§8[§7§l!§8] §7Reportet um: §e" + new SimpleDateFormat("HH:mm").format(new Date(report.getTimestamp() * 1000)) + "" +
+                                "\n§8[§7§l!§8] §7Grund: §e" + report.getReason().getName() + "" +
+                                "\n§8[§7§l!§8] §7Server: §e" + (report.getServer() != null ? report.getServer() : "§cX") + "" +
+                                "\n§8[§7§l!§8] §7ReplayID: §e" + (report.getReplayID() != null ? report.getReplayID() : "§cX") + "" +
+                                "\n§8[§7§l!§8] §7Priorität: §e" + report.getPriority().getPrefix() + "" +
+                                "\n§8[§7§l!§8] §7Reporteter Spieler: §e" + (corePlayer != null ? (corePlayer.isNicked() ? corePlayer.getName() + "§8(§5genickt§8)" : corePlayer.getName()) : offlineCorePlayer.getName()) + "" +
+                                "\n§8§m----------------------------------------" +
+                                "\n");
+                    } catch (PlayerNotResolvedException e) {
+                        e.printStackTrace();
+                    }
 
-        } catch (PlayerNotResolvedException e) {
-            e.printStackTrace();
-        }
+                    for (ProxiedPlayer player : overwatch.getLoggedIn()) {
+                        if (player != member) {
+                            overwatch.getMessenger().send(player, "§a" + member.getName() + " §7kümmert sich nun um den Report §e" + report.getID());
+                        }
+                    }
 
-        for (UUID uuid : acceptedReport.getReporter()) {
-            ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
+                    for (UUID uuid : report.getReporter()) {
+                        ProxiedPlayer player = ProxyServer.getInstance().getPlayer(uuid);
 
-            if (player != null) {
-                overwatch.getMessenger().send(player, "§7Dein Report wird nun §abearbeitet §8(§7ID: " + acceptedReport.getReportID() + "§8)");
+                        if (player != null) {
+                            overwatch.getMessenger().send(player, "§7Dein Report wird nun §abearbeitet §8(§7ID: " + report.getID() + "§8)");
+                        }
+                    }
+
+                    return true;
+                }
+            } else {
+                overwatch.getMessenger().send(member, "§4Es konnte kein §aOffener §4Report mit der ID §c" + id + " §4gefunden werden!");
+                return false;
             }
         }
+    }
 
-        BungeeCoreSystem.getInstance().getChannelHandler().createInfoRequest(teamMember, "REPORT", "ACCEPT", acceptedReport.getReportID(), teamMember.getUniqueId().toString());
-        return false;
+    public boolean updateDBEntry(Report report) {
+        return reportsCollection.replaceOne(eq("iD", report.getID()), report).getModifiedCount() > 0;
     }
 }

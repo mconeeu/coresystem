@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+  ~ Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
   ~ You are not allowed to decompile the code
   -->
 
@@ -12,7 +12,7 @@
     <groupId>eu.mcone.coresystem</groupId>
     <artifactId>mcone-coresystem</artifactId>
     <packaging>pom</packaging>
-    <version>10.8.3-SNAPSHOT</version>
+    <version>10.8.5-SNAPSHOT</version>
 
     <modules>
         <module>core</module>
@@ -51,17 +51,6 @@
             <organizationUrl>https://www.mcone.eu</organizationUrl>
             <roles>
                 <role>administrator</role>
-                <role>developer</role>
-            </roles>
-            <timezone>Europe/Berlin</timezone>
-        </developer>
-        <developer>
-            <id>felixschmid</id>
-            <name>Felix Schmid</name>
-            <url>https://schmiddinger.eu</url>
-            <organization>MC ONE</organization>
-            <organizationUrl>https://www.mcone.eu</organizationUrl>
-            <roles>
                 <role>developer</role>
             </roles>
             <timezone>Europe/Berlin</timezone>

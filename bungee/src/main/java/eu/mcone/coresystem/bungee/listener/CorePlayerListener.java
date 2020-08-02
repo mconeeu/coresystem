@@ -68,7 +68,7 @@ public class CorePlayerListener implements Listener {
         if (punish != null) {
             if (punish.isBanned()) {
                 try {
-                    OfflineCorePlayer corePlayer = BungeeCoreSystem.getSystem().getOfflineCorePlayer(punish.getTeamMember());
+                    OfflineCorePlayer corePlayer = BungeeCoreSystem.getSystem().getOfflineCorePlayer(punish.getMember());
                     e.setCancelled(true);
                     e.setCancelReason(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
                             + "\n§7§oDu wurdest vom Netzwerk gebannt"

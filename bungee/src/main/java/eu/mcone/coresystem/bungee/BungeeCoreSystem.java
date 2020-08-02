@@ -201,9 +201,14 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 ((eu.mcone.coresystem.core.player.GlobalCorePlayer) p).setState(PlayerState.OFFLINE);
             }
 
+            for (String id : overwatch.getReportManager().getInProgress().values()) {
+                overwatch.getReportManager().removeTeamMember(id);
+            }
+
             try {
                 mongoConnection.disconnect();
-            } catch (NoClassDefFoundError ignored) {}
+            } catch (NoClassDefFoundError ignored) {
+            }
 
             sendConsoleMessage("§cPlugin disabled!");
         });
@@ -235,7 +240,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new JumpCMD(),
                 new MsgCMD(),
                 new ReplyCMD(),
-                new ReportCMD(overwatch),
                 new HelpCMD(),
                 new BungeecordCMD(),
                 new RegisterCMD(),

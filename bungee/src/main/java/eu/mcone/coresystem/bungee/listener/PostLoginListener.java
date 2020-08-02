@@ -57,8 +57,6 @@ public class PostLoginListener implements Listener {
             BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Benutze §f/friend req §7zum einsehen!");
         }
 
-//        BungeeCoreSystem.getInstance().getOverwatch().getReportManager().sendOpenReports(p);
-
         Title title = ProxyServer.getInstance().createTitle();
         title.title(new TextComponent("§fWillkommen auf §3§lMC ONE"));
         title.subTitle(new TextComponent("§7§oDein Nummer 1 Minecraftnetzwerk"));
@@ -68,6 +66,11 @@ public class PostLoginListener implements Listener {
 
         title.send(p);
 
+        if (cp.hasPermission("overwatch.report")) {
+            BungeeCoreSystem.getSystem().getOverwatch().login(p);
+            BungeeCoreSystem.getSystem().getOverwatch().getMessenger().send(p, "§aDu wurdest automatisch eingelogt.");
+            BungeeCoreSystem.getSystem().getOverwatch().getReportManager().sendOpenReports(p);
+        }
 
         ProxyServer.getInstance().getScheduler().schedule(BungeeCoreSystem.getInstance(), () -> {
             updateTabHeader(p);

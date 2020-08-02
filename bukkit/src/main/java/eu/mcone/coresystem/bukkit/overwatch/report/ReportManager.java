@@ -10,10 +10,12 @@ import eu.mcone.coresystem.api.bukkit.event.PlayerReportedEvent;
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.item.LeatherArmorItem;
 import eu.mcone.coresystem.api.bukkit.item.Skull;
+import eu.mcone.coresystem.api.bukkit.overwatch.report.ReportMethod;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
-import eu.mcone.coresystem.api.core.overwatch.report.LiveReport;
+import eu.mcone.coresystem.api.core.overwatch.report.Report;
 import eu.mcone.coresystem.api.core.overwatch.report.ReportReason;
+import eu.mcone.coresystem.api.core.overwatch.report.ReportState;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.overwatch.Overwatch;
 import eu.mcone.coresystem.core.overwatch.report.GlobalReportManager;
@@ -27,19 +29,22 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.*;
 
-import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.*;
 
 public class ReportManager extends GlobalReportManager implements eu.mcone.coresystem.api.bukkit.overwatch.report.ReportManager {
 
     private final Overwatch overwatch;
 
-    private final Map<UUID, LiveReport> toConfirm;
+    @Getter
+    private final Map<UUID, Report> toConfirm;
     @Getter
     private final EnumMap<ReportReason, ItemStack> reasonItems;
     private BukkitTask task;
 
+    private ReportMethod reportMethod;
+
     public ReportManager(Overwatch overwatch, GlobalCoreSystem instance) {
-        super(overwatch, instance);
+        super(instance);
         this.overwatch = overwatch;
         toConfirm = new HashMap<>();
 
@@ -60,41 +65,61 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
             put(ReportReason.SKIN, new Skull("DieserDominik").setDisplayName("§fSkin").getItemStack());
             put(ReportReason.BELEIDIGUNG, new ItemBuilder(Material.MAP, 1).displayName("§cBeleidigung").create());
         }};
+
+        reportMethod = ((manager, reporter, reported, reportReason) -> {
+            CorePlayer corePlayer = CoreSystem.getInstance().getCorePlayer(reporter);
+            Report report = reportsCollection.find(
+                    and(
+                            eq("reported", reported.getUniqueId()),
+                            eq("state", ReportState.OPEN.toString()),
+                            lt("timestamp", (System.currentTimeMillis() / 1000) - 3600)
+                    )
+            ).first();
+
+            if (report != null) {
+                if (report.getReporter().contains(reporter.getUniqueId())) {
+                    overwatch.getMessenger().send(reported, "§4Du hast den Spieler §f§l" + reported.getName() + " §4bereits Reportet.");
+                    return false;
+                } else {
+                    toConfirm.put(reporter.getUniqueId(), report);
+                    run();
+                    return true;
+                }
+            } else {
+                report = new Report(reported.getUniqueId(), reporter.getUniqueId(), reportReason, corePlayer.getTrust().getGroup().getTrustPoints());
+                toConfirm.put(reporter.getUniqueId(), report);
+                run();
+
+                return true;
+            }
+        });
+    }
+
+    public void setReportMethod(ReportMethod method) {
+        this.reportMethod = method;
     }
 
     public ItemStack getItemForReason(ReportReason reportReason) {
         return reasonItems.getOrDefault(reportReason, null);
     }
 
-    public void sendOpenReports() {
-        long open = getOpenReportsCount();
-
-        if (open > 0) {
-            for (CorePlayer corePlayer : CoreSystem.getInstance().getOnlineCorePlayers()) {
-                if (corePlayer.hasPermission("overwatch.report.notification") && corePlayer.getSettings().isReceiveIncomingReports()) {
-                    if (open == 1) {
-                        overwatch.getMessenger().send(corePlayer.bukkit(), "§7Es ist momentan ein §cReport §aoffen");
-                    } else {
-                        overwatch.getMessenger().send(corePlayer.bukkit(), "§7Es sind momentan §f§l" + open + " §cReports §aoffen");
-                    }
-                }
-            }
-        }
+    public boolean report(Player reporter, Player reported, ReportReason reportReason) {
+        return reportMethod.report(this, reporter, reported, reportReason);
     }
 
-    private void run() {
+    protected void run() {
         if (task == null) {
             task = Bukkit.getScheduler().runTaskTimerAsynchronously(BukkitCoreSystem.getInstance(), () -> {
                 List<UUID> toRemove = new ArrayList<>();
-                for (Map.Entry<UUID, LiveReport> liveReport : toConfirm.entrySet()) {
-                    if (((System.currentTimeMillis() / 1000) - liveReport.getValue().getTimestamp()) == 15) {
-                        Player player = Bukkit.getPlayer(liveReport.getKey());
+                for (Map.Entry<UUID, Report> report : toConfirm.entrySet()) {
+                    if (((System.currentTimeMillis() / 1000) - report.getValue().getTimestamp()) == 15) {
+                        Player player = Bukkit.getPlayer(report.getKey());
 
                         if (player != null) {
                             overwatch.getMessenger().send(player, "§4Dein Report ist §cabgelaufen!");
                         }
 
-                        toRemove.add(liveReport.getKey());
+                        toRemove.add(report.getKey());
                     }
                 }
 
@@ -111,52 +136,24 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
         }
     }
 
-    public boolean report(Player reporter, Player reported, ReportReason reportReason) {
-        CorePlayer corePlayer = CoreSystem.getInstance().getCorePlayer(reporter);
-
-        LiveReport liveReport = liveReportsCollection.find(eq("reported", reported.getUniqueId())).first();
-
-        if (liveReport != null) {
-            if (liveReport.getReporter().contains(reporter.getUniqueId())) {
-                overwatch.getMessenger().send(reported, "§4Du hast den Spieler §f§l" + reported.getName() + " §4bereits Reportet.");
-                return false;
-            } else {
-                toConfirm.put(reporter.getUniqueId(), liveReport);
-                run();
-                return true;
-            }
-        } else {
-            liveReport = new LiveReport(System.currentTimeMillis() / 1000, reported.getUniqueId(), new ArrayList<UUID>() {{
-                add(reporter.getUniqueId());
-            }}, reportReason, false, Bukkit.getServer().getName(), corePlayer.getTrust().getGroup().getTrustPoints());
-
-            toConfirm.put(reporter.getUniqueId(), liveReport);
-            run();
-
-            return true;
-        }
-    }
-
     public boolean confirmReport(Player player) {
         if (toConfirm.containsKey(player.getUniqueId())) {
             Player reported = Bukkit.getPlayer(player.getUniqueId());
             CorePlayer corePlayer = BukkitCoreSystem.getSystem().getCorePlayer(player);
 
-            LiveReport liveReport = toConfirm.get(player.getUniqueId());
-            LiveReport dbLiveReport = liveReportsCollection.find(eq("reportID", liveReport.getReportID())).first();
-
-            if (dbLiveReport == null) {
+            Report report = toConfirm.get(player.getUniqueId());
+            if (!existsReport(report.getID())) {
                 toConfirm.remove(player.getUniqueId());
-                liveReportsCollection.insertOne(liveReport);
-                BukkitCoreSystem.getSystem().getChannelHandler().createSetRequest(player, "REPORT", "NEW", liveReport.getReportID());
-                overwatch.getMessenger().send(player, "§7Du hast den Spieler §f§l" + reported.getName() + " §7erfolgreich für §f§l" + liveReport.getReportReason().getName() + " §7reported.");
+                reportsCollection.insertOne(report);
+                BukkitCoreSystem.getSystem().getChannelHandler().createSetRequest(player, "REPORT", "NEW", report.getID());
+                overwatch.getMessenger().send(player, "§7Du hast den Spieler §f§l" + reported.getName() + " §7erfolgreich für §f§l" + report.getReason().getName() + " §7reported.");
             } else {
-                liveReport.addReporter(corePlayer);
-                liveReportsCollection.replaceOne(eq("reportID", liveReport.getReportID()), liveReport);
-                BukkitCoreSystem.getSystem().getChannelHandler().createSetRequest(player, "REPORT", "UPDATE", liveReport.getReportID());
+                report.addReporter(corePlayer.getUuid());
+                reportsCollection.replaceOne(eq("ID", report.getID()), report);
+                BukkitCoreSystem.getSystem().getChannelHandler().createSetRequest(player, "REPORT", "UPDATE", report.getID());
             }
 
-            Bukkit.getPluginManager().callEvent(new PlayerReportedEvent(liveReport.getReportID(), liveReport.getReporter(), Bukkit.getPlayer(liveReport.getReported()), liveReport.getReportReason()));
+            Bukkit.getPluginManager().callEvent(new PlayerReportedEvent(report.getID(), report.getReporter(), Bukkit.getPlayer(report.getReported()), report.getReason()));
             return true;
         } else {
             overwatch.getMessenger().send(player, "§4Du musst zuerst einen Spieler reporten um einen Report bestätigen zu können!");

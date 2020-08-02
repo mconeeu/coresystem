@@ -14,27 +14,27 @@ import java.util.UUID;
 public class Punish {
 
     private final String punishID;
-    private final UUID punished, teamMember;
+    private final UUID punished, member;
     private final PunishTemplate template;
     private final String reason;
     private BanEntry banEntry;
     private MuteEntry muteEntry;
 
-    public Punish(UUID punished, UUID teamMember, PunishTemplate template, String reason) {
+    public Punish(UUID punished, UUID member, PunishTemplate template, String reason) {
         this.punishID = IDUtils.generateID();
         this.punished = punished;
-        this.teamMember = teamMember;
+        this.member = member;
         this.template = template;
         this.reason = reason;
     }
 
     @BsonCreator
-    public Punish(@BsonProperty("punishID") String punishID, @BsonProperty("punished") UUID punished, @BsonProperty("teamMember") UUID teamMember,
+    public Punish(@BsonProperty("punishID") String punishID, @BsonProperty("punished") UUID punished, @BsonProperty("member") UUID member,
                   @BsonProperty("template") PunishTemplate template, @BsonProperty("reason") String reason,
                   @BsonProperty("banEntry") BanEntry banEntry, @BsonProperty("muteEntry") MuteEntry muteEntry) {
         this.punishID = punishID;
         this.punished = punished;
-        this.teamMember = teamMember;
+        this.member = member;
         this.template = template;
         this.reason = reason;
         this.banEntry = banEntry;
@@ -42,8 +42,8 @@ public class Punish {
     }
 
 
-    public void addBanEntry(long end) {
-        banEntry = new BanEntry(end);
+    public void addBanEntry(long end, String replayID) {
+        banEntry = new BanEntry(end, replayID);
     }
 
     public void addMuteEntry(long end, String chatLogID) {

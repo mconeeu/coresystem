@@ -8,7 +8,7 @@ package eu.mcone.coresystem.bungee.listener;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.event.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
-import eu.mcone.coresystem.api.core.overwatch.report.AbstractReport;
+import eu.mcone.coresystem.api.core.overwatch.report.Report;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.friend.Party;
@@ -96,7 +96,7 @@ public class PluginMessageListener implements Listener {
                         String action = in.readUTF();
 
                         if (action.equalsIgnoreCase("NEW")) {
-                            BungeeCoreSystem.getSystem().getOverwatch().getReportManager().addLiveReportFromDB(in.readUTF());
+                            BungeeCoreSystem.getSystem().getOverwatch().getReportManager().addReport(in.readUTF());
                         } else if (action.equalsIgnoreCase("UPDATE")) {
                             BungeeCoreSystem.getSystem().getOverwatch().getReportManager().updateReportData(in.readUTF());
                         } else if (action.equalsIgnoreCase("ACCEPT")) {
@@ -106,9 +106,13 @@ public class PluginMessageListener implements Listener {
                             BungeeCoreSystem.getSystem().getOverwatch().getReportManager().removeTeamMember(in.readUTF());
                         }
                     } else if (subch.equalsIgnoreCase("PUNISH")) {
-                        AbstractReport report = BungeeCoreSystem.getSystem().getOverwatch().getReportManager().getReport(in.readUTF());
-                        if (report != null)
+                        String id = in.readUTF();
+                        System.out.println("PUNISH");
+                        if (BungeeCoreSystem.getSystem().getOverwatch().getReportManager().existsReport(id)) {
+                            System.out.println("EXISTS");
+                            Report report = BungeeCoreSystem.getSystem().getOverwatch().getReportManager().getReport(id);
                             BungeeCoreSystem.getSystem().getOverwatch().getPunishManager().punishPlayer(report, UUID.fromString(in.readUTF()));
+                        }
                     } else if (subch.equalsIgnoreCase("CMD")) {
                         String input = in.readUTF();
 

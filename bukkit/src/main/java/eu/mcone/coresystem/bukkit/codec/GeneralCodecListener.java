@@ -89,6 +89,8 @@ public class GeneralCodecListener {
     }
 
     public void refresh() {
+        unRegisterListeners();
+
         if (listening) {
             for (Map.Entry<Class<?>, List<Class<? extends Codec<?, ?>>>> entry : codecRegistry.getCodecsByTriggerTyp(Event.class).entrySet()) {
                 Class<? extends Event> eventClass = (Class<? extends Event>) entry.getKey();
@@ -98,6 +100,9 @@ public class GeneralCodecListener {
 
                     if (handlerList != null) {
                         RegisteredListener registeredListener = new RegisteredListener(null, (listener, event) -> {
+                            if (!eventClass.isAssignableFrom(event.getClass()))
+                                return;
+
                             try {
                                 for (Class<? extends Codec<?, ?>> codecClass : entry.getValue()) {
                                     Codec codec = codecClass.newInstance();
@@ -137,10 +142,7 @@ public class GeneralCodecListener {
         }
     }
 
-    public void unListening() {
-        listening = false;
-        CoreSystem.getInstance().getPacketManager().unregisterPacketListener(packetListener);
-
+    public void unRegisterListeners() {
         for (Map.Entry<Class<? extends Event>, RegisteredListener> entry : listener.entrySet()) {
             HandlerList handlerList = getHandlerList(entry.getKey());
 
@@ -150,5 +152,11 @@ public class GeneralCodecListener {
         }
 
         listener.clear();
+    }
+
+    public void unListening() {
+        listening = false;
+        CoreSystem.getInstance().getPacketManager().unregisterPacketListener(packetListener);
+        unRegisterListeners();
     }
 }

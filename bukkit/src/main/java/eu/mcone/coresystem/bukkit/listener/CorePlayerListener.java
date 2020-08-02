@@ -137,7 +137,7 @@ public class CorePlayerListener implements Listener {
     public void onQuitMonitor(PlayerQuitEvent e) {
         Player bukkit = e.getPlayer();
         if (BukkitCoreSystem.getSystem().getOverwatch().getReportManager().currentlyWorkingOnReport(bukkit.getUniqueId())) {
-            BukkitCoreSystem.getSystem().getChannelHandler().createSetRequest(bukkit, "REPORT", "REMOVE", BukkitCoreSystem.getSystem().getOverwatch().getReportManager().getCurrentlyEditing(bukkit.getUniqueId()).getReportID());
+            BukkitCoreSystem.getSystem().getChannelHandler().createSetRequest(bukkit, "REPORT", "REMOVE", BukkitCoreSystem.getSystem().getOverwatch().getReportManager().getCurrentlyEditing(bukkit.getUniqueId()).getID());
         }
 
         BukkitCorePlayer p = (BukkitCorePlayer) BukkitCoreSystem.getSystem().getCorePlayer(e.getPlayer());

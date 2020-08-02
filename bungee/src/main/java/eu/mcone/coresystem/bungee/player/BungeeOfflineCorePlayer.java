@@ -6,11 +6,13 @@
 package eu.mcone.coresystem.bungee.player;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.overwatch.punish.Punish;
 import eu.mcone.coresystem.api.bungee.player.FriendData;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.bungee.overwatch.punish.PunishManager;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.GlobalOfflineCorePlayer;
 import group.onegaming.networkmanager.core.api.database.Database;
@@ -22,6 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.combine;
 import static com.mongodb.client.model.Updates.set;
 
 public class BungeeOfflineCorePlayer extends GlobalOfflineCorePlayer implements OfflineCorePlayer {
@@ -48,27 +51,41 @@ public class BungeeOfflineCorePlayer extends GlobalOfflineCorePlayer implements 
     private void loadData() {
         this.friendData = BungeeCoreSystem.getInstance().getFriendSystem().getData(uuid);
 
-        Document muteEntry = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_mute").find(eq("uuid", uuid.toString())).first();
-        if (muteEntry != null) {
-            this.muted = true;
-            this.muteTime = muteEntry.getLong("end");
-        } else {
-            this.muted = false;
+        Punish punish = PunishManager.PUNISH_COLLECTION.find(eq("punished", uuid)).first();
+
+        if (punish != null) {
+            if (punish.isBanned()) {
+                banned = true;
+                banTime = punish.getBanEntry().getEnd();
+            }
+
+            if (punish.isMuted()) {
+                muted = true;
+                muteTime = punish.getMuteEntry().getEnd();
+            }
         }
 
-        Document banEntry = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_ban").find(eq("uuid", uuid.toString())).first();
-        if (banEntry != null) {
-            this.banned = true;
-            this.banTime = banEntry.getLong("end");
-        } else {
-            this.banned = false;
-        }
-
-        Document pointsEntry = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_bansystem_points").find(eq("uuid", uuid.toString())).first();
+        Document pointsEntry = PunishManager.PUNISH_POINTS_COLLECTION.find(eq("uuid", uuid.toString())).first();
         if (pointsEntry != null) {
             this.banPoints = pointsEntry.getInteger("banpoints");
             this.mutePoints = pointsEntry.getInteger("mutepoints");
         }
+    }
+
+    public void setMuted(boolean muted) {
+        this.muted = muted;
+    }
+
+    public void setMuteTime(long time) {
+        this.muteTime = time;
+    }
+
+    public void setBanned(boolean banned) {
+        this.banned = banned;
+    }
+
+    public void setBanTime(long time) {
+        this.banTime = time;
     }
 
     @Override
@@ -87,6 +104,20 @@ public class BungeeOfflineCorePlayer extends GlobalOfflineCorePlayer implements 
     public void removeGroup(Group group) {
         this.groupSet.remove(group);
         updateDatabaseGroupsAsync(groupSet);
+    }
+
+    public void updatePunishmentAsync() {
+        instance.runAsync(() -> {
+            ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(
+                    eq("uuid", uuid.toString()),
+                    combine(
+                            set("banned", banned),
+                            set("banTime", banTime),
+                            set("muted", muted),
+                            set("muteTime", muteTime)
+                    )
+            );
+        });
     }
 
     private void updateDatabaseGroupsAsync(Set<Group> groupSet) {

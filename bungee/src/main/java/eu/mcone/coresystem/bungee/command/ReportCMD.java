@@ -51,17 +51,17 @@ public class ReportCMD extends Command {
 
                         if (!id.isEmpty()) {
                             if (!overwatch.getReportManager().currentlyWorkingOnReport(p.getUniqueId())) {
-                                if (!overwatch.getReportManager().isReportAlreadyTaken(id)) {
-                                    overwatch.getReportManager().acceptReport(id, p);
-                                } else {
+                                if (overwatch.getReportManager().isReportAlreadyTaken(id)) {
                                     try {
                                         Report report = overwatch.getReportManager().getReport(id);
-                                        OfflineCorePlayer corePlayer = BungeeCoreSystem.getSystem().getOfflineCorePlayer(report.getTeamMember());
+                                        OfflineCorePlayer corePlayer = BungeeCoreSystem.getSystem().getOfflineCorePlayer(report.getMember());
                                         overwatch.getMessenger().send(p, "§4Das §aTeammitglied §7" + corePlayer.getMainGroup().getPrefix() + corePlayer.getName() + " §4kümmert sich bereits um den Report!");
 
                                     } catch (PlayerNotResolvedException e) {
                                         e.printStackTrace();
                                     }
+                                } else {
+                                    overwatch.getReportManager().acceptReport(id, p);
                                 }
                             } else {
                                 overwatch.getMessenger().send(p, "§cDu bearbeitest bereits einen §cReport");
