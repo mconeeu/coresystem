@@ -44,6 +44,10 @@ public enum Group {
         this.tsId = tsId;
     }
 
+    public boolean standsAbove(Group group) {
+        return id < group.id;
+    }
+
     public static Group getGroupbyName(String name) {
         for (Group group : values()) {
             if (group.getName().equalsIgnoreCase(name)) {

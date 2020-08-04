@@ -51,6 +51,9 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.pojo.Conventions;
 import org.bson.codecs.pojo.PojoCodecProvider;
 
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -62,7 +65,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private boolean cloudsystemAvailable;
 
     private Map<String, CorePlugin> plugins;
-
     private MongoConnection mongoConnection;
 
     @Getter
@@ -116,6 +118,19 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 sentryClient.addTag("Plugin dependencies", getDescription().getDepends().toString());
                 sentryClient.addTag("Plugin soft dependencies", getDescription().getSoftDepends().toString());
                 sentryClient.addTag("Max Players", String.valueOf(listener.getMaxPlayers()));
+            }
+
+            final File file = new File("messages.properties");
+            if (!file.isFile()) {
+                try {
+                    System.out.println("set custom bundle");
+                    Field customBundle = getProxy().getClass().getDeclaredField("customBundle");
+
+                    customBundle.setAccessible(true);
+                    customBundle.set(getProxy(), new PropertyResourceBundle(getResourceAsStream("core_messages.properties")));
+                } catch (NoSuchFieldException | IOException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
 
             getProxy().getConsole().sendMessage(new TextComponent(TextComponent.fromLegacyText("\n" +
@@ -218,7 +233,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         registerCommands(
                 new PingCMD(),
                 new TeamChatCMD(),
-                new PermsCMD(getMongoDB()),
+                new PermsCMD(),
                 new PunishCMD(overwatch),
                 new WhoisCMD(),
                 new RestartCMD(),

@@ -22,24 +22,24 @@ public class SentryListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
-        recordBreadcrumb(e.getPlayer(), "Join", "joined", new HashMap<String, String>(){{
-            put("quitMesage", e.getJoinMessage());
-        }});
+        recordBreadcrumb(e.getPlayer(), "Join", "joined", new String[][]{
+                {"quitMesage", e.getJoinMessage()}
+        });
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerQuitEvent e) {
-        recordBreadcrumb(e.getPlayer(), "Quit", "leaved", new HashMap<String, String>(){{
-            put("quitMesage", e.getQuitMessage());
-        }});
+        recordBreadcrumb(e.getPlayer(), "Quit", "leaved", new String[][]{
+                {"quitMesage", e.getQuitMessage()}
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onCommandPreprocess(PlayerCommandPreprocessEvent e) {
-        recordBreadcrumb(e.getPlayer(), "Command", "performed Command "+e.getMessage(), new HashMap<String, String>(){{
-            put("command", e.getMessage());
-            put("cancelled", String.valueOf(e.isCancelled()));
-        }});
+        recordBreadcrumb(e.getPlayer(), "Command", "performed Command " + e.getMessage(), new String[][]{
+                {"command", e.getMessage()},
+                {"cancelled", String.valueOf(e.isCancelled())}
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -48,30 +48,37 @@ public class SentryListener implements Listener {
             Player p = (Player) e.getPlayer();
             Inventory inv = e.getInventory();
 
-            recordBreadcrumb(p, "CoreInventory", "opens CoreInventory "+inv.getName(), new HashMap<String, String>(){{
-                put("title", inv.getTitle());
-                put("type", String.valueOf(inv.getType()));
-                put("size", String.valueOf(inv.getSize()));
-                put("cancelled", String.valueOf(e.isCancelled()));
-            }});
+            recordBreadcrumb(p, "CoreInventory", "opens CoreInventory " + inv.getName(), new String[][]{
+                    {"title", inv.getTitle()},
+                    {"type", String.valueOf(inv.getType())},
+                    {"size", String.valueOf(inv.getSize())},
+                    {"cancelled", String.valueOf(e.isCancelled())}
+            });
         }
     }
 
     private static void recordBreadcrumb(Player p, String category, String message) {
-        recordBreadcrumb(p, category, message, new HashMap<>());
+        recordBreadcrumb(p, category, message, null);
     }
 
-    private static void recordBreadcrumb(Player p, String category, String message, Map<String, String> data) {
+    private static void recordBreadcrumb(Player p, String category, String message, String[][] data) {
         for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
             if (plugin instanceof CorePlugin) {
                 CorePlugin corePlugin = (CorePlugin) plugin;
 
                 if (corePlugin.hasSentryClient()) {
-                    data.put("name", p.getName());
-                    data.put("uuid", p.getUniqueId().toString());
+                    Map<String, String> dataMap = new HashMap<>();
+                    dataMap.put("name", p.getName());
+                    dataMap.put("uuid", p.getUniqueId().toString());
+
+                    if (data != null) {
+                        for (String[] entry : data) {
+                            dataMap.put(entry[0], entry[2]);
+                        }
+                    }
 
                     corePlugin.getSentryClient().getContext().recordBreadcrumb(
-                            new BreadcrumbBuilder().setCategory(category).setMessage("Player "+message).setData(data).build()
+                            new BreadcrumbBuilder().setCategory(category).setMessage("Player " + message).setData(dataMap).build()
                     );
                 }
             }
