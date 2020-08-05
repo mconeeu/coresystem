@@ -73,7 +73,7 @@ public class SentryListener implements Listener {
 
                     if (data != null) {
                         for (String[] entry : data) {
-                            dataMap.put(entry[0], entry[2]);
+                            dataMap.put(entry[0], entry[1]);
                         }
                     }
 
