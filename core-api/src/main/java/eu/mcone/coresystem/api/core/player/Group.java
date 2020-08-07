@@ -15,7 +15,7 @@ public enum Group {
     SRDEVELOPER(10, "SrDeveloper", "§b§oSrDeveloper", "§8[§bSrDev§8] §7", ChatColor.AQUA, 20),
     SRBUILDER(11, "SrBuilder", "§e§oSrBuilder", "§8[§eSrB§8] §7", ChatColor.YELLOW, 21),
     SRMODERATOR(12, "SrModerator", "§2§oSrModerator", "§8[§2SrMod§8] §7", ChatColor.DARK_GREEN, 22),
-    SRCONTENT(13, "SrContent", "§2§oSrModerator", "§8[§2SrMod§8] §7", ChatColor.BLUE, 22),
+    SRCONTENT(13, "SrContent", "§2§oSrContent", "§8[§2SrCon§8] §7", ChatColor.BLUE, 22),
     DEVELOPER(20, "Developer", "§b§oDeveloper", "§8[§bDev§8] §7", ChatColor.AQUA, 30),
     BUILDER(21, "Builder", "§e§oBuilder", "§8[§eB§8] §7", ChatColor.YELLOW, 32),
     MODERATOR(22, "Moderator", "§2§oModerator", "§8[§2Mod§8] §7", ChatColor.DARK_GREEN, 33),
