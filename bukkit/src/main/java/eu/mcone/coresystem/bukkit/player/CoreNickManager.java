@@ -142,8 +142,6 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
     }
 
     public void setNick(Player p, GameProfile gp, String name, UUID uuid) {
-        setGameProfileName(gp, name, uuid);
-
         List<Player> canSee = new ArrayList<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.canSee(p) && player != p) {
@@ -151,6 +149,8 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
                 player.hidePlayer(p);
             }
         }
+
+        setGameProfileName(gp, name, uuid);
 
         for (Player player : canSee) {
             player.showPlayer(p);
