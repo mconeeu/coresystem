@@ -28,7 +28,7 @@ public class ReportCMD extends CorePlayerCommand {
         if (args.length >= 1) {
             if (!(args[0].equalsIgnoreCase("accept") || args[0].equalsIgnoreCase("close"))) {
                 if (args[0].equalsIgnoreCase("help")) {
-                    if (player.hasPermission("overwatch.report.general") || player.hasPermission("overwatch.report.*")) {
+                    if (player.hasPermission("system.bungee.overwatch.report.general") || player.hasPermission("system.bungee.overwatch.report.*")) {
                         overwatch.getMessenger().send(player, "§4Bitte benutze: " +
                                 "\n§c/report <Spieler> §4oder " +
                                 "\n§c/report accept <id> §4oder " +
@@ -44,7 +44,7 @@ public class ReportCMD extends CorePlayerCommand {
 
                     return true;
                 } else if (args[0].equalsIgnoreCase("list")) {
-                    if (player.hasPermission("overwatch.report.general") || player.hasPermission("overwatch.report.*")) {
+                    if (player.hasPermission("system.bungee.overwatch.report.general") || player.hasPermission("system.bungee.overwatch.report.*")) {
                         new ReportsInventory(overwatch, player);
                     } else {
                         overwatch.getMessenger().send(player, "§4Du hast keine Berechtigung für diesen Befehl!");
@@ -55,7 +55,7 @@ public class ReportCMD extends CorePlayerCommand {
                     overwatch.getReportManager().confirmReport(player);
                     return true;
                 } else if (args[0].equalsIgnoreCase("info")) {
-                    if (player.hasPermission("overwatch.report.general") || player.hasPermission("overwatch.report.*")) {
+                    if (player.hasPermission("system.bungee.overwatch.report.general") || player.hasPermission("system.bungee.overwatch.report.*")) {
                         Report report = overwatch.getReportManager().getCurrentlyEditing(player.getUniqueId());
 
                         if (report != null) {
@@ -71,12 +71,12 @@ public class ReportCMD extends CorePlayerCommand {
                 } else {
                     String reported = args[0];
                     if (!reported.isEmpty()) {
-                        if (!player.hasPermission("overwatch.report.general") || player.hasPermission("overwatch.report.*")) {
+                        if (!player.hasPermission("system.bungee.overwatch.report.general") || player.hasPermission("system.bungee.overwatch.report.*")) {
                             Player reportedPlayer = Bukkit.getPlayer(reported);
 
                             if (reportedPlayer != null) {
                                 if (player != reportedPlayer) {
-                                    if (!(reportedPlayer.hasPermission("overwatch.report.ignore") || reportedPlayer.hasPermission("overwatch.report.*"))) {
+                                    if (!(reportedPlayer.hasPermission("system.bungee.overwatch.report.ignore") || reportedPlayer.hasPermission("system.bungee.overwatch.report.*"))) {
                                         new ReportInventory(player, reportedPlayer);
                                     } else {
                                         overwatch.getMessenger().send(player, "§4Du kannst keine §cTeammitglieder §4Reporten!");

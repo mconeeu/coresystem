@@ -14,7 +14,7 @@ import eu.mcone.coresystem.api.core.player.SkinInfo;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-public interface CorePlayer extends GlobalCorePlayer {
+public interface CorePlayer extends OfflineCorePlayer, GlobalCorePlayer {
 
     /**
      * returns the current nick. null if player is not nicked

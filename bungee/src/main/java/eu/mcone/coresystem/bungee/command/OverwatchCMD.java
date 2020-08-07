@@ -12,7 +12,7 @@ public class OverwatchCMD extends Command {
     private final Overwatch overwatch;
 
     public OverwatchCMD(Overwatch overwatch) {
-        super("overwatch", "overwatch.login");
+        super("overwatch", "system.bungee.overwatch.login");
         this.overwatch = overwatch;
     }
 

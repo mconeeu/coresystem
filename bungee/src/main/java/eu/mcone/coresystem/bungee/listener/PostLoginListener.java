@@ -66,7 +66,7 @@ public class PostLoginListener implements Listener {
 
         title.send(p);
 
-        if (cp.hasPermission("overwatch.report")) {
+        if (cp.hasPermission("system.bungee.overwatch.report")) {
             BungeeCoreSystem.getSystem().getOverwatch().login(p);
             BungeeCoreSystem.getSystem().getOverwatch().getMessenger().send(p, "§aDu wurdest automatisch eingelogt.");
             BungeeCoreSystem.getSystem().getOverwatch().getReportManager().sendOpenReports(p);

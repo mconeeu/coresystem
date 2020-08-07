@@ -205,4 +205,7 @@ public interface GlobalOfflineCorePlayer {
     void increaseCorrectReports();
 
     void increaseWrongReports();
+
+    boolean hasLinkedOneGamingAccount();
+
 }

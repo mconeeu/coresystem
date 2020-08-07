@@ -22,7 +22,7 @@ public class Overwatch extends GlobalOverwatch implements eu.mcone.coresystem.ap
     public Overwatch() {
         super(BukkitCoreSystem.getInstance());
         reportManager = new ReportManager(this, CoreSystem.getInstance());
-        messenger = new Messenger("overwatch.prefix");
+        messenger = new Messenger("system.bungee.overwatch.prefix");
 
         BukkitCoreSystem.getSystem().registerCommands(
                 new ReportCMD(this)

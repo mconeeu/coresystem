@@ -21,10 +21,10 @@ public class SentryListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(LoginEvent e) {
-        recordBreadcrumb(null, "Join", "logged in", new HashMap<String, String>(){{
-            put("cancelled", String.valueOf(e.isCancelled()));
-            put("cancelReason", e.getCancelReasonComponents() != null ? BaseComponent.toLegacyText(e.getCancelReasonComponents()) : null);
-        }});
+        recordBreadcrumb(null, "Join", "logged in", new String[][]{
+                {"cancelled", String.valueOf(e.isCancelled())},
+                {"cancelReason", e.getCancelReasonComponents() != null ? BaseComponent.toLegacyText(e.getCancelReasonComponents()) : null}
+        });
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -35,31 +35,38 @@ public class SentryListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onCommandPreprocess(ChatEvent e) {
         if (e.isCommand()) {
-            recordBreadcrumb((ProxiedPlayer) e.getSender(), "Command", "performed Command "+e.getMessage(), new HashMap<String, String>(){{
-                put("command", e.getMessage());
-                put("cancelled", String.valueOf(e.isCancelled()));
-                put("proxyCommand", String.valueOf(e.isProxyCommand()));
-            }});
+            recordBreadcrumb((ProxiedPlayer) e.getSender(), "Command", "performed Command " + e.getMessage(), new String[][]{
+                    {"command", e.getMessage()},
+                    {"cancelled", String.valueOf(e.isCancelled())},
+                    {"proxyCommand", String.valueOf(e.isProxyCommand())}
+            });
         }
     }
 
     private static void recordBreadcrumb(ProxiedPlayer p, String category, String message) {
-        recordBreadcrumb(p, category, message, new HashMap<>());
+        recordBreadcrumb(p, category, message, new String[0][]);
     }
 
-    private static void recordBreadcrumb(ProxiedPlayer p, String category, String message, Map<String, String> data) {
+    private static void recordBreadcrumb(ProxiedPlayer p, String category, String message, String[][] data) {
         for (Plugin plugin : ProxyServer.getInstance().getPluginManager().getPlugins()) {
             if (plugin instanceof CorePlugin) {
                 CorePlugin corePlugin = (CorePlugin) plugin;
 
                 if (corePlugin.hasSentryClient()) {
+                    Map<String, String> dataMap = new HashMap<>();
                     if (p != null) {
-                        data.put("name", p.getName());
-                        data.put("uuid", p.getUniqueId().toString());
+                        dataMap.put("name", p.getName());
+                        dataMap.put("uuid", p.getUniqueId().toString());
+                    }
+
+                    if (data != null) {
+                        for (String[] entry : data) {
+                            dataMap.put(entry[0], entry[1]);
+                        }
                     }
 
                     corePlugin.getSentryClient().getContext().recordBreadcrumb(
-                            new BreadcrumbBuilder().setCategory(category).setMessage("Player "+message).setData(data).build()
+                            new BreadcrumbBuilder().setCategory(category).setMessage("Player " + message).setData(dataMap).build()
                     );
                 }
             }

@@ -6,6 +6,8 @@
 package eu.mcone.coresystem.api.bukkit.util;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.core.chat.MarkdownParser;
+import eu.mcone.coresystem.api.core.chat.spec.TextLevel;
 import eu.mcone.coresystem.api.bukkit.event.BroadcastMessageEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.translation.Language;
@@ -38,12 +40,127 @@ public final class Messenger implements Serializable {
      * @param message message
      */
     public void send(Player player, String message) {
+        send(player, TextLevel.INFO, message);
+    }
+
+    /**
+     * send message with prefix to player
+     *
+     * @param player  player
+     * @param message message
+     */
+    public void sendSuccess(Player player, String message) {
+        send(player, TextLevel.SUCCESS, message);
+    }
+
+    /**
+     * send message with prefix to player
+     *
+     * @param player  player
+     * @param message message
+     */
+    public void sendInfo(Player player, String message) {
+        send(player, TextLevel.INFO, message);
+    }
+
+    /**
+     * send message with prefix to player
+     *
+     * @param player  player
+     * @param message message
+     */
+    public void sendWarning(Player player, String message) {
+        send(player, TextLevel.WARNING, message);
+    }
+
+    /**
+     * send message with prefix to player
+     *
+     * @param player  player
+     * @param message message
+     */
+    public void sendError(Player player, String message) {
+        send(player, TextLevel.ERROR, message);
+    }
+
+    /**
+     * send message with prefix to player
+     *
+     * @param player  player
+     * @param message message
+     */
+    public void send(Player player, TextLevel level, String message) {
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
 
         player.sendMessage(CoreSystem.getInstance().getTranslationManager().get(
                 prefixTranslation,
                 cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE
-        ) + message);
+        ) + MarkdownParser.parseMarkdown(message, level));
+    }
+
+    /**
+     * send message with prefix to command sender
+     *
+     * @param sender  command sender
+     * @param message message
+     */
+    public void send(CommandSender sender, String message) {
+        send(sender, TextLevel.NONE, message);
+    }
+
+    /**
+     * send message with prefix to command sender
+     *
+     * @param sender  command sender
+     * @param message message
+     */
+    public void sendInfo(CommandSender sender, String message) {
+        send(sender, TextLevel.INFO, message);
+    }
+
+    /**
+     * send message with prefix to command sender
+     *
+     * @param sender  command sender
+     * @param message message
+     */
+    public void sendSuccess(CommandSender sender, String message) {
+        send(sender, TextLevel.SUCCESS, message);
+    }
+
+    /**
+     * send message with prefix to command sender
+     *
+     * @param sender  command sender
+     * @param message message
+     */
+    public void sendWarning(CommandSender sender, String message) {
+        send(sender, TextLevel.WARNING, message);
+    }
+
+    /**
+     * send message with prefix to command sender
+     *
+     * @param sender  command sender
+     * @param message message
+     */
+    public void sendError(CommandSender sender, String message) {
+        send(sender, TextLevel.ERROR, message);
+    }
+
+    /**
+     * send message with prefix to command sender
+     *
+     * @param sender  command sender
+     * @param message message
+     */
+    public void send(CommandSender sender, TextLevel level, String message) {
+        CorePlayer cp = sender instanceof Player ? CoreSystem.getInstance().getCorePlayer((Player) sender) : null;
+
+        sender.sendMessage(CoreSystem.getInstance().getTranslationManager().get(
+                prefixTranslation,
+                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE
+        ) + (!level.equals(TextLevel.NONE) ? MarkdownParser.parseMarkdown(message, level) : message));
     }
 
     /**
@@ -62,21 +179,6 @@ public final class Messenger implements Serializable {
         realTc.addExtra(textComponent);
 
         player.spigot().sendMessage(realTc);
-    }
-
-    /**
-     * send message with prefix to command sender
-     *
-     * @param sender  command sender
-     * @param message message
-     */
-    public void send(CommandSender sender, String message) {
-        CorePlayer cp = sender instanceof Player ? CoreSystem.getInstance().getCorePlayer((Player) sender) : null;
-
-        sender.sendMessage(CoreSystem.getInstance().getTranslationManager().get(
-                prefixTranslation,
-                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE
-        ) + message);
     }
 
     /**

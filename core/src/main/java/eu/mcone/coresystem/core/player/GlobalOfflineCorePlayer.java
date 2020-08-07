@@ -304,4 +304,9 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         this.emeralds = amount;
     }
 
+    @Override
+    public boolean hasLinkedOneGamingAccount() {
+        return ((CoreModuleCoreSystem) instance).getMongoDB(Database.ONEGAMING).getCollection("users").find(eq("links.minecraft.identifier", uuid.toString())).first() != null;
+    }
+
 }

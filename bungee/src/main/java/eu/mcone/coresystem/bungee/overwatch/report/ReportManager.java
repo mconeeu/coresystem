@@ -49,7 +49,7 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
     public void sendOpenReports(ProxiedPlayer player) {
         CorePlayer corePlayer = BungeeCoreSystem.getSystem().getCorePlayer(player);
 
-        if (corePlayer.hasPermission("overwatch.report") && overwatch.isLoggedIn(player)) {
+        if (corePlayer.hasPermission("system.bungee.overwatch.report") && overwatch.isLoggedIn(player)) {
             long open = countOpenReports();
             if (open > 0) {
                 if (open == 1) {
@@ -95,7 +95,7 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
             ProxiedPlayer reported = ProxyServer.getInstance().getPlayer(report.getReported());
 
             for (CorePlayer corePlayer : BungeeCoreSystem.getInstance().getOnlineCorePlayers()) {
-                if (corePlayer.hasPermission("overwatch.report") && overwatch.isLoggedIn(corePlayer.bungee())) {
+                if (corePlayer.hasPermission("system.bungee.overwatch.report") && overwatch.isLoggedIn(corePlayer.bungee())) {
                     overwatch.getMessenger().send(corePlayer.bungee(), "§7Der Spieler §e" + reporter.getName() + " §7hat §e" + reported.getName() + " §7reportet §8(§7ID: §e" + report.getID() + "§8). §7Grund: §c" + report.getReason().getName() + " §7Priorität: §c" + report.getPriority().getPrefix());
                     overwatch.getMessenger().send(corePlayer.bungee(),
                             new ComponentBuilder("[ANNEHMEN]")
@@ -130,7 +130,7 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
                 reportsCollection.replaceOne(eq("iD", id), report);
 
                 for (CorePlayer corePlayer : BungeeCoreSystem.getInstance().getOnlineCorePlayers()) {
-                    if (corePlayer.hasPermission("overwatch.report.notification") && overwatch.isLoggedIn(corePlayer.bungee())) {
+                    if (corePlayer.hasPermission("system.bungee.overwatch.report.notification") && overwatch.isLoggedIn(corePlayer.bungee())) {
                         overwatch.getMessenger().send(corePlayer.bungee(), "§7Es ist ein neuer Report verfügbar §8(§f§l" + countOpenReports() + " §fVerfügbar§8)");
                     }
                 }
@@ -187,7 +187,7 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
                             OfflineCorePlayer corePlayer = BungeeCoreSystem.getSystem().getOfflineCorePlayer(member.getUniqueId());
 
                             if (corePlayer != null) {
-                                overwatch.getMessenger().send(member, "§4Das Teammitglied " + corePlayer.getMainGroup().getFormattingCode() + corePlayer.getName() + " bearbeitet diesem Report bereits!");
+                                overwatch.getMessenger().send(member, "§4Das Teammitglied " + corePlayer.getMainGroup().getColor() + corePlayer.getName() + " bearbeitet diesem Report bereits!");
                             } else {
                                 overwatch.getMessenger().send(member, "§4Ein anderes Teammitglied bearbeitet diesen Report bereits!");
                             }

@@ -35,7 +35,7 @@ public class Overwatch extends GlobalOverwatch implements eu.mcone.coresystem.ap
         reportManager = new ReportManager(this);
         punishManager = new PunishManager(this);
         trustManager = new TrustManager(this);
-        messenger = new Messenger("overwatch.prefix");
+        messenger = new Messenger("system.bungee.overwatch.prefix");
         loggedIn = new HashSet<>();
 
         BungeeCoreSystem.getSystem().registerCommands(

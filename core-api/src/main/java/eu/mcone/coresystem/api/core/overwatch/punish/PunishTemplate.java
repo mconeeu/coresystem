@@ -14,7 +14,7 @@ public enum PunishTemplate {
 
     RADIKALISMUS("RM", "Radikalismus", 10, 20),
 
-    CLIENTMODS("CM", "Clientmods", 10, 0),
+    CLIENTMODS("CM", "Clientmods", 20, 0),
     BETRUG("BT", "Betrug", 10, 0),
     BUGUSING("BU", "Bugusing", 2, 0),
     TEAM_TROLLING("TT", "TeamTrolling", 2, 0),

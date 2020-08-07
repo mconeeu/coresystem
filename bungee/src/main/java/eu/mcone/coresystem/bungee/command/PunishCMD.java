@@ -25,7 +25,7 @@ public class PunishCMD extends Command implements TabExecutor {
     private final Overwatch overwatch;
 
     public PunishCMD(Overwatch overwatch) {
-        super("punish", "overwatch.punish");
+        super("punish", "system.bungee.overwatch.punish");
         this.overwatch = overwatch;
     }
 

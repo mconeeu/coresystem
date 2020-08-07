@@ -31,7 +31,7 @@ public class ReportCMD extends Command {
 
             if (args.length == 1) {
                 if (args[0].equalsIgnoreCase("close")) {
-                    if (p.hasPermission("overwatch.report.general") || p.hasPermission("overwatch.report.*")) {
+                    if (p.hasPermission("system.bungee.overwatch.report.general") || p.hasPermission("system.bungee.overwatch.report.*")) {
                         if (overwatch.getReportManager().currentlyWorkingOnReport(p.getUniqueId())) {
                             overwatch.getReportManager().closeReport(p);
                             overwatch.getMessenger().send(p, "§7Du hast den Report erfolgreich §aabgeschlosse§7!");
@@ -46,7 +46,7 @@ public class ReportCMD extends Command {
                 }
             } else if (args.length == 2) {
                 if (args[0].equalsIgnoreCase("accept")) {
-                    if (p.hasPermission("overwatch.report.general") || p.hasPermission("overwatch.report.*")) {
+                    if (p.hasPermission("system.bungee.overwatch.report.general") || p.hasPermission("system.bungee.overwatch.report.*")) {
                         String id = args[1];
 
                         if (!id.isEmpty()) {

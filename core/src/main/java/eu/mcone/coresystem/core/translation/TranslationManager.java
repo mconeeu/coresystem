@@ -8,6 +8,8 @@ package eu.mcone.coresystem.core.translation;
 import com.mongodb.MongoBulkWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.InsertManyOptions;
+import eu.mcone.coresystem.api.core.chat.MarkdownParser;
+import eu.mcone.coresystem.api.core.chat.spec.TextLevel;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.api.core.translation.TranslationField;
@@ -67,7 +69,11 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
                 }
             }
 
-            setTranslation(document.getString("key"), values);
+            setTranslation(
+                    document.getString("key"),
+                    TextLevel.valueOf(document.getString("level")),
+                    values
+            );
         }
     }
 
@@ -114,7 +120,11 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
                     }
                 }
 
-                setTranslation(document.getString("key"), values);
+                setTranslation(
+                        document.getString("key"),
+                        TextLevel.valueOf(document.getString("level")),
+                        values
+                );
             }
         }
     }
@@ -147,17 +157,21 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
                     }
                 }
 
-                setTranslation(document.getString("key"), values);
+                setTranslation(
+                        document.getString("key"),
+                        TextLevel.valueOf(document.getString("level")),
+                        values
+                );
             }
         }
     }
 
-    private void setTranslation(String key, Map<Language, String> translations) {
+    private void setTranslation(String key, TextLevel level, Map<Language, String> translations) {
         if (this.translations.containsKey(key)) {
             TranslationField translationField = this.translations.get(key);
 
             for (Map.Entry<Language, String> translation : translations.entrySet()) {
-                translationField.setTranslation(translation.getKey(), translation.getValue());
+                translationField.setTranslation(translation.getKey(), MarkdownParser.parseMarkdown(translation.getValue(), level));
             }
 
         } else {
@@ -230,10 +244,11 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
     }
 
     private String[] getQueryCols(List<Language> languages) {
-        String[] cols = new String[languages.size() + 2];
+        String[] cols = new String[languages.size() + 3];
 
         int i = 0;
         cols[i++] = "key";
+        cols[i++] = "level";
         cols[i++] = "category";
         for (Language language : languages) {
             cols[i++] = language.getId();

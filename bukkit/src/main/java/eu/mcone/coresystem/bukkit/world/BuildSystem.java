@@ -67,6 +67,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
             switch (event) {
                 case BLOCK_BREAK: {
                     instance.getServer().getPluginManager().registerEvents(new Listener() {
+                        @SuppressWarnings("deprecation")
                         @EventHandler
                         public void on(BlockBreakEvent e) {
                             Player p = e.getPlayer();
@@ -84,6 +85,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                             }
                         }
 
+                        @SuppressWarnings("deprecation")
                         @EventHandler
                         public void on(EntityDamageByEntityEvent e) {
                             if (e.getDamager() instanceof Player) {
@@ -105,6 +107,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                             }
                         }
 
+                        @SuppressWarnings("deprecation")
                         @EventHandler
                         public void on(HangingBreakByEntityEvent e) {
                             if (e.getRemover() instanceof Player) {
@@ -126,6 +129,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                             }
                         }
 
+                        @SuppressWarnings("deprecation")
                         @EventHandler
                         public void on(PlayerInteractEvent e) {
                             Player p = e.getPlayer();
@@ -151,6 +155,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                 }
                 case BLOCK_PLACE: {
                     instance.getServer().getPluginManager().registerEvents(new Listener() {
+                        @SuppressWarnings("deprecation")
                         @EventHandler
                         public void on(BlockPlaceEvent e) {
                             Player p = e.getPlayer();
@@ -168,6 +173,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                             }
                         }
 
+                        @SuppressWarnings("deprecation")
                         @EventHandler
                         public void on(HangingPlaceEvent e) {
                             Player p = e.getPlayer();
@@ -189,6 +195,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                 }
                 case INTERACT: {
                     instance.getServer().getPluginManager().registerEvents(new Listener() {
+                        @SuppressWarnings("deprecation")
                         @EventHandler
                         public void on(PlayerInteractEvent e) {
                             Player p = e.getPlayer();
@@ -211,6 +218,7 @@ public class BuildSystem implements Listener, eu.mcone.coresystem.api.bukkit.wor
                             }
                         }
 
+                        @SuppressWarnings("deprecation")
                         @EventHandler
                         public void on(PlayerInteractAtEntityEvent e) {
                             Player p = e.getPlayer();
