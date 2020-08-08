@@ -6,10 +6,10 @@
 package eu.mcone.coresystem.api.bukkit.util;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.core.chat.MarkdownParser;
-import eu.mcone.coresystem.api.core.chat.spec.TextLevel;
 import eu.mcone.coresystem.api.bukkit.event.BroadcastMessageEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.core.chat.MarkdownParser;
+import eu.mcone.coresystem.api.core.chat.spec.TextLevel;
 import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.api.core.translation.TranslationManager;
 import lombok.Getter;
@@ -22,9 +22,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.io.Serializable;
-
-public final class Messenger implements Serializable {
+public final class Messenger {
 
     @Getter
     private final String prefixTranslation;

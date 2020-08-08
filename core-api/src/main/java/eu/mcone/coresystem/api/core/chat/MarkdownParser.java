@@ -14,11 +14,11 @@ public class MarkdownParser {
             TextVariant currentVariant = null;
 
             stringLoop:
-            for (int i = 0; i < rawArr.length - 1; i++) {
+            for (int i = 0; i < rawArr.length; i++) {
                 char c = rawArr[i];
 
                 if (currentVariant == null) {
-                    if (rawArr[i + 1] == '[') {
+                    if (rawArr.length > (i + 1) && rawArr[i + 1] == '[') {
                         for (TextVariant variant : TextVariant.values()) {
                             if (variant.getMarkdown() == c) {
                                 currentVariant = variant;
@@ -26,11 +26,9 @@ public class MarkdownParser {
                                 continue stringLoop;
                             }
                         }
-
-                        sb.append(c);
-                    } else {
-                        sb.append(c);
                     }
+
+                    sb.append(c);
                 } else {
                     if (c == ']') {
                         currentVariant = null;

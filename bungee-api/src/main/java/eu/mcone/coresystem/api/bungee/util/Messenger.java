@@ -7,15 +7,15 @@ package eu.mcone.coresystem.api.bungee.util;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
+import eu.mcone.coresystem.api.core.chat.MarkdownParser;
+import eu.mcone.coresystem.api.core.chat.spec.TextLevel;
 import eu.mcone.coresystem.api.core.translation.TranslationManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-import java.io.Serializable;
-
-public final class Messenger implements Serializable {
+public final class Messenger {
 
     private final String prefixTranslation;
 
@@ -25,16 +25,131 @@ public final class Messenger implements Serializable {
 
     /**
      * send message with prefix to player
+     *
+     * @param player  player
+     * @param message message
+     */
+    public void send(ProxiedPlayer player, String message) {
+        send(player, TextLevel.INFO, message);
+    }
+
+    /**
+     * send message with prefix to player
+     *
+     * @param player  player
+     * @param message message
+     */
+    public void sendSuccess(ProxiedPlayer player, String message) {
+        send(player, TextLevel.SUCCESS, message);
+    }
+
+    /**
+     * send message with prefix to player
+     *
+     * @param player  player
+     * @param message message
+     */
+    public void sendInfo(ProxiedPlayer player, String message) {
+        send(player, TextLevel.INFO, message);
+    }
+
+    /**
+     * send message with prefix to player
+     *
+     * @param player  player
+     * @param message message
+     */
+    public void sendWarning(ProxiedPlayer player, String message) {
+        send(player, TextLevel.WARNING, message);
+    }
+
+    /**
+     * send message with prefix to player
+     *
+     * @param player  player
+     * @param message message
+     */
+    public void sendError(ProxiedPlayer player, String message) {
+        send(player, TextLevel.ERROR, message);
+    }
+
+    /**
+     * send message with prefix to player
      * @param player player
      * @param message message
      */
-    public void send(final ProxiedPlayer player, final String message) {
+    public void send(ProxiedPlayer player, TextLevel level, String message) {
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
 
         player.sendMessage(new TextComponent(TextComponent.fromLegacyText(CoreSystem.getInstance().getTranslationManager().get(
                 prefixTranslation,
                 cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE
-        ) + message)));
+        ) + (!level.equals(TextLevel.NONE) ? MarkdownParser.parseMarkdown(message, level) : message))));
+    }
+
+    /**
+     * send message with prefix to command sender
+     *
+     * @param sender  command sender
+     * @param message message
+     */
+    public void send(CommandSender sender, String message) {
+        send(sender, TextLevel.NONE, message);
+    }
+
+    /**
+     * send message with prefix to command sender
+     *
+     * @param sender  command sender
+     * @param message message
+     */
+    public void sendInfo(CommandSender sender, String message) {
+        send(sender, TextLevel.INFO, message);
+    }
+
+    /**
+     * send message with prefix to command sender
+     *
+     * @param sender  command sender
+     * @param message message
+     */
+    public void sendSuccess(CommandSender sender, String message) {
+        send(sender, TextLevel.SUCCESS, message);
+    }
+
+    /**
+     * send message with prefix to command sender
+     *
+     * @param sender  command sender
+     * @param message message
+     */
+    public void sendWarning(CommandSender sender, String message) {
+        send(sender, TextLevel.WARNING, message);
+    }
+
+    /**
+     * send message with prefix to command sender
+     *
+     * @param sender  command sender
+     * @param message message
+     */
+    public void sendError(CommandSender sender, String message) {
+        send(sender, TextLevel.ERROR, message);
+    }
+
+    /**
+     * send message with prefix to command sender
+     * @param sender command sender
+     * @param message message
+     */
+    public void send(final CommandSender sender, TextLevel level, final String message) {
+        CorePlayer cp = sender instanceof ProxiedPlayer ? CoreSystem.getInstance().getCorePlayer((ProxiedPlayer) sender) : null;
+
+        sender.sendMessage(new TextComponent(TextComponent.fromLegacyText(CoreSystem.getInstance().getTranslationManager().get(
+                prefixTranslation,
+                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE)
+                + (!level.equals(TextLevel.NONE) ? MarkdownParser.parseMarkdown(message, level) : message)
+        )));
     }
 
     /**
@@ -54,20 +169,6 @@ public final class Messenger implements Serializable {
         }
 
         player.sendMessage(realTc);
-    }
-
-    /**
-     * send message with prefix to command sender
-     * @param sender command sender
-     * @param message message
-     */
-    public void send(final CommandSender sender, final String message) {
-        CorePlayer cp = sender instanceof ProxiedPlayer ? CoreSystem.getInstance().getCorePlayer((ProxiedPlayer) sender) : null;
-
-        sender.sendMessage(new TextComponent(TextComponent.fromLegacyText(CoreSystem.getInstance().getTranslationManager().get(
-                prefixTranslation,
-                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE) + message
-        )));
     }
 
     /**
