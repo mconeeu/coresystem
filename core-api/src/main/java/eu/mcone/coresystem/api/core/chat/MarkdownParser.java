@@ -10,7 +10,7 @@ public class MarkdownParser {
     public static String parseMarkdown(String raw, TextLevel level) {
         if (!level.equals(TextLevel.NONE)) {
             char[] rawArr = raw.toCharArray();
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder(level.getColor().toString());
             TextVariant currentVariant = null;
 
             stringLoop:

@@ -175,7 +175,7 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
             }
 
         } else {
-            this.translations.put(key, new TranslationField(translations));
+            this.translations.put(key, new TranslationField(translations, level));
         }
     }
 

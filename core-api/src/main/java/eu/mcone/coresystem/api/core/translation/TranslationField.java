@@ -5,24 +5,19 @@
 
 package eu.mcone.coresystem.api.core.translation;
 
+import eu.mcone.coresystem.api.core.chat.MarkdownParser;
+import eu.mcone.coresystem.api.core.chat.spec.TextLevel;
+
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 
 public final class TranslationField {
 
     private final Map<Language, String> values;
 
-    public TranslationField(Map<Language, String> values) {
+    public TranslationField(Map<Language, String> values, TextLevel level) {
+        values.replaceAll((k, v) -> MarkdownParser.parseMarkdown(v, level));
         this.values = values;
-    }
-
-    public TranslationField(String... translations) {
-        this.values = new HashMap<>();
-
-        for (int i = 0; i < translations.length && i < Language.values().length; i++) {
-            values.put(Language.values()[0], translations[0]);
-        }
     }
 
     public void setTranslation(Language language, String value) {
