@@ -22,10 +22,6 @@
 
     <repositories>
         <repository>
-            <id>mcone-systems</id>
-            <url>https://repo.onegaming.group/repository/mcone-systems/</url>
-        </repository>
-        <repository>
             <id>bungeecord-repo</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </repository>
@@ -35,7 +31,7 @@
         <dependency>
             <groupId>group.onegaming.networkmanager</groupId>
             <artifactId>core-api</artifactId>
-            <version>1.1.4-SNAPSHOT</version>
+            <version>1.1.5-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -52,4 +48,5 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
 </project>

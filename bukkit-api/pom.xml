@@ -20,13 +20,6 @@
         <finalName>${project.parent.name}-${project.name}-${project.version}</finalName>
     </build>
 
-    <repositories>
-        <repository>
-            <id>mcone-systems</id>
-            <url>https://repo.onegaming.group/repository/mcone-systems/</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency> <!-- Core APIs -->
             <groupId>eu.mcone.coresystem</groupId>
@@ -37,7 +30,7 @@
         <dependency> <!-- MC ONE Cloud -->
             <groupId>eu.mcone.cloud</groupId>
             <artifactId>plugin-api-bukkit</artifactId>
-            <version>2.1.0-SNAPSHOT</version>
+            <version>2.1.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency> <!-- Spigot (this includes Spigot API, Bukkit API, Craftbukkit and NMS) -->

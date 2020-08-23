@@ -83,8 +83,12 @@
 
     <repositories>
         <repository>
-            <id>onegaming-gitlab</id>
-            <url>https://gitlab.com/api/v4/groups/6/-/packages/maven</url>
+            <id>onegaming-gitlab-applications</id>
+            <url>https://gitlab.onegaming.group/api/v4/groups/applications/-/packages/maven</url>
+        </repository>
+        <repository>
+            <id>onegaming-gitlab-systems</id>
+            <url>https://gitlab.onegaming.group/api/v4/groups/systems/-/packages/maven</url>
         </repository>
     </repositories>
 
