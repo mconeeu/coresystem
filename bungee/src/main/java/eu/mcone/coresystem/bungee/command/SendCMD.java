@@ -28,7 +28,7 @@ public class SendCMD extends Command implements TabExecutor {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (sender instanceof ProxiedPlayer) {
-            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), ((ProxiedPlayer) sender).getUniqueId()))
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(this.getClass(), ((ProxiedPlayer) sender).getUniqueId()))
                 return;
         }
 

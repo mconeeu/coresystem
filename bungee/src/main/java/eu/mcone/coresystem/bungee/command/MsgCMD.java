@@ -32,7 +32,7 @@ public class MsgCMD extends Command implements TabExecutor {
     public void execute(final CommandSender sender, final String[] args) {
         if (sender instanceof ProxiedPlayer) {
             final CorePlayer p = CoreSystem.getInstance().getCorePlayer((ProxiedPlayer) sender);
-            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUuid())) return;
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(this.getClass(), p.getUuid())) return;
 
             if (args.length < 1) {
                 BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte Benutze: §c/msg §c<Player | toggle> §c[<Nachricht>]");

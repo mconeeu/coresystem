@@ -20,7 +20,7 @@ public class TeamChatCMD extends Command {
     public void execute(final CommandSender sender, final String[] args) {
         if (sender instanceof ProxiedPlayer) {
             final ProxiedPlayer p = (ProxiedPlayer) sender;
-            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId()))
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(this.getClass(), p.getUniqueId()))
                 return;
 
             if (args.length == 0) {

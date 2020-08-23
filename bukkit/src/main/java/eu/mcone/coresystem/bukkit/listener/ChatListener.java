@@ -36,7 +36,7 @@ public class ChatListener implements Listener {
             if (!cp.isVanished() || VanishChatCMD.usingCommand.contains(p.getUniqueId())) {
                 if (
                         cooldown > 0
-                                && !CoreSystem.getInstance().getCooldownSystem().addAndCheck(CoreSystem.getInstance(), getClass(), p.getUniqueId())
+                                && !CoreSystem.getInstance().getCooldownSystem().addAndCheck(getClass(), p.getUniqueId())
                                 && !p.hasPermission("system.bukkit.chat.cooldown.bypass")
                 ) {
                     CoreSystem.getInstance().getMessenger().send(p, "Bitte warte " + cooldown + " Sekunden bevor du eine neue Nachricht schreibst!");

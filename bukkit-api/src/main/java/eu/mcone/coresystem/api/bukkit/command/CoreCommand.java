@@ -36,7 +36,7 @@ public abstract class CoreCommand extends Command {
 
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-        if (sender instanceof Player && !CoreSystem.getInstance().getCooldownSystem().addAndCheck(CoreSystem.getInstance(), this.getClass(), ((Player) sender).getUniqueId()))
+        if (sender instanceof Player && !CoreSystem.getInstance().getCooldownSystem().addAndCheck(this.getClass(), ((Player) sender).getUniqueId()))
             return false;
 
         if (permission == null || sender.hasPermission(permission)) {

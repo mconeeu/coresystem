@@ -38,7 +38,7 @@ public class RegisterCMD extends Command {
         if (sender instanceof ProxiedPlayer) {
             final ProxiedPlayer p = (ProxiedPlayer) sender;
 
-            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId()))
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(this.getClass(), p.getUniqueId()))
                 return;
 
             try {

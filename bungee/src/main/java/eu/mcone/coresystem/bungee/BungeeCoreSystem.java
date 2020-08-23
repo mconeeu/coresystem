@@ -158,7 +158,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                     )
                     .connect();
 
-            cooldownSystem = new CoreCooldownSystem();
+            cooldownSystem = new CoreCooldownSystem(this);
             channelHandler = new ChannelHandler();
             preferences = new PreferencesManager(getMongoDB(), new HashMap<String, Object>() {{
                 put("maintenance", false);

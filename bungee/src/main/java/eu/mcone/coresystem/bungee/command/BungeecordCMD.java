@@ -31,7 +31,7 @@ public class BungeecordCMD extends Command {
         } else if (args[0].equals("reload")) {
             if (sender instanceof ProxiedPlayer) {
                 ProxiedPlayer p = (ProxiedPlayer) sender;
-                if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId()))
+                if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(this.getClass(), p.getUniqueId()))
                     return;
                 if (!p.hasPermission("system.bungee.reload")) {
                     return;

@@ -14,6 +14,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.Dye;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ import java.util.Map;
 public class CoreInventory implements ItemEventStore {
 
     public static final String PLACEHOLDER_ITEM_DISPLAYNAME = "§8//§oMCONE§8//";
-    public static final ItemStack PLACEHOLDER_ITEM = new ItemBuilder(Material.STAINED_GLASS_PANE, 1, DyeColor.GRAY.getData()).displayName(PLACEHOLDER_ITEM_DISPLAYNAME).create();
+    public static final ItemStack PLACEHOLDER_ITEM = makePlaceholderItem(DyeColor.GRAY);
     public static final ItemStack BACK_ITEM = new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück").create();
 
     @Getter
@@ -85,6 +86,10 @@ public class CoreInventory implements ItemEventStore {
 
         player.openInventory(inventory);
         return inventory;
+    }
+
+    public static ItemStack makePlaceholderItem(DyeColor color) {
+        return new ItemBuilder(Material.STAINED_GLASS_PANE, 1, color.getWoolData()).displayName(PLACEHOLDER_ITEM_DISPLAYNAME).create();
     }
 
 }

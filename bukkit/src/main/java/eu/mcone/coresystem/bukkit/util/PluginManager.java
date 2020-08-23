@@ -12,6 +12,7 @@ import eu.mcone.coresystem.api.bukkit.inventory.modification.InventoryModificati
 import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
 import eu.mcone.coresystem.api.bukkit.util.CorePluginManager;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
 import eu.mcone.coresystem.bukkit.inventory.modification.CoreInventoryModificationManager;
 import eu.mcone.coresystem.core.util.CoreCooldownSystem;
@@ -51,8 +52,8 @@ public class PluginManager implements CorePluginManager {
         }
     }
 
-    public PluginManager() {
-        this.cooldownSystem = new CoreCooldownSystem();
+    public PluginManager(BukkitCoreSystem system) {
+        this.cooldownSystem = new CoreCooldownSystem(system);
         this.commands = new HashMap<>();
         this.coreInventories = new HashMap<>();
         this.inventoryModificationManagers = new HashMap<>();

@@ -33,7 +33,7 @@ public class PunishCMD extends Command implements TabExecutor {
         if (sender instanceof ProxiedPlayer) {
             ProxiedPlayer player = (ProxiedPlayer) sender;
 
-            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), player.getUniqueId()))
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(this.getClass(), player.getUniqueId()))
                 return;
 
             if (args.length == 2) {

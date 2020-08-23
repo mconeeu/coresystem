@@ -33,7 +33,7 @@ public class FriendCMD extends Command implements TabExecutor {
             final ProxiedPlayer bp = (ProxiedPlayer) sender;
             final CorePlayer p = BungeeCoreSystem.getInstance().getCorePlayer(bp);
 
-            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUuid())) return;
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(this.getClass(), p.getUuid())) return;
 
             if (args.length == 1) {
                 switch (args[0]) {

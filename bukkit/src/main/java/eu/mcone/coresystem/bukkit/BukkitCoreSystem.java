@@ -174,7 +174,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             database4 = mongoConnection.getDatabase(Database.CLOUD);
 
             packetManager = new CorePacketManager();
-            pluginManager = new PluginManager();
+            pluginManager = new PluginManager(this);
             moneyUtil = new MoneyUtil(this, database1) {
                 @Override
                 protected void fireEvent(GlobalCorePlayer player, Currency currency) {

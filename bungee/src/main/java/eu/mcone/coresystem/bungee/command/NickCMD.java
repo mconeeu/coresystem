@@ -22,7 +22,7 @@ public class NickCMD extends Command{
         if (sender instanceof ProxiedPlayer) {
             ProxiedPlayer p = (ProxiedPlayer) sender;
             CorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p);
-            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(this.getClass(), p.getUniqueId())) return;
 
             if (args.length == 0) {
                 if (!cp.isNicked()) {

@@ -34,7 +34,7 @@ public class ChatlogCMD extends Command {
                 final ProxiedPlayer t = ProxyServer.getInstance().getPlayer(args[0]);
                 long millis = System.currentTimeMillis() / 1000;
 
-                if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId()))
+                if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(this.getClass(), p.getUniqueId()))
                     return;
 
                 if (t != null) {

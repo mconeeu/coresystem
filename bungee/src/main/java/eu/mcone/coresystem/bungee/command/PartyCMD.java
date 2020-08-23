@@ -39,7 +39,7 @@ public class PartyCMD extends Command implements TabExecutor {
 
                 CoreSystem.getInstance().getChannelHandler().createInfoRequest(p, "CMD", sb.toString());
             } else {
-                if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUniqueId())) return;
+                if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(this.getClass(), p.getUniqueId())) return;
 
                 if (args.length >= 2) {
                     if (args[0].equalsIgnoreCase("msg")) {

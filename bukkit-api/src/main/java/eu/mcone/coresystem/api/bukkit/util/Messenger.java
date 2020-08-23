@@ -13,6 +13,7 @@ import eu.mcone.coresystem.api.core.chat.spec.TextLevel;
 import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.api.core.translation.TranslationManager;
 import lombok.Getter;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
@@ -165,18 +166,20 @@ public final class Messenger {
      * send TextComponent with prefix to player
      *
      * @param player        player
-     * @param textComponent text component
+     * @param extra text component
      */
-    public void send(Player player, TextComponent textComponent) {
+    public void send(Player player, BaseComponent[] extra) {
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
 
-        TextComponent realTc = new TextComponent(CoreSystem.getInstance().getTranslationManager().get(
+        TextComponent tc = new TextComponent(CoreSystem.getInstance().getTranslationManager().get(
                 prefixTranslation,
                 cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE
         ));
-        realTc.addExtra(textComponent);
+        for (BaseComponent text : extra) {
+            tc.addExtra(text);
+        }
 
-        player.spigot().sendMessage(realTc);
+        player.spigot().sendMessage(tc);
     }
 
     /**

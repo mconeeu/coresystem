@@ -8,6 +8,7 @@ package eu.mcone.coresystem.core.util;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.util.CooldownSystem;
+import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,12 +16,17 @@ import java.util.UUID;
 
 public class CoreCooldownSystem implements CooldownSystem {
 
+    private final GlobalCoreSystem system;
     private final Map<Class<?>, Integer> customCooldown = new HashMap<>();
     private final Map<Class<?>, Map<UUID, Long>> classMap = new HashMap<>();
 
+    public CoreCooldownSystem(GlobalCoreSystem system) {
+        this.system = system;
+    }
+
     @Override
-    public boolean addAndCheck(GlobalCoreSystem instance, Class<?> clazz, UUID uuid) {
-        if (canExecute(instance, clazz, uuid)) {
+    public boolean addAndCheck(Class<?> clazz, UUID uuid) {
+        if (canExecute(clazz, uuid)) {
             addPlayer(uuid, clazz);
             return true;
         }
@@ -44,8 +50,8 @@ public class CoreCooldownSystem implements CooldownSystem {
         customCooldown.put(clazz, cooldown);
     }
 
-    public boolean canExecute(GlobalCoreSystem instance, Class<?> clazz, UUID uuid) {
-        GlobalCorePlayer p = instance.getGlobalCorePlayer(uuid);
+    public boolean canExecute(Class<?> clazz, UUID uuid) {
+        GlobalCorePlayer p = system.getGlobalCorePlayer(uuid);
 
         if (p.hasPermission("system.bungee.cooldown")) {
             return true;

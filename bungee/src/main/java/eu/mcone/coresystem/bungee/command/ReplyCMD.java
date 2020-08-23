@@ -23,7 +23,7 @@ public class ReplyCMD extends Command {
     public void execute(final CommandSender sender, final String[] args) {
         if (sender instanceof ProxiedPlayer) {
             CorePlayer p = CoreSystem.getInstance().getCorePlayer((ProxiedPlayer) sender);
-            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(BungeeCoreSystem.getInstance(), this.getClass(), p.getUuid()))
+            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(this.getClass(), p.getUuid()))
                 return;
 
             if (MsgCMD.reply.containsKey(p.getUuid())) {

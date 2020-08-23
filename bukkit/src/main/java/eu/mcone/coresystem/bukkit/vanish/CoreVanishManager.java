@@ -24,7 +24,6 @@ public class CoreVanishManager implements VanishManager {
                 }
             }
         }
-        System.out.println("can see player "+p.getName()+": "+canSeePlayer);
     };
 
     private LinkedHashMap<Integer, VanishRule> vanishRules;
@@ -80,25 +79,19 @@ public class CoreVanishManager implements VanishManager {
     }
 
     private void hidePlayer(Player player, Player shouldBeHidden) {
-        System.out.println("hide player "+shouldBeHidden+" for "+player);
+        player.hidePlayer(shouldBeHidden);
 
-        if (!hiddenPlayers.containsKey(player) || !hiddenPlayers.get(player).contains(shouldBeHidden)) {
-            player.hidePlayer(shouldBeHidden);
-            System.out.println(player+" can see "+shouldBeHidden+"? "+player.canSee(shouldBeHidden));
-
-            if (hiddenPlayers.containsKey(player)) {
-                hiddenPlayers.get(player).add(shouldBeHidden);
-            } else {
-                hiddenPlayers.put(player, new HashSet<>(Collections.singleton(shouldBeHidden)));
-            }
+        if (hiddenPlayers.containsKey(player)) {
+            hiddenPlayers.get(player).add(shouldBeHidden);
         } else {
-            System.out.println("aborted");
+            hiddenPlayers.put(player, new HashSet<>(Collections.singleton(shouldBeHidden)));
         }
     }
 
     private void showPlayer(Player player, Player shouldBeShown) {
-        if (hiddenPlayers.containsKey(player) && hiddenPlayers.get(player).contains(shouldBeShown)) {
-            player.showPlayer(shouldBeShown);
+        player.showPlayer(shouldBeShown);
+
+        if (hiddenPlayers.containsKey(player)) {
             hiddenPlayers.get(player).remove(shouldBeShown);
         }
     }
