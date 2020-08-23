@@ -168,7 +168,7 @@ public final class Messenger {
      * @param player        player
      * @param extra text component
      */
-    public void send(Player player, BaseComponent[] extra) {
+    public void send(Player player, BaseComponent... extra) {
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
 
         TextComponent tc = new TextComponent(CoreSystem.getInstance().getTranslationManager().get(
