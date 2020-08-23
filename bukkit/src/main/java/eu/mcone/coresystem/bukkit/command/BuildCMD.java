@@ -11,7 +11,7 @@ import eu.mcone.coresystem.bukkit.world.BuildSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class BuildCMD extends CorePlayerCommand {
+public class  BuildCMD extends CorePlayerCommand {
 
     private BuildSystem buildSystem;
 

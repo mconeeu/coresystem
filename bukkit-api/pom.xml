@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald, Felix Schmid and the MC ONE Minecraftnetwork. All rights reserved
+  ~ Copyright (c) 2017 - 2020 Dominik Lippl, Rufus Maiwald and the MC ONE Minecraftnetwork. All rights reserved
   ~ You are not allowed to decompile the code
   -->
 
@@ -10,7 +10,7 @@
     <parent>
         <artifactId>mcone-coresystem</artifactId>
         <groupId>eu.mcone.coresystem</groupId>
-        <version>10.8.7-SNAPSHOT</version>
+        <version>10.8.8-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -24,7 +24,7 @@
         <dependency> <!-- Core APIs -->
             <groupId>eu.mcone.coresystem</groupId>
             <artifactId>core-api</artifactId>
-            <version>10.8.7-SNAPSHOT</version>
+            <version>10.8.8-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency> <!-- MC ONE Cloud -->

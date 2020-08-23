@@ -25,15 +25,15 @@ public class StatsInventory extends CoreInventory {
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(p);
 
         setItem(InventorySlot.ROW_2_SLOT_3, new ItemBuilder(Material.FEATHER, 1, 0).displayName(Gamemode.SKYPVP.getLabel()).create(), e -> {
-            new StatsCategoryInventory(p, cp.getStats(Gamemode.SKYPVP));
+//            new StatsCategoryInventory(p, cp.getStats(Gamemode.SKYPVP));
             p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
         });
         setItem(InventorySlot.ROW_2_SLOT_5, new ItemBuilder(Material.STICK, 1, 0).enchantment(Enchantment.KNOCKBACK, 1).displayName(Gamemode.KNOCKIT.getLabel()).itemFlags(ItemFlag.HIDE_ENCHANTS).create(), e -> {
-            new StatsCategoryInventory(p, cp.getStats(Gamemode.KNOCKIT));
+//            new StatsCategoryInventory(p, cp.getStats(Gamemode.KNOCKIT));
             p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
         });
         setItem(InventorySlot.ROW_2_SLOT_7, new ItemBuilder(Material.BED, 1, 0).displayName(Gamemode.BEDWARS.getLabel()).create(), e -> {
-            new StatsCategoryInventory(p, cp.getStats(Gamemode.BEDWARS));
+//            new StatsCategoryInventory(p, cp.getStats(Gamemode.BEDWARS));
             p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
         });
 

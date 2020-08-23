@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.bukkit.overwatch.report;
 
+import com.mongodb.client.FindIterable;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
 import eu.mcone.coresystem.api.bukkit.inventory.category.CategoryInventory;
@@ -26,7 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ReportsInventory extends CoreInventory {
+public class ReportsInventoryCopy extends CoreInventory {
 
     @Getter
     private final Overwatch overwatch;
@@ -36,7 +37,7 @@ public class ReportsInventory extends CoreInventory {
 
     private LinkedHashMap<Report, Integer> page;
 
-    public ReportsInventory(Overwatch overwatch, Player player) {
+    public ReportsInventoryCopy(Overwatch overwatch, Player player) {
         super("§8» §f§lReports", player, InventorySlot.ROW_6);
         this.overwatch = overwatch;
         this.page = new LinkedHashMap<>();
@@ -103,24 +104,24 @@ public class ReportsInventory extends CoreInventory {
         int i = 0;
         currentPage = page;
 
-        List<Report> reports;
+        FindIterable<Report> reports;
         if (live) {
             reports = overwatch.getReportManager().getReports(ReportState.OPEN, (currentPage == 1 ? 0 : page * 35), 35);
         } else {
             reports = overwatch.getReportManager().getReports((currentPage == 1 ? 0 : page * 35), 35);
         }
-
-        if (!reports.isEmpty()) {
-            for (Report report : reports) {
-                this.page.put(report, report.getPriority().getLevel());
-
-                if (i <= 34) {
-                    ++i;
-                }
-            }
-        } else {
-            setItem(InventorySlot.ROW_3_SLOT_5, new ItemBuilder(Material.BARRIER, 1).displayName("§cKeine Reports gefunden").create());
-        }
+//
+//        if (!reports.s()) {
+//            for (Report report : reports) {
+//                this.page.put(report, report.getPriority().getLevel());
+//
+//                if (i <= 34) {
+//                    ++i;
+//                }
+//            }
+//        } else {
+//            setItem(InventorySlot.ROW_3_SLOT_6, new ItemBuilder(Material.BARRIER, 1).displayName("§cKeine Reports gefunden").create());
+//        }
 
         this.page = this.page.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
@@ -143,7 +144,7 @@ public class ReportsInventory extends CoreInventory {
                         });
                     } else {
                         setItem(slot, getItem(report), e -> {
-
+                            new ReportInfoInventory(player, report);
                             player.closeInventory();
                         });
                     }
@@ -157,8 +158,6 @@ public class ReportsInventory extends CoreInventory {
                     }
                 }
             }
-        } else {
-            setItem(InventorySlot.ROW_3_SLOT_6, new ItemBuilder(Material.BARRIER, 1).displayName("§cKeine Reports verfügbar").create());
         }
 
         player.updateInventory();
@@ -242,6 +241,8 @@ public class ReportsInventory extends CoreInventory {
                     .lore(
                             "§7Reportet um: §e" + new SimpleDateFormat("HH:mm").format(new Date(report.getTimestamp() * 1000)),
                             "§7Grund: §e" + report.getReason().getName(),
+                            "§7Status: §e" + report.getState().getPrefix(),
+                            "§7Punkte: §e" + report.getPoints(),
                             "§7Priorität: " + report.getPriority().getPrefix(),
                             "§7Reporteter Spieler: §e" + reporter.getName(),
                             "",

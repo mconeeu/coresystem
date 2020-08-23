@@ -57,10 +57,11 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
                         encoderIDs.put(encoderID, encoder);
                     }
 
+                    codecIDs.put(codecID, codecClass);
+
                     if (codecs.containsKey(triggerClass)) {
                         codecs.get(triggerClass).add(codecClass);
                     } else {
-                        codecIDs.put(codecID, codecClass);
                         codecs.put(triggerClass, new ArrayList<Class<? extends Codec<?, ?>>>() {{
                             add(codecClass);
                         }});

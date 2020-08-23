@@ -6,8 +6,11 @@
 package eu.mcone.coresystem.api.bukkit.overwatch;
 
 import eu.mcone.coresystem.api.bukkit.overwatch.report.ReportManager;
+import eu.mcone.coresystem.api.bukkit.util.Messenger;
 
 public interface Overwatch {
+
+    Messenger getMessenger();
 
     ReportManager getReportManager();
 }

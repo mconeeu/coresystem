@@ -5,23 +5,25 @@
 
 package eu.mcone.coresystem.api.core.overwatch.report;
 
+import com.mongodb.client.FindIterable;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 public interface GlobalReportManager {
 
-    List<Report> getReports(int skip, int limit);
+    FindIterable<Report> getReports(int skip, int limit);
 
     Map<Integer, List<Report>> getOpenReportsSortedByLevel();
 
     Report getReport(String ID);
 
-    List<Report> getReports(UUID reported);
+    FindIterable<Report> getReports(UUID reported);
 
-    List<Report> getReports(ReportState state, int skip, int limit);
+    FindIterable<Report> getReports(ReportState state, int skip, int limit);
 
-    List<Report> getReports(UUID reported, ReportState state);
+    FindIterable<Report> getReports(UUID reported, ReportState state);
 
     long countOpenReports();
 

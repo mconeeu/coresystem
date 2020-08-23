@@ -7,10 +7,10 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.core.overwatch.report.Report;
+import eu.mcone.coresystem.bukkit.inventory.ReportsInventory;
 import eu.mcone.coresystem.bukkit.overwatch.Overwatch;
 import eu.mcone.coresystem.bukkit.overwatch.report.ReportInfoInventory;
 import eu.mcone.coresystem.bukkit.overwatch.report.ReportInventory;
-import eu.mcone.coresystem.bukkit.overwatch.report.ReportsInventory;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -45,7 +45,7 @@ public class ReportCMD extends CorePlayerCommand {
                     return true;
                 } else if (args[0].equalsIgnoreCase("list")) {
                     if (player.hasPermission("system.bungee.overwatch.report.general") || player.hasPermission("system.bungee.overwatch.report.*")) {
-                        new ReportsInventory(overwatch, player);
+                        ReportsInventory.openNewInventory(player);
                     } else {
                         overwatch.getMessenger().send(player, "§4Du hast keine Berechtigung für diesen Befehl!");
                     }

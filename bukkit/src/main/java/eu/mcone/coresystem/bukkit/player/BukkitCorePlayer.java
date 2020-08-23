@@ -11,9 +11,9 @@ import eu.mcone.coresystem.api.bukkit.event.PlayerVanishEvent;
 import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
-import eu.mcone.coresystem.api.bukkit.player.Stats;
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
+import eu.mcone.coresystem.api.bukkit.stats.CoreStats;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
@@ -50,7 +50,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     private Nick nick;
     @Getter
     private CoreScoreboard scoreboard;
-    private final Map<Gamemode, StatsAPI> stats;
+    private final Map<Gamemode, CoreStats> stats;
     @Getter
     private final SkinInfo skin;
     @Getter
@@ -113,14 +113,19 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     }
 
     @Override
-    public Stats getStats(Gamemode gamemode) {
-        if (stats.containsKey(gamemode)) {
-            return stats.get(gamemode);
+    public <S> S getStats(Gamemode gamemode, Class<S> clazz) {
+        S stats;
+        if (this.stats.containsKey(gamemode)) {
+            if (this.stats.get(gamemode).getClass().isAssignableFrom(clazz)) {
+                stats = (S) this.stats.get(gamemode);
+            } else {
+                stats = CoreSystem.getInstance().getCoreStatsManager().getStats(gamemode, uuid, clazz);
+            }
         } else {
-            StatsAPI api = new StatsAPI((BukkitCoreSystem) instance, this, gamemode);
-            stats.put(gamemode, api);
-            return api;
+            stats = CoreSystem.getInstance().getCoreStatsManager().getStats(gamemode, uuid, clazz);
         }
+
+        return stats;
     }
 
     @Override

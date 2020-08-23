@@ -25,7 +25,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 @Getter
-public class PlayInUseCodec extends Codec<PlayerInteractEvent, PlayerNpc> {
+public class PlayInUseBlockCodec extends Codec<PlayerInteractEvent, PlayerNpc> {
 
     public static final byte CODEC_VERSION = 1;
 
@@ -35,7 +35,7 @@ public class PlayInUseCodec extends Codec<PlayerInteractEvent, PlayerNpc> {
     private boolean action;
     private PlayInUseAction interactWith;
 
-    public PlayInUseCodec() {
+    public PlayInUseBlockCodec() {
         super((byte) 2, (byte) 2);
     }
 
@@ -58,11 +58,14 @@ public class PlayInUseCodec extends Codec<PlayerInteractEvent, PlayerNpc> {
             x = block.getX();
             y = block.getY();
             z = block.getZ();
-        } else {
+
+            return new Object[]{interactEvent.getPlayer()};
+        } else if (interactEvent.getAction().equals(Action.LEFT_CLICK_BLOCK) || interactEvent.getAction().equals(Action.LEFT_CLICK_AIR)) {
             interactWith = PlayInUseAction.AIR;
+            return new Object[]{interactEvent.getPlayer()};
         }
 
-        return new Object[]{interactEvent.getPlayer()};
+        return null;
     }
 
     @Override
@@ -78,6 +81,7 @@ public class PlayInUseCodec extends Codec<PlayerInteractEvent, PlayerNpc> {
                 Block block = iblockdata.getBlock();
 
                 block.interact(((CraftWorld) location.getWorld()).getHandle(), blockposition, iblockdata, null, iblockdata.get(FACING), (float) location.getX(), (float) location.getY(), (float) location.getZ());
+                npc.sendAnimation(NpcAnimation.SWING_ARM);
                 break;
             case DOOR:
                 BlockStateBoolean OPEN = BlockStateBoolean.of("open");
@@ -96,10 +100,13 @@ public class PlayInUseCodec extends Codec<PlayerInteractEvent, PlayerNpc> {
                 } else {
                     location.getWorld().playSound(location, Sound.DOOR_CLOSE, 1, 1);
                 }
+
+                npc.sendAnimation(NpcAnimation.SWING_ARM);
+                break;
+            case AIR:
+                npc.sendAnimation(NpcAnimation.SWING_ARM);
                 break;
         }
-
-        npc.sendAnimation(NpcAnimation.SWING_ARM);
     }
 
     public Location calculateLocation(PlayerNpc npc) {

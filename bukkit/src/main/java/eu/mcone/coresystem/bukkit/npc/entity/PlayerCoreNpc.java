@@ -313,7 +313,7 @@ public class PlayerCoreNpc extends CoreNPC<EntityHumanNPC, PlayerNpcData> implem
 
     @Override
     public void playLabymodEmote(int emoteId, Player... players) {
-        Collection<? extends Player> send = players.length > 0 ? Arrays.asList(players) : Bukkit.getOnlinePlayers();
+        Collection<? extends Player> send = (players.length > 0 ? Arrays.asList(players) : visiblePlayersList);
         for (Player player : send) {
             BukkitCoreSystem.getInstance().getLabyModAPI().forceEmote(player, uuid, emoteId);
         }
@@ -321,7 +321,7 @@ public class PlayerCoreNpc extends CoreNPC<EntityHumanNPC, PlayerNpcData> implem
 
     @Override
     public void playLabymodSticker(short stickerId, Player... players) {
-        Collection<? extends Player> send = players.length > 0 ? Arrays.asList(players) : Bukkit.getOnlinePlayers();
+        Collection<? extends Player> send = (players.length > 0 ? Arrays.asList(players) : visiblePlayersList);
         for (Player player : send) {
             BukkitCoreSystem.getInstance().getLabyModAPI().forceSticker(player, uuid, stickerId);
         }
@@ -410,8 +410,8 @@ public class PlayerCoreNpc extends CoreNPC<EntityHumanNPC, PlayerNpcData> implem
         PacketPlayOutEntityEffect packet = new PacketPlayOutEntityEffect();
         ReflectionManager.setValue(packet, "a", entity.getId());
         ReflectionManager.setValue(packet, "b", (byte) effect.getEffectId());
-        ReflectionManager.setValue(packet, "c", (short) effect.getDuration());
-        ReflectionManager.setValue(packet, "d", (byte) effect.getAmplifier());
+        ReflectionManager.setValue(packet, "c", (byte) effect.getDuration());
+        ReflectionManager.setValue(packet, "d", effect.getAmplifier());
 //                plugin.reflect.setPrivateField(packet, "e", hide);
         sendPackets(packet, players);
     }

@@ -50,7 +50,7 @@ public interface CorePlayer extends OfflineCorePlayer, GlobalCorePlayer {
      * @param gamemode wished Gamemode
      * @return StatsAPI object
      */
-    Stats getStats(Gamemode gamemode);
+    <S> S getStats(Gamemode gamemode, Class<S> clazz);
 
     /**
      * returns the players skin, given in Base64 encoded value and signature

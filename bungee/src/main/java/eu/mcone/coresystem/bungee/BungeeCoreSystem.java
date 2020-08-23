@@ -309,6 +309,11 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         return this.mongoConnection.getDatabase(Database.SYSTEM);
     }
 
+    @Override
+    public MongoDatabase getStatsDB() {
+        return this.mongoConnection.getDatabase(Database.STATS);
+    }
+
     public CorePlayer getCorePlayer(ProxiedPlayer p) {
         return corePlayers.getOrDefault(p.getUniqueId(), null);
     }

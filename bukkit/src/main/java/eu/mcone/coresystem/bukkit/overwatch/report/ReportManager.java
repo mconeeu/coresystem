@@ -31,11 +31,10 @@ import java.util.*;
 
 import static com.mongodb.client.model.Filters.*;
 
-public class ReportManager extends GlobalReportManager implements eu.mcone.coresystem.api.bukkit.overwatch.report.ReportManager {
+public class ReportManager extends GlobalReportManager implements eu.mcone.coresystem.api.bukkit.overwatch.report.ReportManager, eu.mcone.coresystem.api.core.overwatch.report.GlobalReportManager {
 
     private final Overwatch overwatch;
 
-    @Getter
     private final Map<UUID, Report> toConfirm;
     @Getter
     private final EnumMap<ReportReason, ItemStack> reasonItems;
@@ -68,30 +67,7 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
 
         reportMethod = ((manager, reporter, reported, reportReason) -> {
             CorePlayer corePlayer = CoreSystem.getInstance().getCorePlayer(reporter);
-            Report report = reportsCollection.find(
-                    and(
-                            eq("reported", reported.getUniqueId()),
-                            eq("state", ReportState.OPEN.toString()),
-                            lt("timestamp", (System.currentTimeMillis() / 1000) - 3600)
-                    )
-            ).first();
-
-            if (report != null) {
-                if (report.getReporter().contains(reporter.getUniqueId())) {
-                    overwatch.getMessenger().send(reported, "§4Du hast den Spieler §f§l" + reported.getName() + " §4bereits Reportet.");
-                    return false;
-                } else {
-                    toConfirm.put(reporter.getUniqueId(), report);
-                    run();
-                    return true;
-                }
-            } else {
-                report = new Report(reported.getUniqueId(), reporter.getUniqueId(), reportReason, corePlayer.getTrust().getGroup().getTrustPoints());
-                toConfirm.put(reporter.getUniqueId(), report);
-                run();
-
-                return true;
-            }
+            return new Report(reported.getUniqueId(), reporter.getUniqueId(), reportReason, corePlayer.getTrust().getGroup().getTrustPoints());
         });
     }
 
@@ -103,8 +79,37 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
         return reasonItems.getOrDefault(reportReason, null);
     }
 
+    public Collection<Report> getToConfirm() {
+        return toConfirm.values();
+    }
+
     public boolean report(Player reporter, Player reported, ReportReason reportReason) {
-        return reportMethod.report(this, reporter, reported, reportReason);
+        Report report = reportsCollection.find(
+                and(
+                        eq("reported", reported.getUniqueId()),
+                        eq("state", ReportState.OPEN.toString()),
+                        lt("timestamp", (System.currentTimeMillis() / 1000) - 3600)
+                )
+        ).first();
+
+        if (report != null) {
+            if (report.getReporter().contains(reporter.getUniqueId())) {
+                overwatch.getMessenger().send(reported, "§4Du hast den Spieler §f§l" + reported.getName() + " §4bereits Reportet.");
+                return false;
+            } else {
+                run();
+                toConfirm.put(reporter.getUniqueId(), report);
+                return true;
+            }
+        } else {
+            Report succeed = reportMethod.report(this, reporter, reported, reportReason);
+            if (succeed != null) {
+                run();
+                toConfirm.put(reporter.getUniqueId(), succeed);
+            }
+
+            return succeed != null;
+        }
     }
 
     protected void run() {

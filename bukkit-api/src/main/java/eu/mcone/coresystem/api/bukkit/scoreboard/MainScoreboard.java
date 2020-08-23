@@ -19,5 +19,4 @@ public final class MainScoreboard extends CoreScoreboard {
             t.suffix(" §3§lⓋ");
         }
     }
-
 }

@@ -39,7 +39,7 @@ public abstract class CategoryInventory extends CoreInventory {
 
     private final LinkedList<ItemStack> categories;
     private final List<CategoryInvItem> categoryInvItems;
-    private ItemStack currentCategoryItem;
+    protected ItemStack currentCategoryItem;
 
     public CategoryInventory(String title, Player player, ItemStack currentCategoryItem) {
         super(title, player, InventorySlot.ROW_6);

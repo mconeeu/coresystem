@@ -9,14 +9,13 @@ import eu.mcone.coresystem.api.core.overwatch.report.Report;
 import eu.mcone.coresystem.api.core.overwatch.report.ReportReason;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.Collection;
 
 public interface ReportManager {
 
     ItemStack getItemForReason(ReportReason reportReason);
 
-    Map<UUID, Report> getToConfirm();
+    Collection<Report> getToConfirm();
 
     void setReportMethod(ReportMethod method);
 }

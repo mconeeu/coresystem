@@ -5,12 +5,14 @@
 
 package eu.mcone.coresystem.core.overwatch.report;
 
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.overwatch.report.Report;
 import eu.mcone.coresystem.api.core.overwatch.report.ReportState;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import group.onegaming.networkmanager.core.api.database.Database;
+import lombok.Getter;
 import org.bson.UuidRepresentation;
 import org.bson.codecs.UuidCodecProvider;
 import org.bson.codecs.pojo.Conventions;
@@ -21,11 +23,13 @@ import java.util.*;
 
 import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Sorts.descending;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 public abstract class GlobalReportManager implements eu.mcone.coresystem.api.core.overwatch.report.GlobalReportManager, Serializable {
 
+    @Getter
     protected final MongoCollection<Report> reportsCollection;
 
     //TODO: Implementing Ban-/Mute Manager for the TrustedUser System
@@ -41,13 +45,8 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @return Map
      */
     @Override
-    public List<Report> getReports(int skip, int limit) {
-        List<Report> reports = new ArrayList<>();
-        for (Report report : reportsCollection.find().skip(skip).limit(limit)) {
-            reports.add(report);
-        }
-
-        return reports;
+    public FindIterable<Report> getReports(int skip, int limit) {
+        return reportsCollection.find().sort(descending("points")).skip(skip).limit(limit);
     }
 
     /**
@@ -59,7 +58,7 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
     public Map<Integer, List<Report>> getOpenReportsSortedByLevel() {
         Map<Integer, List<Report>> sortedReports = new HashMap<>();
 
-        for (Report report : reportsCollection.find(eq("state", ReportState.OPEN.toString()))) {
+        for (Report report : reportsCollection.find(eq("state", ReportState.OPEN.toString())).sort(descending("points"))) {
             if (sortedReports.containsKey(report.getPriority().getLevel())) {
                 sortedReports.get(report.getPriority().getLevel()).add(report);
             } else {
@@ -90,13 +89,8 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @return Report
      */
     @Override
-    public List<Report> getReports(UUID reported) {
-        List<Report> reports = new ArrayList<>();
-        for (Report report : reportsCollection.find(eq("reported", reported))) {
-            reports.add(report);
-        }
-
-        return reports;
+    public FindIterable<Report> getReports(UUID reported) {
+        return reportsCollection.find(eq("reported", reported)).sort(descending("points"));
     }
 
     /**
@@ -105,13 +99,8 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @return Map
      */
     @Override
-    public List<Report> getReports(ReportState state, int skip, int limit) {
-        List<Report> result = new ArrayList<>();
-        for (Report report : reportsCollection.find(eq("state", state.toString())).skip(skip).limit(limit)) {
-            result.add(report);
-        }
-
-        return result;
+    public FindIterable<Report> getReports(ReportState state, int skip, int limit) {
+        return reportsCollection.find(eq("state", state.toString())).sort(descending("points")).skip(skip).limit(limit);
     }
 
     /**
@@ -121,13 +110,8 @@ public abstract class GlobalReportManager implements eu.mcone.coresystem.api.cor
      * @return Report
      */
     @Override
-    public List<Report> getReports(UUID reported, ReportState state) {
-        List<Report> reports = new ArrayList<>();
-        for (Report report : reportsCollection.find(and(eq("reported", reported), eq("state", state.toString())))) {
-            reports.add(report);
-        }
-
-        return reports;
+    public FindIterable<Report> getReports(UUID reported, ReportState state) {
+        return reportsCollection.find(and(eq("reported", reported), eq("state", state.toString()))).sort(descending("points"));
     }
 
     /**
