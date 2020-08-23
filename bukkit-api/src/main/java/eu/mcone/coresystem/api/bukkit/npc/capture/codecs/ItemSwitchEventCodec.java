@@ -24,17 +24,11 @@ public class ItemSwitchEventCodec extends Codec<PlayerItemHeldEvent, PlayerNpc> 
 
     public static final byte CODEC_VERSION = 1;
 
-    private short material;
-    private String enchantments;
-
-    public ItemSwitchEventCodec(eu.mcone.coresystem.api.bukkit.npc.capture.codecs.ItemSwitchEventCodec old) {
-        super((byte) 2, (byte) 3);
-        this.material = (short) Material.getMaterial(old.getMaterial()).getId();
-        this.enchantments = old.getEnchantments();
-    }
+    private int material;
+    private String enchantments = "";
 
     public ItemSwitchEventCodec() {
-        super((byte) 2, (byte) 2);
+        super((byte) 4, (byte) 2);
     }
 
     @Override
@@ -42,18 +36,17 @@ public class ItemSwitchEventCodec extends Codec<PlayerItemHeldEvent, PlayerNpc> 
         ItemStack previousItem = event.getPlayer().getInventory().getItem(event.getPreviousSlot());
         ItemStack newItem = event.getPlayer().getInventory().getItem(event.getNewSlot());
 
-        if (previousItem != null && newItem != null) {
-            if (previousItem.getType() != newItem.getType()) {
-                ItemStack itemStack = event.getPlayer().getItemInHand();
-                this.material = (short) itemStack.getType().getId();
-                this.enchantments = ItemStackTypeAdapterUtils.serializeEnchantments(itemStack.getEnchantments());
-                return new Object[]{event.getPlayer()};
-            } else {
+        if (previousItem == null && newItem == null) {
+            return null;
+        } else if (previousItem != null && newItem != null) {
+            if (previousItem.getType() == newItem.getType()) {
                 return null;
             }
-        } else {
-            return null;
         }
+
+        this.material = (newItem != null ? newItem.getType() : Material.AIR).getId();
+        this.enchantments = (newItem != null ? ItemStackTypeAdapterUtils.serializeEnchantments(newItem.getEnchantments()) : "");
+        return new Object[]{event.getPlayer()};
     }
 
     @Override
@@ -63,18 +56,22 @@ public class ItemSwitchEventCodec extends Codec<PlayerItemHeldEvent, PlayerNpc> 
 
     @Override
     public void onWriteObject(DataOutputStream out) throws IOException {
-        out.writeShort(material);
+        out.writeInt(material);
         out.writeUTF(enchantments);
     }
 
     @Override
     public void onReadObject(DataInputStream in) throws IOException {
-        material = in.readShort();
+        material = in.readInt();
         enchantments = in.readUTF();
     }
 
     public ItemStack getItem() {
-        return new ItemBuilder(Material.getMaterial(material), 1).enchantments(ItemStackTypeAdapterUtils.getEnchantments(enchantments)).create();
+        ItemBuilder itemBuilder = new ItemBuilder(Material.getMaterial(material), 1);
+        if (enchantments.isEmpty()) {
+            itemBuilder.enchantments(ItemStackTypeAdapterUtils.getEnchantments(enchantments));
+        }
+        return itemBuilder.create();
     }
 
     @Override

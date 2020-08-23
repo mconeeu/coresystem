@@ -28,6 +28,7 @@ import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
+import eu.mcone.coresystem.api.bukkit.stats.CoreStatsManager;
 import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
 import eu.mcone.coresystem.api.bukkit.util.CoreProjectile;
 import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
@@ -88,19 +89,20 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private static BukkitCoreSystem system;
 
     private MongoConnection mongoConnection;
-    private MongoDatabase database1;
-    private MongoDatabase database2;
-    private MongoDatabase database3;
-    private MongoDatabase database4;
+    private MongoDatabase systemDB;
+    private MongoDatabase statsDB;
+    private MongoDatabase gameDB;
+    private MongoDatabase dataDB;
+    private MongoDatabase cloudDB;
 
     @Getter
     private TranslationManager translationManager;
     @Getter
     private PermissionManager permissionManager;
     @Getter
-    private Overwatch overwatch;
-    @Getter
     private PluginManager pluginManager;
+    @Getter
+    private Overwatch overwatch;
     @Getter
     private CoreNickManager nickManager;
     @Getter
@@ -115,6 +117,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private CoreHologramManager hologramManager;
     @Getter
     private LabyModManager labyModAPI;
+    @Getter
+    private CoreStatsManager coreStatsManager;
     @Getter
     private PlayerUtils playerUtils;
     @Getter
@@ -168,14 +172,15 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                     )
                     .connect();
 
-            database1 = mongoConnection.getDatabase(Database.SYSTEM);
-            database2 = mongoConnection.getDatabase(Database.STATS);
-            database3 = mongoConnection.getDatabase(Database.DATA);
-            database4 = mongoConnection.getDatabase(Database.CLOUD);
+            systemDB = mongoConnection.getDatabase(Database.SYSTEM);
+            statsDB = mongoConnection.getDatabase(Database.STATS);
+            gameDB = mongoConnection.getDatabase(Database.GAME);
+            dataDB = mongoConnection.getDatabase(Database.DATA);
+            cloudDB = mongoConnection.getDatabase(Database.CLOUD);
 
             packetManager = new CorePacketManager();
             pluginManager = new PluginManager(this);
-            moneyUtil = new MoneyUtil(this, database1) {
+            moneyUtil = new MoneyUtil(this, systemDB) {
                 @Override
                 protected void fireEvent(GlobalCorePlayer player, Currency currency) {
                     Bukkit.getServer().getPluginManager().callEvent(new MoneyChangeEvent((CorePlayer) player, currency));
@@ -199,6 +204,9 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             sendConsoleMessage("§aInitializing LabyModManager...");
             labyModAPI = new LabyModManager();
 
+            sendConsoleMessage("§aInitializing CoreStatsManager...");
+            coreStatsManager = new CoreStatsManager();
+
             sendConsoleMessage("§aStarting WorldManager...");
             worldManager = new WorldManager(this);
 
@@ -212,7 +220,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             afkManager = new CoreAfkManager();
 
             sendConsoleMessage("§aLoading Permissions & Groups...");
-            permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), database1);
+            permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), systemDB);
 
             sendConsoleMessage("§aStarting Overwatch §aSystem...");
             overwatch = new Overwatch();
@@ -362,13 +370,15 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     public MongoDatabase getMongoDB(Database database) {
         switch (database) {
             case SYSTEM:
-                return database1;
+                return systemDB;
             case STATS:
-                return database2;
+                return statsDB;
+            case GAME:
+                return gameDB;
             case DATA:
-                return database3;
+                return dataDB;
             case CLOUD:
-                return database4;
+                return cloudDB;
             default:
                 return null;
         }
@@ -376,7 +386,12 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Override
     public MongoDatabase getMongoDB() {
-        return database3;
+        return dataDB;
+    }
+
+    @Override
+    public MongoDatabase getStatsDB() {
+        return statsDB;
     }
 
     @Override

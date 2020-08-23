@@ -107,7 +107,7 @@ public class GeneralCodecListener {
                                 for (Class<? extends Codec<?, ?>> codecClass : entry.getValue()) {
                                     Codec codec = codecClass.newInstance();
                                     Object[] args = codec.decode(null, event);
-                                    if (args != null) {
+                                    if (args != null && args.length > 0) {
                                         callListeners(codec, args);
                                     }
                                 }
@@ -138,6 +138,7 @@ public class GeneralCodecListener {
 
     private void callListeners(Codec<?, ?> codec, Object[] args) {
         for (CodecListener listener : codecRegistry.getListeners()) {
+            System.out.println("Listener");
             listener.onCodec(codec, args);
         }
     }

@@ -75,7 +75,8 @@ public final class Messenger {
 
     /**
      * send message with prefix to player
-     * @param player player
+     *
+     * @param player  player
      * @param message message
      */
     public void send(ProxiedPlayer player, TextLevel level, String message) {
@@ -139,7 +140,8 @@ public final class Messenger {
 
     /**
      * send message with prefix to command sender
-     * @param sender command sender
+     *
+     * @param sender  command sender
      * @param message message
      */
     public void send(final CommandSender sender, TextLevel level, final String message) {
@@ -154,10 +156,11 @@ public final class Messenger {
 
     /**
      * send TextComponent with prefix to player
-     * @param player player
+     *
+     * @param player        player
      * @param textComponent text component
      */
-    public void send(final ProxiedPlayer player, final BaseComponent[] textComponent) {
+    public void send(final ProxiedPlayer player, final BaseComponent... textComponent) {
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
 
         TextComponent realTc = new TextComponent(CoreSystem.getInstance().getTranslationManager().get(
@@ -173,7 +176,8 @@ public final class Messenger {
 
     /**
      * send Translation with prefix to player
-     * @param player player
+     *
+     * @param player      player
      * @param translation translation name/key
      */
     public void sendTransl(final ProxiedPlayer player, String... translation) {
@@ -190,7 +194,7 @@ public final class Messenger {
     /**
      * send Translation with prefix to player
      *
-     * @param player      player
+     * @param player         player
      * @param translationKey translation name/key
      */
     public void sendTransl(final ProxiedPlayer player, String translationKey, Object... replacements) {
@@ -203,7 +207,8 @@ public final class Messenger {
 
     /**
      * send Translation with prefix to command sender
-     * @param sender command sender
+     *
+     * @param sender      command sender
      * @param translation translation name/key
      */
     public void sendTransl(final CommandSender sender, String... translation) {
@@ -243,7 +248,8 @@ public final class Messenger {
 
     /**
      * send message to player
-     * @param player player
+     *
+     * @param player  player
      * @param message message
      */
     public void sendSimple(final ProxiedPlayer player, final String message) {
@@ -253,7 +259,8 @@ public final class Messenger {
 
     /**
      * send TextComponent to player
-     * @param player player
+     *
+     * @param player        player
      * @param textComponent text component
      */
     public void sendSimple(final ProxiedPlayer player, final TextComponent textComponent) {
@@ -262,7 +269,8 @@ public final class Messenger {
 
     /**
      * send message to command sender
-     * @param sender command sender
+     *
+     * @param sender  command sender
      * @param message message
      */
     public void sendSimple(final CommandSender sender, final String message) {
@@ -271,7 +279,8 @@ public final class Messenger {
 
     /**
      * send TextComponent to command sender
-     * @param sender command sender
+     *
+     * @param sender        command sender
      * @param textComponent text component
      */
     public void sendSimple(final CommandSender sender, final TextComponent textComponent) {
@@ -280,7 +289,8 @@ public final class Messenger {
 
     /**
      * send message with party prefix
-     * @param player command sender
+     *
+     * @param player  command sender
      * @param message text component
      */
     public void sendParty(final ProxiedPlayer player, final String message) {
@@ -290,7 +300,8 @@ public final class Messenger {
 
     /**
      * send message with friend prefix
-     * @param player player
+     *
+     * @param player  player
      * @param message message
      */
     public void sendFriend(final ProxiedPlayer player, final String message) {

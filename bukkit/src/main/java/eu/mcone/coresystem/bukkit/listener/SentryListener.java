@@ -2,6 +2,7 @@ package eu.mcone.coresystem.bukkit.listener;
 
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import io.sentry.event.BreadcrumbBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -44,7 +45,8 @@ public class SentryListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInventoryOpen(InventoryOpenEvent e) {
-        if (CoreSystem.getInstance().getPluginManager().getCurrentCoreInventory((Player) e.getPlayer()).getInventory().equals(e.getInventory())) {
+        CoreInventory coreInventory = CoreSystem.getInstance().getPluginManager().getCurrentCoreInventory((Player) e.getPlayer());
+        if (coreInventory != null && coreInventory.getInventory().equals(e.getInventory())) {
             Player p = (Player) e.getPlayer();
             Inventory inv = e.getInventory();
 
@@ -84,5 +86,4 @@ public class SentryListener implements Listener {
             }
         }
     }
-
 }

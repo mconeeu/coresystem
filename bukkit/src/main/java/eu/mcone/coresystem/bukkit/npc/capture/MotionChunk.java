@@ -50,7 +50,7 @@ public class MotionChunk implements eu.mcone.coresystem.api.bukkit.npc.capture.M
             CodecOutputStream stream = new CodecOutputStream();
 
             for (Map.Entry<Integer, List<Codec<?, ?>>> entry : codecs.entrySet()) {
-                generic.put(entry.getKey(), stream.serialize(entry.getValue()));
+                generic.put(entry.getKey(), stream.write(entry.getValue()));
             }
 
             return GenericUtils.serialize(generic);

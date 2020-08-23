@@ -1,10 +1,10 @@
 package eu.mcone.coresystem.bukkit.npc.capture;
 
-import eu.mcone.coresystem.api.bukkit.codec.DeserializeCallback;
 import eu.mcone.coresystem.api.bukkit.codec.Codec;
+import eu.mcone.coresystem.api.bukkit.codec.CodecInputStream;
+import eu.mcone.coresystem.api.bukkit.codec.MultipleCodecCallback;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionRecorder;
 import eu.mcone.coresystem.api.core.util.GenericUtils;
-import eu.mcone.coresystem.api.bukkit.codec.CodecInputStream;
 import lombok.Getter;
 import org.bson.Document;
 import org.bson.types.Binary;
@@ -64,9 +64,9 @@ public class MotionCapture implements eu.mcone.coresystem.api.bukkit.npc.capture
             if (mapData != null) {
                 Map<Integer, List<Codec<?, ?>>> codecs = new HashMap<>();
 
-                DeserializeCallback callback;
+                MultipleCodecCallback callback;
                 for (Map.Entry<Integer, byte[]> mapDataEntry : mapData.entrySet()) {
-                    callback = inputStream.deserialize(mapDataEntry.getValue());
+                    callback = inputStream.readAsList(mapDataEntry.getValue());
                     codecs.put(mapDataEntry.getKey(), callback.getCodecs());
 
                     if (callback.getMigrated() > 0 && Boolean.parseBoolean(System.getProperty("SaveCodecMigrations"))) {

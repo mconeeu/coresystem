@@ -10,6 +10,8 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.codec.CodecRegistry;
 import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationStateChangeEvent;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionRecorder;
+import eu.mcone.coresystem.api.bukkit.npc.capture.codecs.PlayInUseBlockCodec;
+import eu.mcone.coresystem.api.bukkit.npc.capture.codecs.PlayInUseItemCodec;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.core.exception.MotionCaptureAlreadyExistsException;
 import eu.mcone.coresystem.api.core.exception.MotionCaptureNotDefinedException;
@@ -51,10 +53,11 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
         codecRegistry = CoreSystem.getInstance().createCodecRegistry(false);
 
         codecRegistry.registerCodec((byte) 1, eu.mcone.coresystem.api.bukkit.npc.capture.codecs.PlayerMoveEventCodec.class, PlayerMoveEvent.class, (byte) 2, PlayerNpc.class);
-        codecRegistry.registerCodec((byte) 2, eu.mcone.coresystem.api.bukkit.npc.capture.codecs.PlayInUseCodec.class, PlayerInteractEvent.class, (byte) 2, PlayerNpc.class);
-        codecRegistry.registerCodec((byte) 3, eu.mcone.coresystem.api.bukkit.npc.capture.codecs.ItemSwitchEventCodec.class, PlayerItemHeldEvent.class, (byte) 2, PlayerNpc.class);
-        codecRegistry.registerCodec((byte) 4, eu.mcone.coresystem.api.bukkit.npc.capture.codecs.PlayInEntityActionCodec.class, PacketPlayInEntityAction.class, (byte) 2, PlayerNpc.class);
-        codecRegistry.registerCodec((byte) 5, eu.mcone.coresystem.api.bukkit.npc.capture.codecs.PlayOutAnimationCodec.class, PacketPlayOutAnimation.class, (byte) 2, PlayerNpc.class);
+        codecRegistry.registerCodec((byte) 2, PlayInUseBlockCodec.class, PlayerInteractEvent.class, (byte) 2, PlayerNpc.class);
+        codecRegistry.registerCodec((byte) 3, PlayInUseItemCodec.class, PlayerInteractEvent.class, (byte) 2, PlayerNpc.class);
+        codecRegistry.registerCodec((byte) 4, eu.mcone.coresystem.api.bukkit.npc.capture.codecs.ItemSwitchEventCodec.class, PlayerItemHeldEvent.class, (byte) 2, PlayerNpc.class);
+        codecRegistry.registerCodec((byte) 5, eu.mcone.coresystem.api.bukkit.npc.capture.codecs.PlayInEntityActionCodec.class, PacketPlayInEntityAction.class, (byte) 2, PlayerNpc.class);
+        codecRegistry.registerCodec((byte) 6, eu.mcone.coresystem.api.bukkit.npc.capture.codecs.PlayOutAnimationCodec.class, PacketPlayOutAnimation.class, (byte) 2, PlayerNpc.class);
 
         loadDatabase();
     }

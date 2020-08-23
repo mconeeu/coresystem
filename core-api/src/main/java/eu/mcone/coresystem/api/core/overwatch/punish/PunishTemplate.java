@@ -25,6 +25,7 @@ public enum PunishTemplate {
     MOBBING("MB", "Mobbing", 5, 5),
     DROHUNG("DH", "Drohung", 5, 5),
     BELEIDIGUNG("BL", "Beleidigung", 0, 2),
+    HOUSE_BAN("HV", "Hausverbot", 1, 0),
     SPAM("SP", "Spam", 0, 2),
     WERBUNG("WB", "Werbung", 0, 2);
 

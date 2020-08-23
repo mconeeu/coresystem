@@ -13,9 +13,11 @@ import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
 import eu.mcone.coresystem.api.bukkit.npc.entity.EntityProjectile;
+import eu.mcone.coresystem.api.bukkit.overwatch.Overwatch;
 import eu.mcone.coresystem.api.bukkit.player.*;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
+import eu.mcone.coresystem.api.bukkit.stats.CoreStatsManager;
 import eu.mcone.coresystem.api.bukkit.util.*;
 import eu.mcone.coresystem.api.bukkit.vanish.VanishManager;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
@@ -55,18 +57,28 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     /**
      * returns the BCS PluginManager
+     *
      * @return CorePluginManager instance
      */
     public abstract CorePluginManager getPluginManager();
 
     /**
+     * returns the Overwatch System
+     *
+     * @return Overwatch instance
+     */
+    public abstract Overwatch getOverwatch();
+
+    /**
      * returns the CorePacketManager
+     *
      * @return CorePacketManager instance
      */
     public abstract PacketManager getPacketManager();
 
     /**
      * creates a new codec registry object
+     *
      * @param listening listening for codecs?
      * @return new CodecRegistry instance
      */
@@ -74,30 +86,35 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     /**
      * returns the BCS NickManager
+     *
      * @return NickManager instance
      */
     public abstract NickManager getNickManager();
 
     /**
      * returns the BCS WorldManager
+     *
      * @return WorldManager instance
      */
     public abstract WorldManager getWorldManager();
 
     /**
      * returns the BCS NpcManager
+     *
      * @return NpcManager instance
      */
     public abstract NpcManager getNpcManager();
 
     /**
      * returns the BCS HologramManager
+     *
      * @return HologramManager instance
      */
     public abstract eu.mcone.coresystem.api.bukkit.hologram.HologramManager getHologramManager();
 
     /**
      * returns the BCS AfkManager
+     *
      * @return AfkManager instance
      */
     public abstract AfkManager getAfkManager();
@@ -106,24 +123,35 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     /**
      * returns the bukkit Labymod API
+     *
      * @return bukkit Labymod API instance
      */
     public abstract LabyModBukkitAPI getLabyModAPI();
 
     /**
+     * returns the core stats manager
+     *
+     * @return bukkit stats manager instance
+     */
+    public abstract CoreStatsManager getCoreStatsManager();
+
+    /**
      * returns the mc one plugin messaging channel handler
+     *
      * @return plugin messaging channel handler
      */
     public abstract ChannelHandler getChannelHandler();
 
     /**
      * returns if the mc one Cloudsystem is available
+     *
      * @return boolean cloudsystem available
      */
     public abstract boolean isCloudsystemAvailable();
 
     /**
      * returns the CorePlayer object by Bukkit Player
+     *
      * @param player player
      * @return CorePlayer
      */
@@ -131,6 +159,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     /**
      * returns the CorePlayer by UUID
+     *
      * @param uuid uuid
      * @return CorePlayer
      */
@@ -138,6 +167,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     /**
      * returns the CorePlayer by name
+     *
      * @param name name
      * @return CorePlayer
      */
@@ -145,12 +175,14 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     /**
      * returns all online CorePlayers
+     *
      * @return List of online CorePlayers
      */
     public abstract Collection<CorePlayer> getOnlineCorePlayers();
 
     /**
      * creates a new instance of BuildSystem
+     *
      * @param events events that get blocked
      * @return nwe BuildSystem instance
      */
@@ -158,18 +190,21 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     /**
      * creates a new player title
+     *
      * @return new CoreTitle
      */
     public abstract CoreTitle createTitle();
 
     /**
      * create a new Tablist Header/Footer
+     *
      * @return new TablistInfo
      */
     public abstract CoreTablistInfo createTablistInfo();
 
     /**
      * creates a new ActionBar message
+     *
      * @return new ActionBar
      */
     public abstract CoreActionBar createActionBar();
@@ -178,14 +213,16 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     /**
      * opens a predefined book for a player
+     *
      * @param player player
-     * @param book book
+     * @param book   book
      */
     public abstract void openBook(Player player, ItemStack book);
 
     /**
      * creates a new AnvilInventory
      * it can be set for more than one player using the open(Player) method
+     *
      * @param handler ClickHandler
      * @return new AnvilInventory
      */
@@ -194,6 +231,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     /**
      * creates an CorePlayer object for an offline or online player
      * this object has limited abilities as it should be uses for a potentially offline player
+     *
      * @param name Player name
      * @return OfflineCorePlayer object
      * @throws PlayerNotResolvedException thrown if the wished player is not in the database
@@ -203,6 +241,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     /**
      * creates an CorePlayer object for an offline or online player
      * this object has limited abilities as it should be uses for a potentially offline player
+     *
      * @param uuid Player uuid
      * @return OfflineCorePlayer object
      * @throws PlayerNotResolvedException thrown if the wished player is not in the database
@@ -211,18 +250,21 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     /**
      * disables all Player chat formatting
+     *
      * @param disabled if chat should be disabled
      */
     public abstract void setPlayerChatEnabled(boolean disabled);
 
     /**
      * allows you to add items to the ProfileInventory
+     *
      * @param modifier ProfileInventoryModifier
      */
     public abstract void modifyProfileInventory(ProfileInventoryModifier modifier);
 
     /**
      * allows you to change the size of the ProfileInventory
+     *
      * @param enabled if custom enderchest (with variable size) should be enabled
      */
     public abstract void setCustomEnderchestEnabled(boolean enabled);
@@ -230,6 +272,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     /**
      * allows to set the cooldown time for how long players must wait to write their next message
      * use 0 for no cooldown
+     *
      * @param cooldown cooldown in seconds
      */
     public abstract void setPlayerChatCooldown(int cooldown);
@@ -238,8 +281,9 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * enables an global /server spawn command
      * IMPORTANT: The location "spawn" must be set in the core-config.json of the given world!
      * otherwise the spawn command will throw an error to the player!
-     * @param plugin the plugin for message prefix
-     * @param world CoreWorld
+     *
+     * @param plugin   the plugin for message prefix
+     * @param world    CoreWorld
      * @param cooldown cooldown in seconds where the must not move until he get teleported, use 0 for no cooldown
      */
     public abstract void enableSpawnCommand(CorePlugin plugin, CoreWorld world, int cooldown);
@@ -247,7 +291,8 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     /**
      * allows all players to use /home /sethome /delhome commands
      * allowed home amount can be set with "system.bukkit.home.<i>i</i>" permission where <i>i</i> stands for the maximum allowed homes
-     * @param plugin the plugin for message prefix
+     *
+     * @param plugin   the plugin for message prefix
      * @param cooldown cooldown in seconds where the must not move until he get teleported, use 0 for no cooldown
      */
     public abstract void enableHomeSystem(CorePlugin plugin, HomeManagerGetter apiGetter, int cooldown);
@@ -257,13 +302,15 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     /**
      * allows all players to use the /tpa /tpaccept /tpdeny commands
-     * @param plugin the plugin for message prefix
+     *
+     * @param plugin   the plugin for message prefix
      * @param cooldown cooldown in seconds where the must not move until he get teleported, use 0 for no cooldown
      */
     public abstract void enableTpaSystem(CorePlugin plugin, int cooldown);
 
     /**
      * allows you to change the size of the ProfileInventory
+     *
      * @param inventorySize size of the ProfileInventory
      */
     public abstract void setProfileInventorySize(int inventorySize);

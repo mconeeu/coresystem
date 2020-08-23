@@ -171,7 +171,8 @@ public abstract class CoreSidebarObjective extends CoreObjective {
         super.unregister();
 
         for (Team t : this.scoreboard.getTeams()) {
-            if (t.getName().contains(TEAM_NAME_PREFIX)) t.unregister();
+            if (t.getName().contains(TEAM_NAME_PREFIX))
+                t.unregister();
         }
     }
 

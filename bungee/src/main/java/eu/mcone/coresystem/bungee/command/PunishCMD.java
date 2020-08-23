@@ -117,6 +117,7 @@ public class PunishCMD extends Command implements TabExecutor {
                                                 "\n§8» §7MOBBING §8- §eMB" +
                                                 "\n§8» §7BELEIDIGUNG §8- §eBL" +
                                                 "\n§8» §7DROHUNG §8- §eDH" +
+                                                "\n§8» §7HAUSVERBOT §8- §eHV" +
                                                 "\n§8» §7SPAM §8- §eSP" +
                                                 "\n§8» §7WERBUNG §8- §eWB" +
                                                 "\n§8§m--------------------" +
@@ -155,7 +156,7 @@ public class PunishCMD extends Command implements TabExecutor {
                     "\n§8» §7SPAM §8- §eSP" +
                     "\n§8» §7WERBUNG §8- §eWB" +
                     "\n§8§m------§r §f§lBefehle §8§m------" +
-                    "\n§8» §c/punish unban <§cSpieler§c>" +
+                    "\n§8» §c/punish unpunish <§cSpieler§c>" +
                     "\n§8» §c/punish unmute <§cSpieler§c>" +
                     "\n§8» §c/punish check <§cSpieler§c>" +
                     "\n§8» §c/punish <§fSpieler§c> <§eTemplateID§c> <§fGrund§c>" +

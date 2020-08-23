@@ -14,64 +14,120 @@ public class CodecInputStream {
         this.codecRegistry = codecRegistry;
     }
 
-    public DeserializeCallback deserialize(byte[] array) {
+    public SingleCodecCallback read(DataInputStream dataInputStream) {
         try {
-            if (array.length > 0) {
-                List<Codec<?, ?>> deserializedCodecs = new ArrayList<>();
-                ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(array);
-                DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+            Codec<?, ?> obj = null;
+            //Migration
+            int migrated = 0;
+            ByteArrayOutputStream migratedByteOutput = new ByteArrayOutputStream();
+            DataOutputStream migratedDataOutput = new DataOutputStream(migratedByteOutput);
 
-                //Migration
-                int migrated = 0;
-                ByteArrayOutputStream migratedByteOutput = new ByteArrayOutputStream();
-                DataOutputStream migratedDataOutput = new DataOutputStream(migratedByteOutput);
+            int codecID;
+            if ((codecID = dataInputStream.read()) != 0) {
+                System.out.println("CodecID: " + codecID);
+                Class<? extends Codec<?, ?>> codecClass = codecRegistry.getCodecByID((byte) codecID);
+                byte version = dataInputStream.readByte();
+                byte codecVersion = CodecRegistry.getCodecVersion(codecClass);
+                Codec<?, ?> codec = codecClass.newInstance();
 
-                int codecID = dataInputStream.read();
+                codec.setCodecID((byte) codecID);
+                migratedDataOutput.writeByte(codec.getCodecID());
+                migratedDataOutput.writeByte(codecVersion);
 
-                while (codecID != -1) {
-                    Class<? extends Codec<?, ?>> codecClass = codecRegistry.getCodecByID((byte) codecID);
-                    byte version = dataInputStream.readByte();
-                    byte codecVersion = CodecRegistry.getCodecVersion(codecClass);
-                    Codec<?, ?> codec = codecClass.newInstance();
-
-                    codec.setCodecID((byte) codecID);
-                    migratedDataOutput.writeByte(codec.getCodecID());
-                    migratedDataOutput.writeByte(codecVersion);
-
-                    if (version == codecVersion) {
-                        codec.readObject(dataInputStream);
-                        codec.writeObject(migratedDataOutput);
-                    } else if (version < codecVersion) {
-                        migrated++;
-                        codec.migrate(dataInputStream, migratedDataOutput);
-                    } else {
-                        throw new IllegalStateException("Could not read Codec " + codecClass.getSimpleName() + ". This plugin is outdated!");
-                    }
-
-                    deserializedCodecs.add(codec);
-                    codecID = dataInputStream.read();
-                }
-
-                DeserializeCallback callback;
-                if (migrated == 0) {
-                    callback = new DeserializeCallback(deserializedCodecs, null, 0);
+                if (version == codecVersion) {
+                    codec.readObject(dataInputStream);
+                    codec.writeObject(migratedDataOutput);
+                } else if (version < codecVersion) {
+                    migrated++;
+                    codec.migrate(dataInputStream, migratedDataOutput);
                 } else {
-                    CoreSystem.getInstance().sendConsoleMessage("§cMigrating " + migrated + " Codec(s)");
-                    callback = new DeserializeCallback(deserializedCodecs, migratedByteOutput.toByteArray(), migrated);
+                    throw new IllegalStateException("Could not read Codec " + codecClass.getSimpleName() + ". This plugin is outdated!");
                 }
 
-                byteArrayInputStream.close();
-                dataInputStream.close();
-
-                migratedByteOutput.close();
-                migratedDataOutput.close();
-
-                return callback;
+                obj = codec;
             }
 
-            return null;
+            SingleCodecCallback callback;
+            if (migrated == 0) {
+                callback = new SingleCodecCallback(obj, null, 0);
+            } else {
+                CoreSystem.getInstance().sendConsoleMessage("§cMigrating " + migrated + " Codec(s)");
+                callback = new SingleCodecCallback(obj, migratedByteOutput.toByteArray(), migrated);
+            }
+
+            migratedByteOutput.close();
+            migratedDataOutput.close();
+            return callback;
         } catch (IOException | IllegalAccessException | InstantiationException | ClassNotFoundException e) {
             e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public MultipleCodecCallback readAsList(DataInputStream dataInputStream) {
+        try {
+            List<Codec<?, ?>> deserializedCodecs = new ArrayList<>();
+            //Migration
+            int migrated = 0;
+            ByteArrayOutputStream migratedByteOutput = new ByteArrayOutputStream();
+            DataOutputStream migratedDataOutput = new DataOutputStream(migratedByteOutput);
+
+            int size = dataInputStream.readInt();
+
+            for (int i = 0; i < size; i++) {
+                byte codecID = dataInputStream.readByte();
+                System.out.println("CODEC ID: " + codecID);
+                Class<? extends Codec<?, ?>> codecClass = codecRegistry.getCodecByID(codecID);
+                System.out.println("CLASS: " + codecClass.getSimpleName());
+                byte version = dataInputStream.readByte();
+                byte codecVersion = CodecRegistry.getCodecVersion(codecClass);
+                Codec<?, ?> codec = codecClass.newInstance();
+
+                codec.setCodecID(codecID);
+                migratedDataOutput.writeByte(codec.getCodecID());
+                migratedDataOutput.writeByte(codecVersion);
+
+                if (version == codecVersion) {
+                    codec.readObject(dataInputStream);
+                    codec.writeObject(migratedDataOutput);
+                } else if (version < codecVersion) {
+                    migrated++;
+                    codec.migrate(dataInputStream, migratedDataOutput);
+                } else {
+                    throw new IllegalStateException("Could not read Codec " + codecClass.getSimpleName() + ". This plugin is outdated!");
+                }
+
+                deserializedCodecs.add(codec);
+            }
+
+            MultipleCodecCallback callback;
+            if (migrated == 0) {
+                callback = new MultipleCodecCallback(deserializedCodecs, null, 0);
+            } else {
+                CoreSystem.getInstance().sendConsoleMessage("§cMigrating " + migrated + " Codec(s)");
+                callback = new MultipleCodecCallback(deserializedCodecs, migratedByteOutput.toByteArray(), migrated);
+            }
+
+            dataInputStream.close();
+
+            migratedByteOutput.close();
+            migratedDataOutput.close();
+
+            return callback;
+        } catch (IOException | IllegalAccessException | InstantiationException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public MultipleCodecCallback readAsList(byte[] array) {
+        if (array.length > 0) {
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(array);
+            DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+
+            return readAsList(dataInputStream);
         }
 
         return null;
