@@ -5,7 +5,6 @@
 
 package eu.mcone.coresystem.api.bukkit.world;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +14,6 @@ import org.bukkit.Location;
 import java.io.Serializable;
 
 @NoArgsConstructor
-@AllArgsConstructor
 public final class CoreLocation implements Serializable {
 
     private transient Location bukkit;
@@ -29,6 +27,15 @@ public final class CoreLocation implements Serializable {
     @Getter
     @Setter
     private float yaw, pitch;
+
+    public CoreLocation(String world, double x, double y, double z, float yaw, float pitch) {
+        this.world = world;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.yaw = yaw;
+        this.pitch = pitch;
+    }
 
     public CoreLocation(Location loc) {
         this.world = loc.getWorld().getName();
