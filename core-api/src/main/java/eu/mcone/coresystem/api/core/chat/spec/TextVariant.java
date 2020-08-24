@@ -11,7 +11,7 @@ public enum TextVariant {
 
     HIGHLIGHTED('!', new HashMap<TextLevel, String>(){{
         put(TextLevel.INFO, ChatColor.WHITE.toString());
-        put(TextLevel.SUCCESS, ChatColor.RED.toString());
+        put(TextLevel.SUCCESS, ChatColor.GREEN.toString());
         put(TextLevel.WARNING, ChatColor.YELLOW.toString());
         put(TextLevel.ERROR, ChatColor.RED.toString());
     }}),

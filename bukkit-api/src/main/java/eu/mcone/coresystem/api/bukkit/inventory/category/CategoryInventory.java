@@ -21,10 +21,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public abstract class CategoryInventory extends CoreInventory {
 
@@ -39,6 +36,7 @@ public abstract class CategoryInventory extends CoreInventory {
 
     private final LinkedList<ItemStack> categories;
     private final List<CategoryInvItem> categoryInvItems;
+    private final Map<Integer, CategoryInvItem> customPlacedItems;
     protected ItemStack currentCategoryItem;
 
     public CategoryInventory(String title, Player player, ItemStack currentCategoryItem) {
@@ -46,6 +44,7 @@ public abstract class CategoryInventory extends CoreInventory {
 
         this.categories = new LinkedList<>();
         this.categoryInvItems = new ArrayList<>();
+        this.customPlacedItems = new HashMap<>();
         this.currentCategoryItem = currentCategoryItem;
     }
 
@@ -54,6 +53,7 @@ public abstract class CategoryInventory extends CoreInventory {
 
         this.categories = new LinkedList<>();
         this.categoryInvItems = new ArrayList<>();
+        this.customPlacedItems = new HashMap<>();
     }
 
     public void addCategory(ItemStack item) {
@@ -66,6 +66,10 @@ public abstract class CategoryInventory extends CoreInventory {
 
     public void addItem(ItemStack item) {
         addItem(item, null);
+    }
+
+    public void addCustomPlacedItem(int slot, ItemStack item, CoreItemEvent event) {
+        customPlacedItems.put(slot, new CategoryInvItem(item, event));
     }
 
     protected abstract void openCategoryInventory(ItemStack categoryItem, Player player);
@@ -102,7 +106,7 @@ public abstract class CategoryInventory extends CoreInventory {
             else if (x == 26) x = 29;
 
             CategoryInvItem item = categoryInvItems.get(i);
-            setItem(x, item.getItemStack(), item.getItemEvent());
+            setItem(x, item.itemStack, item.itemEvent);
         }
 
         final int itemPages = (allItemsSize / MAX_PAGE_SIZE) + (((allItemsSize % MAX_PAGE_SIZE) > 0) ? 1 : 0);
@@ -122,6 +126,10 @@ public abstract class CategoryInventory extends CoreInventory {
                 player.playSound(player.getLocation(), Sound.NOTE_BASS, 1, 1);
             }
         });
+
+        for (Map.Entry<Integer, CategoryInvItem> item : customPlacedItems.entrySet()) {
+            setItem(item.getKey(), item.getValue().itemStack, item.getValue().itemEvent);
+        }
 
         return super.openInventory();
     }
