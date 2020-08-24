@@ -29,9 +29,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>group.onegaming.networkmanager</groupId>
-            <artifactId>core-api</artifactId>
-            <version>1.1.5-SNAPSHOT</version>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <version>3.12.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -48,5 +48,4 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
 </project>
