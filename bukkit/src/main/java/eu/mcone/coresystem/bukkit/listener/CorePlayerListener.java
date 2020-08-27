@@ -88,12 +88,7 @@ public class CorePlayerListener implements Listener {
             CorePlayerLoadedEvent e = new CorePlayerLoadedEvent(loadReason, BukkitCoreSystem.getInstance().getCorePlayer(p), p);
             Bukkit.getPluginManager().callEvent(e);
 
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                if (player != p) {
-                    BukkitCoreSystem.getSystem().getVanishManager().showIfShouldBeSeen(player, p);
-                    BukkitCoreSystem.getSystem().getVanishManager().showIfShouldBeSeen(p, player);
-                }
-            }
+            CoreSystem.getInstance().getVanishManager().recalculateVanishes();
 
             LOADING_SUCCESS_MSG.send(p);
             p.removePotionEffect(PotionEffectType.BLINDNESS);

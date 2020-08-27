@@ -123,7 +123,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             final File file = new File("messages.properties");
             if (!file.isFile()) {
                 try {
-                    System.out.println("set custom bundle");
                     Field customBundle = getProxy().getClass().getDeclaredField("customBundle");
 
                     customBundle.setAccessible(true);

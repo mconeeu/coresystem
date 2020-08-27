@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface VanishRule {
 
-    void allowToSeePlayer(Player player, List<Player> canSeePlayer);
+    void visibleForPlayer(Player player, List<Player> playerCanSee);
 
 }

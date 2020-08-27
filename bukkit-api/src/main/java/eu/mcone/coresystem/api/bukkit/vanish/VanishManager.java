@@ -10,7 +10,4 @@ public interface VanishManager {
 
     boolean shouldSee(Player player, Player shouldBeSeen);
 
-    boolean showIfShouldBeSeen(Player target, Player shouldShow);
-
-    boolean hideIfShouldBeHidden(Player target, Player shouldShow);
 }

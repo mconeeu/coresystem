@@ -24,7 +24,6 @@ public class CodecInputStream {
 
             int codecID;
             if ((codecID = dataInputStream.read()) != 0) {
-                System.out.println("CodecID: " + codecID);
                 Class<? extends Codec<?, ?>> codecClass = codecRegistry.getCodecByID((byte) codecID);
                 byte version = dataInputStream.readByte();
                 byte codecVersion = CodecRegistry.getCodecVersion(codecClass);
@@ -77,9 +76,7 @@ public class CodecInputStream {
 
             for (int i = 0; i < size; i++) {
                 byte codecID = dataInputStream.readByte();
-                System.out.println("CODEC ID: " + codecID);
                 Class<? extends Codec<?, ?>> codecClass = codecRegistry.getCodecByID(codecID);
-                System.out.println("CLASS: " + codecClass.getSimpleName());
                 byte version = dataInputStream.readByte();
                 byte codecVersion = CodecRegistry.getCodecVersion(codecClass);
                 Codec<?, ?> codec = codecClass.newInstance();

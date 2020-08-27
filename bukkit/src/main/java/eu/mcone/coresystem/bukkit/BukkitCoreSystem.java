@@ -244,12 +244,13 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordReturnPluginChannelListener());
             getServer().getMessenger().registerIncomingPluginChannel(this, "WDL|INIT", new AntiWorldDownloader());
 
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                CorePlayerListener.LOADING_MSG.send(p);
-                p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 0));
-                CorePlayerListener.setCorePermissibleBase(p);
+            getServer().getScheduler().runTask(this, () -> {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    CorePlayerListener.LOADING_MSG.send(p);
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 0));
+                    CorePlayerListener.setCorePermissibleBase(p);
 
-                getServer().getScheduler().runTask(this, () -> {
+
                     Property textures = ((CraftPlayer) p).getHandle().getProfile().getProperties().get("textures").iterator().next();
                     CorePlayerLoadedEvent e = new CorePlayerLoadedEvent(CorePlayerLoadedEvent.Reason.RELOAD, new eu.mcone.coresystem.bukkit.player.BukkitCorePlayer(
                             this,
@@ -264,19 +265,14 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                     ), p);
                     getServer().getPluginManager().callEvent(e);
 
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        if (player != p) {
-                            BukkitCoreSystem.getSystem().getVanishManager().showIfShouldBeSeen(player, p);
-                            BukkitCoreSystem.getSystem().getVanishManager().showIfShouldBeSeen(p, player);
-                        }
-                    }
-
                     channelHandler.createSetRequest(p, "REFRESH_NICK");
 
                     CorePlayerListener.LOADING_SUCCESS_MSG.send(p);
                     p.removePotionEffect(PotionEffectType.BLINDNESS);
-                });
-            }
+                }
+                
+                getVanishManager().recalculateVanishes();
+            });
 
             super.onEnable();
 

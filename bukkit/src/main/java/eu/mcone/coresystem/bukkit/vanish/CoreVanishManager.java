@@ -14,15 +14,9 @@ import static java.util.stream.Collectors.toMap;
 
 public class CoreVanishManager implements VanishManager {
 
-    private static final VanishRule VANISH_SYSTEM_RULE = (p, canSeePlayer) -> {
-        if (CoreSystem.getInstance().getCorePlayer(p).isVanished()) {
-            for (int i = 0; i < canSeePlayer.size(); i++) {
-                Player player = canSeePlayer.get(i);
-
-                if (!canSeePlayer.get(i).hasPermission("system.bukkit.vanish")) {
-                    canSeePlayer.remove(player);
-                }
-            }
+    private static final VanishRule VANISH_SYSTEM_RULE = (player, playerCanSee) -> {
+        if (!player.hasPermission("system.bukkit.vanish")) {
+            playerCanSee.removeIf(p -> CoreSystem.getInstance().getCorePlayer(player).isVanished());
         }
     };
 
@@ -54,24 +48,26 @@ public class CoreVanishManager implements VanishManager {
 
     @Override
     public void recalculateVanishes() {
-        List<Player> canSeePlayer = new ArrayList<>();
+        List<Player> visibleForPlayer = new ArrayList<>();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
-            canSeePlayer.clear();
-            canSeePlayer.addAll(Bukkit.getOnlinePlayers());
-            canSeePlayer.remove(p);
+            visibleForPlayer.clear();
+            visibleForPlayer.addAll(Bukkit.getOnlinePlayers());
+            visibleForPlayer.remove(p);
 
             for (VanishRule rule : vanishRules.values()) {
-                rule.allowToSeePlayer(p, canSeePlayer);
+                if (!visibleForPlayer.isEmpty()) {
+                    rule.visibleForPlayer(p, visibleForPlayer);
+                } else break;
             }
 
-            // hide Player p for all players that should not see him
+            // hide Player all players for p that he should not see
             for (Player player : Bukkit.getOnlinePlayers()) {
                 if (player != p) {
-                    if (canSeePlayer.contains(player)) {
-                        showPlayer(player, p);
+                    if (visibleForPlayer.contains(player)) {
+                        showPlayer(p, player);
                     } else {
-                        hidePlayer(player, p);
+                        hidePlayer(p, player);
                     }
                 }
             }
@@ -99,26 +95,6 @@ public class CoreVanishManager implements VanishManager {
     @Override
     public boolean shouldSee(Player player, Player shouldBeSeen) {
         return !hiddenPlayers.containsKey(player) || !hiddenPlayers.get(player).contains(shouldBeSeen);
-    }
-
-    @Override
-    public boolean showIfShouldBeSeen(Player target, Player shouldShow) {
-        if (shouldSee(target, shouldShow)) {
-            target.showPlayer(shouldShow);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean hideIfShouldBeHidden(Player target, Player shouldShow) {
-        if (!shouldSee(target, shouldShow)) {
-            target.hidePlayer(shouldShow);
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public void playerLeaved(Player player) {
