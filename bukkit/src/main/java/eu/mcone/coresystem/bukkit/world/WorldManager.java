@@ -7,42 +7,38 @@ package eu.mcone.coresystem.bukkit.world;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mongodb.client.MongoCollection;
+import eu.mcone.cloud.core.api.world.CloudWorldManager;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.npc.data.PlayerNpcData;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.WorldCreateProperties;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
-import eu.mcone.coresystem.api.core.util.UnZip;
-import eu.mcone.coresystem.api.core.util.Zip;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.LocationCMD;
 import eu.mcone.coresystem.bukkit.command.WorldCMD;
 import group.onegaming.networkmanager.core.api.database.Database;
-import org.apache.commons.io.IOUtils;
-import org.bson.Document;
-import org.bson.types.Binary;
+import group.onegaming.networkmanager.core.api.util.Random;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.EntityType;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Projections.include;
-import static com.mongodb.client.model.Updates.combine;
-import static com.mongodb.client.model.Updates.set;
+import java.util.function.Consumer;
 
 public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldManager {
 
-    private static final MongoCollection<Document> WORLD_COLLECTION = BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD).getCollection("cloudwrapper_worlds");
+    private final Random randomWorldID;
     final static String CONFIG_NAME = "core-config.json";
 
     private final static String CONFIG_VERSION_KEY = "configVersion";
@@ -51,9 +47,14 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     private final WorldCMD worldCMD;
     List<BukkitCoreWorld> coreWorlds;
 
+    @Getter
+    private final CloudWorldManager cloudWorldManager;
+
     public WorldManager(BukkitCoreSystem instance) {
-        this.coreWorlds = new ArrayList<>();
+        this.randomWorldID = new Random(6);
         this.worldCMD = new WorldCMD();
+        this.coreWorlds = new ArrayList<>();
+        cloudWorldManager = new CloudWorldManager(BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD));
 
         instance.getPluginManager().registerCoreCommand(worldCMD, CoreSystem.getInstance());
         instance.getPluginManager().registerCoreCommand(new LocationCMD(instance), CoreSystem.getInstance());
@@ -107,7 +108,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
 
                             w.save();
                             coreWorlds.add(w);
-                            BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + w.getName());
+                            BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + w.getName() + ", ID " + w.getID());
                         }
                     } else {
                         if (world != null) {
@@ -231,120 +232,83 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     }
 
     @Override
-    public boolean download(final String name) {
+    public void download(final String id, Consumer<Boolean> succeeded) {
         CoreSystem.getInstance().sendConsoleMessage("§aDownloading world...");
-        Document document = WORLD_COLLECTION.find(eq("name", name)).first();
+        cloudWorldManager.download(Bukkit.getWorldContainer(), id, config -> {
+            if (config != null) {
+                try {
+                    CoreSystem.getInstance().sendConsoleMessage("§aImport world...");
+                    FileInputStream fis = new FileInputStream(config.getConfig());
+                    InputStreamReader reader = new InputStreamReader(fis, StandardCharsets.UTF_8);
+                    JsonElement json = BukkitCoreSystem.getSystem().getJsonParser().parse(reader);
+                    reader.close();
+                    fis.close();
 
-        if (document != null) {
-            try {
-                File zipFile = new File(Bukkit.getWorldContainer().getAbsolutePath() + File.separator + name + ".zip");
-                FileOutputStream fos = new FileOutputStream(zipFile);
-                fos.write(document.get("bytes", Binary.class).getData());
-                fos.close();
-
-                CoreSystem.getInstance().sendConsoleMessage("§aUnzip file...");
-                new UnZip(zipFile.getPath(), Bukkit.getWorldContainer() + File.separator + name);
-                zipFile.delete();
-
-                CoreSystem.getInstance().sendConsoleMessage("§aImport world...");
-                File config = new File(Bukkit.getWorldContainer() + File.separator + name, CONFIG_NAME);
-
-                FileInputStream fis = new FileInputStream(config);
-                InputStreamReader reader = new InputStreamReader(fis, StandardCharsets.UTF_8);
-                JsonElement json = BukkitCoreSystem.getSystem().getJsonParser().parse(reader);
-                reader.close();
-                fis.close();
-
-                if (!json.getAsJsonObject().has(CONFIG_VERSION_KEY)) {
-                    json.getAsJsonObject().addProperty(CONFIG_VERSION_KEY, 0);
-                }
-                if (json.getAsJsonObject().get(CONFIG_VERSION_KEY).getAsInt() < LATEST_CONFIG_VERSION) {
-                    json = migrateConfig(json);
-                }
-
-                BukkitCoreWorld w = CoreSystem.getInstance().getGson().fromJson(json, BukkitCoreWorld.class);
-
-                if (w.isLoadOnStartup()) {
-                    WorldCreator wc = new WorldCreator(w.getName())
-                            .environment(w.getEnvironment())
-                            .type(w.getWorldType())
-                            .generateStructures(w.isGenerateStructures());
-
-                    if (w.getGenerator() != null) {
-                        wc.generator(w.getGenerator());
-                        if (w.getGeneratorSettings() != null)
-                            wc.generatorSettings(w.getGeneratorSettings());
+                    if (!json.getAsJsonObject().has(CONFIG_VERSION_KEY)) {
+                        json.getAsJsonObject().addProperty(CONFIG_VERSION_KEY, 0);
+                    }
+                    if (json.getAsJsonObject().get(CONFIG_VERSION_KEY).getAsInt() < LATEST_CONFIG_VERSION) {
+                        json = migrateConfig(json);
                     }
 
-                    wc.createWorld();
+                    BukkitCoreWorld w = CoreSystem.getInstance().getGson().fromJson(json, BukkitCoreWorld.class);
 
-                    w.save();
-                    coreWorlds.add(w);
-                    BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + w.getName());
+                    if (w.isLoadOnStartup()) {
+                        WorldCreator wc = new WorldCreator(w.getName())
+                                .environment(w.getEnvironment())
+                                .type(w.getWorldType())
+                                .generateStructures(w.isGenerateStructures());
+
+                        if (w.getGenerator() != null) {
+                            wc.generator(w.getGenerator());
+                            if (w.getGeneratorSettings() != null)
+                                wc.generatorSettings(w.getGeneratorSettings());
+                        }
+
+                        wc.createWorld();
+
+                        w.save();
+                        coreWorlds.add(w);
+                        BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + w.getName());
+                    }
+
+                    succeeded.accept(true);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
+            } else {
+                succeeded.accept(false);
             }
-        } else {
-            return false;
-        }
-
-        return false;
+        });
     }
 
     @Override
-    public boolean upload(final CoreWorld world) {
+    public void upload(final CoreWorld world, Consumer<Boolean> succeeded) {
         world.save();
 
         World w = world.bukkit();
         w.setAutoSave(false);
         w.save();
 
-        File worldFile = w.getWorldFolder();
-        File zipFile = new File(world.getName() + ".zip");
-
-        if (zipFile.exists()) zipFile.delete();
-        new Zip(worldFile, zipFile);
-
-        try {
-            FileInputStream fis = new FileInputStream(zipFile);
-            Document document = WORLD_COLLECTION.find(eq("name", world.getName())).projection(include("build")).first();
-
-            int build = 0;
-            if (document != null) {
-                build = document.getInteger("build");
-
-                WORLD_COLLECTION.updateOne(eq("name", world.getName()), combine(
-                        set("build", ++build),
-                        set("name", world.getName()),
-                        set("bytes", IOUtils.toByteArray(fis))));
+        cloudWorldManager.upload(w.getWorldFolder(), uploaded -> {
+            if (uploaded) {
+                w.setAutoSave(true);
+                succeeded.accept(true);
             } else {
-                WORLD_COLLECTION.insertOne(new Document("build", ++build)
-                        .append("name", world.getName())
-                        .append("bytes", IOUtils.toByteArray(fis)));
+                succeeded.accept(false);
             }
-
-            fis.close();
-
-            zipFile.delete();
-            w.setAutoSave(true);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
+        });
     }
 
     @Override
-    public boolean existsWorldInDatabase(final String name) {
-        return WORLD_COLLECTION.find(eq("name", name)).projection(include("build")).first() != null;
+    public boolean existsWorldInDatabase(final String iD) {
+        return cloudWorldManager.existsWorld(iD);
     }
 
     private BukkitCoreWorld constructNewCoreWorld(World world, String generator, String generatorSettings) {
         Location loc = world.getSpawnLocation();
         BukkitCoreWorld w = new BukkitCoreWorld(
+                randomWorldID.nextString(),
                 world.getName(),
                 world.getName(),
                 generator,
@@ -441,6 +405,14 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                             entityData.add("equipment", new JsonObject());
                         }
                     }
+                }
+            }
+            case 4: {
+                CoreSystem.getInstance().sendConsoleMessage("§7Updating Config from version 4 to 5...");
+
+                if (json.getAsJsonObject().has("iD")) {
+                    Random random = new Random(6);
+                    json.getAsJsonObject().addProperty("iD", random.nextString());
                 }
             }
         }

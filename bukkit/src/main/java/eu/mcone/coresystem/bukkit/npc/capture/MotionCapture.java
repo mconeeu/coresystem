@@ -4,7 +4,7 @@ import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import eu.mcone.coresystem.api.bukkit.codec.CodecInputStream;
 import eu.mcone.coresystem.api.bukkit.codec.MultipleCodecCallback;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionRecorder;
-import eu.mcone.coresystem.api.core.util.GenericUtils;
+import group.onegaming.networkmanager.core.api.util.GenericUtils;
 import lombok.Getter;
 import org.bson.Document;
 import org.bson.types.Binary;

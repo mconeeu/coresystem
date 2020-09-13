@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.api.bukkit.scoreboard;
 
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.api.core.util.Random;
+import group.onegaming.networkmanager.core.api.util.Random;
 import lombok.Getter;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;

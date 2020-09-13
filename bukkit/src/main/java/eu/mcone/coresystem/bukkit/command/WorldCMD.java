@@ -201,29 +201,14 @@ public class WorldCMD extends CorePlayerCommand {
                                         BukkitCoreSystem.getInstance().getMessenger().send(player, "§3" + p.getName() + "§7 lädt gerade die Welt §f" + w.getName() + "§7 in die Datenbank hoch...");
                                 }
 
-                                if (w.upload()) {
-                                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Die Welt wurde erfolgreich abgespeichert und kann nun wieder modifiziert werden!");
-                                } else {
-                                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Es ist ein Fehler beim speichern der Welt aufgetreten!");
-                                }
-                            } else {
-                                BukkitCoreSystem.getInstance().getMessenger().sendTransl(p, "system.command.noperm");
-                            }
-                            return true;
-                        } else if (args[0].equalsIgnoreCase("betaupload")) {
-                            if (p.hasPermission("system.bukkit.world.upload")) {
-                                BukkitCoreSystem.getInstance().getMessenger().send(p, "§7Die Welt wird hochgeladen...");
-                                BukkitCoreSystem.getInstance().sendConsoleMessage("Uploading beta world " + w.getName() + " to database. Initialized by " + p.getName());
-                                for (Player player : Bukkit.getOnlinePlayers()) {
-                                    if (player.hasPermission("group.builder") && player != p)
-                                        BukkitCoreSystem.getInstance().getMessenger().send(player, "§3" + p.getName() + "§7 lädt gerade die Welt §f" + w.getName() + "§7 in die Datenbank hoch...");
-                                }
+                                CoreSystem.getInstance().getWorldManager().upload(w, succeeded -> {
+                                    if (succeeded) {
+                                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Die Welt wurde erfolgreich abgespeichert und kann nun wieder modifiziert werden!");
 
-                                if (w.betaUpload()) {
-                                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Die Welt wurde erfolgreich als Beta-Version abgespeichert und kann nun wieder modifiziert werden!");
-                                } else {
-                                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Es ist ein Fehler beim speichern der Welt aufgetreten!");
-                                }
+                                    } else {
+                                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Es ist ein Fehler beim speichern der Welt aufgetreten!");
+                                    }
+                                });
                             } else {
                                 BukkitCoreSystem.getInstance().getMessenger().sendTransl(p, "system.command.noperm");
                             }

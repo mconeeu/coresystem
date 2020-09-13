@@ -39,7 +39,7 @@ import java.util.Map;
 @DontObfuscate
 public class BukkitCoreWorld implements CoreWorld {
 
-    private String name, alias, generator, generatorSettings;
+    private String ID, name, alias, generator, generatorSettings;
     private WorldType worldType = WorldType.NORMAL;
     private World.Environment environment = World.Environment.NORMAL;
     private Difficulty difficulty = Difficulty.NORMAL;
@@ -156,16 +156,6 @@ public class BukkitCoreWorld implements CoreWorld {
     @Override
     public Hologram getHologram(String name) {
         return CoreSystem.getInstance().getHologramManager().getHologram(this, name);
-    }
-
-    @Override
-    public boolean upload() {
-        return new WorldUploader(this).upload();
-    }
-
-    @Override
-    public boolean betaUpload() {
-        return new WorldUploader(this, CoreSystem.getInstance().getMongoDB().getCollection("bukkitsystem_beta_worlds")).upload();
     }
 
     @Override

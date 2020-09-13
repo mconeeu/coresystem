@@ -1,8 +1,8 @@
 package eu.mcone.coresystem.bukkit.npc.capture;
 
 import eu.mcone.coresystem.api.bukkit.codec.Codec;
-import eu.mcone.coresystem.api.core.util.GenericUtils;
 import eu.mcone.coresystem.api.bukkit.codec.CodecOutputStream;
+import group.onegaming.networkmanager.core.api.util.GenericUtils;
 import lombok.Getter;
 
 import java.util.ArrayList;

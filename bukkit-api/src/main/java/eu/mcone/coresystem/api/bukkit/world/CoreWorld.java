@@ -19,6 +19,13 @@ import java.util.Map;
 public interface CoreWorld {
 
     /**
+     * Unique WorldID
+     *
+     * @return world id
+     */
+    String getID();
+
+    /**
      * get the worlds name
      *
      * @return name
@@ -307,20 +314,6 @@ public interface CoreWorld {
      * @return delete successful
      */
     boolean delete();
-
-    /**
-     * upload the world to the mc1cloud database
-     *
-     * @return if upload was successful
-     */
-    boolean upload();
-
-    /**
-     * uploads the world to the mc1data beta database
-     *
-     * @return if upload was successful
-     */
-    boolean betaUpload();
 
     /**
      * save latest changes to bukkit

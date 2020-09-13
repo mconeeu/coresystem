@@ -5,14 +5,24 @@
 
 package eu.mcone.coresystem.api.bukkit.world;
 
+import eu.mcone.cloud.core.api.world.CloudWorldManager;
 import org.bukkit.World;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public interface WorldManager {
 
     /**
+     * returns the instance of the cloud world manager
+     *
+     * @return Cloud world manager instance
+     */
+    CloudWorldManager getCloudWorldManager();
+
+    /**
      * returns all loaded worlds
+     *
      * @return Collection of CoreWorlds
      */
     List<CoreWorld> getWorlds();
@@ -31,6 +41,7 @@ public interface WorldManager {
 
     /**
      * checks if a world exists
+     *
      * @param world World name
      * @return boolean
      */
@@ -38,13 +49,15 @@ public interface WorldManager {
 
     /**
      * enables the /world upload [name] command
+     *
      * @param enable enables the upload command
      */
     void enableUploadCommand(boolean enable);
 
     /**
      * To use for existing worlds
-     * @param name name of the target World
+     *
+     * @param name        name of the target World
      * @param environment Environment of the target world
      * @return new bukkit world
      */
@@ -52,7 +65,8 @@ public interface WorldManager {
 
     /**
      * To use for new non-existing worlds
-     * @param name name
+     *
+     * @param name       name
      * @param properties WorldProperties for creating and maintaining
      * @return boolean created
      * @throws IllegalArgumentException thrown if one setting was formatted false, but world was created though
@@ -61,20 +75,23 @@ public interface WorldManager {
 
     /**
      * Downloads the world with the specified name from the database and imports it
-     * @param name World name
-     * @return boolean
+     *
+     * @param id        World ID
+     * @param succeeded Consumer that accepts an boolean
      */
-    boolean download(final String name);
+    void download(final String id, Consumer<Boolean> succeeded);
 
     /**
      * Uploads the world as byte array in the database
-     * @param world CoreWorld
-     * @return boolean
+     *
+     * @param world     CoreWorld
+     * @param succeeded Consumer that accepts an boolean
      */
-    boolean upload(final CoreWorld world);
+    void upload(final CoreWorld world, Consumer<Boolean> succeeded);
 
     /**
      * Checks if the world with the specified name exists in the database
+     *
      * @param name WorldName
      * @return boolean
      */

@@ -1,7 +1,7 @@
 package eu.mcone.coresystem.api.bungee.overwatch.punish;
 
 import eu.mcone.coresystem.api.core.overwatch.punish.PunishTemplate;
-import eu.mcone.coresystem.api.core.util.IDUtils;
+import group.onegaming.networkmanager.core.api.util.Random;
 import lombok.Getter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
@@ -21,7 +21,7 @@ public class Punish {
     private MuteEntry muteEntry;
 
     public Punish(UUID punished, UUID member, PunishTemplate template, String reason) {
-        this.punishID = IDUtils.generateID();
+        this.punishID = new Random(6).nextString();
         this.punished = punished;
         this.member = member;
         this.template = template;
