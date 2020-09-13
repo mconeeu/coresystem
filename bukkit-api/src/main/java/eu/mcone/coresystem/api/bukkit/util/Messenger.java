@@ -34,60 +34,72 @@ public final class Messenger {
 
     /**
      * send message with prefix to player
+     * deprecated: use TranslationManager#sendTrans instead
      *
      * @param player  player
      * @param message message
      */
+    @Deprecated
     public void send(Player player, String message) {
         send(player, TextLevel.INFO, message);
     }
 
     /**
      * send message with prefix to player
+     * deprecated: use TranslationManager#sendTrans instead
      *
      * @param player  player
      * @param message message
      */
+    @Deprecated
     public void sendSuccess(Player player, String message) {
         send(player, TextLevel.SUCCESS, message);
     }
 
     /**
      * send message with prefix to player
+     * deprecated: use TranslationManager#sendTrans instead
      *
      * @param player  player
      * @param message message
      */
+    @Deprecated
     public void sendInfo(Player player, String message) {
         send(player, TextLevel.INFO, message);
     }
 
     /**
      * send message with prefix to player
+     * deprecated: use TranslationManager#sendTrans instead
      *
      * @param player  player
      * @param message message
      */
+    @Deprecated
     public void sendWarning(Player player, String message) {
         send(player, TextLevel.WARNING, message);
     }
 
     /**
      * send message with prefix to player
+     * deprecated: use TranslationManager#sendTrans instead
      *
      * @param player  player
      * @param message message
      */
+    @Deprecated
     public void sendError(Player player, String message) {
         send(player, TextLevel.ERROR, message);
     }
 
     /**
      * send message with prefix to player
+     * deprecated: use TranslationManager#sendTrans instead
      *
      * @param player  player
      * @param message message
      */
+    @Deprecated
     public void send(Player player, TextLevel level, String message) {
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
 
@@ -99,60 +111,72 @@ public final class Messenger {
 
     /**
      * send message with prefix to command sender
+     * deprecated: use TranslationManager#sendTrans instead
      *
      * @param sender  command sender
      * @param message message
      */
+    @Deprecated
     public void send(CommandSender sender, String message) {
         send(sender, TextLevel.NONE, message);
     }
 
     /**
      * send message with prefix to command sender
+     * deprecated: use TranslationManager#sendTrans instead
      *
      * @param sender  command sender
      * @param message message
      */
+    @Deprecated
     public void sendInfo(CommandSender sender, String message) {
         send(sender, TextLevel.INFO, message);
     }
 
     /**
      * send message with prefix to command sender
+     * deprecated: use TranslationManager#sendTrans instead
      *
      * @param sender  command sender
      * @param message message
      */
+    @Deprecated
     public void sendSuccess(CommandSender sender, String message) {
         send(sender, TextLevel.SUCCESS, message);
     }
 
     /**
      * send message with prefix to command sender
+     * deprecated: use TranslationManager#sendTrans instead
      *
      * @param sender  command sender
      * @param message message
      */
+    @Deprecated
     public void sendWarning(CommandSender sender, String message) {
         send(sender, TextLevel.WARNING, message);
     }
 
     /**
      * send message with prefix to command sender
+     * deprecated: use TranslationManager#sendTrans instead
      *
      * @param sender  command sender
      * @param message message
      */
+    @Deprecated
     public void sendError(CommandSender sender, String message) {
         send(sender, TextLevel.ERROR, message);
     }
 
     /**
      * send message with prefix to command sender
+     * deprecated: use TranslationManager#sendTrans instead
      *
      * @param sender  command sender
      * @param message message
      */
+    @Deprecated
     public void send(CommandSender sender, TextLevel level, String message) {
         CorePlayer cp = sender instanceof Player ? CoreSystem.getInstance().getCorePlayer((Player) sender) : null;
 
@@ -164,10 +188,12 @@ public final class Messenger {
 
     /**
      * send TextComponent with prefix to player
+     * deprecated: use TranslationManager#sendTrans instead
      *
      * @param player        player
      * @param extra text component
      */
+    @Deprecated
     public void send(Player player, BaseComponent... extra) {
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(player);
 
@@ -269,30 +295,36 @@ public final class Messenger {
 
     /**
      * send message to player
+     * deprecated: use TranslationManager#sendTrans instead
      *
      * @param player  player
      * @param message message
      */
+    @Deprecated
     public void sendSimple(final Player player, final String message) {
         player.sendMessage(message);
     }
 
     /**
      * send TextComponent to player
+     * deprecated: use TranslationManager#sendTrans instead
      *
      * @param player        player
      * @param textComponent text component
      */
+    @Deprecated
     public void sendSimple(final Player player, final TextComponent textComponent) {
         player.spigot().sendMessage(textComponent);
     }
 
     /**
      * send message to command sender
+     * deprecated: use TranslationManager#sendTrans instead
      *
      * @param sender  command sender
      * @param message message
      */
+    @Deprecated
     public void sendSimple(final CommandSender sender, final String message) {
         sender.sendMessage(message);
     }

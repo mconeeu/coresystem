@@ -42,7 +42,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     final static String CONFIG_NAME = "core-config.json";
 
     private final static String CONFIG_VERSION_KEY = "configVersion";
-    final static int LATEST_CONFIG_VERSION = 4;
+    final static int LATEST_CONFIG_VERSION = 5;
 
     private final WorldCMD worldCMD;
     List<BukkitCoreWorld> coreWorlds;
@@ -410,10 +410,8 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
             case 4: {
                 CoreSystem.getInstance().sendConsoleMessage("§7Updating Config from version 4 to 5...");
 
-                if (json.getAsJsonObject().has("iD")) {
-                    Random random = new Random(6);
-                    json.getAsJsonObject().addProperty("iD", random.nextString());
-                }
+                Random random = new Random(6);
+                json.getAsJsonObject().addProperty("iD", random.nextString());
             }
         }
 

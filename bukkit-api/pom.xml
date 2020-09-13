@@ -31,6 +31,13 @@
             <groupId>eu.mcone.cloud</groupId>
             <artifactId>plugin-api-bukkit</artifactId>
             <version>2.1.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- TODO: Remove if CloudSystem plugin is available everytime when coresystem is used! -->
+        <dependency> <!-- MC ONE Cloud -->
+            <groupId>eu.mcone.cloud</groupId>
+            <artifactId>cloud-api</artifactId>
+            <version>2.1.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency> <!-- Spigot (this includes Spigot API, Bukkit API, Craftbukkit and NMS) -->
