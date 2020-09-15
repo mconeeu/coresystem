@@ -21,7 +21,7 @@ public enum Group {
     MODERATOR(22, "Moderator", "§2§oModerator", "§8[§2Mod§8] §7", ChatColor.DARK_GREEN, 33),
     CONTENT(23, "Content", "§9§oContent", "§8[§9Con§8] §7", ChatColor.BLUE, 31),
     SUPPORTER(24, "Supporter", "§a§oSupporter", "§8[§aSup§8] §7", ChatColor.GREEN, 34),
-    JRDEVELOPER(30, "Developer", "§b§oDeveloper", "§8[§bJrDev§8] §7", ChatColor.AQUA, 40),
+    JRDEVELOPER(30, "JrDeveloper", "§b§oJrDeveloper", "§8[§bJrDev§8] §7", ChatColor.AQUA, 40),
     JRBUILDER(31, "JrBuilder", "§e§oJrBuilder", "§8[§eJrB§8] §7", ChatColor.YELLOW, 41),
     JRSUPPORTER(32, "JrSupporter", "§a§oJrSupporter", "§8[§aJrSup§8] §7", ChatColor.GREEN, 42),
     TEAM(40, "Team", "§f§oTeam", "§8[§fTeam§8] §7", ChatColor.WHITE, 1000),
