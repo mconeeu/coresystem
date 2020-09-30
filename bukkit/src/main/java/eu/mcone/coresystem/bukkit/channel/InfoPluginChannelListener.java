@@ -6,7 +6,11 @@
 package eu.mcone.coresystem.bukkit.channel;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.event.*;
+import eu.mcone.coresystem.api.bukkit.event.nick.UnnickEvent;
+import eu.mcone.coresystem.api.bukkit.event.player.MoneyChangeEvent;
+import eu.mcone.coresystem.api.bukkit.event.nick.NickEvent;
+import eu.mcone.coresystem.api.bukkit.event.player.PermissionChangeEvent;
+import eu.mcone.coresystem.api.bukkit.event.player.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Currency;
 import eu.mcone.coresystem.api.core.player.Group;

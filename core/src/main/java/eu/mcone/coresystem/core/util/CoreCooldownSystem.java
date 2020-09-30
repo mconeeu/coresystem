@@ -8,7 +8,6 @@ package eu.mcone.coresystem.core.util;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.util.CooldownSystem;
-import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +25,12 @@ public class CoreCooldownSystem implements CooldownSystem {
 
     @Override
     public boolean addAndCheck(Class<?> clazz, UUID uuid) {
-        if (canExecute(clazz, uuid)) {
+        return addAndCheck(clazz, uuid, true);
+    }
+
+    @Override
+    public boolean addAndCheck(Class<?> clazz, UUID uuid, boolean notify) {
+        if (canExecute(clazz, uuid, notify)) {
             addPlayer(uuid, clazz);
             return true;
         }
@@ -50,7 +54,13 @@ public class CoreCooldownSystem implements CooldownSystem {
         customCooldown.put(clazz, cooldown);
     }
 
+    @Override
     public boolean canExecute(Class<?> clazz, UUID uuid) {
+        return canExecute(clazz, uuid, true);
+    }
+
+    @Override
+    public boolean canExecute(Class<?> clazz, UUID uuid, boolean notify) {
         GlobalCorePlayer p = system.getGlobalCorePlayer(uuid);
 
         if (p.hasPermission("system.bungee.cooldown")) {
@@ -62,7 +72,10 @@ public class CoreCooldownSystem implements CooldownSystem {
         } else if (classMap.get(clazz).get(uuid) < ((System.currentTimeMillis() / 1000) - customCooldown.getOrDefault(clazz, DEFAULT_COOLDOWN))) {
             return true;
         } else {
-            p.sendMessage("§8[§7§l!§8] §fSystem §8» §4Bitte warte noch " + (classMap.get(clazz).get(uuid) - ((System.currentTimeMillis() / 1000) - customCooldown.getOrDefault(clazz, DEFAULT_COOLDOWN))) + " Sekunden bevor du diesen Befehl wieder ausführst!");
+            if (notify) {
+                p.sendMessage("§8[§7§l!§8] §fSystem §8» §4Bitte warte noch " + (classMap.get(clazz).get(uuid) - ((System.currentTimeMillis() / 1000) - customCooldown.getOrDefault(clazz, DEFAULT_COOLDOWN))) + " Sekunden bevor du diese Aktion wieder ausführst!");
+            }
+
             return false;
         }
     }

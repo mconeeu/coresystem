@@ -3,7 +3,7 @@
  * You are not allowed to decompile the code
  */
 
-package eu.mcone.coresystem.api.bukkit.event;
+package eu.mcone.coresystem.api.bukkit.event.player;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

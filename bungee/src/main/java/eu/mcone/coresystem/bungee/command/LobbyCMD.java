@@ -26,13 +26,13 @@ public class LobbyCMD extends Command {
         if (sender instanceof ProxiedPlayer) {
             for (Map.Entry<String, ServerInfo> s : ProxyServer.getInstance().getServers().entrySet()) {
                 if (s.getKey().contains("Lobby")) {
-                    CoreSystem.getInstance().getMessenger().send(sender, "§7Du wirst zur §fLobby §7gesendet...");
+                    CoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§7Du wirst zur §fLobby §7gesendet...");
                     ((ProxiedPlayer) sender).connect(s.getValue());
                     return;
                 }
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 }

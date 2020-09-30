@@ -6,9 +6,9 @@
 package eu.mcone.coresystem.bukkit.listener;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.event.LanguageChangeEvent;
-import eu.mcone.coresystem.api.bukkit.event.PermissionChangeEvent;
-import eu.mcone.coresystem.api.bukkit.event.PlayerSettingsChangeEvent;
+import eu.mcone.coresystem.api.bukkit.event.player.LanguageChangeEvent;
+import eu.mcone.coresystem.api.bukkit.event.player.PermissionChangeEvent;
+import eu.mcone.coresystem.api.bukkit.event.player.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;

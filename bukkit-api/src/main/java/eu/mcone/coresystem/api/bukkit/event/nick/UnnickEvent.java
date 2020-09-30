@@ -3,24 +3,27 @@
  * You are not allowed to decompile the code
  */
 
-package eu.mcone.coresystem.api.bukkit.event;
+package eu.mcone.coresystem.api.bukkit.event.nick;
 
-import eu.mcone.coresystem.api.core.labymod.LabyModConnection;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.entity.Player;
+import lombok.Setter;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 @Getter
 @RequiredArgsConstructor
-public final class LabyModPlayerJoinEvent extends Event {
+public final class UnnickEvent extends Event implements Cancellable {
 
     @Getter
-    private final static HandlerList handlerList = new HandlerList();
+    private static final HandlerList handlerList = new HandlerList();
 
-    private final Player player;
-    private final LabyModConnection connection;
+    private final CorePlayer player;
+    private final boolean skinBypassed;
+    @Setter
+    private boolean cancelled;
 
     @Override
     public HandlerList getHandlers() {

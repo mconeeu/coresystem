@@ -3,9 +3,9 @@
  * You are not allowed to decompile the code
  */
 
-package eu.mcone.coresystem.api.bukkit.event;
+package eu.mcone.coresystem.api.bukkit.event.player;
 
-import com.google.gson.JsonElement;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
@@ -14,16 +14,20 @@ import org.bukkit.event.HandlerList;
 
 @Getter
 @RequiredArgsConstructor
-public final class LabyModMessageReceiveEvent extends Event {
+public final class CorePlayerLoadedEvent extends Event {
+
+    public enum Reason {
+        JOIN,
+        RELOAD
+    }
 
     @Getter
-    private final static HandlerList handlerList = new HandlerList();
+    private static final HandlerList handlerList = new HandlerList();
 
-    private final Player player;
-    private final String messageKey;
-    private final JsonElement jsonElement;
+    private final Reason loadReason;
+    private final CorePlayer player;
+    private final Player bukkitPlayer;
 
-    @Override
     public HandlerList getHandlers() {
         return handlerList;
     }

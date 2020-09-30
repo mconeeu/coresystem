@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.bukkit.overwatch.report;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.event.PlayerReportedEvent;
+import eu.mcone.coresystem.api.bukkit.event.report.PlayerReportedEvent;
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.item.LeatherArmorItem;
 import eu.mcone.coresystem.api.bukkit.item.Skull;

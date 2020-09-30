@@ -163,7 +163,7 @@ public class PunishCMD extends Command implements TabExecutor {
                     "\n§8§m--------------------" +
                     "\n§8» §7Alle Infos zum Punishsystem und zu den verschiedenen Templates findest du (bald) im Team Wiki: §fhttps://wiki.onegaming.group/coresystem");
         } else {
-            overwatch.getMessenger().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            overwatch.getMessenger().sendSenderSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 

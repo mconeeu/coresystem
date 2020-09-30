@@ -5,7 +5,6 @@
 
 package eu.mcone.coresystem.api.bungee;
 
-import eu.mcone.coresystem.api.bungee.util.Messenger;
 import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import io.sentry.SentryClient;
 import io.sentry.SentryClientFactory;
@@ -23,18 +22,15 @@ public abstract class CorePlugin extends Plugin implements GlobalCorePlugin {
     private final String pluginName;
     private final String consolePrefix;
     @Getter
-    private final Messenger messenger;
-    @Getter
     protected final SentryClient sentryClient;
 
-    protected CorePlugin(String pluginName, ChatColor pluginColor, String prefixTranslation) {
-        this(pluginName, pluginColor, prefixTranslation, null);
+    protected CorePlugin(String pluginName, ChatColor pluginColor) {
+        this(pluginName, pluginColor, null);
     }
 
-    protected CorePlugin(String pluginName, ChatColor pluginColor, String prefixTranslation, String sentryDsn) {
+    protected CorePlugin(String pluginName, ChatColor pluginColor, String sentryDsn) {
         this.pluginName = pluginName;
         this.consolePrefix = "§8[" + pluginColor + pluginName + "§8] §7";
-        this.messenger = new Messenger(prefixTranslation);
 
         if (sentryDsn != null && Boolean.parseBoolean(System.getProperty("EnableSentry"))) {
             sendConsoleMessage("§aInitialzing Sentry...");

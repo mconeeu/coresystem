@@ -23,17 +23,17 @@ public class CoinsCMD extends Command {
     public void execute(CommandSender sender, String[] args) {
         if (args.length == 0) {
             if (sender instanceof ProxiedPlayer) {
-                BungeeCoreSystem.getInstance().getMessenger().send(sender, "§7Du hast momentan §a" + CoreSystem.getInstance().getCorePlayer(((ProxiedPlayer) sender)).getFormattedCoins() + " Coins!");
+                BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§7Du hast momentan §a" + CoreSystem.getInstance().getCorePlayer(((ProxiedPlayer) sender)).getFormattedCoins() + " Coins!");
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+                BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
             }
         } else if (sender.hasPermission("system.bungee.coins")) {
             if (args.length == 1) {
                 try {
                     OfflineCorePlayer t = CoreSystem.getInstance().getOfflineCorePlayer(args[0]);
-                    BungeeCoreSystem.getInstance().getMessenger().send(sender, "§7Der Spieler §f" + t.getName() + "§7 hat momentan §a" + t.getFormattedCoins() + " Coins§7!");
+                    BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§7Der Spieler §f" + t.getName() + "§7 hat momentan §a" + t.getFormattedCoins() + " Coins§7!");
                 } catch (PlayerNotResolvedException e) {
-                    BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Der Minecraftaccount mit dem Namen §c" + args[0] + "§4konnte nicht gefunden werden: \n§f§o" + e.getMessage());
+                    BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Der Minecraftaccount mit dem Namen §c" + args[0] + "§4konnte nicht gefunden werden: \n§f§o" + e.getMessage());
                 }
 
                 return;
@@ -45,24 +45,24 @@ public class CoinsCMD extends Command {
 
                     if (args[0].equalsIgnoreCase("add")) {
                         o.addCoins(coins);
-                        BungeeCoreSystem.getInstance().getMessenger().send(sender, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins§2 hinzugefügt");
+                        BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins§2 hinzugefügt");
                     } else if (args[0].equalsIgnoreCase("remove")) {
                         o.removeCoins(coins);
-                        BungeeCoreSystem.getInstance().getMessenger().send(sender, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins §2abgezogen");
+                        BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins §2abgezogen");
                     } else if (args[0].equalsIgnoreCase("set")) {
                         o.setCoins(coins);
-                        BungeeCoreSystem.getInstance().getMessenger().send(sender, "§f" + name + "§2 hat nun §a" + coins + " Coins§2!");
+                        BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§f" + name + "§2 hat nun §a" + coins + " Coins§2!");
                     }
                 } catch (PlayerNotResolvedException e) {
-                    BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Der Minecraftaccount mit dem Namen §c" + args[0] + "§4konnte nicht gefunden werden: \n§f§o" + e.getMessage());
+                    BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Der Minecraftaccount mit dem Namen §c" + args[0] + "§4konnte nicht gefunden werden: \n§f§o" + e.getMessage());
                 }
 
                 return;
             }
 
-            BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze: §c/coins <add|remove|set> <Spieler> <Anzahl>");
+            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Bitte benutze: §c/coins <add|remove|set> <Spieler> <Anzahl>");
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.noperm"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.noperm"));
         }
     }
 

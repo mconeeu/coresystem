@@ -6,8 +6,8 @@
 package eu.mcone.coresystem.bukkit.player;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.event.PlayerSettingsChangeEvent;
-import eu.mcone.coresystem.api.bukkit.event.PlayerVanishEvent;
+import eu.mcone.coresystem.api.bukkit.event.player.PlayerSettingsChangeEvent;
+import eu.mcone.coresystem.api.bukkit.event.player.PlayerVanishEvent;
 import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;

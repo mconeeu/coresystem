@@ -3,33 +3,26 @@
  * You are not allowed to decompile the code
  */
 
-package eu.mcone.coresystem.api.bukkit.event;
+package eu.mcone.coresystem.api.bukkit.event.player;
 
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 @Getter
 @RequiredArgsConstructor
-public final class PlayerVanishEvent extends Event {
+public final class StatsChangeEvent extends Event {
 
     @Getter
     private static final HandlerList handlerList = new HandlerList();
 
+    private final Gamemode gamemode;
     private final CorePlayer player;
-    private final boolean isVanished;
-    private String cancelCause;
-    @Setter
-    private boolean cancelled;
 
-    public void setCancelled(boolean cancelled, String cancelCause) {
-        this.cancelled = cancelled;
-        this.cancelCause = cancelCause;
-    }
-
+    @Override
     public HandlerList getHandlers() {
         return handlerList;
     }

@@ -28,7 +28,7 @@ public class JumpCMD extends Command {
                 ProxiedPlayer t = ProxyServer.getInstance().getPlayer(args[0]);
 
                 if (t != null) {
-                    if (BungeeCoreSystem.getInstance().getCorePlayer(p).getFriendData().getFriends().containsKey(t.getUniqueId())) {
+                    if (sender.hasPermission("group.team") || BungeeCoreSystem.getInstance().getCorePlayer(p).getFriendData().getFriends().containsKey(t.getUniqueId())) {
                         ServerInfo tserver = t.getServer().getInfo();
 
                         if (t.getServer().getInfo() != p.getServer().getInfo()) {
@@ -48,7 +48,8 @@ public class JumpCMD extends Command {
                 BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte Benutze: §c/jump <Spieler>");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
+
 }

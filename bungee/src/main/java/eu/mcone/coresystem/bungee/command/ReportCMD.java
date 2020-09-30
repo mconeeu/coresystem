@@ -77,7 +77,7 @@ public class ReportCMD extends Command {
                 BungeeCoreSystem.getInstance().getChannelHandler().createInfoRequest(p, "CMD", "report help");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 }

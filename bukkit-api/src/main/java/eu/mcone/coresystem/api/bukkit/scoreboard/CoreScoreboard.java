@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.api.bukkit.scoreboard;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.event.objectiv.CoreObjectiveCreateEvent;
+import eu.mcone.coresystem.api.bukkit.event.objective.CoreObjectiveCreateEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import lombok.Getter;
 import org.bukkit.Bukkit;

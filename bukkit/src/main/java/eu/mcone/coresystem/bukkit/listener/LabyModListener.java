@@ -5,7 +5,7 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
-import eu.mcone.coresystem.api.bukkit.event.LabyModPlayerJoinEvent;
+import eu.mcone.coresystem.api.bukkit.event.labymod.LabyModPlayerJoinEvent;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import org.bukkit.event.EventHandler;

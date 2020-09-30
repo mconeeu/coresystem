@@ -11,6 +11,7 @@ import eu.mcone.coresystem.api.bungee.player.FriendSystem;
 import eu.mcone.coresystem.api.bungee.player.NickManager;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bungee.util.ChannelHandler;
+import eu.mcone.coresystem.api.bungee.util.Messenger;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.labymod.LabyModAPI;
@@ -30,7 +31,6 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
         super(
                 "bungeesystem",
                 ChatColor.DARK_AQUA,
-                "system.prefix",
                 "https://60310ff9f7874486af14718c51e62a80@o267551.ingest.sentry.io/5341158?stacktrace.app.packages=eu.mcone.coresystem"
         );
     }
@@ -80,6 +80,10 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @throws PlayerNotResolvedException thrown if the wished player is not in the database
      */
     public abstract OfflineCorePlayer getOfflineCorePlayer(UUID uuid) throws PlayerNotResolvedException;
+
+    public abstract Messenger initializeMessenger(String prefixTranslation);
+
+    public abstract Messenger getMessenger();
 
     /**
      * returns an registered CorePlugin

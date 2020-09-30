@@ -5,7 +5,7 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
-import eu.mcone.coresystem.api.bukkit.event.PermissionChangeEvent;
+import eu.mcone.coresystem.api.bukkit.event.player.PermissionChangeEvent;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

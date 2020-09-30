@@ -16,6 +16,6 @@ public class HelpCMD extends Command{
 	}
 	
 	public void execute(final CommandSender sender, final String[] args){
-		BungeeCoreSystem.getInstance().getMessenger().send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.command.help"));
+		BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.command.help"));
 	}
 }

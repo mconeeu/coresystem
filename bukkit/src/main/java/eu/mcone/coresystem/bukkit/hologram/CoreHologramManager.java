@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.bukkit.hologram;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.event.HologramManagerReloadedEvent;
+import eu.mcone.coresystem.api.bukkit.event.hologram.HologramManagerReloadedEvent;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;

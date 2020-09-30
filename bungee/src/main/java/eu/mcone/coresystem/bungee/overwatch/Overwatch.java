@@ -13,6 +13,7 @@ import eu.mcone.coresystem.bungee.command.ReportCMD;
 import eu.mcone.coresystem.bungee.overwatch.punish.PunishManager;
 import eu.mcone.coresystem.bungee.overwatch.report.ReportManager;
 import eu.mcone.coresystem.bungee.overwatch.trusted.TrustManager;
+import eu.mcone.coresystem.bungee.player.BungeeMessenger;
 import eu.mcone.coresystem.core.overwatch.GlobalOverwatch;
 import lombok.Getter;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -35,7 +36,7 @@ public class Overwatch extends GlobalOverwatch implements eu.mcone.coresystem.ap
         reportManager = new ReportManager(this);
         punishManager = new PunishManager(this);
         trustManager = new TrustManager(this);
-        messenger = new Messenger("system.bungee.overwatch.prefix");
+        messenger = new BungeeMessenger(instance, "system.bungee.overwatch.prefix");
         loggedIn = new HashSet<>();
 
         BungeeCoreSystem.getSystem().registerCommands(

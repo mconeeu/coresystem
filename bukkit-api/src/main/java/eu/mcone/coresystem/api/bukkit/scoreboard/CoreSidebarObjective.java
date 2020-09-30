@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.api.bukkit.scoreboard;
 
 import com.google.common.base.Splitter;
-import eu.mcone.coresystem.api.bukkit.event.objectiv.CoreSidebarObjectiveUpdateEvent;
+import eu.mcone.coresystem.api.bukkit.event.objective.CoreSidebarObjectiveUpdateEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

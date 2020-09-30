@@ -3,30 +3,31 @@
  * You are not allowed to decompile the code
  */
 
-package eu.mcone.coresystem.api.bukkit.event;
+package eu.mcone.coresystem.api.bukkit.event.report;
 
-import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.api.core.player.Nick;
+import eu.mcone.coresystem.api.core.overwatch.report.ReportReason;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.bukkit.event.Cancellable;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import java.util.List;
+import java.util.UUID;
+
 @Getter
 @RequiredArgsConstructor
-public final class NickEvent extends Event implements Cancellable {
+public final class PlayerReportedEvent extends Event {
 
     @Getter
     private static final HandlerList handlerList = new HandlerList();
 
-    private final CorePlayer player;
-    private final boolean skinChange;
-    private final Nick nick;
-    @Setter
-    private boolean cancelled;
+    private final String reportID;
+    private final List<UUID> reporter;
+    private final Player reported;
+    private final ReportReason reportReason;
 
+    @Override
     public HandlerList getHandlers() {
         return handlerList;
     }

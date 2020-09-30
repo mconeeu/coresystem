@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.api.bukkit;
 
+import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
 import eu.mcone.coresystem.api.bukkit.channel.PacketManager;
 import eu.mcone.coresystem.api.bukkit.codec.CodecRegistry;
@@ -119,6 +120,11 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      */
     public abstract AfkManager getAfkManager();
 
+    /**
+     * returns the BCS VanishManager
+     *
+     * @return VanishManager instance
+     */
     public abstract VanishManager getVanishManager();
 
     /**
@@ -189,6 +195,14 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     public abstract BuildSystem initialiseBuildSystem(BuildSystem.BuildEvent... events);
 
     /**
+     * creates a new instance of BukkitMessenger
+     *
+     * @param prefixTranslation translation that will be used for the prefix
+     * @return nwe BukkitMessenger instance
+     */
+    public abstract Messenger initializeMessenger(String prefixTranslation);
+
+    /**
      * creates a new player title
      *
      * @return new CoreTitle
@@ -209,6 +223,11 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      */
     public abstract CoreActionBar createActionBar();
 
+    /**
+     * creates a new Projectile
+     *
+     * @return new Projectile
+     */
     public abstract CoreProjectile createProjectile(EntityProjectile type);
 
     /**

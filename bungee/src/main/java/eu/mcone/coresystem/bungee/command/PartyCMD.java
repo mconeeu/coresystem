@@ -59,10 +59,10 @@ public class PartyCMD extends Command implements TabExecutor {
                             }
 
                             for (ProxiedPlayer m : party.getMember()) {
-                                BungeeCoreSystem.getInstance().getMessenger().sendParty(m, msg.toString());
+                                Party.getMessenger().send(m, msg.toString());
                             }
                         } else {
-                            BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Du bist in keiner Party!");
+                            Party.getMessenger().send(p, "§4Du bist in keiner Party!");
                         }
                         return;
                     } else if (args.length == 2) {
@@ -76,24 +76,24 @@ public class PartyCMD extends Command implements TabExecutor {
                                 case "invite": {
                                     if (Party.getParty(t) == null) {
                                         if (tc.getSettings().getPartyInvites().equals(PlayerSettings.Sender.NOBODY)) {
-                                            BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Dieser Spieler hat Party-Einladungen ausgeschaltet!");
+                                            Party.getMessenger().send(p, "§4Dieser Spieler hat Party-Einladungen ausgeschaltet!");
                                         } else if (tc.getSettings().getPartyInvites().equals(PlayerSettings.Sender.FRIENDS) && !tc.getFriendData().getFriends().containsKey(p.getUniqueId())) {
-                                            BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Dieser Spieler emfängt nur Party-Einladungen von Freunden!");
+                                            Party.getMessenger().send(p, "§4Dieser Spieler emfängt nur Party-Einladungen von Freunden!");
                                         } else {
                                             if (party != null) {
                                                 if (party.getLeader().equals(p)) {
-                                                    BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§f" + t.getName() + " §2wird in die Party eingeladen!");
+                                                    Party.getMessenger().send(p, "§f" + t.getName() + " §2wird in die Party eingeladen!");
                                                     party.invite(t);
                                                 } else {
-                                                    BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Du bist kein Partyleader!");
+                                                    Party.getMessenger().send(p, "§4Du bist kein Partyleader!");
                                                 }
                                             } else {
-                                                BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§7§oDu bist in keiner Party!");
+                                                Party.getMessenger().send(p, "§7§oDu bist in keiner Party!");
                                                 new Party(p, t);
                                             }
                                         }
                                     } else {
-                                        BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Dieser Spieler ist bereits in einer Party!");
+                                        Party.getMessenger().send(p, "§4Dieser Spieler ist bereits in einer Party!");
                                     }
                                     return;
                                 }
@@ -102,10 +102,10 @@ public class PartyCMD extends Command implements TabExecutor {
                                         if (Party.parties.containsKey(args[1].toLowerCase())) {
                                             Party.parties.get(args[1].toLowerCase()).addPlayer(p);
                                         } else {
-                                            BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Dieser Spieler hat keine Party!");
+                                            Party.getMessenger().send(p, "§4Dieser Spieler hat keine Party!");
                                         }
                                     } else {
-                                        BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Du bist bereits in einer Party");
+                                        Party.getMessenger().send(p, "§4Du bist bereits in einer Party");
                                     }
                                     return;
                                 }
@@ -114,19 +114,19 @@ public class PartyCMD extends Command implements TabExecutor {
                                         if (party.getLeader().equals(p)) {
                                             if (p != t) {
                                                 if (party.getMember().contains(p)) {
-                                                    BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§f" + t.getName() + " §2wird zum Partyleader promotet!");
+                                                    Party.getMessenger().send(p, "§f" + t.getName() + " §2wird zum Partyleader promotet!");
                                                     party.promotePlayer(t);
                                                 } else {
-                                                    BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Dieser Spieler befindet sich nicht in deiner Party!");
+                                                    Party.getMessenger().send(p, "§4Dieser Spieler befindet sich nicht in deiner Party!");
                                                 }
                                             } else {
-                                                BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Du bist bereits der Partyleader!");
+                                                Party.getMessenger().send(p, "§4Du bist bereits der Partyleader!");
                                             }
                                         } else {
-                                            BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Du bist kein Partyleader!");
+                                            Party.getMessenger().send(p, "§4Du bist kein Partyleader!");
                                         }
                                     } else {
-                                        BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Du bist in keiner Party!");
+                                        Party.getMessenger().send(p, "§4Du bist in keiner Party!");
                                     }
                                     return;
                                 }
@@ -134,24 +134,24 @@ public class PartyCMD extends Command implements TabExecutor {
                                     if (party != null) {
                                         if (party.getLeader().equals(p)) {
                                             if (party.getMember().contains(p)) {
-                                                BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§f" + t.getName() + " §2wird aus der Party gekickt!");
+                                                Party.getMessenger().send(p, "§f" + t.getName() + " §2wird aus der Party gekickt!");
                                                 party.removePlayer(t);
 
-                                                BungeeCoreSystem.getInstance().getMessenger().sendParty(t, "§c"+p.getName()+"§4 hat dich aus der Party gekickt");
+                                                Party.getMessenger().send(t, "§c"+p.getName()+"§4 hat dich aus der Party gekickt");
                                             } else {
-                                                BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Dieser Spieler befindet sich nicht in deiner Party!");
+                                                Party.getMessenger().send(p, "§4Dieser Spieler befindet sich nicht in deiner Party!");
                                             }
                                         } else {
-                                            BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Du bist kein Partyleader!");
+                                            Party.getMessenger().send(p, "§4Du bist kein Partyleader!");
                                         }
                                     } else {
-                                        BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Du bist in keiner Party!");
+                                        Party.getMessenger().send(p, "§4Du bist in keiner Party!");
                                     }
                                     return;
                                 }
                             }
                         } else {
-                            BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Der Spieler §c" + args[1] + " §4ist nicht online!");
+                            Party.getMessenger().send(p, "§4Der Spieler §c" + args[1] + " §4ist nicht online!");
                             return;
                         }
                     }
@@ -160,7 +160,7 @@ public class PartyCMD extends Command implements TabExecutor {
                         if (!Party.isInParty(p)) {
                             new Party(p);
                         } else {
-                            BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Du bist bereits in einer Party");
+                            Party.getMessenger().send(p, "§4Du bist bereits in einer Party");
                         }
                         return;
                     } else if (args[0].equalsIgnoreCase("leave")) {
@@ -168,9 +168,9 @@ public class PartyCMD extends Command implements TabExecutor {
 
                         if (party != null) {
                             party.removePlayer(p);
-                            BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§2Du hast die Party verlassen!");
+                            Party.getMessenger().send(p, "§2Du hast die Party verlassen!");
                         } else {
-                            BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Du bist in keiner Party!");
+                            Party.getMessenger().send(p, "§4Du bist in keiner Party!");
                         }
                         return;
                     } else if (args[0].equalsIgnoreCase("list")) {
@@ -201,9 +201,9 @@ public class PartyCMD extends Command implements TabExecutor {
                                 }
                             }
 
-                            BungeeCoreSystem.getInstance().getMessenger().sendParty(p, result.toString());
+                            Party.getMessenger().send(p, result.toString());
                         } else {
-                            BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Du bist in keiner Party!");
+                            Party.getMessenger().send(p, "§4Du bist in keiner Party!");
                         }
                         return;
                     } else if (args[0].equalsIgnoreCase("delete")) {
@@ -213,19 +213,19 @@ public class PartyCMD extends Command implements TabExecutor {
                             if (party.getLeader().equals(p)) {
                                 party.delete(p);
                             } else {
-                                BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Du bist kein Partyleader!");
+                                Party.getMessenger().send(p, "§4Du bist kein Partyleader!");
                             }
                         } else {
-                            BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Du bist in keiner Party!");
+                            Party.getMessenger().send(p, "§4Du bist in keiner Party!");
                         }
                         return;
                     }
                 }
 
-                BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Bitte benutze: §c/party <create | invite | msg | kick | promote | delete | leave> [<Player>]");
+                Party.getMessenger().send(p, "§4Bitte benutze: §c/party <create | invite | msg | kick | promote | delete | leave> [<Player>]");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 

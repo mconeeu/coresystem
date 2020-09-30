@@ -14,6 +14,7 @@ import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.event.MoneyChangeEvent;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
+import eu.mcone.coresystem.api.bungee.util.Messenger;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.Currency;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
@@ -24,10 +25,7 @@ import eu.mcone.coresystem.bungee.friend.FriendSystem;
 import eu.mcone.coresystem.bungee.listener.*;
 import eu.mcone.coresystem.bungee.overwatch.Overwatch;
 import eu.mcone.coresystem.bungee.overwatch.replay.ReplayServerSessionHandler;
-import eu.mcone.coresystem.bungee.player.BungeeCorePlayer;
-import eu.mcone.coresystem.bungee.player.BungeeOfflineCorePlayer;
-import eu.mcone.coresystem.bungee.player.LabyModManager;
-import eu.mcone.coresystem.bungee.player.NickManager;
+import eu.mcone.coresystem.bungee.player.*;
 import eu.mcone.coresystem.bungee.runnable.Broadcast;
 import eu.mcone.coresystem.bungee.runnable.OnlineTime;
 import eu.mcone.coresystem.bungee.runnable.PremiumCheck;
@@ -67,6 +65,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private Map<String, CorePlugin> plugins;
     private MongoConnection mongoConnection;
 
+    @Getter
+    private Messenger messenger;
     @Getter
     private TranslationManager translationManager;
     @Getter
@@ -180,6 +180,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             translationManager = new TranslationManager(this, "bungeesystem");
             translationManager.loadAdditionalLanguages(Language.values());
             translationManager.loadAdditionalCategories("bukkitsystem");
+            messenger = new BungeeMessenger(this, "system.prefix");
 
             sendConsoleMessage("§aLoading Permissions & Groups...");
             permissionManager = new PermissionManager("Proxy", getMongoDB());
@@ -349,6 +350,11 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     public OfflineCorePlayer getOfflineCorePlayer(UUID uuid) throws PlayerNotResolvedException {
         BungeeCorePlayer cp = corePlayers.getOrDefault(uuid, null);
         return cp != null ? cp : new BungeeOfflineCorePlayer(this, uuid);
+    }
+
+    @Override
+    public Messenger initializeMessenger(String prefixTranslation) {
+        return new BungeeMessenger(this, prefixTranslation);
     }
 
     @Override
