@@ -44,7 +44,7 @@ public class TeamChatCMD extends Command {
                 }
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().send(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 }

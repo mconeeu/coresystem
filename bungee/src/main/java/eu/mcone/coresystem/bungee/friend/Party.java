@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bungee.friend;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.util.Messenger;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -21,6 +22,8 @@ import java.util.List;
 public class Party {
 
     public static HashMap<String, Party> parties = new HashMap<>();
+    @Getter
+    private static final Messenger messenger = BungeeCoreSystem.getSystem().initializeMessenger("system.prefix.party");
 
     @Getter
     private ProxiedPlayer leader;
@@ -34,7 +37,7 @@ public class Party {
     public Party(ProxiedPlayer leader, ProxiedPlayer... member) {
         if (leader != null) {
             if (isInParty(leader)) {
-                BungeeCoreSystem.getInstance().getMessenger().sendParty(leader, "§4Du bist noch in einer Party! Benutze §c/party leave §4um die Party zu verlassen!");
+                messenger.send(leader, "§4Du bist noch in einer Party! Benutze §c/party leave §4um die Party zu verlassen!");
             } else {
                 parties.put(leader.getName().toLowerCase(), this);
 
@@ -45,11 +48,11 @@ public class Party {
 
                 this.member.add(leader);
 
-                BungeeCoreSystem.getInstance().getMessenger().sendParty(leader, "§2Eine neue Party wurde erfolgreich erstellt");
+                messenger.send(leader, "§2Eine neue Party wurde erfolgreich erstellt");
                 if (member != null) {
                     for (ProxiedPlayer m : member) {
                         this.invites.add(m);
-                        BungeeCoreSystem.getInstance().getMessenger().sendParty(leader, "§f" + m.getName() + "§7 wurde in die Party eingeladen!");
+                        messenger.send(leader, "§f" + m.getName() + "§7 wurde in die Party eingeladen!");
                         m.sendMessage(
                                 new ComponentBuilder("")
                                         .append(TextComponent.fromLegacyText(BungeeCoreSystem.getInstance().getTranslationManager().get("system.prefix.party", CoreSystem.getInstance().getCorePlayer(m))))
@@ -87,13 +90,13 @@ public class Party {
             if (this.invites.contains(p)) {
                 this.member.add(p);
                 this.invites.remove(p);
-                BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§2Du bist der Party beigetreten!");
+                messenger.send(p, "§2Du bist der Party beigetreten!");
                 this.sendAll("§f" + p.getName() + " §7ist der Party beigetreten!");
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Du wurdest nicht in diese Party eingeladen!");
+                messenger.send(p, "§4Du wurdest nicht in diese Party eingeladen!");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendParty(p, "§4Du bist bereits in dieser Party!");
+            messenger.send(p, "§4Du bist bereits in dieser Party!");
         }
     }
 
@@ -106,8 +109,8 @@ public class Party {
                 parties.put(this.leader.getName().toLowerCase(), this);
 
                 for (ProxiedPlayer m : this.member) {
-                    BungeeCoreSystem.getInstance().getMessenger().sendParty(m, "§c" + p.getName() + " §4hat die Party verlassen");
-                    BungeeCoreSystem.getInstance().getMessenger().sendParty(m, "§f" + this.leader + " §7ist jetzt der neue Partyleader!");
+                    messenger.send(m, "§c" + p.getName() + " §4hat die Party verlassen");
+                    messenger.send(m, "§f" + this.leader + " §7ist jetzt der neue Partyleader!");
                 }
             } else {
                 destroy();
@@ -143,7 +146,7 @@ public class Party {
 
     public void sendAll(final String msg) {
         for (ProxiedPlayer p : this.member) {
-            BungeeCoreSystem.getInstance().getMessenger().sendParty(p, msg);
+            messenger.send(p, msg);
         }
     }
 

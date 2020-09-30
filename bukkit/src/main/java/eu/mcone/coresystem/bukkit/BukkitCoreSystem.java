@@ -13,13 +13,14 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
 import eu.mcone.coresystem.api.bukkit.codec.CodecRegistry;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.ItemStackCodecProvider;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.LocationCodecProvider;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.gson.CraftItemStackTypeAdapter;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.gson.LocationTypeAdapter;
-import eu.mcone.coresystem.api.bukkit.event.CorePlayerLoadedEvent;
-import eu.mcone.coresystem.api.bukkit.event.MoneyChangeEvent;
+import eu.mcone.coresystem.api.bukkit.event.player.CorePlayerLoadedEvent;
+import eu.mcone.coresystem.api.bukkit.event.player.MoneyChangeEvent;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
@@ -223,7 +224,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), systemDB);
 
             sendConsoleMessage("§aStarting Overwatch §aSystem...");
-            overwatch = new Overwatch();
+            overwatch = new Overwatch(this);
 
             sendConsoleMessage("§aStarting NickManager...");
             nickManager = new CoreNickManager(this);
@@ -423,6 +424,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Override
     public BuildSystem initialiseBuildSystem(BuildSystem.BuildEvent... events) {
         return new eu.mcone.coresystem.bukkit.world.BuildSystem(this, events);
+    }
+
+    @Override
+    public Messenger initializeMessenger(String prefixTranslation) {
+        return new BukkitMessenger(this, prefixTranslation);
     }
 
     @Override

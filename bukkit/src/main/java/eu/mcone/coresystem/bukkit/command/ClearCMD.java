@@ -22,9 +22,9 @@ public class ClearCMD extends CoreCommand {
         if (args.length == 0) {
             if (sender instanceof Player) {
                 ((Player) sender).getInventory().clear();
-                CoreSystem.getInstance().getMessenger().send(sender, "§2Du hast dein Inventar erfolgreich geleert!");
+                CoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§2Du hast dein Inventar erfolgreich geleert!");
             } else {
-                CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.consolesender");
+                CoreSystem.getInstance().getMessenger().sendSenderTransl(sender, "system.command.consolesender");
             }
             return true;
         } else if (args.length == 1) {
@@ -33,17 +33,17 @@ public class ClearCMD extends CoreCommand {
 
                 if (t != null) {
                     t.getInventory().clear();
-                    CoreSystem.getInstance().getMessenger().send(sender, "§2Du hast erfolgreich das Inventar von §a" + t.getName() + "§2 geleert!");
+                    CoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§2Du hast erfolgreich das Inventar von §a" + t.getName() + "§2 geleert!");
                 } else {
-                    CoreSystem.getInstance().getMessenger().send(sender, "§4Der Spieler §c" + args[0] + "§4 ist nicht online!");
+                    CoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Der Spieler §c" + args[0] + "§4 ist nicht online!");
                 }
             } else {
-                CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.noperm");
+                CoreSystem.getInstance().getMessenger().sendSenderTransl(sender, "system.command.noperm");
             }
             return true;
         }
 
-        CoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze: §c/clear " + (sender.hasPermission("system.bukkit.clear.other") ? "[<player>]" : ""));
+        CoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Bitte benutze: §c/clear " + (sender.hasPermission("system.bukkit.clear.other") ? "[<player>]" : ""));
         return false;
     }
 }

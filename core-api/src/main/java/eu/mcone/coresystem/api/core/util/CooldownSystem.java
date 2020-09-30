@@ -20,6 +20,8 @@ public interface CooldownSystem {
      */
     boolean addAndCheck(Class<?> clazz, UUID uuid);
 
+    boolean addAndCheck(Class<?> clazz, UUID uuid, boolean notify);
+
     /**
      * adds a player to the list
      *
@@ -45,4 +47,5 @@ public interface CooldownSystem {
      */
     boolean canExecute(Class<?> clazz, UUID uuid);
 
+    boolean canExecute(Class<?> clazz, UUID uuid, boolean notify);
 }

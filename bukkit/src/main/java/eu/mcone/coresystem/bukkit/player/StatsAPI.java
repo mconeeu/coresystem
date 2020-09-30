@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.bukkit.player;
 
 import com.mongodb.client.MongoCollection;
-import eu.mcone.coresystem.api.bukkit.event.StatsChangeEvent;
+import eu.mcone.coresystem.api.bukkit.event.player.StatsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;

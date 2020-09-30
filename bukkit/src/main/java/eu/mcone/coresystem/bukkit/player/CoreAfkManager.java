@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.bukkit.player;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.event.AfkEvent;
+import eu.mcone.coresystem.api.bukkit.event.player.AfkEvent;
 import eu.mcone.coresystem.api.bukkit.player.AfkManager;
 import eu.mcone.coresystem.api.core.exception.RuntimeCoreException;
 import eu.mcone.coresystem.api.core.player.PlayerState;

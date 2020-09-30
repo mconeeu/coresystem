@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.api.bukkit.player.profile.interfaces;
 
+import eu.mcone.coresystem.api.bukkit.player.profile.PlayerInventoryProfile;
 import org.bukkit.entity.Player;
 
 /**
@@ -18,6 +19,6 @@ public interface EnderchestManagerGetter {
      * @param player Player that enderchest should be managed
      * @return EnderchestManager instance to modify a players enderchest
      */
-    EnderchestManager getEnderchestManager(Player player);
+    EnderchestManager<? extends PlayerInventoryProfile> getEnderchestManager(Player player);
 
 }

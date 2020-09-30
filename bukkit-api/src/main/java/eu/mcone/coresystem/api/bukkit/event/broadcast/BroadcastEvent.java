@@ -3,30 +3,27 @@
  * You are not allowed to decompile the code
  */
 
-package eu.mcone.coresystem.api.bukkit.event;
+package eu.mcone.coresystem.api.bukkit.event.broadcast;
 
-import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.bukkit.broadcast.Broadcast;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.entity.Player;
+import lombok.Setter;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 @Getter
 @RequiredArgsConstructor
-public final class CorePlayerLoadedEvent extends Event {
-
-    public enum Reason {
-        JOIN,
-        RELOAD
-    }
+public final class BroadcastEvent extends Event implements Cancellable {
 
     @Getter
     private static final HandlerList handlerList = new HandlerList();
 
-    private final Reason loadReason;
-    private final CorePlayer player;
-    private final Player bukkitPlayer;
+    private final Broadcast broadcast;
+    private final boolean simpleBroadcast;
+    @Setter
+    private boolean cancelled;
 
     public HandlerList getHandlers() {
         return handlerList;

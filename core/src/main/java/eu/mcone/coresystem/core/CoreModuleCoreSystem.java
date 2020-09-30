@@ -8,10 +8,11 @@ package eu.mcone.coresystem.core;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.mongodb.client.MongoDatabase;
+import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.core.util.MoneyUtil;
 import group.onegaming.networkmanager.core.api.database.Database;
 
-public interface CoreModuleCoreSystem {
+public interface CoreModuleCoreSystem extends GlobalCoreSystem {
 
     default boolean checkIfCloudSystemAvailable() {
         try {

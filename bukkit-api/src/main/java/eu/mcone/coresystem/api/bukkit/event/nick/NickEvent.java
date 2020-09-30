@@ -3,24 +3,32 @@
  * You are not allowed to decompile the code
  */
 
-package eu.mcone.coresystem.api.bukkit.event;
+package eu.mcone.coresystem.api.bukkit.event.nick;
 
-import eu.mcone.coresystem.api.bukkit.util.Messenger;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.core.player.Nick;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 @Getter
 @RequiredArgsConstructor
-public final class BroadcastMessageEvent extends Event {
+public final class NickEvent extends Event implements Cancellable {
 
     @Getter
     private static final HandlerList handlerList = new HandlerList();
 
-    private final Messenger.Broadcast broadcast;
+    private final CorePlayer player;
+    private final boolean skinChange;
+    private final Nick nick;
+    @Setter
+    private boolean cancelled;
 
     public HandlerList getHandlers() {
         return handlerList;
     }
+
 }

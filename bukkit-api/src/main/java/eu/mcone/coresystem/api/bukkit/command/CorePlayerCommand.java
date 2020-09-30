@@ -24,7 +24,7 @@ public abstract class CorePlayerCommand extends CoreCommand {
         if (sender instanceof Player) {
             return onPlayerCommand((Player) sender, args);
         } else {
-            CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.consolesender");
+            CoreSystem.getInstance().getMessenger().sendSenderTransl(sender, "system.command.consolesender");
             return false;
         }
     }

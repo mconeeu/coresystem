@@ -10,7 +10,7 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManager;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
-import eu.mcone.coresystem.api.bukkit.util.Messenger;
+import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
 import org.bukkit.entity.Player;
 
 public class DelhomeCMD extends CorePlayerCommand {

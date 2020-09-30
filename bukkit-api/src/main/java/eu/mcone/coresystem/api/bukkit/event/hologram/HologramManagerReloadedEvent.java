@@ -3,33 +3,25 @@
  * You are not allowed to decompile the code
  */
 
-package eu.mcone.coresystem.api.bukkit.event;
+package eu.mcone.coresystem.api.bukkit.event.hologram;
 
-import eu.mcone.coresystem.api.core.overwatch.report.ReportReason;
+import eu.mcone.coresystem.api.bukkit.hologram.HologramManager;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import java.util.List;
-import java.util.UUID;
-
 @Getter
 @RequiredArgsConstructor
-public final class PlayerReportedEvent extends Event {
+public final class HologramManagerReloadedEvent extends Event {
 
     @Getter
     private static final HandlerList handlerList = new HandlerList();
 
-    private final String reportID;
-    private final List<UUID> reporter;
-    private final Player reported;
-    private final ReportReason reportReason;
+    private final HologramManager holoManager;
 
-    @Override
     public HandlerList getHandlers() {
         return handlerList;
     }
-
+    
 }

@@ -101,7 +101,7 @@ public class ServerConnectListener implements Listener {
                                     continue;
 
                                 //Send info message
-                                BungeeCoreSystem.getInstance().getMessenger().sendParty(m, "§2Die Party betritt den Server §f" + target.getName());
+                                Party.getMessenger().send(m, "§2Die Party betritt den Server §f" + target.getName());
                                 if (m == p) continue;
 
                                 //Send member to server

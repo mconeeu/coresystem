@@ -8,9 +8,11 @@ package eu.mcone.coresystem.bungee.friend;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
+import eu.mcone.coresystem.api.bungee.util.Messenger;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.player.FriendData;
 import group.onegaming.networkmanager.core.api.database.Database;
+import lombok.Getter;
 import net.md_5.bungee.api.ProxyServer;
 import org.bson.Document;
 
@@ -23,6 +25,8 @@ import static com.mongodb.client.model.Updates.push;
 public class FriendSystem implements eu.mcone.coresystem.api.bungee.player.FriendSystem {
 
     private static final MongoDatabase DATABASE = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM);
+    @Getter
+    private static final Messenger messenger = BungeeCoreSystem.getSystem().initializeMessenger("system.prefix.friend");
 
     public FriendData getData(UUID uuid) {
         Map<UUID, String> names = new HashMap<>();

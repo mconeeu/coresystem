@@ -35,23 +35,23 @@ public class RestartCMD extends Command {
                 t.cancel();
                 t=null;
 
-                BungeeCoreSystem.getInstance().getMessenger().send(sender, "§2Der Neustartvorgang wurde abgebrochen!");
+                BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§2Der Neustartvorgang wurde abgebrochen!");
             } else {
                 int cursor = Integer.valueOf(args[0]);
 
                 if (cursor >= 5) {
                     restart(sender, Integer.valueOf(args[0]));
                 } else {
-                    BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze: §c/restart [<Sekunden>]");
+                    BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Bitte benutze: §c/restart [<Sekunden>]");
                 }
             }
             return;
         }
 
-        BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze: §c/restart [<Sekunden>]");
+        BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Bitte benutze: §c/restart [<Sekunden>]");
     }
 
-    private void restart(CommandSender p, int seconds) {
+    private void restart(CommandSender sender, int seconds) {
 		if (t==null) {
 			for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
 				BungeeCoreSystem.getInstance().getMessenger().send(player, "§4§oDas Netzwerk wird in " + getTime(seconds) + "§4§o neustarten...");
@@ -77,8 +77,8 @@ public class RestartCMD extends Command {
 				}, 0, 1, TimeUnit.SECONDS);
 			}, seconds - 5, TimeUnit.SECONDS);
 		} else {
-			BungeeCoreSystem.getInstance().getMessenger().send(p, "Der Neustartvorgang ist bereits eingeleitet! Benutze §c/restart cancel §4zum abbrechen!");
-			BungeeCoreSystem.getInstance().getMessenger().send(p, "§4§oDas Netzwerk wird in " + getTime(seconds) + "§4§o neustarten...");
+			BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "Der Neustartvorgang ist bereits eingeleitet! Benutze §c/restart cancel §4zum abbrechen!");
+			BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4§oDas Netzwerk wird in " + getTime(seconds) + "§4§o neustarten...");
 		}
 	}
 

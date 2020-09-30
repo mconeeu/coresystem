@@ -5,7 +5,7 @@
 
 package eu.mcone.coresystem.bukkit.channel;
 
-import eu.mcone.coresystem.api.bukkit.event.LabyModPlayerJoinEvent;
+import eu.mcone.coresystem.api.bukkit.event.labymod.LabyModPlayerJoinEvent;
 import eu.mcone.coresystem.api.core.labymod.LabyModConnection;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.labymod.LMCUtils;

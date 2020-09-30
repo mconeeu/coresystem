@@ -12,6 +12,7 @@ import eu.mcone.coresystem.bukkit.overwatch.Overwatch;
 import eu.mcone.coresystem.bukkit.overwatch.report.ReportInfoInventory;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.SimpleDateFormat;
@@ -105,7 +106,7 @@ public class ReportsInventory extends CategoryInventory {
                             "§7Reporteter Spieler: §e" + reporter.getName(),
                             "",
                             (report.getState().equals(ReportState.OPEN) ? "§8» §7Linksklick §8| §7§oAnnehmen" : "§8» §7Linksklick §8| §7§oInfos")
-                    ).create();
+                    ).itemFlags(ItemFlag.HIDE_ATTRIBUTES).create();
         } catch (PlayerNotResolvedException e) {
             e.printStackTrace();
         }

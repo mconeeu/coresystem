@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
+import eu.mcone.coresystem.api.core.player.GlobalMessenger;
 import eu.mcone.coresystem.api.core.player.PermissionManager;
 import eu.mcone.coresystem.api.core.player.PlayerUtils;
 import eu.mcone.coresystem.api.core.translation.TranslationManager;
@@ -47,6 +48,14 @@ public interface GlobalCoreSystem {
     JsonParser getJsonParser();
 
     /**
+     * creates a new instance of BukkitMessenger
+     *
+     * @param prefixTranslation translation that will be used for the prefix
+     * @return nwe BukkitMessenger instance
+     */
+    GlobalMessenger<?, ?> initializeMessenger(String prefixTranslation);
+
+    /**
      * returns the BCS TranslationManager
      *
      * @return TranslationManager instance
@@ -59,6 +68,13 @@ public interface GlobalCoreSystem {
      * @return PermissionManager instance
      */
     PermissionManager getPermissionManager();
+
+    /**
+     * returns the BCS Messenger
+     *
+     * @return Messenger instance
+     */
+    GlobalMessenger<?, ?> getMessenger();
 
     /**
      * returns the BCS PlayerUtils

@@ -10,7 +10,7 @@ import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManager;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
-import eu.mcone.coresystem.api.bukkit.util.Messenger;
+import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.entity.Player;
 

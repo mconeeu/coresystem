@@ -47,7 +47,7 @@ public class GamemodeCMD extends CoreCommand {
                 BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du hast deinen Spielmodus auf §f" + p.getGameMode() + " §2gesetzt!");
                 p.playSound(p.getLocation(), Sound.BLAZE_HIT, 1, 1);
             } else {
-                CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.consolesender");
+                CoreSystem.getInstance().getMessenger().sendSenderTransl(sender, "system.command.consolesender");
             }
         } else if (args.length == 2) {
             try {
@@ -66,22 +66,22 @@ public class GamemodeCMD extends CoreCommand {
                     t.setGameMode(GameMode.SPECTATOR);
                     t.setAllowFlight(true);
                 } else {
-                    BukkitCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze: §c/gm §4oder §c/gamemode <Gamemode> [<Spieler>]");
+                    BukkitCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Bitte benutze: §c/gm §4oder §c/gamemode <Gamemode> [<Spieler>]");
                     return true;
                 }
 
                 BukkitCoreSystem.getInstance().getMessenger().send(t, "§7Dein Spielmodus wurde auf §f" + t.getGameMode() + " §7gesetzt.");
-                BukkitCoreSystem.getInstance().getMessenger().send(sender, "§2Du hast den Spielmodus von §f" + t.getName() + " §2auf §a" + t.getGameMode() + "§2 gesetzt.");
+                BukkitCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§2Du hast den Spielmodus von §f" + t.getName() + " §2auf §a" + t.getGameMode() + "§2 gesetzt.");
                 t.playSound(t.getLocation(), Sound.BLAZE_HIT, 1, 1);
 
                 if (sender instanceof Player) {
                     ((Player) sender).playSound(((Player) sender).getLocation(), Sound.BLAZE_HIT, 1, 1);
                 }
             } catch (NullPointerException d) {
-                BukkitCoreSystem.getInstance().getMessenger().send(sender, "§4Dieser Spieler ist nicht Online oder existiert nicht!");
+                BukkitCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Dieser Spieler ist nicht Online oder existiert nicht!");
             }
         } else {
-            BukkitCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze: §c/gm §4oder §c/gamemode <GamemodeCMD> [<Spieler>]");
+            BukkitCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Bitte benutze: §c/gm §4oder §c/gamemode <GamemodeCMD> [<Spieler>]");
         }
 
         return true;

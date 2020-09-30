@@ -11,7 +11,7 @@ import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.inventory.modification.InventoryModificationManager;
 import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
-import eu.mcone.coresystem.api.bukkit.util.Messenger;
+import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
 import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import io.sentry.SentryClient;
@@ -35,11 +35,11 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin,
     @Getter
     private final Gamemode gamemode;
     @Getter
-    private final String pluginName, consolePrefix;
+    private final String pluginName, consolePrefix, prefixTranslation;
     @Getter
     private final ChatColor pluginColor;
     @Getter
-    private final Messenger messenger;
+    private Messenger messenger;
     @Getter
     protected final SentryClient sentryClient;
 
@@ -66,9 +66,9 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin,
 
         this.gamemode = pluginGamemode;
         this.pluginName = pluginName;
+        this.prefixTranslation = prefixTranslation;
         this.consolePrefix = "§8[" + pluginColor + pluginName + "§8] §7";
         this.pluginColor = pluginColor;
-        this.messenger = new Messenger(prefixTranslation);
 
         if (sentryDsn != null && Boolean.parseBoolean(System.getProperty("EnableSentry"))) {
             sendConsoleMessage("§aInitialzing Sentry...");
@@ -90,6 +90,8 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin,
 
     @Override
     public void onEnable() {
+        this.messenger = CoreSystem.getInstance().initializeMessenger(prefixTranslation);
+
         CoreSystem.getInstance().getTranslationManager().loadAdditionalCategories(pluginName);
         registerTranslationKeys();
     }

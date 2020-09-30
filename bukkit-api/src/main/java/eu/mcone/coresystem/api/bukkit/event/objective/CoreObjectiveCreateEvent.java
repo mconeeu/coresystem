@@ -1,4 +1,4 @@
-package eu.mcone.coresystem.api.bukkit.event.objectiv;
+package eu.mcone.coresystem.api.bukkit.event.objective;
 
 import eu.mcone.coresystem.api.bukkit.scoreboard.CoreObjective;
 import lombok.Getter;

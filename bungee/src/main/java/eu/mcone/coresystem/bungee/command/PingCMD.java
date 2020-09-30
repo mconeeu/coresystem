@@ -22,9 +22,9 @@ public class PingCMD extends Command{
 			if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(this.getClass(), p.getUniqueId())) return;
 
 			if(args.length == 0){
-				BungeeCoreSystem.getInstance().getMessenger().send(sender, "§7Dein Ping: §f" + p.getPing() + "ms");
+				BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§7Dein Ping: §f" + p.getPing() + "ms");
 			}else{
-				BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze: §c/ping");
+				BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Bitte benutze: §c/ping");
 			}
 		}else{
 			BungeeCoreSystem.getInstance().sendConsoleMessage(BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));

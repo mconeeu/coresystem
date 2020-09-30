@@ -47,21 +47,21 @@ public class ForgotpassCMD extends Command {
 
                         JsonObject result = new JsonParser().parse(rtn).getAsJsonObject();
                         if (result.get("result").getAsString().equalsIgnoreCase("success")) {
-                            BungeeCoreSystem.getInstance().getMessenger().send(sender, "§2" + result.get("msg").getAsString());
+                            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§2" + result.get("msg").getAsString());
                         } else if (result.get("result").getAsString().equalsIgnoreCase("error")) {
-                            BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4" + result.get("msg").getAsString());
+                            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4" + result.get("msg").getAsString());
                         } else {
-                            BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Es ist ein Fehler aufgetreten!");
+                            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Es ist ein Fehler aufgetreten!");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 });
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().send(sender, "§cBitte benutze /forgotpass");
+                BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§cBitte benutze /forgotpass");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 
