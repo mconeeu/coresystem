@@ -29,6 +29,7 @@ import eu.mcone.coresystem.bungee.player.*;
 import eu.mcone.coresystem.bungee.runnable.Broadcast;
 import eu.mcone.coresystem.bungee.runnable.OnlineTime;
 import eu.mcone.coresystem.bungee.runnable.PremiumCheck;
+import eu.mcone.coresystem.bungee.utils.BungeeDebugger;
 import eu.mcone.coresystem.bungee.utils.ChannelHandler;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.PermissionManager;
@@ -59,6 +60,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     @Getter
     private static BungeeCoreSystem system;
+    @Getter
+    private BungeeDebugger debugger;
     @Getter
     private boolean cloudsystemAvailable;
 
@@ -147,15 +150,32 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             gson = new Gson();
             jsonParser = new JsonParser();
 
-            mongoConnection = new MongoConnection("db.mcone.eu", "admin", "Ze7OCxrVI30wmJU38TX9UmpoL8RnLPogmV3sIljcD2HQkth86bzr6JRiaDxabdt8", "admin", 27017)
-                    .codecRegistry(
-                            MongoClientSettings.getDefaultCodecRegistry(),
-                            CodecRegistries.fromProviders(
-                                    new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY),
-                                    PojoCodecProvider.builder().conventions(Conventions.DEFAULT_CONVENTIONS).automatic(true).build()
-                            )
+            String host = System.getProperty("Host");
+            String user = System.getProperty("Username");
+            String password = System.getProperty("Password");
+            String port = System.getProperty("Port");
+
+            org.bson.codecs.configuration.CodecRegistry[] registries = new org.bson.codecs.configuration.CodecRegistry[]{
+                    MongoClientSettings.getDefaultCodecRegistry(),
+                    CodecRegistries.fromProviders(
+                            new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY),
+                            PojoCodecProvider.builder().conventions(Conventions.DEFAULT_CONVENTIONS).automatic(true).build()
                     )
-                    .connect();
+            };
+
+            if (host != null && user != null && password != null && port != null) {
+                mongoConnection = new MongoConnection(host, user, password, "admin", Integer.parseInt(port))
+                        .codecRegistry(
+                                registries
+                        )
+                        .connect();
+            } else {
+                mongoConnection = new MongoConnection("db.mcone.eu", "admin", "Ze7OCxrVI30wmJU38TX9UmpoL8RnLPogmV3sIljcD2HQkth86bzr6JRiaDxabdt8", "admin", 27017)
+                        .codecRegistry(
+                                registries
+                        )
+                        .connect();
+            }
 
             cooldownSystem = new CoreCooldownSystem(this);
             channelHandler = new ChannelHandler();
@@ -247,7 +267,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new ServerCMD(),
                 new SendCMD(),
 
-                new NickCMD(),
+                //TODO: Activate this if the teleport bug is fixed
+                //new NickCMD(),
                 new UnnickCMD(),
 
                 new FriendCMD(),

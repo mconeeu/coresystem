@@ -68,7 +68,7 @@ public abstract class CoreMessenger<P, Cs> implements GlobalMessenger<P, Cs> {
     @Deprecated
     public void send(P player, TextLevel level, String message) {
         GlobalCorePlayer cp = getCorePlayer(player);
-        
+
         dispatchMessage(player, new TextComponent(TextComponent.fromLegacyText(system.getTranslationManager().get(
                 prefixTranslation,
                 cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE
@@ -265,5 +265,5 @@ public abstract class CoreMessenger<P, Cs> implements GlobalMessenger<P, Cs> {
 
         return cp;
     }
-    
+
 }

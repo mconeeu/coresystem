@@ -56,6 +56,8 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
         }
     }
 
+    public abstract BukkitDebugger getDebugger();
+
     /**
      * returns the BCS PluginManager
      *

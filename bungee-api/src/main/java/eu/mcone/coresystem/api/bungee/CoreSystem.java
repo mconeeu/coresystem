@@ -10,6 +10,7 @@ import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.FriendSystem;
 import eu.mcone.coresystem.api.bungee.player.NickManager;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
+import eu.mcone.coresystem.api.bungee.util.BungeeDebugger;
 import eu.mcone.coresystem.api.bungee.util.ChannelHandler;
 import eu.mcone.coresystem.api.bungee.util.Messenger;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
@@ -42,6 +43,8 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
             CoreSystem.instance = instance;
         }
     }
+
+    public abstract BungeeDebugger getDebugger();
 
     public abstract Overwatch getOverwatch();
 

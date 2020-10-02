@@ -89,6 +89,9 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private static BukkitCoreSystem system;
 
+    @Getter
+    private BukkitDebugger debugger;
+
     private MongoConnection mongoConnection;
     private MongoDatabase systemDB;
     private MongoDatabase statsDB;
@@ -161,17 +164,43 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                     "                                                         /____/  \n"
             );
 
-            mongoConnection = new MongoConnection("db.mcone.eu", "admin", "Ze7OCxrVI30wmJU38TX9UmpoL8RnLPogmV3sIljcD2HQkth86bzr6JRiaDxabdt8", "admin", 27017)
-                    .codecRegistry(
-                            MongoClientSettings.getDefaultCodecRegistry(),
-                            CodecRegistries.fromProviders(
-                                    new ItemStackCodecProvider(),
-                                    new LocationCodecProvider(),
-                                    new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY),
-                                    PojoCodecProvider.builder().conventions(Collections.singletonList(Conventions.ANNOTATION_CONVENTION)).automatic(true).build()
-                            )
+            gson = new GsonBuilder()
+                    .registerTypeAdapter(Location.class, new LocationTypeAdapter())
+                    .registerTypeAdapter(ItemStack.class, new CraftItemStackTypeAdapter())
+                    .registerTypeAdapter(CraftItemStack.class, new CraftItemStackTypeAdapter())
+                    .create();
+            jsonParser = new JsonParser();
+
+            debugger = new BukkitDebugger(this);
+
+            String host = System.getProperty("Host");
+            String user = System.getProperty("Username");
+            String password = System.getProperty("Password");
+            String port = System.getProperty("Port");
+
+            org.bson.codecs.configuration.CodecRegistry[] registries = new org.bson.codecs.configuration.CodecRegistry[]{
+                    MongoClientSettings.getDefaultCodecRegistry(),
+                    CodecRegistries.fromProviders(
+                            new ItemStackCodecProvider(),
+                            new LocationCodecProvider(),
+                            new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY),
+                            PojoCodecProvider.builder().conventions(Collections.singletonList(Conventions.ANNOTATION_CONVENTION)).automatic(true).build()
                     )
-                    .connect();
+            };
+
+            if (host != null && user != null && password != null && port != null) {
+                mongoConnection = new MongoConnection(host, user, password, "admin", Integer.parseInt(port))
+                        .codecRegistry(
+                                registries
+                        )
+                        .connect();
+            } else {
+                mongoConnection = new MongoConnection("db.mcone.eu", "admin", "Ze7OCxrVI30wmJU38TX9UmpoL8RnLPogmV3sIljcD2HQkth86bzr6JRiaDxabdt8", "admin", 27017)
+                        .codecRegistry(
+                                registries
+                        )
+                        .connect();
+            }
 
             systemDB = mongoConnection.getDatabase(Database.SYSTEM);
             statsDB = mongoConnection.getDatabase(Database.STATS);
@@ -189,12 +218,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             };
             channelHandler = new ChannelHandler();
             playerUtils = new PlayerUtils(this);
-            gson = new GsonBuilder()
-                    .registerTypeAdapter(Location.class, new LocationTypeAdapter())
-                    .registerTypeAdapter(ItemStack.class, new CraftItemStackTypeAdapter())
-                    .registerTypeAdapter(CraftItemStack.class, new CraftItemStackTypeAdapter())
-                    .create();
-            jsonParser = new JsonParser();
 
             cloudsystemAvailable = checkIfCloudSystemAvailable();
             sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
@@ -271,7 +294,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                     CorePlayerListener.LOADING_SUCCESS_MSG.send(p);
                     p.removePotionEffect(PotionEffectType.BLINDNESS);
                 }
-                
+
                 getVanishManager().recalculateVanishes();
             });
 
@@ -344,7 +367,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new VanishCMD(),
                 new ProfileCMD(),
                 new CaptureCMD(),
-                new VanishChatCMD()
+                new VanishChatCMD(),
+                new DebugCMD()
         );
     }
 
@@ -534,5 +558,4 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     public void runAsync(Runnable runnable) {
         getServer().getScheduler().runTaskAsynchronously(this, runnable);
     }
-
 }
