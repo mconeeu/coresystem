@@ -4,31 +4,47 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.bson.codecs.pojo.annotations.BsonDiscriminator;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @BsonDiscriminator
 @NoArgsConstructor
 @Getter
-@Setter
 public abstract class Broadcast {
 
-    private String messageKey;
-    private transient Player[] players;
+    @Setter
+    private BroadcastMessage mainMessage;
+    @Setter
+    private transient boolean sendMainMessage = true;
+    private final transient Set<BroadcastMessage> additionalMessages = new HashSet<>();
 
-    public Broadcast(String messageKey) {
-        this(messageKey, Bukkit.getOnlinePlayers().toArray(new Player[0]));
+    public Broadcast(BroadcastMessage mainMessage) {
+        this.mainMessage = mainMessage;
     }
 
-    public Broadcast(String messageKey, Player... players) {
-        if (players.length > 0) {
-            this.messageKey = messageKey;
-            this.players = players;
-        } else throw new IllegalArgumentException("Cannot broadcast Message with key "+messageKey+". Target player array is empty!");
+    public Broadcast(BroadcastMessage mainMessage, boolean sendMessage) {
+        this.mainMessage = mainMessage;
+        this.sendMainMessage = sendMessage;
     }
 
-    public Object[] getTranslationReplacements() {
-        return null;
+    public void addAdditionalMessage(String messageKey) {
+        additionalMessages.add(
+                new BroadcastMessage(messageKey)
+        );
+    }
+
+    public void addAdditionalMessage(String messageKey, Player... receivers) {
+        additionalMessages.add(
+                new BroadcastMessage(messageKey, receivers)
+        );
+    }
+
+    public void addAdditionalMessage(String messageKey, Object[] translationReplacements, Player... receivers) {
+        additionalMessages.add(
+                new BroadcastMessage(messageKey, translationReplacements, receivers)
+        );
     }
 
 }

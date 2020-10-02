@@ -10,16 +10,11 @@ import org.bukkit.entity.Player;
 public class SimpleBroadcast extends Broadcast {
 
     public SimpleBroadcast(String messageKey) {
-        super(messageKey);
+        super(new BroadcastMessage(messageKey));
     }
 
     public SimpleBroadcast(String messageKey, Player... players) {
-        super(messageKey, players);
-    }
-
-    @Override
-    public Object[] getTranslationReplacements() {
-        return null;
+        super(new BroadcastMessage(messageKey, players));
     }
 
 }

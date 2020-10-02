@@ -45,17 +45,17 @@ public class CoreJsonConfig<T> {
      * @param fileName filename i.e. config.json
      */
     public CoreJsonConfig(CorePlugin plugin, String fileName) {
-        this(plugin, null, "./plugins/" + plugin.getPluginName(), fileName);
+        this(plugin, null, plugin.getDataFolder(), fileName);
     }
 
     /**
      * construct the JSON config with a custom path
      * @param plugin plugin
-     * @param path custom file path
+     * @param configDir custom file path
      * @param fileName filename i.e config.json
      */
-    public CoreJsonConfig(CorePlugin plugin, String path, String fileName) {
-        this(plugin, null, path, fileName);
+    public CoreJsonConfig(CorePlugin plugin, File configDir, String fileName) {
+        this(plugin, null, configDir, fileName);
     }
 
     /**
@@ -65,26 +65,25 @@ public class CoreJsonConfig<T> {
      * @param fileName filename i.e. config.json
      */
     public CoreJsonConfig(CorePlugin plugin, Class<T> tClass, String fileName) {
-        this(plugin, tClass, "./plugins/" + plugin.getPluginName(), fileName);
+        this(plugin, tClass, plugin.getDataFolder(), fileName);
     }
 
     /**
      * construct the JSON config with a custom path
      * @param plugin plugin
      * @param tClass the class to|from where this json config is (de-)serializable (might be null)
-     * @param path custom file path
+     * @param configDir custom file path
      * @param fileName filename i.e config.json
      */
-    public CoreJsonConfig(CorePlugin plugin, Class<T> tClass, String path, String fileName) {
+    public CoreJsonConfig(CorePlugin plugin, Class<T> tClass, File configDir, String fileName) {
         this.plugin = plugin;
         this.tClass = tClass;
 
-        File dir = new File(path);
-        if (!dir.exists()) {
-            dir.mkdir();
+        if (!configDir.exists()) {
+            configDir.mkdir();
         }
 
-        this.file = new File(dir, fileName);
+        this.file = new File(configDir, fileName);
         try {
             if (!file.exists()) {
                 this.file.createNewFile();

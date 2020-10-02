@@ -10,7 +10,7 @@
     <parent>
         <artifactId>mcone-coresystem</artifactId>
         <groupId>eu.mcone.coresystem</groupId>
-        <version>10.9.0-SNAPSHOT</version>
+        <version>10.9.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -24,7 +24,7 @@
         <dependency> <!-- Core APIs -->
             <groupId>eu.mcone.coresystem</groupId>
             <artifactId>core-api</artifactId>
-            <version>10.9.0-SNAPSHOT</version>
+            <version>10.9.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency> <!-- MC ONE Cloud -->
@@ -32,23 +32,6 @@
             <artifactId>plugin-api-bukkit</artifactId>
             <version>2.1.1-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        <!-- TODO: Remove if CloudSystem plugin is available everytime when coresystem is used! -->
-        <dependency> <!-- MC ONE Cloud -->
-            <groupId>eu.mcone.cloud</groupId>
-            <artifactId>cloud-api</artifactId>
-            <version>2.1.1-SNAPSHOT</version>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>net.md-5</groupId>
-                    <artifactId>bungeecord-config</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-io</groupId>
-                    <artifactId>commons-io</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency> <!-- Spigot (this includes Spigot API, Bukkit API, Craftbukkit and NMS) -->
             <groupId>org.spigotmc</groupId>

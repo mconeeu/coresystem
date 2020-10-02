@@ -27,24 +27,23 @@ public class CoreYamlConfig {
      * @param fileName filename i.e. config.yml
      */
     public CoreYamlConfig(CorePlugin plugin, String fileName) {
-        this(plugin, "./plugins/" + plugin.getPluginName(), fileName);
+        this(plugin, plugin.getDataFolder(), fileName);
     }
 
     /**
      * construct the YAML config with a custom path
      * @param plugin plugin
-     * @param path custom file path
+     * @param configDir custom file path
      * @param fileName filename i.e config.yml
      */
-    public CoreYamlConfig(CorePlugin plugin, String path, String fileName) {
+    public CoreYamlConfig(CorePlugin plugin, File configDir, String fileName) {
         this.plugin = plugin;
 
-        File dir = new File(path);
-        if (!dir.exists()) {
-            dir.mkdir();
+        if (!configDir.exists()) {
+            configDir.mkdir();
         }
 
-        this.file = new File(dir, fileName);
+        this.file = new File(configDir, fileName);
         if (!file.exists()) {
             try {
                 file.createNewFile();

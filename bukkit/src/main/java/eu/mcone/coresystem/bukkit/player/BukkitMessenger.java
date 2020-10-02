@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bukkit.player;
 
 import eu.mcone.coresystem.api.bukkit.broadcast.Broadcast;
+import eu.mcone.coresystem.api.bukkit.broadcast.BroadcastMessage;
 import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
 import eu.mcone.coresystem.api.bukkit.event.broadcast.BroadcastEvent;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
@@ -59,13 +60,7 @@ public class BukkitMessenger extends CoreMessenger<Player, CommandSender> implem
         Bukkit.getPluginManager().callEvent(event);
 
         if (!event.isCancelled()) {
-            for (Player player : broadcast.getPlayers()) {
-                if (broadcast.getPlayers() != null && broadcast.getPlayers().length > 0) {
-                    sendTransl(player, broadcast.getMessageKey(), broadcast.getTranslationReplacements());
-                } else {
-                    sendTransl(player, broadcast.getMessageKey());
-                }
-            }
+            sendBroadcast(broadcast, false);
         }
     }
 
@@ -75,11 +70,33 @@ public class BukkitMessenger extends CoreMessenger<Player, CommandSender> implem
         Bukkit.getPluginManager().callEvent(event);
 
         if (!event.isCancelled()) {
-            for (Player player : broadcast.getPlayers()) {
-                if (broadcast.getPlayers() != null && broadcast.getPlayers().length > 0) {
-                    sendSimpleTransl(player, broadcast.getMessageKey(), broadcast.getTranslationReplacements());
+            sendBroadcast(broadcast, true);
+        }
+    }
+
+    private void sendBroadcast(Broadcast broadcast, boolean simple) {
+        if (broadcast.isSendMainMessage()) {
+            sendBroadcastMessage(broadcast.getMainMessage(), simple);
+        }
+
+        for (BroadcastMessage message : broadcast.getAdditionalMessages()) {
+            sendBroadcastMessage(message, simple);
+        }
+    }
+
+    private void sendBroadcastMessage(BroadcastMessage message, boolean simple) {
+        for (Player receiver : message.getReceivers()) {
+            if (simple) {
+                if (message.getTranslationReplacements() != null && message.getTranslationReplacements().length > 0) {
+                    sendSimpleTransl(receiver, message.getMessageKey(), message.getTranslationReplacements());
                 } else {
-                    sendSimpleTransl(player, broadcast.getMessageKey());
+                    sendSimpleTransl(receiver, message.getMessageKey());
+                }
+            } else {
+                if (message.getTranslationReplacements() != null && message.getTranslationReplacements().length > 0) {
+                    sendTransl(receiver, message.getMessageKey(), message.getTranslationReplacements());
+                } else {
+                    sendTransl(receiver, message.getMessageKey());
                 }
             }
         }

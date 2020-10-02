@@ -240,7 +240,7 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
             }
         }
 
-        return "undefined";
+        return key;
     }
 
     private String[] getQueryCols(List<Language> languages) {

@@ -57,15 +57,12 @@ public class CoreStatsManager {
     }
 
     public <S> S getStats(Gamemode gamemode, UUID uuid, Class<S> clazz) {
-        System.out.println("Get stats: " + uuid);
         S stats = statsDatabase.getCollection(gamemode.toString(), clazz).find(eq("uuid", uuid)).first();
 
         if (stats != null) {
-            System.out.println("Return DB Entry");
             return stats;
         } else {
             try {
-                System.out.println("Return new obj");
                 return clazz.getDeclaredConstructor(Gamemode.class, UUID.class).newInstance(gamemode, uuid);
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
                 e.printStackTrace();
