@@ -24,11 +24,9 @@ public class BroadcastMessage {
     }
 
     public BroadcastMessage(String messageKey, Object[] translationReplacements, Player... receivers) {
-        if (receivers.length > 0) {
-            this.messageKey = messageKey;
-            this.translationReplacements = translationReplacements;
-            this.receivers = receivers;
-        } else throw new IllegalArgumentException("Cannot create broadcast message with key "+ messageKey +". Receiver array is empty!");
+        this.messageKey = messageKey;
+        this.translationReplacements = translationReplacements;
+        this.receivers = receivers;
     }
 
 }

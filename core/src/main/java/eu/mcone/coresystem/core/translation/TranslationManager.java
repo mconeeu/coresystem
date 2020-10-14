@@ -71,7 +71,7 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
 
             setTranslation(
                     document.getString("key"),
-                    TextLevel.valueOf(document.getString("level")),
+                    document.getString("level") != null ? TextLevel.valueOf(document.getString("level")) : TextLevel.NONE,
                     values
             );
         }
@@ -122,7 +122,7 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
 
                 setTranslation(
                         document.getString("key"),
-                        TextLevel.valueOf(document.getString("level")),
+                        document.getString("level") != null ? TextLevel.valueOf(document.getString("level")) : TextLevel.NONE,
                         values
                 );
             }
@@ -159,7 +159,7 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
 
                 setTranslation(
                         document.getString("key"),
-                        TextLevel.valueOf(document.getString("level")),
+                        document.getString("level") != null ? TextLevel.valueOf(document.getString("level")) : TextLevel.NONE,
                         values
                 );
             }
