@@ -267,8 +267,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new ServerCMD(),
                 new SendCMD(),
 
-                //TODO: Activate this if the teleport bug is fixed
-                //new NickCMD(),
+                new NickCMD(),
                 new UnnickCMD(),
 
                 new FriendCMD(),

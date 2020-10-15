@@ -348,7 +348,9 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private void registerCommands() {
         registerCommands(
                 new BukkitCMD(),
+                new CaptureCMD(),
                 new ClearCMD(),
+                new DebugCMD(),
                 new EnderchestCMD(),
                 new FeedCMD(),
                 new FlyCMD(),
@@ -356,19 +358,17 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new GiveCMD(),
                 new HealCMD(),
                 new InvCMD(),
-                new TpCMD(),
-                new TphereCMD(),
-                new TpallCMD(),
-                new TpposCMD(),
+                new ProfileCMD(),
                 new SetWorldSpawnCMD(),
                 new SlowchatCMD(),
                 new StatsCMD(),
                 new SpeedCMD(),
-                new VanishCMD(),
-                new ProfileCMD(),
-                new CaptureCMD(),
+                new TpCMD(),
+                new TphereCMD(),
+                new TpallCMD(),
+                new TpposCMD(),
                 new VanishChatCMD(),
-                new DebugCMD()
+                new VanishCMD()
         );
     }
 
