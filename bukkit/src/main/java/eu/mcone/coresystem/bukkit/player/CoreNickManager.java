@@ -7,7 +7,6 @@ package eu.mcone.coresystem.bukkit.player;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.util.ReflectionManager;
 import eu.mcone.coresystem.api.core.player.Nick;
@@ -105,40 +104,38 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
         gp.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
         customGp.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
 
+        setNick(p, gp, name, uuid);
+
+        boolean flying = p.isFlying();
+        Location location = p.getLocation();
+        int level = p.getLevel();
+        float xp = p.getExp();
+        double maxHealth = p.getMaxHealth();
+        double health = p.getHealth();
+
         ep.playerConnection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, ep));
 
-        Bukkit.getScheduler().runTaskLater(CoreSystem.getInstance(), () -> {
-            boolean flying = p.isFlying();
-            Location location = p.getLocation();
-            int level = p.getLevel();
-            float xp = p.getExp();
-            double maxHealth = p.getMaxHealth();
-            double health = p.getHealth();
+        PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo();
+        ReflectionManager.setValue(packet, "a", PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER);
+        ReflectionManager.setValue(packet, "b", new ArrayList<>(Collections.singleton(
+                packet.new PlayerInfoData(customGp, 0, WorldSettings.EnumGamemode.SURVIVAL, ep.getPlayerListName())
+        )));
+        ep.playerConnection.sendPacket(packet);
 
-            ep.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(p.getEntityId()));
-            ep.playerConnection.sendPacket(new PacketPlayOutRespawn(
-                    p.getWorld().getEnvironment().getId(),
-                    ((CraftWorld) p.getWorld()).getHandle().getDifficulty(),
-                    ((CraftWorld) p.getWorld()).getHandle().worldData.getType(),
-                    WorldSettings.EnumGamemode.getById(p.getGameMode().getValue())
-            ));
-            PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo();
-            ReflectionManager.setValue(packet, "a", PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER);
-            ReflectionManager.setValue(packet, "b", new ArrayList<>(Collections.singleton(
-                    packet.new PlayerInfoData(customGp, 0, WorldSettings.EnumGamemode.SURVIVAL, ep.getPlayerListName())
-            )));
-            ep.playerConnection.sendPacket(packet);
+        ep.playerConnection.sendPacket(new PacketPlayOutRespawn(
+                p.getWorld().getEnvironment().getId(),
+                ((CraftWorld) p.getWorld()).getHandle().getDifficulty(),
+                ((CraftWorld) p.getWorld()).getHandle().worldData.getType(),
+                WorldSettings.EnumGamemode.getById(p.getGameMode().getValue())
+        ));
 
-            p.setFlying(flying);
-            p.teleport(location);
-            p.updateInventory();
-            p.setLevel(level);
-            p.setExp(xp);
-            p.setMaxHealth(maxHealth);
-            p.setHealth(health);
-        }, 1);
-
-        setNick(p, gp, name, uuid);
+        p.setFlying(flying);
+        p.teleport(location);
+        p.updateInventory();
+        p.setLevel(level);
+        p.setExp(xp);
+        p.setMaxHealth(maxHealth);
+        p.setHealth(health);
     }
 
     public void setNick(Player p, GameProfile gp, String name, UUID uuid) {
@@ -147,7 +144,6 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
             if (player != p && player.canSee(p)) {
                 canSee.add(player);
                 player.hidePlayer(p);
-                player.sendMessage("hide "+p.getUniqueId()+":"+p.getName()+" for you");
             }
         }
 
