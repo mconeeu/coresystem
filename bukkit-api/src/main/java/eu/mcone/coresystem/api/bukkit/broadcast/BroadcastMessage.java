@@ -26,7 +26,7 @@ public class BroadcastMessage {
     public BroadcastMessage(String messageKey, Object[] translationReplacements, Player... receivers) {
         this.messageKey = messageKey;
         this.translationReplacements = translationReplacements;
-        this.receivers = receivers;
+        this.receivers = receivers.length > 0 ? receivers : Bukkit.getOnlinePlayers().toArray(new Player[0]);
     }
 
 }
