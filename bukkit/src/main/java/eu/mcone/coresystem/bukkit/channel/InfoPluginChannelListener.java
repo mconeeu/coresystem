@@ -74,11 +74,10 @@ public class InfoPluginChannelListener implements PluginMessageListener {
                     break;
                 }
                 case "UNNICK": {
-                    boolean bypassSkin = !CoreSystem.getInstance().getNickManager().isAllowSkinChange();
-                    UnnickEvent event = new UnnickEvent(cp, bypassSkin);
+                    UnnickEvent event = new UnnickEvent(cp, CoreSystem.getInstance().getNickManager().isAllowSkinChange());
                     Bukkit.getPluginManager().callEvent(event);
 
-                    if (!event.isCancelled()) BukkitCoreSystem.getInstance().getNickManager().unnick(p, bypassSkin);
+                    if (!event.isCancelled()) BukkitCoreSystem.getInstance().getNickManager().unnick(p);
                     break;
                 }
                 case "PLAYER_SETTINGS": {

@@ -20,11 +20,10 @@ public interface NickManager {
 
     /**
      * unnicks a player
+     *  @param player     player
      *
-     * @param player     player
-     * @param bypassSkin should the skin be bypassed by unnick?
      */
-    void unnick(Player player, boolean bypassSkin);
+    void unnick(Player player);
 
     /**
      * if false the default /nick command will only change the name but not the skin

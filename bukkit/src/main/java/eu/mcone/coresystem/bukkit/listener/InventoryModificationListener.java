@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
+import eu.mcone.coresystem.api.bukkit.event.player.CorePlayerLoadedEvent;
 import eu.mcone.coresystem.api.bukkit.inventory.modification.ModifyInventory;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.inventory.modification.CoreInventoryModificationManager;
@@ -17,7 +18,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 
@@ -27,8 +27,8 @@ public class InventoryModificationListener implements Listener {
     private final CoreInventoryModificationManager api;
 
     @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-        api.loadModifiedInventories(e.getPlayer().getUniqueId());
+    public void onJoin(CorePlayerLoadedEvent e) {
+        api.loadModifiedInventories(e.getPlayer().getUuid());
     }
 
     @EventHandler

@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bukkit.listener;
 
 import eu.mcone.coresystem.api.bukkit.event.npc.NpcInteractEvent;
+import eu.mcone.coresystem.api.bukkit.event.player.CorePlayerLoadedEvent;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.util.PacketListener;
 import eu.mcone.coresystem.api.bukkit.util.ReflectionManager;
@@ -39,13 +40,14 @@ public class NpcListener implements Listener, PacketListener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void on(PlayerJoinEvent e) {
-        Player p = e.getPlayer();
+    public void on(CorePlayerLoadedEvent e) {
+        Player p = e.getBukkitPlayer();
 
-        for (CoreNPC<?, ?> npc : api.getNpcSet()) {
-            npc.despawn(p);
-            npc.playerJoined(p);
-        }
+        Bukkit.getScheduler().runTask(BukkitCoreSystem.getSystem(), () -> {
+            for (CoreNPC<?, ?> npc : api.getNpcSet()) {
+                npc.playerJoined(p);
+            }
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

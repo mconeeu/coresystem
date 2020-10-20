@@ -46,7 +46,12 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
             ((BukkitCorePlayer) cp).setNick(nick);
             ((BukkitCorePlayer) cp).setNicked(true);
 
-            setNick(p, nick.getName(), nick.getUuid(), nick.getSkinInfo());
+            if (allowSkinChange) {
+                setNick(p, nick.getName(), nick.getUuid(), nick.getSkinInfo());
+            } else {
+                setNick(p, ((CraftPlayer) p).getHandle().getProfile(), nick.getName(), nick.getUuid());
+            }
+
             if (notify) {
                 BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Dein Nickname ist nun §a" + nick.getName());
             }
@@ -55,31 +60,15 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
         }
     }
 
-    public void setNicks(Player p) {
-        for (CorePlayer cp : instance.getOnlineCorePlayers()) {
-            if (cp.isNicked()) {
-                Player player = cp.bukkit();
-                EntityPlayer ep = ((CraftPlayer) player).getHandle();
-                PlayerConnection connection = ((CraftPlayer) p).getHandle().playerConnection;
-                connection.sendPacket(new PacketPlayOutEntityDestroy(player.getEntityId()));
-                connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, ((CraftPlayer) player).getHandle()));
-                connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ((CraftPlayer) player).getHandle()));
-                connection.sendPacket(player != p ? new PacketPlayOutNamedEntitySpawn(((CraftPlayer) p).getHandle()) : new PacketPlayOutRespawn(p.getEntityId(), EnumDifficulty.EASY, ep.world.G(), ep.playerInteractManager.getGameMode()));
-
-                instance.getCorePlayer(p).getScoreboard().reload();
-            }
-        }
-    }
-
     @Override
-    public void unnick(Player p, boolean bypassSkin) {
+    public void unnick(Player p) {
         CorePlayer cp = instance.getCorePlayer(p);
 
         if (cp.isNicked()) {
             ((BukkitCorePlayer) cp).setNick(null);
             ((BukkitCorePlayer) cp).setNicked(false);
 
-            if (!bypassSkin) {
+            if (allowSkinChange) {
                 setNick(p, cp.getName(), cp.getUuid(), oldProfiles.get(p.getUniqueId()));
                 oldProfiles.remove(p.getUniqueId());
             } else {
@@ -91,18 +80,17 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
         }
     }
 
-    @SuppressWarnings("deprecation")
     private void setNick(Player p, String name, UUID uuid, eu.mcone.coresystem.api.core.player.SkinInfo skin) {
         EntityPlayer ep = ((CraftPlayer) p).getHandle();
 
-        GameProfile gp = ((CraftPlayer) p).getProfile(), customGp = new GameProfile(p.getUniqueId(), name);
-        for (Property pr : gp.getProperties().values()) {
-            if (pr.getName().equalsIgnoreCase("textures"))
-                oldProfiles.put(p.getUniqueId(), instance.getPlayerUtils().constructSkinInfo(name, pr.getValue(), pr.getSignature()));
+        GameProfile gp = ((CraftPlayer) p).getProfile(), privateGp = new GameProfile(p.getUniqueId(), name);
+        for (Property property : gp.getProperties().values()) {
+            if (property.getName().equalsIgnoreCase("textures"))
+                oldProfiles.put(p.getUniqueId(), instance.getPlayerUtils().constructSkinInfo(name, property.getValue(), property.getSignature()));
         }
         gp.getProperties().removeAll("textures");
         gp.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
-        customGp.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
+        privateGp.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));
 
         setNick(p, gp, name, uuid);
 
@@ -118,7 +106,7 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
         PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo();
         ReflectionManager.setValue(packet, "a", PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER);
         ReflectionManager.setValue(packet, "b", new ArrayList<>(Collections.singleton(
-                packet.new PlayerInfoData(customGp, 0, WorldSettings.EnumGamemode.SURVIVAL, ep.getPlayerListName())
+                packet.new PlayerInfoData(privateGp, ep.ping, ep.playerInteractManager.getGameMode(), ep.getPlayerListName())
         )));
         ep.playerConnection.sendPacket(packet);
 
@@ -139,18 +127,28 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
     }
 
     public void setNick(Player p, GameProfile gp, String name, UUID uuid) {
+        EntityPlayer ep = ((CraftPlayer) p).getHandle();
+
         List<Player> canSee = new ArrayList<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player != p && player.canSee(p)) {
                 canSee.add(player);
-                player.hidePlayer(p);
+
+                PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo();
+                ReflectionManager.setValue(packet, "a", PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER);
+                ReflectionManager.setValue(packet, "b", new ArrayList<>(Collections.singleton(
+                        packet.new PlayerInfoData(new GameProfile(gp.getId(), gp.getName()), ep.ping, ep.playerInteractManager.getGameMode(), ep.getPlayerListName())
+                )));
+                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
             }
         }
 
         setGameProfileName(gp, name, uuid);
 
         for (Player player : canSee) {
-            player.showPlayer(p);
+            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(
+                    new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ep)
+            );
             instance.getCorePlayer(player).getScoreboard().reload();
         }
 

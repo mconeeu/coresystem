@@ -136,25 +136,25 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         this.isNew = true;
         this.trust = new TrustedUser();
 
-        instance.runAsync(() -> {
-            ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 is new! Registering in Database...");
-            ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo")
-                    .replaceOne(
-                            eq("uuid", uuid.toString()),
-                            new Document("uuid", uuid.toString())
-                                    .append("name", name)
-                                    .append("groups", Collections.singletonList(Group.SPIELER.getId()))
-                                    .append("coins", coins)
-                                    .append("emeralds", emeralds)
-                                    .append("ip", null)
-                                    .append("timestamp", System.currentTimeMillis() / 1000)
-                                    .append("player_settings", settings)
-                                    .append("state", online ? PlayerState.ONLINE.getId() : PlayerState.OFFLINE.getId())
-                                    .append("online_time", onlinetime)
-                                    .append("trust", trust),
-                            new ReplaceOptions().upsert(true)
-                    );
-        });
+        ((CoreModuleCoreSystem) instance).sendConsoleMessage("§2Player §a" + name + "§2 is new! Registering in Database...");
+        ((CoreModuleCoreSystem) instance).getMongoDB(Database.SYSTEM).getCollection("userinfo")
+                .replaceOne(
+                        eq("uuid", uuid.toString()),
+                        new Document("uuid", uuid.toString())
+                                .append("name", name)
+                                .append("groups", Collections.singletonList(Group.SPIELER.getId()))
+                                .append("coins", coins)
+                                .append("emeralds", emeralds)
+                                .append("ip", null)
+                                .append("timestamp", System.currentTimeMillis() / 1000)
+                                .append("player_settings", settings)
+                                .append("state", online ? PlayerState.ONLINE.getId() : PlayerState.OFFLINE.getId())
+                                .append("online_time", onlinetime)
+                                .append("trust", trust)
+                                .append("permissions", Collections.emptyMap())
+                                .append("modifiedInventories", Collections.emptyList()),
+                        new ReplaceOptions().upsert(true)
+                );
     }
 
     private void setDatabaseValues(Document entry, boolean online) {

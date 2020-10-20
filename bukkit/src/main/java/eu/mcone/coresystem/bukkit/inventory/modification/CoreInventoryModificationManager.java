@@ -46,8 +46,8 @@ import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 public class CoreInventoryModificationManager implements InventoryModificationManager {
 
     //Collection in the packets database for all modified inventories
-    private static final MongoCollection<Document> userInfoCollection = BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo");
-    private static final MongoCollection<DefaultInventory> defaultInventoriesCollection = BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).withCodecRegistry(
+    private static final MongoCollection<Document> USERINFO = BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo");
+    private static final MongoCollection<DefaultInventory> DEFAULT_INVENTORIES = BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).withCodecRegistry(
             fromRegistries(getDefaultCodecRegistry(), fromProviders(new ItemStackCodecProvider(), PojoCodecProvider.builder().automatic(true).build()))
     ).getCollection("bukkitsystem_default_inventories", DefaultInventory.class);
 
@@ -77,12 +77,12 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
         currentlyModifing.clear();
 
         if (gamemode.equals(Gamemode.UNDEFINED)) {
-            for (DefaultInventory defaultInventory : defaultInventoriesCollection.find()) {
+            for (DefaultInventory defaultInventory : DEFAULT_INVENTORIES.find()) {
                 CoreSystem.getInstance().sendConsoleMessage("§2Loading Default ModifiedInventory " + defaultInventory.getGamemode() + "." + defaultInventory.getCategory() + "." + defaultInventory.getName());
                 modifyInventories.add(defaultInventory.toModifyInventory(this));
             }
         } else {
-            for (DefaultInventory defaultInventory : defaultInventoriesCollection.find(eq("gamemode", gamemode.toString()))) {
+            for (DefaultInventory defaultInventory : DEFAULT_INVENTORIES.find(eq("gamemode", gamemode.toString()))) {
                 CoreSystem.getInstance().sendConsoleMessage("§2Loading Default ModifiedInventory " + defaultInventory.getGamemode() + "." + defaultInventory.getCategory() + "." + defaultInventory.getName());
                 modifyInventories.add(defaultInventory.toModifyInventory(this));
             }
@@ -104,7 +104,7 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
      * @param uuid Bukkit Player UUID
      */
     public void loadModifiedInventories(final UUID uuid) {
-        Document inventories = userInfoCollection.find(eq("uuid", uuid.toString())).first();
+        Document inventories = USERINFO.find(eq("uuid", uuid.toString())).first();
 
         if (inventories != null) {
             modifiedInventories.put(uuid, new ArrayList<>());
@@ -176,7 +176,7 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
                     CoreSystem.getInstance().sendConsoleMessage("§2Merge all ModifiedInventories with the DefaultInventory " + localDefaultInventory + "...");
                     mergeModifiedInventories(localDefaultInventory, dbDefaultInventory);
 
-                    defaultInventoriesCollection.replaceOne(combine(
+                    DEFAULT_INVENTORIES.replaceOne(combine(
                             eq("gamemode", modifyInventory.getGamemode().toString()),
                             eq("category", modifyInventory.getCategory()),
                             eq("name", modifyInventory.getName())
@@ -200,13 +200,13 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
                     CoreSystem.getInstance().sendConsoleMessage("§2Overwrite existing ModifyInventory " + localDefaultInventory + " with registered object...");
                 }
             } else {
-                defaultInventoriesCollection.replaceOne(combine(
+                DEFAULT_INVENTORIES.replaceOne(combine(
                         eq("gamemode", modifyInventory.getGamemode().toString()),
                         eq("category", modifyInventory.getCategory()),
                         eq("name", modifyInventory.getName())
                 ), localDefaultInventory);
 
-                for (Document userInfo : userInfoCollection.find()) {
+                for (Document userInfo : USERINFO.find()) {
                     ModifiedInventory modifiedInventory = null;
                     List<Document> modifiedInventories = userInfo.getList("modifiedInventories", Document.class);
                     for (Document entry : modifiedInventories) {
@@ -219,12 +219,12 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
                         }
                     }
 
-                    userInfoCollection.updateOne(eq("uuid", userInfo.getString("uuid")), push("modifiedInventories", modifiedInventory));
+                    USERINFO.updateOne(eq("uuid", userInfo.getString("uuid")), push("modifiedInventories", modifiedInventory));
                 }
             }
         } else {
             modifyInventories.add(modifyInventory);
-            defaultInventoriesCollection.replaceOne(combine(
+            DEFAULT_INVENTORIES.replaceOne(combine(
                     eq("gamemode", modifyInventory.getGamemode().toString()),
                     eq("category", modifyInventory.getCategory()),
                     eq("name", modifyInventory.getName())
@@ -497,7 +497,7 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
     @Override
     public void saveModifications(UUID uuid) {
         if (modifiedInventories.containsKey(uuid)) {
-            userInfoCollection.updateOne(
+            USERINFO.updateOne(
                     eq("uuid", uuid.toString()),
                     set("modifiedInventories", modifiedInventories.get(uuid)),
                     new UpdateOptions().upsert(true)
@@ -571,7 +571,7 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
     private void mergeModifiedInventories(final DefaultInventory newDefaultInventory, final ModifyInventory oldDefaultInventory) {
         //Loop all players in the collection
         playerLoop:
-        for (Document userInfo : userInfoCollection.find()) {
+        for (Document userInfo : USERINFO.find()) {
             UUID playerUUID = UUID.fromString(userInfo.getString("uuid"));
             ModifiedInventory modifiedInventory = null;
 
@@ -587,7 +587,7 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
             }
 
             if (modifiedInventory != null) {
-                userInfoCollection.updateOne(
+                USERINFO.updateOne(
                         eq("uuid", playerUUID.toString()),
                         pull("modifiedInventories", combine(
                                 eq("gamemode", newDefaultInventory.getGamemode().toString()),
@@ -671,7 +671,7 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
                 }
 
                 modifiedInventory.setUniqueItemStacks(newUniqueItemStacks);
-                userInfoCollection.updateOne(eq("uuid", playerUUID), push("modifiedInventories", modifiedInventory));
+                USERINFO.updateOne(eq("uuid", playerUUID), push("modifiedInventories", modifiedInventory));
             }
         }
     }

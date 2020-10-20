@@ -5,13 +5,16 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
+import eu.mcone.coresystem.api.bukkit.event.player.CorePlayerLoadedEvent;
+import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.hologram.CoreHologram;
 import eu.mcone.coresystem.bukkit.hologram.CoreHologramManager;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 @RequiredArgsConstructor
@@ -20,10 +23,14 @@ public class HologramListener implements Listener {
     private final CoreHologramManager api;
 
     @EventHandler
-    public void on(PlayerJoinEvent e) {
-        for (CoreHologram holo : api.getHologramSet()) {
-            holo.playerJoined(e.getPlayer());
-        }
+    public void on(CorePlayerLoadedEvent e) {
+        Player p = e.getBukkitPlayer();
+
+        Bukkit.getScheduler().runTask(BukkitCoreSystem.getSystem(), () -> {
+            for (CoreHologram holo : api.getHologramSet()) {
+                holo.playerJoined(p);
+            }
+        });
     }
 
     @EventHandler
