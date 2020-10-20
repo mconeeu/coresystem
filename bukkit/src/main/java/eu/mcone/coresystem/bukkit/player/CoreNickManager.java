@@ -127,28 +127,46 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
     }
 
     public void setNick(Player p, GameProfile gp, String name, UUID uuid) {
-        EntityPlayer ep = ((CraftPlayer) p).getHandle();
+        EntityPlayer nickedEp = ((CraftPlayer) p).getHandle();
 
         List<Player> canSee = new ArrayList<>();
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player != p && player.canSee(p)) {
+                EntityPlayer ep = ((CraftPlayer) player).getHandle();
                 canSee.add(player);
+
+                GameProfile privateGp = new GameProfile(gp.getId(), gp.getName());
+                privateGp.getProperties().put("textures", gp.getProperties().get("textures").iterator().next());
+
+                EntityTracker tracker = ((WorldServer) ep.world).tracker;
+                EntityTrackerEntry entry = tracker.trackedEntities.get(nickedEp.getId());
+                if (entry != null) {
+                    entry.clear(ep);
+                }
 
                 PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo();
                 ReflectionManager.setValue(packet, "a", PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER);
                 ReflectionManager.setValue(packet, "b", new ArrayList<>(Collections.singleton(
-                        packet.new PlayerInfoData(new GameProfile(gp.getId(), gp.getName()), ep.ping, ep.playerInteractManager.getGameMode(), ep.getPlayerListName())
+                        packet.new PlayerInfoData(privateGp, nickedEp.ping, nickedEp.playerInteractManager.getGameMode(), nickedEp.getPlayerListName())
                 )));
-                ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
+                ep.playerConnection.sendPacket(packet);
             }
         }
 
         setGameProfileName(gp, name, uuid);
 
         for (Player player : canSee) {
+            EntityPlayer ep = ((CraftPlayer) player).getHandle();
+
+            EntityTracker tracker = ((WorldServer) ep.world).tracker;
             ((CraftPlayer) player).getHandle().playerConnection.sendPacket(
-                    new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, ep)
+                    new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, nickedEp)
             );
+            EntityTrackerEntry entry = tracker.trackedEntities.get(nickedEp.getId());
+            if (entry != null && !entry.trackedPlayers.contains(ep)) {
+                entry.updatePlayer(ep);
+            }
+
             instance.getCorePlayer(player).getScoreboard().reload();
         }
 
