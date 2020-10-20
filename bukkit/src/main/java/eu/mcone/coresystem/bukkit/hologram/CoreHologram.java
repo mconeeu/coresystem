@@ -39,21 +39,17 @@ public class CoreHologram extends PlayerListModeToggleUtil implements eu.mcone.c
 
     @Override
     public void spawn(final Player p) {
-        if (p.getWorld().equals(data.getLocation().bukkit().getWorld())) {
-            for (final EntityArmorStand armor : this.entitylist) {
-                final PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(armor);
-                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
-            }
+        for (final EntityArmorStand armor : this.entitylist) {
+            final PacketPlayOutSpawnEntityLiving packet = new PacketPlayOutSpawnEntityLiving(armor);
+            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
         }
     }
 
     @Override
     public void despawn(final Player p) {
-        if (p.getWorld().equals(data.getLocation().bukkit().getWorld())) {
-            for (final EntityArmorStand armor : this.entitylist) {
-                final PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(armor.getId());
-                ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
-            }
+        for (final EntityArmorStand armor : this.entitylist) {
+            final PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(armor.getId());
+            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet);
         }
     }
 
@@ -67,7 +63,9 @@ public class CoreHologram extends PlayerListModeToggleUtil implements eu.mcone.c
         }
         create();
         for (Player p : visiblePlayersList) {
-            spawn(p);
+            if (canBeSeenBy(p)) {
+                spawn(p);
+            }
         }
     }
 
@@ -75,10 +73,15 @@ public class CoreHologram extends PlayerListModeToggleUtil implements eu.mcone.c
     public void playerJoined(Player... players) {
         super.playerJoined(players);
         for (Player player : players) {
-            if (visiblePlayersList.contains(player)) {
+            if (visiblePlayersList.contains(player) && canBeSeenBy(player)) {
                 spawn(player);
             }
         }
+    }
+
+    @Override
+    public boolean canBeSeenBy(Player p) {
+        return p.getWorld().equals(data.getLocation().bukkit().getWorld());
     }
 
     private void create() {

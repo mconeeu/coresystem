@@ -61,7 +61,9 @@ public class CoreHologramManager implements HologramManager {
     public void reload(Player p) {
         for (CoreHologram holo : hologramSet) {
             holo.despawn(p);
-            holo.spawn(p);
+            if (holo.canBeSeenBy(p)) {
+                holo.spawn(p);
+            }
         }
 
         Bukkit.getPluginManager().callEvent(new HologramManagerReloadedEvent(this));

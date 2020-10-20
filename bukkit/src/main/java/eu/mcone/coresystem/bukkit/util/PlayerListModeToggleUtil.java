@@ -56,7 +56,7 @@ public abstract class PlayerListModeToggleUtil implements PlayerListModeToggleab
 
         this.listMode = listMode;
         for (Map.Entry<Player, Boolean> entry : setMap.entrySet()) {
-            if (entry.getValue()) { ;
+            if (entry.getValue() && canBeSeenBy(entry.getKey())) {
                 spawn(entry.getKey());
             } else {
                 despawn(entry.getKey());
@@ -67,6 +67,8 @@ public abstract class PlayerListModeToggleUtil implements PlayerListModeToggleab
     public abstract void spawn(Player p);
 
     public abstract void despawn(Player p);
+
+    public abstract boolean canBeSeenBy(Player p);
 
     public void playerJoined(Player... players) {
         if (listMode.equals(ListMode.BLACKLIST)) {
@@ -81,8 +83,11 @@ public abstract class PlayerListModeToggleUtil implements PlayerListModeToggleab
     @Override
     public void toggleVisibility(Player player, boolean canSee) {
         if (canSee && !visiblePlayersList.contains(player)) {
-            spawn(player);
             visiblePlayersList.add(player);
+
+            if (canBeSeenBy(player)) {
+                spawn(player);
+            }
         } else if (!canSee && visiblePlayersList.contains(player)) {
             despawn(player);
             visiblePlayersList.remove(player);
