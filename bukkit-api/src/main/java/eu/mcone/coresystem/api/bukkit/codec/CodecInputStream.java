@@ -24,13 +24,13 @@ public class CodecInputStream {
 
             int codecID;
             if ((codecID = dataInputStream.read()) != 0) {
-                Class<? extends Codec<?, ?>> codecClass = codecRegistry.getCodecByID((byte) codecID);
+                Class<? extends Codec<?, ?>> codecClass = codecRegistry.getCodecByID(codecID);
                 byte version = dataInputStream.readByte();
                 byte codecVersion = CodecRegistry.getCodecVersion(codecClass);
                 Codec<?, ?> codec = codecClass.newInstance();
 
-                codec.setCodecID((byte) codecID);
-                migratedDataOutput.writeByte(codec.getCodecID());
+                codec.setCodecID(codecID);
+                migratedDataOutput.writeInt(codec.getCodecID());
                 migratedDataOutput.writeByte(codecVersion);
 
                 if (version == codecVersion) {
@@ -75,14 +75,14 @@ public class CodecInputStream {
             int size = dataInputStream.readInt();
 
             for (int i = 0; i < size; i++) {
-                byte codecID = dataInputStream.readByte();
+                int codecID = dataInputStream.readInt();
                 Class<? extends Codec<?, ?>> codecClass = codecRegistry.getCodecByID(codecID);
                 byte version = dataInputStream.readByte();
                 byte codecVersion = CodecRegistry.getCodecVersion(codecClass);
                 Codec<?, ?> codec = codecClass.newInstance();
 
                 codec.setCodecID(codecID);
-                migratedDataOutput.writeByte(codec.getCodecID());
+                migratedDataOutput.writeInt(codec.getCodecID());
                 migratedDataOutput.writeByte(codecVersion);
 
                 if (version == codecVersion) {

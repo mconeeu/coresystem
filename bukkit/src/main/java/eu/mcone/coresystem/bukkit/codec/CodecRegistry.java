@@ -2,6 +2,7 @@ package eu.mcone.coresystem.bukkit.codec;
 
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.codec.Codec;
+import eu.mcone.coresystem.api.bukkit.codec.CodecInformation;
 import eu.mcone.coresystem.api.bukkit.codec.CodecListener;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import lombok.Getter;
@@ -16,8 +17,8 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
 
     private final CorePlugin instance;
     private final Map<Class<?>, List<Class<? extends Codec<?, ?>>>> codecs;
-    private final Map<Byte, Class<? extends Codec<?, ?>>> codecIDs;
-    private final Map<Byte, Class<?>> encoderIDs;
+    private final Map<Integer, Class<? extends Codec<?, ?>>> codecIDs;
+    private final Map<Integer, Class<?>> encoderIDs;
     @Getter
     private final List<CodecListener> listeners;
     @Getter
@@ -44,7 +45,7 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
         }
     }
 
-    public boolean registerCodec(byte codecID, Class<? extends Codec<?, ?>> codecClass, Class<?> triggerClass, byte encoderID, Class<?> encoder) {
+    public boolean registerCodec(int codecID, Class<? extends Codec<?, ?>> codecClass, Class<?> triggerClass, int encoderID, Class<?> encoder) {
         try {
             if (!existsCodec(codecClass)) {
                 if (Packet.class.isAssignableFrom(triggerClass) || Event.class.isAssignableFrom(triggerClass)) {
@@ -88,6 +89,35 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
         return false;
     }
 
+    public void unregisterCodec(CodecInformation information) {
+        Class<? extends Codec<?, ?>> codec = codecIDs.get(information.getCodecID());
+
+        if (codec != null) {
+            encoderIDs.remove(information.getEncoderID());
+
+            Class<?> trigger = null;
+
+            for (Map.Entry<Class<?>, List<Class<? extends Codec<?, ?>>>> entry : codecs.entrySet()) {
+                if (entry.getValue().contains(codec)) {
+                    trigger = entry.getKey();
+                    break;
+                }
+            }
+
+            if (trigger != null) {
+                codecs.get(trigger).remove(codec);
+            }
+
+            codecIDs.remove(information.getCodecID());
+        }
+    }
+
+    public void unregisterCodecs(CodecInformation... informations) {
+        for (CodecInformation information : informations) {
+            unregisterCodec(information);
+        }
+    }
+
     public void registerCodecListener(CodecListener... listeners) {
         this.listeners.addAll(Arrays.asList(listeners));
     }
@@ -96,11 +126,11 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
         this.listeners.removeAll(Arrays.asList(listeners));
     }
 
-    public Class<?> getEncoderClass(byte ID) {
+    public Class<?> getEncoderClass(int ID) {
         return encoderIDs.get(ID);
     }
 
-    public Class<?> getTriggerClass(byte ID) {
+    public Class<?> getTriggerClass(int ID) {
         Class<? extends Codec<?, ?>> codec = getCodecByID(ID);
 
         if (codec != null) {
@@ -116,7 +146,7 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
         return null;
     }
 
-    public Class<? extends Codec<?, ?>> getCodecByID(byte ID) {
+    public Class<? extends Codec<?, ?>> getCodecByID(int ID) {
         return codecIDs.getOrDefault(ID, null);
     }
 

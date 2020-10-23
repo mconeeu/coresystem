@@ -47,7 +47,7 @@ public class CodecOutputStream implements Serializable {
             System.out.println("Version: " + version);
 
             if (version > 0) {
-                dataOutputStream.writeByte(codec.getCodecID());
+                dataOutputStream.writeInt(codec.getCodecID());
                 dataOutputStream.writeByte(version);
                 codec.writeObject(dataOutputStream);
                 System.out.println("----------------------------");

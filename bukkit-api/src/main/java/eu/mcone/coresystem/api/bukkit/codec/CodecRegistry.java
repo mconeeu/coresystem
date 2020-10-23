@@ -7,17 +7,21 @@ public interface CodecRegistry {
 
     void listeningForCodecs(boolean listening);
 
-    boolean registerCodec(byte codecID, Class<? extends Codec<?, ?>> codecClass, Class<?> triggerClass, byte encoderID, Class<?> encoder);
+    boolean registerCodec(int codecID, Class<? extends Codec<?, ?>> codecClass, Class<?> triggerClass, int encoderID, Class<?> encoder);
+
+    void unregisterCodec(CodecInformation information);
+
+    void unregisterCodecs(CodecInformation... informations);
 
     void registerCodecListener(CodecListener... listeners);
 
     void unregisterCodecListener(CodecListener... listeners);
 
-    Class<?> getEncoderClass(byte encoderID);
+    Class<?> getEncoderClass(int encoderID);
 
-    Class<?> getTriggerClass(byte codecID);
+    Class<?> getTriggerClass(int codecID);
 
-    Class<? extends Codec<?, ?>> getCodecByID(byte ID);
+    Class<? extends Codec<?, ?>> getCodecByID(int ID);
 
     Map<Class<?>, List<Class<? extends Codec<?, ?>>>> getCodecsByTriggerTyp(Class<?> triggerTyp);
 

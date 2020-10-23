@@ -143,10 +143,10 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
 
     public boolean confirmReport(Player player) {
         if (toConfirm.containsKey(player.getUniqueId())) {
-            Player reported = Bukkit.getPlayer(player.getUniqueId());
+            Report report = toConfirm.get(player.getUniqueId());
+            Player reported = Bukkit.getPlayer(report.getReported());
             CorePlayer corePlayer = BukkitCoreSystem.getSystem().getCorePlayer(player);
 
-            Report report = toConfirm.get(player.getUniqueId());
             if (!existsReport(report.getID())) {
                 toConfirm.remove(player.getUniqueId());
                 reportsCollection.insertOne(report);
