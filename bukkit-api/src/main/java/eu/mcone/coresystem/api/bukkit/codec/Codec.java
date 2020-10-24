@@ -10,12 +10,15 @@ import java.io.*;
 @NoArgsConstructor
 @Setter
 public abstract class Codec<C, E> implements Serializable {
-    @Getter
-    private int codecID;
-    @Getter
-    private int encoderID;
 
-    public Codec(int codecID, int encoderID) {
+    public static final byte BASE_VERSION = 1;
+
+    @Getter
+    private short codecID;
+    @Getter
+    private short encoderID;
+
+    public Codec(short codecID, short encoderID) {
         this.codecID = codecID;
         this.encoderID = encoderID;
     }
@@ -26,7 +29,6 @@ public abstract class Codec<C, E> implements Serializable {
 
     public void writeObject(DataOutputStream out) {
         try {
-            out.writeInt(encoderID);
             onWriteObject(out);
         } catch (IOException e) {
             e.printStackTrace();
@@ -34,7 +36,6 @@ public abstract class Codec<C, E> implements Serializable {
     }
 
     public void readObject(DataInputStream in) throws IOException, ClassNotFoundException {
-        this.encoderID = in.readInt();
         onReadObject(in);
     }
 
@@ -42,8 +43,6 @@ public abstract class Codec<C, E> implements Serializable {
 
     protected abstract void onReadObject(DataInputStream in) throws IOException, ClassNotFoundException;
 
-    public void migrate(DataInputStream in, DataOutputStream out) throws IOException {
-        encoderID = in.readInt();
-        out.writeInt(encoderID);
+    public void migrate(DataInputStream in, DataOutputStream out) {
     }
 }

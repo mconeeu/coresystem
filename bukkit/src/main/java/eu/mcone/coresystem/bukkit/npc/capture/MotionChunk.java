@@ -1,7 +1,8 @@
 package eu.mcone.coresystem.bukkit.npc.capture;
 
 import eu.mcone.coresystem.api.bukkit.codec.Codec;
-import eu.mcone.coresystem.api.bukkit.codec.CodecOutputStream;
+import eu.mcone.coresystem.api.bukkit.codec.binary.CodecOutputStream;
+import eu.mcone.coresystem.api.bukkit.codec.binary.CodecSerializedCallback;
 import group.onegaming.networkmanager.core.api.util.GenericUtils;
 import lombok.Getter;
 
@@ -50,7 +51,16 @@ public class MotionChunk implements eu.mcone.coresystem.api.bukkit.npc.capture.M
             CodecOutputStream stream = new CodecOutputStream();
 
             for (Map.Entry<Integer, List<Codec<?, ?>>> entry : codecs.entrySet()) {
-                generic.put(entry.getKey(), stream.write(entry.getValue()));
+                stream.write(entry.getValue(), new CodecSerializedCallback() {
+                    @Override
+                    public void finished(boolean migrated, byte[] binary, Codec<?, ?>... codecs) {
+                        generic.put(entry.getKey(), binary);
+                    }
+
+                    @Override
+                    public void error() {
+                    }
+                });
             }
 
             return GenericUtils.serialize(generic);

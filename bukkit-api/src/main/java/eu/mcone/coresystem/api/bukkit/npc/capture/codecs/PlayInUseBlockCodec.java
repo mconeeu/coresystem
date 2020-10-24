@@ -36,7 +36,7 @@ public class PlayInUseBlockCodec extends Codec<PlayerInteractEvent, PlayerNpc> {
     private PlayInUseAction interactWith;
 
     public PlayInUseBlockCodec() {
-        super((byte) 2, (byte) 2);
+        super((short) 2, (short) 2);
     }
 
     @Override

@@ -25,7 +25,7 @@ public class PlayOutAnimationCodec extends Codec<PacketPlayOutAnimation, PlayerN
     private NpcAnimation animation;
 
     public PlayOutAnimationCodec() {
-        super((byte) 6, (byte) 2);
+        super((short) 6, (short) 2);
     }
 
     @Override

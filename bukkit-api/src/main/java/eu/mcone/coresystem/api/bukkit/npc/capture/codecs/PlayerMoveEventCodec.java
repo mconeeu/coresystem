@@ -26,7 +26,7 @@ public class PlayerMoveEventCodec extends Codec<PlayerMoveEvent, PlayerNpc> {
     private float pitch;
 
     public PlayerMoveEventCodec() {
-        super((byte) 1, (byte) 2);
+        super((short) 1, (short) 2);
     }
 
     @Override

@@ -1,13 +1,17 @@
 package eu.mcone.coresystem.api.bukkit.codec;
 
+import eu.mcone.coresystem.api.bukkit.codec.migration.CodecMigration;
+
 import java.util.List;
 import java.util.Map;
 
 public interface CodecRegistry {
 
+    CodecMigration getCodecMigration();
+
     void listeningForCodecs(boolean listening);
 
-    boolean registerCodec(int codecID, Class<? extends Codec<?, ?>> codecClass, Class<?> triggerClass, int encoderID, Class<?> encoder);
+    boolean registerCodec(short codecID, Class<? extends Codec<?, ?>> codecClass, Class<?> triggerClass, short encoderID, Class<?> encoder);
 
     void unregisterCodec(CodecInformation information);
 

@@ -1,17 +1,19 @@
 package eu.mcone.coresystem.bukkit.npc.capture;
 
 import eu.mcone.coresystem.api.bukkit.codec.Codec;
-import eu.mcone.coresystem.api.bukkit.codec.CodecInputStream;
-import eu.mcone.coresystem.api.bukkit.codec.MultipleCodecCallback;
+import eu.mcone.coresystem.api.bukkit.codec.binary.CodecDeserializedCallback;
+import eu.mcone.coresystem.api.bukkit.codec.binary.CodecInputStream;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionRecorder;
 import group.onegaming.networkmanager.core.api.util.GenericUtils;
 import lombok.Getter;
 import org.bson.Document;
 import org.bson.types.Binary;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MotionCapture implements eu.mcone.coresystem.api.bukkit.npc.capture.MotionCapture {
 
@@ -58,24 +60,31 @@ public class MotionCapture implements eu.mcone.coresystem.api.bukkit.npc.capture
 
         if (genericChunkData != null) {
             CodecInputStream inputStream = new CodecInputStream(motionCaptureHandler.getCodecRegistry());
-            boolean migrated = false;
+            AtomicBoolean isMigrated = new AtomicBoolean(false);
             Map<Integer, byte[]> mapData = GenericUtils.deserialize(HashMap.class, genericChunkData);
 
             if (mapData != null) {
                 Map<Integer, List<Codec<?, ?>>> codecs = new HashMap<>();
 
-                MultipleCodecCallback callback;
                 for (Map.Entry<Integer, byte[]> mapDataEntry : mapData.entrySet()) {
-                    callback = inputStream.readAsList(mapDataEntry.getValue());
-                    codecs.put(mapDataEntry.getKey(), callback.getCodecs());
+                    inputStream.readAsList(mapDataEntry.getValue(), new CodecDeserializedCallback() {
+                        @Override
+                        public void finished(boolean migrated, byte[] binary, Codec<?, ?>... codecArray) {
+                            codecs.put(mapDataEntry.getKey(), Arrays.asList(codecArray));
+                            mapData.put(mapDataEntry.getKey(), binary);
 
-                    if (callback.getMigrated() > 0 && Boolean.parseBoolean(System.getProperty("SaveCodecMigrations"))) {
-                        mapData.put(mapDataEntry.getKey(), callback.getMigratedCodecs());
-                        migrated = true;
-                    }
+                            if (migrated) {
+                                isMigrated.set(true);
+                            }
+                        }
+
+                        @Override
+                        public void error() {
+                        }
+                    });
                 }
 
-                if (migrated) {
+                if (isMigrated.get()) {
                     motionCaptureHandler.migrateChunk(name, GenericUtils.serialize(mapData));
                 }
 

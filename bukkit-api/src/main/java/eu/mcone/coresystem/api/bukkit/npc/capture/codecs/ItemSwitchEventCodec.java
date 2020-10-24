@@ -28,7 +28,7 @@ public class ItemSwitchEventCodec extends Codec<PlayerItemHeldEvent, PlayerNpc> 
     private String enchantments = "";
 
     public ItemSwitchEventCodec() {
-        super((byte) 4, (byte) 2);
+        super((short) 4, (short) 2);
     }
 
     @Override

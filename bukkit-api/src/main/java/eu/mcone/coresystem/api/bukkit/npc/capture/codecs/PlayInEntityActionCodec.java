@@ -25,7 +25,7 @@ public class PlayInEntityActionCodec extends Codec<PacketPlayInEntityAction, Pla
     private int index;
 
     public PlayInEntityActionCodec() {
-        super((byte) 5, (byte) 2);
+        super((short) 5, (short) 2);
     }
 
     @Override

@@ -20,7 +20,7 @@ public class PlayInUseItemCodec extends Codec<PlayerInteractEvent, PlayerNpc> {
     private Material material;
 
     public PlayInUseItemCodec() {
-        super((byte) 3, (byte) 2);
+        super((short) 3, (short) 2);
     }
 
     @Override

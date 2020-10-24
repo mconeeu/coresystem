@@ -5,6 +5,7 @@ import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import eu.mcone.coresystem.api.bukkit.codec.CodecInformation;
 import eu.mcone.coresystem.api.bukkit.codec.CodecListener;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.bukkit.codec.migration.CodecMigration;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.Packet;
 import org.bukkit.event.Event;
@@ -17,12 +18,14 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
 
     private final CorePlugin instance;
     private final Map<Class<?>, List<Class<? extends Codec<?, ?>>>> codecs;
-    private final Map<Integer, Class<? extends Codec<?, ?>>> codecIDs;
-    private final Map<Integer, Class<?>> encoderIDs;
+    private final Map<Short, Class<? extends Codec<?, ?>>> codecIDs;
+    private final Map<Short, Class<?>> encoderIDs;
     @Getter
     private final List<CodecListener> listeners;
     @Getter
     private final GeneralCodecListener codecListener;
+    @Getter
+    private final CodecMigration codecMigration;
 
     public CodecRegistry(CorePlugin instance, boolean listening) {
         this.instance = instance;
@@ -31,6 +34,7 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
         encoderIDs = new HashMap<>();
         listeners = new ArrayList<>();
         codecListener = new GeneralCodecListener(this);
+        codecMigration = new CodecMigration();
 
         if (listening) {
             codecListener.listening();
@@ -45,7 +49,7 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
         }
     }
 
-    public boolean registerCodec(int codecID, Class<? extends Codec<?, ?>> codecClass, Class<?> triggerClass, int encoderID, Class<?> encoder) {
+    public boolean registerCodec(short codecID, Class<? extends Codec<?, ?>> codecClass, Class<?> triggerClass, short encoderID, Class<?> encoder) {
         try {
             if (!existsCodec(codecClass)) {
                 if (Packet.class.isAssignableFrom(triggerClass) || Event.class.isAssignableFrom(triggerClass)) {
@@ -127,7 +131,7 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
     }
 
     public Class<?> getEncoderClass(int ID) {
-        return encoderIDs.get(ID);
+        return encoderIDs.get((short) ID);
     }
 
     public Class<?> getTriggerClass(int ID) {
@@ -147,7 +151,7 @@ public class CodecRegistry implements eu.mcone.coresystem.api.bukkit.codec.Codec
     }
 
     public Class<? extends Codec<?, ?>> getCodecByID(int ID) {
-        return codecIDs.getOrDefault(ID, null);
+        return codecIDs.getOrDefault((short) ID, null);
     }
 
     public Map<Class<?>, List<Class<? extends Codec<?, ?>>>> getCodecsByTriggerTyp(Class<?> triggerTyp) {
