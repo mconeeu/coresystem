@@ -225,7 +225,7 @@ public class PartyCMD extends Command implements TabExecutor {
                 Party.getMessenger().send(p, "§4Bitte benutze: §c/party <create | invite | msg | kick | promote | delete | leave> [<Player>]");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 

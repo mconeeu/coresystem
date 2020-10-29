@@ -6,12 +6,11 @@
 package eu.mcone.coresystem.api.bukkit;
 
 import com.mongodb.client.model.ReplaceOptions;
-import com.mongodb.client.model.UpdateOptions;
+import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.inventory.modification.InventoryModificationManager;
 import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
-import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
 import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import io.sentry.SentryClient;
@@ -124,9 +123,7 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin,
             CoreSystem.getInstance().getMongoDB().getCollection(pluginName.toLowerCase() + "_profile", GameProfile.class).replaceOne(
                     eq("uuid", profile.getUuid()),
                     profile,
-                    ReplaceOptions.createReplaceOptions(
-                            new UpdateOptions().upsert(true)
-                    )
+                    new ReplaceOptions().upsert(true)
             );
         } else {
             throw new RuntimeException("UUID Field in Gameprofile is null! The Player constructor must be used!");

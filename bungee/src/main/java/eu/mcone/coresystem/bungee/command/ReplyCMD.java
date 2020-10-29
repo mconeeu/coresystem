@@ -31,14 +31,14 @@ public class ReplyCMD extends Command {
 
                 if (t != null) {
                     if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY)) {
-                        BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§c" + args[0] + "§4 hat private Nachrichten deaktiviert!");
+                        BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§c" + args[0] + "§4 hat private Nachrichten deaktiviert!");
                     } else if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !t.getFriendData().getFriends().containsKey(p.getUuid())) {
-                        BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§c" + args[0] + "§4 hat private Nachrichten nur für Freunde aktiviert!");
+                        BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§c" + args[0] + "§4 hat private Nachrichten nur für Freunde aktiviert!");
                     } else {
                         if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY)) {
-                            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Du hast private Nachrichten §cdeaktiviert§4!");
+                            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Du hast private Nachrichten §cdeaktiviert§4!");
                         } else if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !p.getFriendData().getFriends().containsKey(t.getUuid())) {
-                            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Du hast private Nachrichten nur für Freunde aktiviert!");
+                            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Du hast private Nachrichten nur für Freunde aktiviert!");
                         } else {
                             StringBuilder msg = new StringBuilder();
                             for (String arg : args) {
@@ -47,18 +47,18 @@ public class ReplyCMD extends Command {
 
                             MsgCMD.reply.put(t.getUuid(), p.getUuid());
 
-                            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, new TextComponent(BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.fromme").replaceAll("%Msg-Target%", t.getName()) + msg));
+                            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, new TextComponent(BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.fromme").replaceAll("%Msg-Target%", t.getName()) + msg));
                             t.bungee().sendMessage(new TextComponent(BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.tome").replaceAll("%Msg-Player%", p.getName()) + msg));
                         }
                     }
                 } else {
-                    BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Dieser Spieler ist nicht online!");
+                    BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Dieser Spieler ist nicht online!");
                 }
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Du hast keine offene Konversation!");
+                BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Du hast keine offene Konversation!");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 }

@@ -48,7 +48,7 @@ public class JumpCMD extends Command {
                 BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte Benutze: §c/jump <Spieler>");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 

@@ -35,20 +35,20 @@ public class RestartCMD extends Command {
                 t.cancel();
                 t=null;
 
-                BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§2Der Neustartvorgang wurde abgebrochen!");
+                BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§2Der Neustartvorgang wurde abgebrochen!");
             } else {
                 int cursor = Integer.valueOf(args[0]);
 
                 if (cursor >= 5) {
                     restart(sender, Integer.valueOf(args[0]));
                 } else {
-                    BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Bitte benutze: §c/restart [<Sekunden>]");
+                    BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Bitte benutze: §c/restart [<Sekunden>]");
                 }
             }
             return;
         }
 
-        BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Bitte benutze: §c/restart [<Sekunden>]");
+        BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Bitte benutze: §c/restart [<Sekunden>]");
     }
 
     private void restart(CommandSender sender, int seconds) {

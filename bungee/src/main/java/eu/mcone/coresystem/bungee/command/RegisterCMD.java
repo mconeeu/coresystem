@@ -62,7 +62,7 @@ public class RegisterCMD extends Command {
                 BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du hast dich bereits registriert!");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 

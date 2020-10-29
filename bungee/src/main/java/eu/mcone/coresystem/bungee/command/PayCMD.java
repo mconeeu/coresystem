@@ -69,7 +69,7 @@ public class PayCMD extends Command {
                 CoreSystem.getInstance().getMessenger().send(bp, "§4Bitte benutze: §c/pay <Spieler> <Anzahl>");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 }

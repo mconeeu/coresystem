@@ -173,12 +173,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
             debugger = new BukkitDebugger(this);
 
-            String host = System.getProperty("Host");
-            String user = System.getProperty("Username");
-            String password = System.getProperty("Password");
-            String port = System.getProperty("Port");
-
-            org.bson.codecs.configuration.CodecRegistry[] registries = new org.bson.codecs.configuration.CodecRegistry[]{
+            mongoConnection = new MongoConnection().codecRegistry(
                     MongoClientSettings.getDefaultCodecRegistry(),
                     CodecRegistries.fromProviders(
                             new ItemStackCodecProvider(),
@@ -186,21 +181,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                             new UuidCodecProvider(UuidRepresentation.JAVA_LEGACY),
                             PojoCodecProvider.builder().conventions(Collections.singletonList(Conventions.ANNOTATION_CONVENTION)).automatic(true).build()
                     )
-            };
-
-            if (host != null && user != null && password != null && port != null) {
-                mongoConnection = new MongoConnection(host, user, password, "admin", Integer.parseInt(port))
-                        .codecRegistry(
-                                registries
-                        )
-                        .connect();
-            } else {
-                mongoConnection = new MongoConnection("db.mcone.eu", "admin", "Ze7OCxrVI30wmJU38TX9UmpoL8RnLPogmV3sIljcD2HQkth86bzr6JRiaDxabdt8", "admin", 27017)
-                        .codecRegistry(
-                                registries
-                        )
-                        .connect();
-            }
+            ).connect();
 
             systemDB = mongoConnection.getDatabase(Database.SYSTEM);
             statsDB = mongoConnection.getDatabase(Database.STATS);

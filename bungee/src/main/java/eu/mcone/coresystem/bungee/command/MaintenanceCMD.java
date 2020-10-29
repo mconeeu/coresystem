@@ -34,23 +34,23 @@ public class MaintenanceCMD extends Command {
             if (args[0].equalsIgnoreCase("on")) {
                 if (!BungeeCoreSystem.getSystem().getPreferences().get("maintenance", boolean.class)) {
                     BungeeCoreSystem.getSystem().getPreferences().setPreference("maintenance", true);
-                    BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§2Wartungsmodus aktiviert!");
+                    BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§2Wartungsmodus aktiviert!");
                 }else{
-                    BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Der Wartungsmodus ist bereits aktiviert!");
+                    BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Der Wartungsmodus ist bereits aktiviert!");
                 }
                 return;
             } else if (args[0].equalsIgnoreCase("off")) {
                 if (BungeeCoreSystem.getSystem().getPreferences().get("maintenance", boolean.class)) {
                     BungeeCoreSystem.getSystem().getPreferences().setPreference("maintenance", false);
-                    BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§2Wartungsmodus deaktiviert!");
+                    BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§2Wartungsmodus deaktiviert!");
                 }else{
-                    BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Der Wartungsmodus ist nicht aktiviert!");
+                    BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Der Wartungsmodus ist nicht aktiviert!");
                 }
                 return;
             }
         }
 
-        BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Bitte benutze: §c/wartung [<on | off>]");
+        BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Bitte benutze: §c/wartung [<on | off>]");
     }
 
 }

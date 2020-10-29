@@ -133,6 +133,9 @@ public interface GlobalMessenger<P, Cs> {
     @Deprecated
     void sendSender(Cs sender, String message);
 
+    @Deprecated
+    void sendSender(Cs sender, BaseComponent... baseComponents);
+
     /**
      * send message with TextLevel info with prefix to command sender
      * use the sendSenderTransl method instead

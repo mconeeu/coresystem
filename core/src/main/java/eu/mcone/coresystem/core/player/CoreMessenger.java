@@ -149,6 +149,22 @@ public abstract class CoreMessenger<P, Cs> implements GlobalMessenger<P, Cs> {
 
     @Override
     @Deprecated
+    public void sendSender(Cs sender, BaseComponent... baseComponents) {
+        GlobalCorePlayer cp = getCorePlayerFromSender(sender);
+
+        TextComponent tc = new TextComponent(system.getTranslationManager().get(
+                prefixTranslation,
+                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE
+        ));
+        for (BaseComponent bc : baseComponents) {
+            tc.addExtra(bc);
+        }
+
+        dispatchSenderMessage(sender, tc);
+    }
+
+    @Override
+    @Deprecated
     public void sendSenderInfo(Cs sender, String message) {
         sendSender(sender, TextLevel.INFO, message);
     }

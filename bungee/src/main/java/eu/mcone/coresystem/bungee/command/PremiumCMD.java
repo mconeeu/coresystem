@@ -85,15 +85,15 @@ public class PremiumCMD extends Command implements TabExecutor {
 
                                         if (!t.updateGroupsFromDatabase().contains(group)) {
                                             BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("bungeesystem_premium").deleteOne(eq("uuid", t.getUuid().toString()));
-                                            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group + "§2 erfolgreich entzogen!");
+                                            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group + "§2 erfolgreich entzogen!");
                                         } else {
                                             throw new CoreException("Premium Rank of player " + t.getName() + " could not be removed. Error in code!");
                                         }
                                     } else {
-                                        BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Dieser Spieler hat keinen auslaufenden Rang!");
+                                        BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Dieser Spieler hat keinen auslaufenden Rang!");
                                     }
                                 } else {
-                                    BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Dieser Spieler hat keinen Premium Rang!");
+                                    BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Dieser Spieler hat keinen Premium Rang!");
                                 }
                             } catch (CoreException e) {
                                 e.printStackTrace();
@@ -102,7 +102,7 @@ public class PremiumCMD extends Command implements TabExecutor {
 
                         return;
                     } catch (PlayerNotResolvedException e) {
-                        BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
+                        BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
                     }
                 } else if (args.length == 3) {
                     String target = args[1];
@@ -122,13 +122,13 @@ public class PremiumCMD extends Command implements TabExecutor {
                                     );
                                     t.addGroup(group);
 
-                                    BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für 1 Monat zugeschrieben!");
+                                    BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für 1 Monat zugeschrieben!");
                                 } else {
-                                    BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
+                                    BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
                                 }
                             }
                         } else {
-                            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Dieser Rang existiert nicht!");
+                            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Dieser Rang existiert nicht!");
                         }
                         return;
                     } catch (CoreException e) {
@@ -153,13 +153,13 @@ public class PremiumCMD extends Command implements TabExecutor {
                                     );
                                     t.addGroup(group);
 
-                                    BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für " + months + " Monat(e) zugeschrieben!");
+                                    BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§2Dem Spieler " + target + " wurde der Rang §f" + group.getName() + " §2für " + months + " Monat(e) zugeschrieben!");
                                 } else {
-                                    BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
+                                    BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Dieser Spieler hat bereits einen Premium Rang");
                                 }
                             }
                         } else {
-                            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Dieser Rang existiert nicht!");
+                            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Dieser Rang existiert nicht!");
                         }
                         return;
                     } catch (CoreException e) {
@@ -172,7 +172,7 @@ public class PremiumCMD extends Command implements TabExecutor {
                 BungeeCoreSystem.getInstance().getMessenger().send(p, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.noperm"));
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 

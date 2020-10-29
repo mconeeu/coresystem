@@ -246,7 +246,7 @@ public class FriendCMD extends Command implements TabExecutor {
                             }
                         }
                     } catch (CoreException e) {
-                        BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
+                        BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
                         return;
                     }
                 } else {
@@ -257,7 +257,7 @@ public class FriendCMD extends Command implements TabExecutor {
 
             FriendSystem.getMessenger().send(bp, "§4Bitte benutze: §c/friend <list | requests | accept | deny | add | remove | block | unblock> §c[<name>] §4oder §c/friend request toggle");
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
 
