@@ -47,7 +47,7 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin,
     }
 
     protected CorePlugin(Gamemode pluginGamemode, String prefixTranslation, String sentryDsn) {
-        this(pluginGamemode, pluginGamemode.getName().toLowerCase(), pluginGamemode.getColor(), prefixTranslation, sentryDsn);
+        this(pluginGamemode, pluginGamemode.getName(), pluginGamemode.getColor(), prefixTranslation, sentryDsn);
     }
 
     protected CorePlugin(String pluginName, ChatColor pluginColor, String prefixTranslation) {
@@ -91,7 +91,7 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin,
     public void onEnable() {
         this.messenger = CoreSystem.getInstance().initializeMessenger(prefixTranslation);
 
-        CoreSystem.getInstance().getTranslationManager().loadAdditionalCategories(pluginName.toLowerCase());
+        CoreSystem.getInstance().getTranslationManager().loadAdditionalCategories(getPluginSlug());
         registerTranslationKeys();
     }
 
@@ -100,7 +100,7 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin,
     }
 
     public <T> T loadGameProfile(Player player, Class<T> clazz) {
-        T profile = CoreSystem.getInstance().getMongoDB().getCollection(pluginName.toLowerCase() + "_profile", clazz).find(eq("uuid", player.getUniqueId().toString())).first();
+        T profile = CoreSystem.getInstance().getMongoDB().getCollection(getPluginSlug() + "_profile", clazz).find(eq("uuid", player.getUniqueId().toString())).first();
         if (profile != null) {
             return profile;
         } else {
@@ -120,7 +120,7 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin,
 
     public void saveGameProfile(GameProfile profile) {
         if (profile.getUuid() != null) {
-            CoreSystem.getInstance().getMongoDB().getCollection(pluginName.toLowerCase() + "_profile", GameProfile.class).replaceOne(
+            CoreSystem.getInstance().getMongoDB().getCollection(getPluginSlug() + "_profile", GameProfile.class).replaceOne(
                     eq("uuid", profile.getUuid()),
                     profile,
                     new ReplaceOptions().upsert(true)
@@ -177,7 +177,7 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin,
         ArrayList<String> list = (ArrayList<String>) config.getList("translations");
 
         if (list != null && !list.isEmpty()) {
-            CoreSystem.getInstance().getTranslationManager().registerKeys(pluginName.toLowerCase(), list);
+            CoreSystem.getInstance().getTranslationManager().registerKeys(getPluginSlug(), list);
         }
     }
 
@@ -194,6 +194,10 @@ public abstract class CorePlugin extends JavaPlugin implements GlobalCorePlugin,
             }
             throw e;
         }
+    }
+
+    public String getPluginSlug() {
+        return pluginName.replace(" ", "_").toLowerCase().replaceAll("[^a-z0-9_]", "");
     }
 
 }
