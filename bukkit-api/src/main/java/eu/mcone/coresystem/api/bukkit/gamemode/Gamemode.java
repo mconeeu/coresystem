@@ -20,6 +20,8 @@ public enum Gamemode {
     GAMBLE("GM", "Gamble", ChatColor.GOLD, Material.DIAMOND),
     ONE_ATTACK("OA", "One Attack", ChatColor.BLUE, Material.IRON_SWORD),
     BUILD("BU", "Build", ChatColor.YELLOW, Material.GRASS),
+    WHOS_THE_KILLER("WIK", "Wo is the Killer?", ChatColor.RED, Material.IRON_HELMET),
+    TRY_TO_SCARE_ME("TTS", "Try to scare me", ChatColor.GOLD, Material.JACK_O_LANTERN),
     UNDEFINED("UD", "undefined", ChatColor.DARK_GRAY, Material.COAL);
 
     @Getter

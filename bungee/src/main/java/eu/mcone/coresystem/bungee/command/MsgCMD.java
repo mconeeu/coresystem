@@ -68,7 +68,7 @@ public class MsgCMD extends Command implements TabExecutor {
                                         msg.append(args[i]).append(" ");
                                     }
 
-                                    BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, new TextComponent(BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.fromme", p).replaceAll("%Msg-Target%", t.getName()) + msg));
+                                    sender.sendMessage(new TextComponent(BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.fromme", p).replaceAll("%Msg-Target%", t.getName()) + msg));
                                     t.bungee().sendMessage(new TextComponent(BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.tome", p).replaceAll("%Msg-Player%", p.getName()) + msg));
                                     reply.put(t.getUuid(), p.getUuid());
                                 }

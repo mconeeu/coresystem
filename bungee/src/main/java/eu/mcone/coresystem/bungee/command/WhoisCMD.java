@@ -18,7 +18,7 @@ import net.md_5.bungee.api.plugin.Command;
 public class WhoisCMD extends Command {
 
     public WhoisCMD() {
-        super("whois", "system.bungee.whois", "whereis");
+        super("whois", "system.bungee.whois", "whereis", "pi", "playerinformation");
     }
 
     public void execute(CommandSender sender, String[] args) {

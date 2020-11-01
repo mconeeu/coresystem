@@ -47,7 +47,7 @@ public class ReplyCMD extends Command {
 
                             MsgCMD.reply.put(t.getUuid(), p.getUuid());
 
-                            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, new TextComponent(BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.fromme").replaceAll("%Msg-Target%", t.getName()) + msg));
+                            sender.sendMessage(new TextComponent(BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.fromme").replaceAll("%Msg-Target%", t.getName()) + msg));
                             t.bungee().sendMessage(new TextComponent(BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.chat.private.tome").replaceAll("%Msg-Player%", p.getName()) + msg));
                         }
                     }
