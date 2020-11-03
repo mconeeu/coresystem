@@ -7,6 +7,7 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bukkit.facades.Transl;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
@@ -24,7 +25,7 @@ import java.util.List;
 
 public class HoloCMD extends CorePlayerCommand {
 
-    private CoreHologramManager api;
+    private final CoreHologramManager api;
 
     public HoloCMD(CoreHologramManager api) {
         super("holo", "system.bukkit.world.holo", "hologram");
@@ -199,7 +200,7 @@ public class HoloCMD extends CorePlayerCommand {
                     List<eu.mcone.coresystem.api.bukkit.hologram.Hologram> holos = w.getHolograms();
 
                     if (holos.size() > 0) {
-                        ComponentBuilder componentBuilder = new ComponentBuilder(BukkitCoreSystem.getInstance().getTranslationManager().get("system.prefix.server"))
+                        ComponentBuilder componentBuilder = new ComponentBuilder(Transl.get("system.prefix.server", p))
                                 .append("Folgende Hologramme existierten auf der Welt ").color(ChatColor.GRAY)
                                 .append(args[1]).color(ChatColor.WHITE)
                                 .append(": \n").color(ChatColor.GRAY);

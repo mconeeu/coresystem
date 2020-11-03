@@ -6,10 +6,7 @@
 package eu.mcone.coresystem.api.bungee;
 
 import eu.mcone.coresystem.api.bungee.overwatch.Overwatch;
-import eu.mcone.coresystem.api.bungee.player.CorePlayer;
-import eu.mcone.coresystem.api.bungee.player.FriendSystem;
-import eu.mcone.coresystem.api.bungee.player.NickManager;
-import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
+import eu.mcone.coresystem.api.bungee.player.*;
 import eu.mcone.coresystem.api.bungee.util.BungeeDebugger;
 import eu.mcone.coresystem.api.bungee.util.ChannelHandler;
 import eu.mcone.coresystem.api.bungee.util.Messenger;
@@ -85,6 +82,8 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     public abstract OfflineCorePlayer getOfflineCorePlayer(UUID uuid) throws PlayerNotResolvedException;
 
     public abstract Messenger initializeMessenger(String prefixTranslation);
+
+    public abstract TranslationManager getTranslationManager();
 
     public abstract Messenger getMessenger();
 

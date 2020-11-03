@@ -5,17 +5,17 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import eu.mcone.coresystem.api.bungee.command.CoreCommand;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.plugin.Command;
 
-public class MaintenanceCMD extends Command {
+public class MaintenanceCMD extends CoreCommand {
 
     public MaintenanceCMD(){
         super("wartung", "system.bungee.wartung");
     }
 
-    public void execute(CommandSender sender, String[] args) {
+    public void onCommand(CommandSender sender, String[] args) {
         if (args.length == 0) {
             BungeeCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§8§m------------------------------------------");
 

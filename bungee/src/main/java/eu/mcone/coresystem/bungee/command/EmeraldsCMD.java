@@ -6,26 +6,27 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.command.CoreCommand;
+import eu.mcone.coresystem.api.bungee.facades.Transl;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
 
-public class EmeraldsCMD extends Command {
+public class EmeraldsCMD extends CoreCommand {
 
     public EmeraldsCMD() {
         super("emeralds", null, "emerald");
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public void onCommand(CommandSender sender, String[] args) {
         if (args.length == 0) {
             if (sender instanceof ProxiedPlayer) {
                 BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§7Du hast momentan §a" + CoreSystem.getInstance().getCorePlayer(((ProxiedPlayer) sender)).getEmeralds() + " Emeralds!");
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+                BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, Transl.get("system.command.consolesender", sender));
             }
         } else if (sender.hasPermission("system.bungee.emeralds")) {
             if (args.length == 1) {
@@ -41,7 +42,7 @@ public class EmeraldsCMD extends Command {
                 String name = args[1];
                 try {
                     OfflineCorePlayer o = CoreSystem.getInstance().getOfflineCorePlayer(name);
-                    int coins = Integer.valueOf(args[2]);
+                    int coins = Integer.parseInt(args[2]);
 
                     if (args[0].equalsIgnoreCase("add")) {
                         o.addEmeralds(coins);
@@ -62,7 +63,7 @@ public class EmeraldsCMD extends Command {
 
             BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Bitte benutze: §c/emeralds <add|remove|set> <Spieler> <Anzahl>");
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.noperm"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, Transl.get("system.command.noperm", sender));
         }
     }
 

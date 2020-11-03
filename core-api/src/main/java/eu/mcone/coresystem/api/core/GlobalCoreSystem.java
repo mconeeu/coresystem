@@ -12,7 +12,7 @@ import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import eu.mcone.coresystem.api.core.player.GlobalMessenger;
 import eu.mcone.coresystem.api.core.player.PermissionManager;
 import eu.mcone.coresystem.api.core.player.PlayerUtils;
-import eu.mcone.coresystem.api.core.translation.TranslationManager;
+import eu.mcone.coresystem.api.core.translation.CoreTranslationManager;
 import eu.mcone.coresystem.api.core.util.CooldownSystem;
 
 import java.util.UUID;
@@ -60,7 +60,7 @@ public interface GlobalCoreSystem {
      *
      * @return TranslationManager instance
      */
-    TranslationManager getTranslationManager();
+    CoreTranslationManager getTranslationManager();
 
     /**
      * returns the BCS PermissionManager

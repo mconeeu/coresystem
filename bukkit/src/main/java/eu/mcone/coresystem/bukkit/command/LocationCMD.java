@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bukkit.command;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bukkit.facades.Transl;
 import eu.mcone.coresystem.api.bukkit.world.CoreBlockLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
@@ -90,7 +91,7 @@ public class LocationCMD extends CorePlayerCommand {
 
                 if (w != null) {
                     if (w.getLocations().size() > 0 || w.getBlockLocations().size() > 0) {
-                        ComponentBuilder componentBuilder = new ComponentBuilder(BukkitCoreSystem.getInstance().getTranslationManager().get("system.prefix.server"))
+                        ComponentBuilder componentBuilder = new ComponentBuilder(Transl.get("system.prefix.server", p))
                                 .append("Folgende Locations existierten auf der Welt ").color(ChatColor.GRAY)
                                 .append(args[1]).color(ChatColor.WHITE)
                                 .append(":\n").color(ChatColor.GRAY);

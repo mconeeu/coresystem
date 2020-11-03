@@ -5,13 +5,13 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import eu.mcone.coresystem.api.bungee.command.CoreCommand;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerConnectEvent;
-import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
 import java.util.Collections;
@@ -19,19 +19,14 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-public class SendCMD extends Command implements TabExecutor {
+public class SendCMD extends CoreCommand implements TabExecutor {
 
     public SendCMD() {
         super("send", "system.bungee.send");
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
-        if (sender instanceof ProxiedPlayer) {
-            if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(this.getClass(), ((ProxiedPlayer) sender).getUniqueId()))
-                return;
-        }
-
+    public void onCommand(CommandSender sender, String[] args) {
         if (args.length != 2) {
             BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Bitte benutze §c/send <server|player|all|current> <target>");
         } else {

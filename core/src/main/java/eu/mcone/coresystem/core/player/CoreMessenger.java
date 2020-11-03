@@ -4,7 +4,7 @@ import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.chat.MarkdownParser;
 import eu.mcone.coresystem.api.core.chat.spec.TextLevel;
 import eu.mcone.coresystem.api.core.player.GlobalMessenger;
-import eu.mcone.coresystem.api.core.translation.TranslationManager;
+import eu.mcone.coresystem.api.core.translation.CoreTranslationManager;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -71,7 +71,7 @@ public abstract class CoreMessenger<P, Cs> implements GlobalMessenger<P, Cs> {
 
         dispatchMessage(player, new TextComponent(TextComponent.fromLegacyText(system.getTranslationManager().get(
                 prefixTranslation,
-                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE
+                cp != null ? cp.getSettings().getLanguage() : CoreTranslationManager.DEFAULT_LANGUAGE
         ) + (!level.equals(TextLevel.NONE) ? MarkdownParser.parseMarkdown(message, level) : message))));
     }
 
@@ -154,7 +154,7 @@ public abstract class CoreMessenger<P, Cs> implements GlobalMessenger<P, Cs> {
 
         TextComponent tc = new TextComponent(system.getTranslationManager().get(
                 prefixTranslation,
-                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE
+                cp != null ? cp.getSettings().getLanguage() : CoreTranslationManager.DEFAULT_LANGUAGE
         ));
         for (BaseComponent bc : baseComponents) {
             tc.addExtra(bc);
@@ -194,7 +194,7 @@ public abstract class CoreMessenger<P, Cs> implements GlobalMessenger<P, Cs> {
 
         dispatchSenderMessage(sender, system.getTranslationManager().get(
                 prefixTranslation,
-                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE)
+                cp != null ? cp.getSettings().getLanguage() : CoreTranslationManager.DEFAULT_LANGUAGE)
                 + (!level.equals(TextLevel.NONE) ? MarkdownParser.parseMarkdown(message, level) : message)
         );
     }
@@ -217,10 +217,10 @@ public abstract class CoreMessenger<P, Cs> implements GlobalMessenger<P, Cs> {
 
         StringBuilder sb = new StringBuilder(system.getTranslationManager().get(
                 prefixTranslation,
-                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE
+                cp != null ? cp.getSettings().getLanguage() : CoreTranslationManager.DEFAULT_LANGUAGE
         ));
         for (String s : translation) {
-            sb.append(system.getTranslationManager().get(s, cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE));
+            sb.append(system.getTranslationManager().get(s, cp != null ? cp.getSettings().getLanguage() : CoreTranslationManager.DEFAULT_LANGUAGE));
         }
 
         dispatchSenderMessage(sender, sb.toString());
@@ -232,10 +232,10 @@ public abstract class CoreMessenger<P, Cs> implements GlobalMessenger<P, Cs> {
 
         String translation = system.getTranslationManager().get(
                 prefixTranslation,
-                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE
+                cp != null ? cp.getSettings().getLanguage() : CoreTranslationManager.DEFAULT_LANGUAGE
         ) + system.getTranslationManager().get(
                 translationKey,
-                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE,
+                cp != null ? cp.getSettings().getLanguage() : CoreTranslationManager.DEFAULT_LANGUAGE,
                 replacements
         );
 
@@ -248,7 +248,7 @@ public abstract class CoreMessenger<P, Cs> implements GlobalMessenger<P, Cs> {
 
         StringBuilder sb = new StringBuilder();
         for (String s : translation) {
-            sb.append(system.getTranslationManager().get(s, cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE));
+            sb.append(system.getTranslationManager().get(s, cp != null ? cp.getSettings().getLanguage() : CoreTranslationManager.DEFAULT_LANGUAGE));
         }
 
         dispatchSenderMessage(sender, sb.toString());
@@ -260,7 +260,7 @@ public abstract class CoreMessenger<P, Cs> implements GlobalMessenger<P, Cs> {
 
         String translation = system.getTranslationManager().get(
                 translationKey,
-                cp != null ? cp.getSettings().getLanguage() : TranslationManager.DEFAULT_LANGUAGE,
+                cp != null ? cp.getSettings().getLanguage() : CoreTranslationManager.DEFAULT_LANGUAGE,
                 replacements
         );
 

@@ -56,7 +56,6 @@ import eu.mcone.coresystem.bukkit.world.WorldManager;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
-import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CoreCooldownSystem;
 import eu.mcone.coresystem.core.util.MoneyUtil;
 import group.onegaming.networkmanager.core.api.database.Database;
@@ -100,7 +99,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private MongoDatabase cloudDB;
 
     @Getter
-    private TranslationManager translationManager;
+    private BukkitTranslationManager translationManager;
     @Getter
     private PermissionManager permissionManager;
     @Getter
@@ -204,7 +203,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
 
             sendConsoleMessage("§aLoading Translations...");
-            translationManager = new TranslationManager(this, "bukkitsystem");
+            translationManager = new BukkitTranslationManager(this, "bukkitsystem");
 
             sendConsoleMessage("§aInitializing LabyModManager...");
             labyModAPI = new LabyModManager();
@@ -222,7 +221,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             hologramManager = new CoreHologramManager(this);
 
             sendConsoleMessage("§aStarting AFK-Manager...");
-            afkManager = new CoreAfkManager();
+            afkManager = new CoreAfkManager(this);
 
             sendConsoleMessage("§aLoading Permissions & Groups...");
             permissionManager = new PermissionManager(MinecraftServer.getServer().getPropertyManager().properties.getProperty("server-name"), systemDB);

@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import eu.mcone.coresystem.api.bungee.command.CoreCommand;
 import eu.mcone.coresystem.api.bungee.overwatch.punish.Punish;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.CoreException;
@@ -13,15 +14,14 @@ import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
 
-public class WhoisCMD extends Command {
+public class WhoisCMD extends CoreCommand {
 
     public WhoisCMD() {
         super("whois", "system.bungee.whois", "whereis", "pi", "playerinformation");
     }
 
-    public void execute(CommandSender sender, String[] args) {
+    public void onCommand(CommandSender sender, String[] args) {
         if (args.length == 1) {
             try {
                 OfflineCorePlayer p = BungeeCoreSystem.getInstance().getOfflineCorePlayer(args[0]);

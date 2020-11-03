@@ -5,12 +5,12 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
+import eu.mcone.coresystem.api.bungee.facades.Transl;
 import eu.mcone.coresystem.api.bungee.overwatch.punish.Punish;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.PlayerState;
-import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.command.RegisterCMD;
 import eu.mcone.coresystem.bungee.friend.Party;
@@ -105,7 +105,7 @@ public class CorePlayerListener implements Listener {
                 e.setCancelled(false);
             } else {
                 e.setCancelled(true);
-                e.setCancelReason(new TextComponent(TextComponent.fromLegacyText(BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.kick.maintenance", Language.GERMAN))));
+                e.setCancelReason(new TextComponent(TextComponent.fromLegacyText(Transl.get("system.bungee.kick.maintenance", p))));
                 p.unregister();
             }
         }

@@ -6,9 +6,9 @@
 package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
+import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bukkit.facades.Transl;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -47,7 +47,7 @@ public class TpaCMD extends CorePlayerCommand {
                     players.put(p.getName(), requests);
 
                     messager.send(t, "§7Du hast eine Teleportanfrage von §f" + p.getName() + "§7 erhalten!");
-                    t.spigot().sendMessage(new ComponentBuilder(CoreSystem.getInstance().getTranslationManager().get("build.prefix"))
+                    t.spigot().sendMessage(new ComponentBuilder(Transl.get("build.prefix", t))
                             .append("§a[Annehmen]")
                             .color(ChatColor.DARK_GREEN)
                             .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpaccept " + p.getName()))

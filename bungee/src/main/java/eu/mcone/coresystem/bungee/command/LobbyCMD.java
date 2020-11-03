@@ -6,33 +6,28 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
-import eu.mcone.coresystem.bungee.BungeeCoreSystem;
-import net.md_5.bungee.api.CommandSender;
+import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
 
 import java.util.Map;
 
-public class LobbyCMD extends Command {
+public class LobbyCMD extends CorePlayerCommand {
 
     public LobbyCMD() {
         super("lobby", null, "l", "hub", "h");
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
-        if (sender instanceof ProxiedPlayer) {
-            for (Map.Entry<String, ServerInfo> s : ProxyServer.getInstance().getServers().entrySet()) {
-                if (s.getKey().contains("Lobby")) {
-                    CoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§7Du wirst zur §fLobby §7gesendet...");
-                    ((ProxiedPlayer) sender).connect(s.getValue());
-                    return;
-                }
+    public void onPlayerCommand(ProxiedPlayer p, String[] args) {
+        for (Map.Entry<String, ServerInfo> s : ProxyServer.getInstance().getServers().entrySet()) {
+            if (s.getKey().contains("Lobby")) {
+                CoreSystem.getInstance().getMessenger().sendSender(p, "§7Du wirst zur §fLobby §7gesendet...");
+                p.connect(s.getValue());
+                return;
             }
-        } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
         }
     }
+
 }

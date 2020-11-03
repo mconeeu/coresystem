@@ -19,14 +19,17 @@ public class BukkitCMD extends CoreCommand {
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage("");
-            sender.sendMessage("§8§m---------- §r§3§lMCONE-BukkitCoreSystem §8§m----------");
-            sender.sendMessage("§8[§7§l!§8] §fSystem §8» §7Entwickelt von §fDieserDominik §7und §frufi");
-            sender.sendMessage("§r");
-            sender.sendMessage("§7§oWir bemühen uns darum alle Systeme und Spielmodi so effizient wie möglich zu gestalten.");
-            sender.sendMessage("§7§oDeshalb sind auch alle von uns verwendeten Plugins ausschließlich selbst entwickelt!");
-            sender.sendMessage("§8§m---------- §r§3§lMCONE-BukkitCoreSystem §8§m----------");
-            sender.sendMessage("");
+            sender.sendMessage(
+                    "§r" +
+                    "\n§8§m---------- §r§3§lMCONE-BukkitCoreSystem §8§m----------" +
+                    "\n§8[§7§l!§8] §fSystem §8» §7Entwickelt von §fDieserDominik §7und §frufi" +
+                    "\n§r" +
+                    "\n§7§oWir bemühen uns darum alle Systeme und Spielmodi so effizient wie möglich zu gestalten." +
+                    "\n§7§oDeshalb sind auch alle von uns verwendeten Plugins ausschließlich selbst entwickelt!" +
+                    "\n§8§m---------- §r§3§lMCONE-BukkitCoreSystem §8§m----------" +
+                    "\n§r"
+            );
+            return true;
         } else if (args[0].equals("reload")) {
             if (sender.hasPermission("system.bukkit.reload")) {
 

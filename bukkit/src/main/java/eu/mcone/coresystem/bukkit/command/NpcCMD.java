@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bukkit.command;
 import com.google.gson.JsonSyntaxException;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bukkit.facades.Transl;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
@@ -25,7 +26,7 @@ import java.util.List;
 
 public class NpcCMD extends CorePlayerCommand {
 
-    private CoreNpcManager api;
+    private final CoreNpcManager api;
 
     public NpcCMD(CoreNpcManager api) {
         super("npc", "system.bukkit.world.npc");
@@ -162,7 +163,7 @@ public class NpcCMD extends CorePlayerCommand {
                     List<NPC> npcs = w.getNPCs();
 
                     if (npcs.size() > 0) {
-                        ComponentBuilder componentBuilder = new ComponentBuilder(BukkitCoreSystem.getInstance().getTranslationManager().get("system.prefix.server"))
+                        ComponentBuilder componentBuilder = new ComponentBuilder(Transl.get("system.prefix.server", p))
                                 .append("Folgende NPCs existierten auf der Welt ").color(ChatColor.GRAY)
                                 .append(args[1]).color(ChatColor.WHITE)
                                 .append(": \n").color(ChatColor.GRAY);

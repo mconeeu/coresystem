@@ -16,7 +16,7 @@ public class CoreVanishManager implements VanishManager {
 
     private static final VanishRule VANISH_SYSTEM_RULE = (player, playerCanSee) -> {
         if (!player.hasPermission("system.bukkit.vanish")) {
-            playerCanSee.removeIf(p -> CoreSystem.getInstance().getCorePlayer(player).isVanished());
+            playerCanSee.removeIf(p -> CoreSystem.getInstance().getCorePlayer(p).isVanished());
         }
     };
 

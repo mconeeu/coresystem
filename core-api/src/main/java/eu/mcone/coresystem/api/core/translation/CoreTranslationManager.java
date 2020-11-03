@@ -10,9 +10,9 @@ import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
 import java.util.Collection;
 import java.util.List;
 
-public interface TranslationManager {
+public interface CoreTranslationManager {
 
-    Language DEFAULT_LANGUAGE = Language.ENGLISH;
+    Language DEFAULT_LANGUAGE = Language.GERMAN;
 
     /**
      * reloads all translation fields from set categories from database

@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bungee.listener;
 import eu.mcone.cloud.api.plugin.CloudAPI;
 import eu.mcone.cloud.api.plugin.bungee.BungeeCloudPlugin;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.facades.Transl;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.friend.Party;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -76,11 +77,11 @@ public class ServerConnectListener implements Listener {
 
                                             if (cloudSystemAvailable) {
                                                 kick.connect(((BungeeCloudPlugin) CloudAPI.getInstance().getPlugin()).getFallbackServer());
-                                                BungeeCoreSystem.getInstance().getMessenger().send(kick, CoreSystem.getInstance().getTranslationManager().get("system.bungee.kick.premium", CoreSystem.getInstance().getCorePlayer(p)));
+                                                BungeeCoreSystem.getInstance().getMessenger().sendTransl(kick, "system.bungee.kick.premium");
                                             } else {
-                                                kick.disconnect(new TextComponent(TextComponent.fromLegacyText(
-                                                        CoreSystem.getInstance().getTranslationManager().get("system.bungee.kick.premium", CoreSystem.getInstance().getCorePlayer(p))
-                                                )));
+                                                kick.disconnect(TextComponent.fromLegacyText(
+                                                        Transl.get("system.bungee.kick.premium", CoreSystem.getInstance().getCorePlayer(p))
+                                                ));
                                             }
                                             toKick--;
                                         }
@@ -127,11 +128,11 @@ public class ServerConnectListener implements Listener {
 
                                     if (cloudSystemAvailable) {
                                         kick.connect(((BungeeCloudPlugin) CloudAPI.getInstance().getPlugin()).getFallbackServer());
-                                        BungeeCoreSystem.getInstance().getMessenger().send(kick, CoreSystem.getInstance().getTranslationManager().get("system.bungee.kick.premium", CoreSystem.getInstance().getCorePlayer(p)));
+                                        BungeeCoreSystem.getInstance().getMessenger().sendTransl(kick, "system.bungee.kick.premium");
                                     } else {
-                                        kick.disconnect(new TextComponent(TextComponent.fromLegacyText(
-                                                CoreSystem.getInstance().getTranslationManager().get("system.bungee.kick.premium", CoreSystem.getInstance().getCorePlayer(p))
-                                        )));
+                                        kick.disconnect(TextComponent.fromLegacyText(
+                                                Transl.get("system.bungee.kick.premium", CoreSystem.getInstance().getCorePlayer(p))
+                                        ));
                                     }
                                     i--;
                                 }

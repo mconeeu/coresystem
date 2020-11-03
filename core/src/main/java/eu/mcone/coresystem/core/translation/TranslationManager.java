@@ -10,7 +10,9 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.InsertManyOptions;
 import eu.mcone.coresystem.api.core.chat.MarkdownParser;
 import eu.mcone.coresystem.api.core.chat.spec.TextLevel;
+import eu.mcone.coresystem.api.core.facades.TranslCore;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
+import eu.mcone.coresystem.api.core.translation.CoreTranslationManager;
 import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.api.core.translation.TranslationField;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
@@ -23,7 +25,7 @@ import java.util.*;
 import static com.mongodb.client.model.Filters.in;
 import static com.mongodb.client.model.Projections.include;
 
-public class TranslationManager implements eu.mcone.coresystem.api.core.translation.TranslationManager {
+public class TranslationManager implements CoreTranslationManager {
 
     private static final List<Language> DEFAULT_LANGUAGES = new ArrayList<>(Collections.singleton(Language.GERMAN));
 
@@ -52,6 +54,7 @@ public class TranslationManager implements eu.mcone.coresystem.api.core.translat
         system.sendConsoleMessage(sb.toString());
 
         reload();
+        TranslCore.setManager(this);
     }
 
     @Override

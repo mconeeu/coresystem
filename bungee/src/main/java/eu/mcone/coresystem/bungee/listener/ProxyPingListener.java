@@ -5,7 +5,8 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
-import eu.mcone.coresystem.api.core.translation.Language;
+import eu.mcone.coresystem.api.bungee.facades.Transl;
+import eu.mcone.coresystem.api.core.translation.CoreTranslationManager;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -64,7 +65,7 @@ public class ProxyPingListener implements Listener {
 
         if (con.getVersion() < MIN_VERSION) {
             ping.setDescriptionComponent(new TextComponent(TextComponent.fromLegacyText(
-                    BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.ping.outdated", Language.GERMAN)
+                    Transl.get("system.bungee.ping.outdated", CoreTranslationManager.DEFAULT_LANGUAGE)
             )));
 
             version.setProtocol(2);
@@ -73,7 +74,7 @@ public class ProxyPingListener implements Listener {
             players.setSample(PLAYER_INFOS_OUTDATED);
         } else if (con.getVersion() > MAX_VERSION) {
             ping.setDescriptionComponent(new TextComponent(TextComponent.fromLegacyText(
-                    BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.ping.outdated", Language.GERMAN)
+                    Transl.get("system.bungee.ping.outdated", CoreTranslationManager.DEFAULT_LANGUAGE)
             )));
 
             version.setProtocol(2);
@@ -85,7 +86,7 @@ public class ProxyPingListener implements Listener {
             version.setProtocol(2);
 
             ping.setDescriptionComponent(new TextComponent(TextComponent.fromLegacyText(
-                    BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.ping.cracked", Language.GERMAN)
+                    Transl.get("system.bungee.ping.cracked", CoreTranslationManager.DEFAULT_LANGUAGE)
             )));
 
             players.setSample(PLAYER_INFOS_MAINTENANCE);
@@ -94,13 +95,13 @@ public class ProxyPingListener implements Listener {
             version.setProtocol(2);
 
             ping.setDescriptionComponent(new TextComponent(TextComponent.fromLegacyText(
-                    BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.ping.maintenance", Language.GERMAN)
+                    Transl.get("system.bungee.ping.maintenance", CoreTranslationManager.DEFAULT_LANGUAGE)
             )));
 
             players.setSample(PLAYER_INFOS_MAINTENANCE);
         } else {
             ping.setDescriptionComponent(new TextComponent(TextComponent.fromLegacyText(
-                    BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.ping", Language.GERMAN)
+                    Transl.get("system.bungee.ping", CoreTranslationManager.DEFAULT_LANGUAGE)
             )));
 
             players.setSample(PLAYER_INFOS);

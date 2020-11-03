@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.api.bungee;
 
+import eu.mcone.coresystem.api.bungee.command.CoreCommand;
 import eu.mcone.coresystem.api.core.GlobalCorePlugin;
 import io.sentry.SentryClient;
 import io.sentry.SentryClientFactory;
@@ -50,7 +51,7 @@ public abstract class CorePlugin extends Plugin implements GlobalCorePlugin {
         }
     }
 
-    public void registerCommands(Command... commands) {
+    public void registerCommands(CoreCommand... commands) {
         for (Command command : commands) {
             getProxy().getPluginManager().registerCommand(this, command);
         }

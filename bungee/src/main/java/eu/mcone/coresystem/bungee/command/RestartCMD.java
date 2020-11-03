@@ -5,20 +5,20 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import eu.mcone.coresystem.api.bungee.command.CoreCommand;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.Title;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
-public class RestartCMD extends Command {
+public class RestartCMD extends CoreCommand {
 	
 	public RestartCMD(){
 		  super("restart", "system.bungee.restart");
@@ -26,7 +26,7 @@ public class RestartCMD extends Command {
 
 	private static ScheduledTask t = null;
 
-    public void execute(CommandSender sender, String[] args) {
+    public void onCommand(CommandSender sender, String[] args) {
         if (args.length == 0) {
             restart(sender, 300);
             return;
@@ -37,10 +37,10 @@ public class RestartCMD extends Command {
 
                 BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§2Der Neustartvorgang wurde abgebrochen!");
             } else {
-                int cursor = Integer.valueOf(args[0]);
+                int cursor = Integer.parseInt(args[0]);
 
                 if (cursor >= 5) {
-                    restart(sender, Integer.valueOf(args[0]));
+                    restart(sender, Integer.parseInt(args[0]));
                 } else {
                     BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Bitte benutze: §c/restart [<Sekunden>]");
                 }

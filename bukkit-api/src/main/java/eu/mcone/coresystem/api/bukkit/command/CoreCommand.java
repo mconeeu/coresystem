@@ -6,7 +6,8 @@
 package eu.mcone.coresystem.api.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.core.translation.Language;
+import eu.mcone.coresystem.api.bukkit.facades.Transl;
+import eu.mcone.coresystem.api.core.translation.CoreTranslationManager;
 import lombok.Getter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -17,7 +18,7 @@ import java.util.List;
 
 public abstract class CoreCommand extends Command {
 
-    private final static String NO_PERM_MESSAGE = CoreSystem.getInstance().getTranslationManager().get("system.prefix.server", Language.ENGLISH) + CoreSystem.getInstance().getTranslationManager().get("system.command.noperm", Language.ENGLISH);
+    private final static String NO_PERM_MESSAGE = Transl.get("system.prefix.server", CoreTranslationManager.DEFAULT_LANGUAGE) + Transl.get("system.command.noperm", CoreTranslationManager.DEFAULT_LANGUAGE);
 
     @Getter
     private final String permission;
@@ -49,7 +50,7 @@ public abstract class CoreCommand extends Command {
     }
 
     @Override
-    public List<String> tabComplete(CommandSender sender, String alais, String[] args) {
+    public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
         return onTabComplete(sender, args);
     }
 

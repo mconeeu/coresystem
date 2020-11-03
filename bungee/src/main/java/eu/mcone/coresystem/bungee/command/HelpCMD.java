@@ -5,17 +5,19 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import eu.mcone.coresystem.api.bungee.command.CoreCommand;
+import eu.mcone.coresystem.api.bungee.facades.Transl;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.plugin.Command;
 
-public class HelpCMD extends Command{
+public class HelpCMD extends CoreCommand {
 
 	public HelpCMD(){
 		super("help", null, "hilfe", "support");
 	}
 	
-	public void execute(final CommandSender sender, final String[] args){
-		BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.command.help"));
+	public void onCommand(CommandSender sender, String[] args){
+		BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, Transl.get("system.bungee.command.help"));
 	}
+
 }

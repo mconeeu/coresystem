@@ -1,9 +1,7 @@
 package eu.mcone.coresystem.bungee.player;
 
-import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.util.Messenger;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
-import eu.mcone.coresystem.api.core.translation.TranslationManager;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.core.player.CoreMessenger;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;

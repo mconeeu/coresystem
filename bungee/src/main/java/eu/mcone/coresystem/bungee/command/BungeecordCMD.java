@@ -6,28 +6,29 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.command.CoreCommand;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
 
-public class BungeecordCMD extends Command {
+public class BungeecordCMD extends CoreCommand {
 
     public BungeecordCMD() {
         super("bungeecord", null, "bungee");
     }
 
-    public void execute(final CommandSender sender, final String[] args) {
+    public void onCommand(CommandSender sender, String[] args) {
         if (args.length == 0) {
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "");
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§8§m---------- §r§3§lMCONE-BungeeCord-System §8§m----------");
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§7Entwickelt von §fTwinsterHD §7und §frufi");
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§r");
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§7§oWir bemühen uns darum alle Systeme und Spielmodi so effizient wie möglich zu gestalten.");
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§7§oDeshalb sind auch alle von uns verwendeten Plugins ausschließlich selbst entwickelt!");
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§8§m---------- §r§3§lMCONE-BungeeCord-System §8§m----------");
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "");
+            sender.sendMessage(TextComponent.fromLegacyText("§r" +
+                    "\n§8§m---------- §r§3§lMCONE-BungeeCord-System §8§m----------" +
+                    "\n§7Entwickelt von §fTwinsterHD §7und §frufi" +
+                    "\n§r" +
+                    "\n§7§oWir bemühen uns darum alle Systeme und Spielmodi so effizient wie möglich zu gestalten." +
+                    "\n§7§oDeshalb sind auch alle von uns verwendeten Plugins ausschließlich selbst entwickelt!" +
+                    "\n§8§m---------- §r§3§lMCONE-BungeeCord-System §8§m----------" +
+                    "\n"));
         } else if (args[0].equals("reload")) {
             if (sender instanceof ProxiedPlayer) {
                 ProxiedPlayer p = (ProxiedPlayer) sender;

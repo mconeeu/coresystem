@@ -66,6 +66,13 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     public abstract CorePluginManager getPluginManager();
 
     /**
+     * returns the Translation manager System
+     *
+     * @return Translationmanager instance
+     */
+    public abstract TranslationManager getTranslationManager();
+
+    /**
      * returns the Overwatch System
      *
      * @return Overwatch instance

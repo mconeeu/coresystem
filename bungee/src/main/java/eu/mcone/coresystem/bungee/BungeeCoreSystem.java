@@ -34,7 +34,6 @@ import eu.mcone.coresystem.bungee.utils.ChannelHandler;
 import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
-import eu.mcone.coresystem.core.translation.TranslationManager;
 import eu.mcone.coresystem.core.util.CoreCooldownSystem;
 import eu.mcone.coresystem.core.util.MoneyUtil;
 import eu.mcone.coresystem.core.util.PreferencesManager;
@@ -71,7 +70,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private Messenger messenger;
     @Getter
-    private TranslationManager translationManager;
+    private BungeeTranslationManager translationManager;
     @Getter
     private PreferencesManager preferences;
     @Getter
@@ -178,7 +177,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             sendConsoleMessage("§7CloudSystem available: " + cloudsystemAvailable);
 
             sendConsoleMessage("§aLoading Translations...");
-            translationManager = new TranslationManager(this, "bungeesystem");
+            translationManager = new BungeeTranslationManager(this, "bungeesystem");
             translationManager.loadAdditionalLanguages(Language.values());
             translationManager.loadAdditionalCategories("bukkitsystem");
             messenger = new BungeeMessenger(this, "system.prefix");
@@ -259,12 +258,13 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new HelpCMD(),
                 new BungeecordCMD(),
                 new RegisterCMD(),
-                new ForgotpassCMD(),
                 new ChatlogCMD(),
                 new RulesCMD(),
 
+                new ApplyCMD(),
+                new TeamCMD(),
+                new VoteCMD(),
                 new PremiumCMD(),
-                new YoutubeCMD(),
                 new BugreportCMD()
         );
     }

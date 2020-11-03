@@ -5,6 +5,8 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import eu.mcone.coresystem.api.bungee.command.CoreCommand;
+import eu.mcone.coresystem.api.bungee.facades.Transl;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
@@ -19,7 +21,6 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 import org.bson.Document;
 
@@ -29,17 +30,17 @@ import java.util.List;
 
 import static com.mongodb.client.model.Filters.eq;
 
-public class PremiumCMD extends Command implements TabExecutor {
+public class PremiumCMD extends CoreCommand implements TabExecutor {
 
     public PremiumCMD() {
-        super("premium", null);
+        super("premium");
     }
 
-    public void execute(final CommandSender sender, final String[] args) {
+    public void onCommand(CommandSender sender, String[] args) {
         long unixtime = System.currentTimeMillis() / 1000;
 
         if (args.length == 0) {
-            String[] parts = BungeeCoreSystem.getInstance().getTranslationManager().get("system.bungee.command.premium").split("%button%");
+            String[] parts = Transl.get("system.bungee.command.premium", sender).split("%button%");
 
             sender.sendMessage(
                     new ComponentBuilder("")
@@ -137,7 +138,7 @@ public class PremiumCMD extends Command implements TabExecutor {
                 } else if (args.length == 4) {
                     String target = args[1];
                     Group group = Group.getGroupbyName(args[2]);
-                    int months = Integer.valueOf(args[3]);
+                    int months = Integer.parseInt(args[3]);
 
                     try {
                         OfflineCorePlayer t = BungeeCoreSystem.getInstance().getOfflineCorePlayer(target);
@@ -169,10 +170,10 @@ public class PremiumCMD extends Command implements TabExecutor {
 
                 BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/premium add <player> <group> [<Anzahl der Monate>] §4oder §c/premium <check | remove> <eu.mcone.coresystem.api.core.player>");
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().send(p, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.noperm"));
+                BungeeCoreSystem.getInstance().getMessenger().send(p, Transl.get("system.command.noperm"));
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, BungeeCoreSystem.getInstance().getTranslationManager().get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, Transl.get("system.command.consolesender"));
         }
     }
 

@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bungee.command;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.command.CoreCommand;
 import eu.mcone.coresystem.api.bungee.event.PermissionChangeEvent;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.CoreException;
@@ -18,7 +19,6 @@ import group.onegaming.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 import org.bson.Document;
 
@@ -28,7 +28,7 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.set;
 import static com.mongodb.client.model.Updates.unset;
 
-public class PermsCMD extends Command implements TabExecutor {
+public class PermsCMD extends CoreCommand implements TabExecutor {
 
     private static final MongoCollection<Document> GROUP_COLLECTION = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("permission_groups");
     private static final MongoCollection<Document> PLAYER_COLLECTION = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("permission_players");
@@ -38,7 +38,7 @@ public class PermsCMD extends Command implements TabExecutor {
     }
 
     @Override
-    public void execute(CommandSender sender, String[] args) {
+    public void onCommand(CommandSender sender, String[] args) {
         if (args.length >= 3 && args[0].equalsIgnoreCase("user")) {
             try {
                 OfflineCorePlayer p = CoreSystem.getInstance().getOfflineCorePlayer(args[1]);
