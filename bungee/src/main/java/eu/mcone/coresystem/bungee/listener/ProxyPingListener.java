@@ -15,6 +15,7 @@ import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+import java.net.InetSocketAddress;
 import java.util.UUID;
 
 public class ProxyPingListener implements Listener {
@@ -107,17 +108,22 @@ public class ProxyPingListener implements Listener {
             players.setSample(PLAYER_INFOS);
         }
 
-        String hostName = con.getVirtualHost().getHostName();
-        if (!hostName.endsWith("mcone.eu")) {
-            version.setName("§4Unsichere Adresse!");
-            version.setProtocol(2);
+        System.out.println("con: "+con);
+        InetSocketAddress virtualHost = con.getVirtualHost();
+        if (virtualHost != null) {
+            String hostName = virtualHost.getHostName();
 
-            players.setSample(new ServerPing.PlayerInfo[] {
-                    new ServerPing.PlayerInfo("§c§oDu hast MC ONE mit einer unsicheren Adresse eingespeichert!", UUID.randomUUID()),
-                    new ServerPing.PlayerInfo("§c§oBitte benutze §c§nmcone.eu", UUID.randomUUID()),
-                    new ServerPing.PlayerInfo("§r", UUID.randomUUID()),
-                    new ServerPing.PlayerInfo("§c§oDeine Aktuelle Adresse: §4§o"+hostName, UUID.randomUUID())
-            });
+            if (hostName != null && !hostName.endsWith("mcone.eu")) {
+                version.setName("§4Unsichere Adresse!");
+                version.setProtocol(2);
+
+                players.setSample(new ServerPing.PlayerInfo[] {
+                        new ServerPing.PlayerInfo("§c§oDu hast MC ONE mit einer unsicheren Adresse eingespeichert!", UUID.randomUUID()),
+                        new ServerPing.PlayerInfo("§c§oBitte benutze §c§nmcone.eu", UUID.randomUUID()),
+                        new ServerPing.PlayerInfo("§r", UUID.randomUUID()),
+                        new ServerPing.PlayerInfo("§c§oDeine Aktuelle Adresse: §4§o"+hostName, UUID.randomUUID())
+                });
+            }
         }
 
         ping.setPlayers(players);
