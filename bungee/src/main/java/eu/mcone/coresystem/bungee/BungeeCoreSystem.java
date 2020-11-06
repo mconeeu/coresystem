@@ -134,7 +134,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 }
             }
 
-            getProxy().getConsole().sendMessage(new TextComponent(TextComponent.fromLegacyText("\n" +
+            getProxy().getConsole().sendMessage(TextComponent.fromLegacyText("\n" +
                     "      __  _____________  _   ________                                                          \n" +
                     "     /  |/  / ____/ __ \\/ | / / ____/                                                          \n" +
                     "    / /|_/ / /   / / / /  |/ / __/                                                             \n" +
@@ -144,7 +144,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                     "    / __  / / / / __ \\/ __ `/ _ \\/ _ \\/ /   / __ \\/ ___/ _ \\\\__ \\/ / / / ___/ __/ _ \\/ __ `__ \\\n" +
                     "   / /_/ / /_/ / / / / /_/ /  __/  __/ /___/ /_/ / /  /  __/__/ / /_/ (__  ) /_/  __/ / / / / /\n" +
                     "  /_____/\\__,_/_/ /_/\\__, /\\___/\\___/\\____/\\____/_/   \\___/____/\\__, /____/\\__/\\___/_/ /_/ /_/ \n" +
-                    "                    /____/                                     /____/\n")));
+                    "                    /____/                                     /____/\n"));
 
             gson = new Gson();
             jsonParser = new JsonParser();

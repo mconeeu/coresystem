@@ -34,7 +34,7 @@ public class ChatListener implements Listener {
             Player p = e.getPlayer();
             CorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(p);
 
-            if (!cp.isVanished() || VanishChatCMD.usingCommand.contains(p.getUniqueId())) {
+            if (!cp.isVanished() || VanishChatCMD.chatEnabled.contains(p.getUniqueId())) {
                 if (
                         cooldown > 0
                                 && !CoreSystem.getInstance().getCooldownSystem().addAndCheck(getClass(), p.getUniqueId())
@@ -73,10 +73,9 @@ public class ChatListener implements Listener {
 
                 e.getRecipients().remove(p);
                 p.sendMessage((cp.isNicked() ? cp.getNick().getGroup().getPrefix() : cp.getMainGroup().getPrefix()) + Transl.get("system.chat", p).replaceAll("%Player%", p.getName()) + playerMessage);
-                VanishChatCMD.usingCommand.remove(p.getUniqueId());
             } else {
                 e.setCancelled(true);
-                CoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze §c/vc <message>§4 um eine Chatnachricht zu schreiben während du im Vanish-Modus bist!");
+                CoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze §c/vc on§4 um eine Chatnachricht zu schreiben während du im Vanish-Modus bist!");
             }
         }
     }

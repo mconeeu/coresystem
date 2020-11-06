@@ -108,7 +108,6 @@ public class ProxyPingListener implements Listener {
             players.setSample(PLAYER_INFOS);
         }
 
-        System.out.println("con: "+con);
         InetSocketAddress virtualHost = con.getVirtualHost();
         if (virtualHost != null) {
             String hostName = virtualHost.getHostName();

@@ -24,14 +24,14 @@ public class CoreAfkManager implements AfkManager {
 
     private final Map<UUID, Location> locations;
     private final Map<UUID, Long> players;
-    private final List<UUID> afkPlayers;
+    private final Set<UUID> afkPlayers;
 
     private BukkitTask task;
 
     public CoreAfkManager(BukkitCoreSystem system) {
         locations = new HashMap<>();
         players = new HashMap<>();
-        afkPlayers = new ArrayList<>();
+        afkPlayers = new HashSet<>();
 
         system.registerEvents(new AfkListener(this));
 
@@ -74,20 +74,27 @@ public class CoreAfkManager implements AfkManager {
     }
 
     public void setAfk(Player p, boolean afk) {
-        PlayerState state;
+        PlayerState state = null;
 
         if (afk) {
-            afkPlayers.add(p.getUniqueId());
-            state = PlayerState.AFK;
+            if (afkPlayers.add(p.getUniqueId())) {
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du bist nun AFK!");
+                state = PlayerState.AFK;
+            }
         } else {
-            afkPlayers.remove(p.getUniqueId());
-            state = PlayerState.ONLINE;
+            if (afkPlayers.remove(p.getUniqueId())) {
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du bist nun nicht mehr AFK!");
+                players.put(p.getUniqueId(), 0L);
+                state = PlayerState.ONLINE;
+            }
         }
 
-        BukkitCoreSystem.getInstance().getMessenger().send(p, afk ? "§2Du bist nun AFK!" : "§2Du bist nun nicht mehr AFK!");
-        ((GlobalCorePlayer) BukkitCoreSystem.getInstance().getCorePlayer(p)).setState(state);
+        if (state != null) {
+            PlayerState changedState = state;
 
-        Bukkit.getScheduler().runTask(BukkitCoreSystem.getSystem(), () -> Bukkit.getPluginManager().callEvent(new AfkEvent(p, state)));
+            ((GlobalCorePlayer) BukkitCoreSystem.getInstance().getCorePlayer(p)).setState(changedState);
+            Bukkit.getScheduler().runTask(BukkitCoreSystem.getSystem(), () -> Bukkit.getPluginManager().callEvent(new AfkEvent(p, changedState)));
+        }
     }
 
     void unregisterPlayer(UUID uuid) {

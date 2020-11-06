@@ -11,6 +11,7 @@ import eu.mcone.coresystem.api.bungee.facades.Transl;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -67,8 +68,8 @@ public class MsgCMD extends CorePlayerCommand implements TabExecutor {
                                     msg.append(args[i]).append(" ");
                                 }
 
-                                bp.sendMessage(new TextComponent(Transl.get("system.bungee.chat.private.fromme", p).replaceAll("%Msg-Target%", t.getName()) + msg));
-                                t.bungee().sendMessage(new TextComponent(Transl.get("system.bungee.chat.private.tome", p).replaceAll("%Msg-Player%", p.getName()) + msg));
+                                bp.sendMessage(TextComponent.fromLegacyText(Transl.get("system.bungee.chat.private.fromme", p).replaceAll("%Msg-Target%", t.getName()) + msg, ChatColor.GRAY));
+                                t.bungee().sendMessage(TextComponent.fromLegacyText(Transl.get("system.bungee.chat.private.tome", p).replaceAll("%Msg-Player%", p.getName()) + msg, ChatColor.GRAY));
                                 reply.put(t.getUuid(), p.getUuid());
                             }
                         }

@@ -42,7 +42,7 @@ public class RestartCMD extends CoreCommand {
                 if (cursor >= 5) {
                     restart(sender, Integer.parseInt(args[0]));
                 } else {
-                    BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Bitte benutze: §c/restart [<Sekunden>]");
+                    BungeeCoreSystem.getInstance().getMessenger().sendSenderError(sender, "Der minimale Countdown ist ![5 Sekunden]!");
                 }
             }
             return;
@@ -56,8 +56,8 @@ public class RestartCMD extends CoreCommand {
 			for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
 				BungeeCoreSystem.getInstance().getMessenger().send(player, "§4§oDas Netzwerk wird in " + getTime(seconds) + "§4§o neustarten...");
 				Title title = ProxyServer.getInstance().createTitle();
-				title.title(new TextComponent("§fWillkommen auf §3§lMC ONE"));
-				title.subTitle(new TextComponent("§7§oDein Nummer 1 Minecraftnetzwerk"));
+				title.title(TextComponent.fromLegacyText("§fWillkommen auf §3§lMC ONE"));
+				title.subTitle(TextComponent.fromLegacyText("§7§oDein Nummer 1 Minecraftnetzwerk"));
 				title.fadeIn(20);
 				title.stay(100);
 				title.fadeOut(20);

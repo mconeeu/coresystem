@@ -10,6 +10,7 @@ import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.command.OverwatchCMD;
 import eu.mcone.coresystem.bungee.command.ReportCMD;
+import eu.mcone.coresystem.bungee.command.ReportsCMD;
 import eu.mcone.coresystem.bungee.overwatch.punish.PunishManager;
 import eu.mcone.coresystem.bungee.overwatch.report.ReportManager;
 import eu.mcone.coresystem.bungee.overwatch.trusted.TrustManager;
@@ -40,6 +41,7 @@ public class Overwatch extends GlobalOverwatch implements eu.mcone.coresystem.ap
         loggedIn = new HashSet<>();
 
         BungeeCoreSystem.getSystem().registerCommands(
+                new ReportsCMD(),
                 new ReportCMD(this),
                 new OverwatchCMD(this)
         );

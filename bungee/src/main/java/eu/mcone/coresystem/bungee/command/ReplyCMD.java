@@ -11,6 +11,7 @@ import eu.mcone.coresystem.api.bungee.facades.Transl;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -44,8 +45,8 @@ public class ReplyCMD extends CorePlayerCommand {
 
                         MsgCMD.reply.put(t.getUuid(), p.getUuid());
 
-                        bp.sendMessage(new TextComponent(Transl.get("system.bungee.chat.private.fromme", bp).replaceAll("%Msg-Target%", t.getName()) + msg));
-                        t.bungee().sendMessage(new TextComponent(Transl.get("system.bungee.chat.private.tome", t).replaceAll("%Msg-Player%", p.getName()) + msg));
+                        bp.sendMessage(TextComponent.fromLegacyText(Transl.get("system.bungee.chat.private.fromme", bp).replaceAll("%Msg-Target%", t.getName()) + msg, ChatColor.GRAY));
+                        t.bungee().sendMessage(TextComponent.fromLegacyText(Transl.get("system.bungee.chat.private.tome", t).replaceAll("%Msg-Player%", p.getName()) + msg, ChatColor.GRAY));
                     }
                 }
             } else {

@@ -39,7 +39,13 @@ public class VanishCMD extends CorePlayerCommand {
 
     private static boolean setVanished(CorePlayer cp) {
         if (!cp.isVanished()) {
-            return cp.setVanished(true);
+            boolean vanished = cp.setVanished(true);
+
+            if (VanishChatCMD.chatEnabled.contains(cp.getUuid())) {
+                BukkitCoreSystem.getInstance().getMessenger().sendInfo(cp.bukkit(), "![Achtung]: Der Vanish Chat ist aktiviert!");
+            }
+
+            return vanished;
         } else {
             return cp.setVanished(false);
         }

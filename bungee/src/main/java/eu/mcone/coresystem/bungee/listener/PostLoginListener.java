@@ -58,8 +58,8 @@ public class PostLoginListener implements Listener {
         }
 
         Title title = ProxyServer.getInstance().createTitle();
-        title.title(new TextComponent("§fWillkommen auf §3§lMC ONE"));
-        title.subTitle(new TextComponent("§7§oDein Nummer 1 Minecraftnetzwerk"));
+        title.title(TextComponent.fromLegacyText("§fWillkommen auf §3§lMC ONE"));
+        title.subTitle(TextComponent.fromLegacyText("§7§oDein Nummer 1 Minecraftnetzwerk"));
         title.fadeIn(20);
         title.stay(100);
         title.fadeOut(20);

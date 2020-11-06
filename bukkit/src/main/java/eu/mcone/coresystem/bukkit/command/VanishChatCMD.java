@@ -15,7 +15,7 @@ import java.util.*;
 
 public class VanishChatCMD extends CorePlayerCommand {
 
-    public static Set<UUID> usingCommand = new HashSet<>();
+    public static Set<UUID> chatEnabled = new HashSet<>();
 
     public VanishChatCMD() {
         super("vanishchat", "system.bukkit.vanish", "vc");
@@ -24,20 +24,21 @@ public class VanishChatCMD extends CorePlayerCommand {
     @Override
     public boolean onPlayerCommand(Player p, String[] args) {
         if (CoreSystem.getInstance().getCorePlayer(p).isVanished()) {
-            if (args.length > 0) {
-                StringBuilder sb = new StringBuilder();
+            if (args.length == 1 && (args[0].equalsIgnoreCase("on") || args[0].equalsIgnoreCase("off"))) {
+                if (args[0].equalsIgnoreCase("on")) {
+                    chatEnabled.add(p.getUniqueId());
+                    BukkitCoreSystem.getInstance().getMessenger().sendSuccess(p, "Du hast den ![Vanish Chat] aktiviert!");
 
-                for (int i = 0; i < args.length; i++) {
-                    sb.append(args[i]);
+                    return true;
+                } else if (args[0].equalsIgnoreCase("off")) {
+                    chatEnabled.remove(p.getUniqueId());
+                    BukkitCoreSystem.getInstance().getMessenger().sendSuccess(p, "Du hast den ![Vanish Chat] deaktiviert!");
 
-                    if (i != args.length - 1) {
-                        sb.append(" ");
-                    }
+                    return true;
                 }
-
-                usingCommand.add(p.getUniqueId());
-                p.chat(sb.toString());
             }
+
+            BukkitCoreSystem.getInstance().getMessenger().sendError(p, "Bitte benutze: ![/vc <on|off>]");
         } else {
             BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Benutze §c/vanish§4 um in den Vanish-Modus zu wechseln!");
         }

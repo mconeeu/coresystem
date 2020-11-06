@@ -18,22 +18,24 @@ public class PlayerVersionCheckListener implements Listener {
 
         if (version < 47) {
             e.setCancelled(true);
-            e.setCancelReason(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
-                    + "\n§4§oDu verwendest eine zu alte Minecraft-Version!"
-                    + "\n§r"
-                    + "\n§fMC ONE §7ist momentan nur über die Version §f1.8.X§7 erreichbar, "
-                    + "\n§7um die bekannteste Minecraftversion mit dem beliebtesten PvP-System"
-                    + "\n§7zu unterstützen."))
-            );
+            e.setCancelReason(TextComponent.fromLegacyText(
+                    "§f§lMC ONE §3Minecraftnetzwerk"
+                            + "\n§4§oDu verwendest eine zu alte Minecraft-Version!"
+                            + "\n§r"
+                            + "\n§fMC ONE §7ist momentan nur über die Version §f1.8.X§7 erreichbar, "
+                            + "\n§7um die bekannteste Minecraftversion mit dem beliebtesten PvP-System"
+                            + "\n§7zu unterstützen."
+            ));
         } else if (version > 47) {
             //e.setCancelled(true);
-            e.setCancelReason(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
-                    + "\n§4§oDu verwendest eine zu alte Minecraft-Version!"
-                    + "\n§r"
-                    + "\n§fMC ONE §7ist momentan nur über die Version §f1.8.X§7 erreichbar, "
-                    + "\n§7um die bekannteste Minecraftversion mit dem beliebtesten PvP-System"
-                    + "\n§7zu unterstützen."))
-            );
+            e.setCancelReason(TextComponent.fromLegacyText(
+                    "§f§lMC ONE §3Minecraftnetzwerk"
+                            + "\n§4§oDu verwendest eine zu alte Minecraft-Version!"
+                            + "\n§r"
+                            + "\n§fMC ONE §7ist momentan nur über die Version §f1.8.X§7 erreichbar, "
+                            + "\n§7um die bekannteste Minecraftversion mit dem beliebtesten PvP-System"
+                            + "\n§7zu unterstützen."
+            ));
         }
     }
 

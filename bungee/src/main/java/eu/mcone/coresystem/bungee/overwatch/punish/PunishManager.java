@@ -92,17 +92,19 @@ public class PunishManager implements eu.mcone.coresystem.api.bungee.overwatch.p
 
                     if (targetBungeePlayer != null) {
                         targetName = targetBungeePlayer.getName();
-                        targetBungeePlayer.bungee().disconnect(new TextComponent(TextComponent.fromLegacyText("§f§lMC ONE §3Minecraftnetzwerk"
-                                + "\n§7§oDu wurdest vom Netzwerk gebannt"
-                                + "\n§r"
-                                + "\n§7Gebannt von §8» §e" + memberName
-                                + "\n§7Grund §8» §c" + template.getName() + " §7/§c " + reason
-                                + "\n§7Gebannt für §8» " + getEndeString(banTime)
-                                + (replayID != null ? "\n§7RpelayID: " + replayID : "")
-                                + "\n§r"
-                                + "\n§2Du hast die Möglichkeit auf einer der folgenden Plattformen einen Entbannungsantrag zu stellen:"
-                                + "\n§7TS-Server §8» §fts.mcone.eu"
-                                + "\n§7Homepage §8» §fwww.mcone.eu/unban")));
+                        targetBungeePlayer.bungee().disconnect(TextComponent.fromLegacyText(
+                                "§f§lMC ONE §3Minecraftnetzwerk"
+                                        + "\n§7§oDu wurdest vom Netzwerk gebannt"
+                                        + "\n§r"
+                                        + "\n§7Gebannt von §8» §e" + memberName
+                                        + "\n§7Grund §8» §c" + template.getName() + " §7/§c " + reason
+                                        + "\n§7Gebannt für §8» " + getEndeString(banTime)
+                                        + (replayID != null ? "\n§7RpelayID: " + replayID : "")
+                                        + "\n§r"
+                                        + "\n§2Du hast die Möglichkeit auf einer der folgenden Plattformen einen Entbannungsantrag zu stellen:"
+                                        + "\n§7TS-Server §8» §fts.mcone.eu"
+                                        + "\n§7Homepage §8» §fwww.mcone.eu/unban"
+                        ));
                     } else {
                         try {
                             BungeeOfflineCorePlayer offlineCorePlayer = (BungeeOfflineCorePlayer) BungeeCoreSystem.getSystem().getOfflineCorePlayer(target);
