@@ -58,7 +58,7 @@ public class BungeecordCMD extends CoreCommand {
                 } else if (args[1].equalsIgnoreCase("permissions")) {
                     BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§aPermissions werden neu geladen...");
                     BungeeCoreSystem.getInstance().getPermissionManager().reload();
-                } else if (args[1].equalsIgnoreCase("nick")) {
+                } else if (args[1].equalsIgnoreCase("nicks")) {
                     BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§aNicks werden neu geladen...");
                     BungeeCoreSystem.getInstance().getNickManager().reload();
                 }

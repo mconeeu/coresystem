@@ -8,7 +8,6 @@ package eu.mcone.coresystem.core.player;
 import com.mongodb.client.model.ReplaceOptions;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
-import eu.mcone.coresystem.api.core.exception.RuntimeCoreException;
 import eu.mcone.coresystem.api.core.overwatch.trust.TrustedUser;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
@@ -225,7 +224,7 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     @Override
     public void setCoins(int coins) {
         if (coins < 0) {
-            throw new RuntimeCoreException("Cannot set negative coin amount!");
+            throw new IllegalArgumentException("Cannot set negative coin amount!");
         } else {
             this.coins = coins;
             ((CoreModuleCoreSystem) instance).getMoneyUtil().setCoins(uuid, coins);
@@ -235,18 +234,18 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     @Override
     public void addCoins(int amount) {
         this.coins += amount;
-        ((CoreModuleCoreSystem) instance).getMoneyUtil().addCoins(uuid, amount);
+        ((CoreModuleCoreSystem) instance).getMoneyUtil().setCoins(uuid, coins);
     }
 
     @Override
-    public void removeCoins(int amount) {
+    public int removeCoins(int amount) {
         if (coins - amount < 0) {
             amount = coins;
-            ((CoreModuleCoreSystem) instance).sendConsoleMessage("§7Tried to remove more coins than Player §f" + name + "§7 has! (" + coins + "-" + amount + ")");
         }
 
         this.coins -= amount;
-        ((CoreModuleCoreSystem) instance).getMoneyUtil().removeCoins(uuid, amount);
+        ((CoreModuleCoreSystem) instance).getMoneyUtil().setCoins(uuid, coins);
+        return amount;
     }
 
     @Override
@@ -255,30 +254,30 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     }
 
     @Override
-    public void setEmeralds(int coins) {
-        if (coins < 0) {
-            throw new RuntimeCoreException("Cannot set negative coin amount!");
+    public void setEmeralds(int emeralds) {
+        if (emeralds < 0) {
+            throw new IllegalArgumentException("Cannot set negative emerald amount!");
         } else {
-            this.emeralds = coins;
-            ((CoreModuleCoreSystem) instance).getMoneyUtil().setEmeralds(uuid, coins);
+            this.emeralds = emeralds;
+            ((CoreModuleCoreSystem) instance).getMoneyUtil().setEmeralds(uuid, emeralds);
         }
     }
 
     @Override
     public void addEmeralds(int amount) {
         this.emeralds += amount;
-        ((CoreModuleCoreSystem) instance).getMoneyUtil().addEmeralds(uuid, amount);
+        ((CoreModuleCoreSystem) instance).getMoneyUtil().setEmeralds(uuid, emeralds);
     }
 
     @Override
-    public void removeEmeralds(int amount) {
+    public int removeEmeralds(int amount) {
         if (emeralds - amount < 0) {
             amount = emeralds;
-            ((CoreModuleCoreSystem) instance).sendConsoleMessage("§7Tried to remove more emeralds than Player §f" + name + "§7 has! (" + coins + "-" + amount + ")");
         }
 
         this.emeralds -= amount;
-        ((CoreModuleCoreSystem) instance).getMoneyUtil().removeEmeralds(uuid, amount);
+        ((CoreModuleCoreSystem) instance).getMoneyUtil().setEmeralds(uuid, emeralds);
+        return amount;
     }
 
     @Override

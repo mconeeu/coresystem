@@ -34,7 +34,7 @@ public class ProfileInventory extends CoreInventory {
         String status = cp.getState().getName();
 
         if (cp.isNicked()) {
-            setItem(InventorySlot.ROW_1_SLOT_5, Skull.fromMojangValue(cp.getNick().getSkinInfo().getValue(), 1).toItemBuilder().displayName("§f§l" + cp.getName()).lore(
+            setItem(InventorySlot.ROW_1_SLOT_5, Skull.fromMojangValue(cp.getSkin().getValue(), 1).toItemBuilder().displayName("§f§l" + cp.getName()).lore(
                     cp.getMainGroup().getLabel(),
                     "",
                     "§7Nick: " + cp.getNick().getGroup().getPrefix() + cp.getNick().getName(),

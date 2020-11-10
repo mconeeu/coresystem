@@ -82,7 +82,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private FriendSystem friendSystem;
     @Getter
-    private NickManager nickManager;
+    private CoreNickManager nickManager;
     @Getter
     private ChannelHandler channelHandler;
     @Getter
@@ -169,6 +169,13 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             moneyUtil = new MoneyUtil(this, getMongoDB()) {
                 @Override
                 protected void fireEvent(GlobalCorePlayer player, Currency currency) {
+                    channelHandler.createInfoRequest(
+                            ((CorePlayer) player).bungee(),
+                            "EVENT",
+                            "MoneyChangeEvent",
+                            currency.toString(),
+                            String.valueOf(currency.equals(Currency.COINS) ? player.getCoins() : player.getEmeralds())
+                    );
                     getProxy().getPluginManager().callEvent(new MoneyChangeEvent((CorePlayer) player, currency));
                 }
             };
@@ -195,7 +202,7 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             labyModAPI = new LabyModManager(this);
 
             sendConsoleMessage("§aLoading Nicksystem...");
-            nickManager = new NickManager(this);
+            nickManager = new CoreNickManager(this);
 
             sendConsoleMessage("§aRegistering Commands, Events & Scheduler...");
             registerCommand();

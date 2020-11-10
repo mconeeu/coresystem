@@ -39,7 +39,8 @@ import java.util.Map;
 @DontObfuscate
 public class BukkitCoreWorld implements CoreWorld {
 
-    private String ID, name, alias, generator, generatorSettings;
+    private String id, name, alias, generator, generatorSettings;
+    private int[] version = new int[]{0, 0, 1};
     private WorldType worldType = WorldType.NORMAL;
     private World.Environment environment = World.Environment.NORMAL;
     private Difficulty difficulty = Difficulty.NORMAL;
@@ -266,6 +267,11 @@ public class BukkitCoreWorld implements CoreWorld {
                 entity.remove();
             }
         }
+    }
+
+    @Override
+    public String getVersionString() {
+        return "v"+version[0]+"."+version[1]+"."+version[2];
     }
 
     @Override

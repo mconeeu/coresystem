@@ -41,12 +41,12 @@ public class MsgCMD extends CorePlayerCommand implements TabExecutor {
                 p.getSettings().setPrivateMessages(PlayerSettings.Sender.ALL);
                 p.updateSettings();
 
-                BungeeCoreSystem.getInstance().getMessenger().send(p.bungee(), Transl.get("system.bungee.chat.private.see", bp));
+                BungeeCoreSystem.getInstance().getMessenger().sendTransl(p.bungee(), "system.bungee.chat.private.see");
             } else {
                 p.getSettings().setPrivateMessages(PlayerSettings.Sender.NOBODY);
                 p.updateSettings();
 
-                BungeeCoreSystem.getInstance().getMessenger().send(p.bungee(), Transl.get("system.bungee.chat.private.dontsee", bp));
+                BungeeCoreSystem.getInstance().getMessenger().sendTransl(p.bungee(), "system.bungee.chat.private.dontsee");
             }
         } else {
             final CorePlayer t = BungeeCoreSystem.getInstance().getCorePlayer(args[0]);

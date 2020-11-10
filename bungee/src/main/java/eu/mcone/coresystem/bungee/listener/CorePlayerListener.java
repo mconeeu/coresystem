@@ -104,7 +104,7 @@ public class CorePlayerListener implements Listener {
         }
 
         if (BungeeCoreSystem.getSystem().getPreferences().get("maintenance", boolean.class)) {
-            if (p.hasPermission("system.bungee.wartung.join")) {
+            if (p.hasPermission("system.bungee.maintenance.join")) {
                 e.setCancelled(false);
             } else {
                 e.setCancelled(true);

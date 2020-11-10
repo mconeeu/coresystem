@@ -6,7 +6,6 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
-import eu.mcone.coresystem.api.bungee.facades.Transl;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -37,7 +36,7 @@ public class JumpCMD extends CorePlayerCommand {
                     BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du kannst nur zu Spielern springen die deine Freunde sind!");
                 }
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().send(p, Transl.get("system.player.notonline", p));
+                BungeeCoreSystem.getInstance().getMessenger().sendTransl(p, "system.player.notonline");
             }
         } else {
             BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte Benutze: §c/jump <Spieler>");

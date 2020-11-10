@@ -5,8 +5,10 @@
 
 package eu.mcone.coresystem.bukkit.world;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import eu.mcone.cloud.core.api.world.CloudWorldManager;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.npc.data.PlayerNpcData;
@@ -42,7 +44,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     final static String CONFIG_NAME = "core-config.json";
 
     private final static String CONFIG_VERSION_KEY = "configVersion";
-    final static int LATEST_CONFIG_VERSION = 5;
+    final static int LATEST_CONFIG_VERSION = 6;
 
     private final WorldCMD worldCMD;
     List<BukkitCoreWorld> coreWorlds;
@@ -108,7 +110,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
 
                             w.save();
                             coreWorlds.add(w);
-                            BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + w.getName() + ", ID " + w.getID());
+                            BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + w.getName() + " "+w.getVersionString()+" (" + w.getId()+") ");
                         }
                     } else {
                         if (world != null) {
@@ -313,6 +315,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                 world.getName(),
                 generator,
                 generatorSettings,
+                new int[]{0, 0, 1},
                 world.getWorldType(),
                 world.getEnvironment(),
                 world.getDifficulty(),
@@ -407,11 +410,20 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                     }
                 }
             }
-            case 4: {
-                CoreSystem.getInstance().sendConsoleMessage("§7Updating Config from version 4 to 5...");
+            case 5: {
+                CoreSystem.getInstance().sendConsoleMessage("§7Updating Config from version 4/5 to 6...");
 
                 Random random = new Random(6);
-                json.getAsJsonObject().addProperty("iD", random.nextString());
+                JsonObject world = json.getAsJsonObject();
+                JsonArray version = new JsonArray();
+                version.add(new JsonPrimitive(0));
+                version.add(new JsonPrimitive(0));
+                version.add(new JsonPrimitive(1));
+
+                world.remove("ID");
+                world.remove("iD");
+                world.addProperty("id", random.nextString());
+                world.add("version", version);
             }
         }
 

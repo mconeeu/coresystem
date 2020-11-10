@@ -49,7 +49,7 @@ public class WorldCMD extends CorePlayerCommand {
 
                     componentBuilder
                             .append("§3" + world.getName())
-                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§f" + world.bukkit().getPlayers().size() + " Spieler & NPCs\n§7§oLinksklick zum teleportieren").create()))
+                            .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§f" + world.getVersionString() + " §7("+world.getId()+")\n§7§oLinksklick zum teleportieren").create()))
                             .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/world tp " + world.getName()));
 
                     if (i != worlds.size() - 1) componentBuilder.append(ChatColor.GRAY + ", ");
@@ -271,25 +271,25 @@ public class WorldCMD extends CorePlayerCommand {
                                 w.setGeneratorSettings(args[2]);
                                 BukkitCoreSystem.getInstance().getMessenger().send(p, "§6Diese Einstellung tritt erst nach einem Serverneustart in Wirkung!");
                             } else if (args[1].equalsIgnoreCase("generateStructures")) {
-                                w.setGenerateStructures(Boolean.valueOf(args[2]));
+                                w.setGenerateStructures(Boolean.parseBoolean(args[2]));
                             } else if (args[1].equalsIgnoreCase("autoSave")) {
-                                w.setAutoSave(Boolean.valueOf(args[2]));
+                                w.setAutoSave(Boolean.parseBoolean(args[2]));
                             } else if (args[1].equalsIgnoreCase("pvp")) {
-                                w.setPvp(Boolean.valueOf(args[2]));
+                                w.setPvp(Boolean.parseBoolean(args[2]));
                             } else if (args[1].equalsIgnoreCase("allowAnimals")) {
-                                w.setAllowAnimals(Boolean.valueOf(args[2]));
-                                if (!Boolean.valueOf(args[2])) w.purgeAnimals();
+                                w.setAllowAnimals(Boolean.parseBoolean(args[2]));
+                                if (!Boolean.parseBoolean(args[2])) w.purgeAnimals();
                             } else if (args[1].equalsIgnoreCase("allowMonsters")) {
-                                w.setAllowMonsters(Boolean.valueOf(args[2]));
-                                if (!Boolean.valueOf(args[2])) w.purgeMonsters();
+                                w.setAllowMonsters(Boolean.parseBoolean(args[2]));
+                                if (!Boolean.parseBoolean(args[2])) w.purgeMonsters();
                             } else if (args[1].equalsIgnoreCase("spawnAnimals")) {
-                                w.setSpawnAnimals(Boolean.valueOf(args[2]));
+                                w.setSpawnAnimals(Boolean.parseBoolean(args[2]));
                             } else if (args[1].equalsIgnoreCase("spawnMonsters")) {
-                                w.setSpawnMonsters(Boolean.valueOf(args[2]));
+                                w.setSpawnMonsters(Boolean.parseBoolean(args[2]));
                             } else if (args[1].equalsIgnoreCase("keepSpawnInMemory")) {
-                                w.setKeepSpawnInMemory(Boolean.valueOf(args[2]));
+                                w.setKeepSpawnInMemory(Boolean.parseBoolean(args[2]));
                             } else if (args[1].equalsIgnoreCase("loadOnStartup")) {
-                                w.setLoadOnStartup(Boolean.valueOf(args[2]));
+                                w.setLoadOnStartup(Boolean.parseBoolean(args[2]));
                             } else if (args[1].equalsIgnoreCase("seed")) {
                                 BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Der Seed kann nachträglich nicht verändert werden!");
                                 return true;

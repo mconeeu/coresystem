@@ -6,12 +6,15 @@
 package eu.mcone.coresystem.bungee.listener;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.event.MoneyChangeEvent;
 import eu.mcone.coresystem.api.bungee.event.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.overwatch.report.Report;
+import eu.mcone.coresystem.api.core.player.Currency;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.friend.Party;
+import eu.mcone.coresystem.core.player.GlobalOfflineCorePlayer;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -108,6 +111,7 @@ public class PluginMessageListener implements Listener {
                     } else if (subch.equalsIgnoreCase("PUNISH")) {
                         String id = in.readUTF();
                         System.out.println("PUNISH");
+
                         if (BungeeCoreSystem.getSystem().getOverwatch().getReportManager().existsReport(id)) {
                             System.out.println("EXISTS");
                             Report report = BungeeCoreSystem.getSystem().getOverwatch().getReportManager().getReport(id);
@@ -131,8 +135,20 @@ public class PluginMessageListener implements Listener {
                                 CoreSystem.getInstance().getCorePlayer(p),
                                 CoreSystem.getInstance().getGson().fromJson(in.readUTF(), PlayerSettings.class)
                         ));
+                    } else if (subch.equalsIgnoreCase("MONEY_CHANGE")) {
+                        Currency currency = Currency.valueOf(in.readUTF());
+                        int amount = Integer.parseInt(in.readUTF());
+
+                        switch (currency) {
+                            case COINS:
+                                ((GlobalOfflineCorePlayer) cp).setCoinsAmount(amount);
+                                break;
+                            case EMERALDS:
+                                ((GlobalOfflineCorePlayer) cp).setEmeraldsAmount(amount);
+                                break;
+                        }
+                        ProxyServer.getInstance().getPluginManager().callEvent(new MoneyChangeEvent(cp, currency));
                     }
-                } else if (mainChannel.equalsIgnoreCase("MC_ONE_SET_OBJ")) {
                 } else if (mainChannel.equalsIgnoreCase("MC_ONE_REPLAY")) {
                     String subch = in.readUTF();
                     Server server = p.getServer();

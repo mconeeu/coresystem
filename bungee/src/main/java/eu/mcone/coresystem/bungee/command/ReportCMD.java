@@ -25,7 +25,7 @@ public class ReportCMD extends CorePlayerCommand {
     public void onPlayerCommand(ProxiedPlayer p, String[] args) {
         if (args.length == 1) {
             if (args[0].equalsIgnoreCase("close")) {
-                if (p.hasPermission("system.bungee.overwatch.report.general") || p.hasPermission("system.bungee.overwatch.report.*")) {
+                if (p.hasPermission("system.bungee.overwatch.report")) {
                     if (overwatch.getReportManager().currentlyWorkingOnReport(p.getUniqueId())) {
                         overwatch.getReportManager().closeReport(p);
                         overwatch.getMessenger().send(p, "§7Du hast den Report erfolgreich §aabgeschlosse§7!");
@@ -40,7 +40,7 @@ public class ReportCMD extends CorePlayerCommand {
             }
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("accept")) {
-                if (p.hasPermission("system.bungee.overwatch.report.general") || p.hasPermission("system.bungee.overwatch.report.*")) {
+                if (p.hasPermission("system.bungee.overwatch.report")) {
                     String id = args[1];
 
                     if (!id.isEmpty()) {
@@ -50,7 +50,6 @@ public class ReportCMD extends CorePlayerCommand {
                                     Report report = overwatch.getReportManager().getReport(id);
                                     OfflineCorePlayer corePlayer = BungeeCoreSystem.getSystem().getOfflineCorePlayer(report.getMember());
                                     overwatch.getMessenger().send(p, "§4Das §aTeammitglied §7" + corePlayer.getMainGroup().getPrefix() + corePlayer.getName() + " §4kümmert sich bereits um den Report!");
-
                                 } catch (PlayerNotResolvedException e) {
                                     e.printStackTrace();
                                 }

@@ -12,7 +12,7 @@ import net.md_5.bungee.api.CommandSender;
 public class MaintenanceCMD extends CoreCommand {
 
     public MaintenanceCMD(){
-        super("wartung", "system.bungee.wartung");
+        super("wartung", "system.bungee.maintenance");
     }
 
     public void onCommand(CommandSender sender, String[] args) {

@@ -83,6 +83,10 @@ public class PermsCMD extends CoreCommand implements TabExecutor {
                                         if (groups.contains(g)) {
                                             groups.remove(g);
 
+                                            if (groups.isEmpty()) {
+                                                groups.add(Group.SPIELER);
+                                            }
+
                                             StringBuilder sb = new StringBuilder();
                                             groups.forEach(group -> sb.append(group.getLabel()).append(" "));
 

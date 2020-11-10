@@ -78,8 +78,9 @@ public interface GlobalOfflineCorePlayer {
      * sets the given coin amount
      *
      * @param coins amount
+     * @throws IllegalStateException if coins amount is smaller than 0
      */
-    void setCoins(int coins);
+    void setCoins(int coins) throws IllegalStateException;
 
     /**
      * adds the given amount to the players coins
@@ -93,8 +94,9 @@ public interface GlobalOfflineCorePlayer {
      * if wished amount subtracted from his current is smaller than 0 it will be set to 0
      *
      * @param amount amount
+     * @return the final amount of coins that got removed (in case the player has fewer coins than the given amount)
      */
-    void removeCoins(int amount);
+    int removeCoins(int amount);
 
     /**
      * returns the amount of emeralds that the player has
@@ -114,8 +116,9 @@ public interface GlobalOfflineCorePlayer {
      * sets the given emerald amount
      *
      * @param coins amount
+     * @throws IllegalStateException if emeralds amount is smaller than 0
      */
-    void setEmeralds(int coins);
+    void setEmeralds(int coins) throws IllegalStateException;
 
     /**
      * adds the given amount to the players emeralds
@@ -129,8 +132,9 @@ public interface GlobalOfflineCorePlayer {
      * if wished amount subtracted from his current is smaller than 0 it will be set to 0
      *
      * @param amount amount
+     * @return the final amount of coins that got removed (in case the player has fewer coins than the given amount)
      */
-    void removeEmeralds(int amount);
+    int removeEmeralds(int amount);
 
     /**
      * refresh all players groups from database

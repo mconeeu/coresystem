@@ -41,22 +41,17 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
     @Override
     public void nick(Player p, Nick nick, boolean notify) {
         CorePlayer cp = instance.getCorePlayer(p);
+        ((BukkitCorePlayer) cp).setNick(nick);
+        ((BukkitCorePlayer) cp).setNicked(true);
 
-        if (!cp.isNicked()) {
-            ((BukkitCorePlayer) cp).setNick(nick);
-            ((BukkitCorePlayer) cp).setNicked(true);
-
-            if (allowSkinChange) {
-                setNick(p, nick.getName(), nick.getUuid(), nick.getSkinInfo());
-            } else {
-                setNick(p, ((CraftPlayer) p).getHandle().getProfile(), nick.getName(), nick.getUuid());
-            }
-
-            if (notify) {
-                BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Dein Nickname ist nun §a" + nick.getName());
-            }
+        if (allowSkinChange) {
+            setNick(p, nick.getName(), nick.getUuid(), nick.getSkinInfo());
         } else {
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du bist bereits genickt!");
+            setNick(p, ((CraftPlayer) p).getHandle().getProfile(), nick.getName(), nick.getUuid());
+        }
+
+        if (notify) {
+            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Dein Nickname ist nun §a" + nick.getName());
         }
     }
 
@@ -84,9 +79,13 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
         EntityPlayer ep = ((CraftPlayer) p).getHandle();
 
         GameProfile gp = ((CraftPlayer) p).getProfile(), privateGp = new GameProfile(p.getUniqueId(), name);
-        for (Property property : gp.getProperties().values()) {
-            if (property.getName().equalsIgnoreCase("textures"))
-                oldProfiles.put(p.getUniqueId(), instance.getPlayerUtils().constructSkinInfo(name, property.getValue(), property.getSignature()));
+        if (!oldProfiles.containsKey(p.getUniqueId())) {
+            for (Property property : gp.getProperties().values()) {
+                if (property.getName().equalsIgnoreCase("textures")) {
+                    oldProfiles.put(p.getUniqueId(), instance.getPlayerUtils().constructSkinInfo(name, property.getValue(), property.getSignature()));
+                    break;
+                }
+            }
         }
         gp.getProperties().removeAll("textures");
         gp.getProperties().put("textures", new Property("textures", skin.getValue(), skin.getSignature()));

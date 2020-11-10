@@ -7,7 +7,6 @@ package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.command.CoreCommand;
-import eu.mcone.coresystem.api.bungee.facades.Transl;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
@@ -26,7 +25,7 @@ public class EmeraldsCMD extends CoreCommand {
             if (sender instanceof ProxiedPlayer) {
                 BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§7Du hast momentan §a" + CoreSystem.getInstance().getCorePlayer(((ProxiedPlayer) sender)).getEmeralds() + " Emeralds!");
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, Transl.get("system.command.consolesender", sender));
+                BungeeCoreSystem.getInstance().getMessenger().sendSenderTransl(sender, "system.command.consolesender");
             }
         } else if (sender.hasPermission("system.bungee.emeralds")) {
             if (args.length == 1) {
@@ -63,7 +62,7 @@ public class EmeraldsCMD extends CoreCommand {
 
             BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Bitte benutze: §c/emeralds <add|remove|set> <Spieler> <Anzahl>");
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, Transl.get("system.command.noperm", sender));
+            BungeeCoreSystem.getInstance().getMessenger().sendSenderTransl(sender, "system.command.noperm");
         }
     }
 

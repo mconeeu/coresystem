@@ -8,29 +8,27 @@ package eu.mcone.coresystem.bungee.player;
 import com.mongodb.client.MongoCollection;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
+import eu.mcone.coresystem.api.bungee.player.NickManager;
 import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import group.onegaming.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.inc;
 
-public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickManager {
+public class CoreNickManager implements NickManager {
 
     private static final Random NICK_CHOOSE_RANDOM = new Random();
     private static final MongoCollection<Nick> NICKS_COLLECTION = BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("nicks", Nick.class);
 
     private final BungeeCoreSystem instance;
-    private final HashMap<Nick, ProxiedPlayer> nicks;
+    private final Map<Nick, ProxiedPlayer> nicks;
 
-    public NickManager(BungeeCoreSystem instance) {
+    public CoreNickManager(BungeeCoreSystem instance) {
         this.instance = instance;
         this.nicks = new HashMap<>();
 
@@ -39,10 +37,22 @@ public class NickManager implements eu.mcone.coresystem.api.bungee.player.NickMa
 
     @Override
     public void reload() {
+        Map<Nick, ProxiedPlayer> currentNicks = new HashMap<>();
+        for (Map.Entry<Nick, ProxiedPlayer> nick : nicks.entrySet()) {
+            if (nick.getValue() != null) {
+                currentNicks.put(nick.getKey(), nick.getValue());
+            }
+        }
         nicks.clear();
 
         for (Nick nick : NICKS_COLLECTION.find()) {
-            nicks.put(nick, null);
+            nicks.put(nick, currentNicks.getOrDefault(nick, null));
+            currentNicks.remove(nick);
+        }
+
+        for (ProxiedPlayer p : currentNicks.values()) {
+            ((BungeeCorePlayer) CoreSystem.getInstance().getCorePlayer(p)).setCurrentNick(null);
+            nick(p);
         }
     }
 

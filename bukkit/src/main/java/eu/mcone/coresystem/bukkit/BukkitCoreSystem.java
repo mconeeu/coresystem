@@ -24,6 +24,7 @@ import eu.mcone.coresystem.api.bukkit.event.player.MoneyChangeEvent;
 import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
+import eu.mcone.coresystem.api.bukkit.listener.WorldGrowCanceller;
 import eu.mcone.coresystem.api.bukkit.npc.entity.EntityProjectile;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
@@ -193,6 +194,12 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             moneyUtil = new MoneyUtil(this, systemDB) {
                 @Override
                 protected void fireEvent(GlobalCorePlayer player, Currency currency) {
+                    channelHandler.createSetRequest(
+                            ((CorePlayer) player).bukkit(),
+                            "MONEY_CHANGE",
+                            currency.toString(),
+                            String.valueOf(currency.equals(Currency.COINS) ? player.getCoins() : player.getEmeralds())
+                    );
                     Bukkit.getServer().getPluginManager().callEvent(new MoneyChangeEvent((CorePlayer) player, currency));
                 }
             };
@@ -354,6 +361,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
     private void registerListener() {
         registerEvents(
+                new ArmorListener(),
                 new ChatListener(),
                 new CoreCommandListener(),
                 new CoreInventoryListener(),
@@ -362,9 +370,12 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new LabyModListener(),
                 new ReloadListener(),
                 new SentryListener(),
-                new SignChangeListener(),
-                new ArmorListener()
+                new SignChangeListener()
         );
+
+        if (!Boolean.parseBoolean(System.getProperty("EnableWorldGrow"))) {
+            registerEvents(new WorldGrowCanceller());
+        }
     }
 
     @Override
@@ -400,14 +411,17 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         return new eu.mcone.coresystem.bukkit.codec.CodecRegistry(CoreSystem.getInstance(), listening);
     }
 
+    @Override
     public CorePlayer getCorePlayer(Player p) {
         return corePlayers.getOrDefault(p.getUniqueId(), null);
     }
 
+    @Override
     public CorePlayer getCorePlayer(UUID uuid) {
         return corePlayers.getOrDefault(uuid, null);
     }
 
+    @Override
     public CorePlayer getCorePlayer(String name) {
         for (CorePlayer p : corePlayers.values()) {
             if (p.getName().equalsIgnoreCase(name)) return p;

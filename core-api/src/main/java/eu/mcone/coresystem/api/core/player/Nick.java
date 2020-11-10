@@ -12,6 +12,7 @@ import org.bson.codecs.pojo.annotations.BsonDiscriminator;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 
@@ -33,7 +34,7 @@ public class Nick implements Serializable {
         this(
                 uuid,
                 name,
-                NICK_RANDOM.nextInt(1) == 0 ? Group.SPIELER : Group.PREMIUM,
+                NICK_RANDOM.nextBoolean() ? Group.SPIELER : Group.PREMIUM,
                 skin,
                 NICK_RANDOM.nextInt(1000),
                 NICK_RANDOM.nextInt(100)
@@ -64,4 +65,21 @@ public class Nick implements Serializable {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Nick nick = (Nick) o;
+        return coins == nick.coins &&
+                onlineTime == nick.onlineTime &&
+                uuid.equals(nick.uuid) &&
+                name.equals(nick.name) &&
+                group == nick.group &&
+                skinInfo.equals(nick.skinInfo);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uuid, name, group, skinInfo, coins, onlineTime);
+    }
 }

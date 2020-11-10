@@ -23,7 +23,7 @@ public interface CoreWorld {
      *
      * @return world id
      */
-    String getID();
+    String getId();
 
     /**
      * get the worlds name
@@ -31,6 +31,10 @@ public interface CoreWorld {
      * @return name
      */
     String getName();
+
+    int[] getVersion();
+
+    String getVersionString();
 
     /**
      * get the worlds saved alias name

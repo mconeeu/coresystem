@@ -134,8 +134,8 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
 
         if (cooldown > 0) {
             BukkitCoreSystem.getSystem().getMessenger().send(p, "§7Du wirst in §f" + cooldown + " Sekunden§7 teleportiert! Bewege dich nicht!");
-            CorePlayerListener.teleports.put(uuid, Bukkit.getScheduler().runTaskLater(BukkitCoreSystem.getSystem(), () -> {
-                CorePlayerListener.teleports.remove(uuid);
+            CorePlayerListener.TELEPORTS.put(uuid, Bukkit.getScheduler().runTaskLater(BukkitCoreSystem.getSystem(), () -> {
+                CorePlayerListener.TELEPORTS.remove(uuid);
 
                 p.teleport(location);
             }, cooldown * 20));

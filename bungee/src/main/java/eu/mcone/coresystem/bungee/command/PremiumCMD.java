@@ -170,10 +170,10 @@ public class PremiumCMD extends CoreCommand implements TabExecutor {
 
                 BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/premium add <player> <group> [<Anzahl der Monate>] §4oder §c/premium <check | remove> <eu.mcone.coresystem.api.core.player>");
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().send(p, Transl.get("system.command.noperm"));
+                BungeeCoreSystem.getInstance().getMessenger().sendTransl(p, "system.command.noperm");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, Transl.get("system.command.consolesender"));
+            BungeeCoreSystem.getInstance().getMessenger().sendSenderTransl(sender, "system.command.consolesender");
         }
     }
 

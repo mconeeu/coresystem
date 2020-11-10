@@ -11,7 +11,7 @@ public class OverwatchCMD extends CorePlayerCommand {
     private final Overwatch overwatch;
 
     public OverwatchCMD(Overwatch overwatch) {
-        super("overwatch", "system.bungee.overwatch.login");
+        super("overwatch", "system.bungee.overwatch.report");
         this.overwatch = overwatch;
     }
 

@@ -40,7 +40,7 @@ public class CorePlayerListener implements Listener {
     public final static CoreActionBar LOADING_MSG = CoreSystem.getInstance().createActionBar().message("§7§oDeine Daten werden geladen...");
     public final static CoreActionBar LOADING_SUCCESS_MSG = CoreSystem.getInstance().createActionBar().message("§2§oDeine Daten wurden geladen!");
 
-    public static final Map<UUID, BukkitTask> teleports = new HashMap<>();
+    public static final Map<UUID, BukkitTask> TELEPORTS = new HashMap<>();
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onLogin(PlayerLoginEvent e) {
@@ -54,8 +54,6 @@ public class CorePlayerListener implements Listener {
                 new SkinInfo(p.getName(), textures.getValue(), textures.getSignature(), SkinInfo.SkinType.PLAYER),
                 p
         );
-
-        p.setDisplayName(p.getName());
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -113,9 +111,9 @@ public class CorePlayerListener implements Listener {
     public void onMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
 
-        if (teleports.containsKey(p.getUniqueId()) && (e.getFrom().getBlockX() != e.getTo().getBlockX() || e.getFrom().getBlockY() != e.getTo().getBlockY() || e.getFrom().getBlockZ() != e.getTo().getBlockZ())) {
-            teleports.get(p.getUniqueId()).cancel();
-            teleports.remove(p.getUniqueId());
+        if (TELEPORTS.containsKey(p.getUniqueId()) && (e.getFrom().getBlockX() != e.getTo().getBlockX() || e.getFrom().getBlockY() != e.getTo().getBlockY() || e.getFrom().getBlockZ() != e.getTo().getBlockZ())) {
+            TELEPORTS.get(p.getUniqueId()).cancel();
+            TELEPORTS.remove(p.getUniqueId());
 
             BukkitCoreSystem.getSystem().getMessenger().send(p, "§4Der Teleportvorgang wurde abgebrochen, weil du dich bewegt hast!");
         }

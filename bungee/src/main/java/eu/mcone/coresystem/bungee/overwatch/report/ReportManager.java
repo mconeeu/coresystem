@@ -130,7 +130,7 @@ public class ReportManager extends GlobalReportManager implements eu.mcone.cores
                 reportsCollection.replaceOne(eq("iD", id), report);
 
                 for (CorePlayer corePlayer : BungeeCoreSystem.getInstance().getOnlineCorePlayers()) {
-                    if (corePlayer.hasPermission("system.bungee.overwatch.report.notification") && overwatch.isLoggedIn(corePlayer.bungee())) {
+                    if (overwatch.isLoggedIn(corePlayer.bungee())) {
                         overwatch.getMessenger().send(corePlayer.bungee(), "§7Es ist ein neuer Report verfügbar §8(§f§l" + countOpenReports() + " §fVerfügbar§8)");
                     }
                 }
