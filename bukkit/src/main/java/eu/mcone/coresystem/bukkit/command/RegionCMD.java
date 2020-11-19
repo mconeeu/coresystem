@@ -34,7 +34,7 @@ public class RegionCMD extends CorePlayerCommand {
     private final WorldManager manager;
 
     public RegionCMD(WorldManager manager) {
-        super("region", "system.bukkit.world.location", "regions", "rg");
+        super("region", "system.bukkit.world.region", "regions", "rg");
         this.manager = manager;
     }
 

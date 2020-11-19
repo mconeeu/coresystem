@@ -43,11 +43,13 @@ public class RegionEnterPermissionCanceller implements Listener {
         if (e.getWorld().equals(world)) {
             for (Region region : regions) {
                 if (region.equals(e.getRegion())) {
-                    e.setCancelled(!e.getPlayer().hasPermission(permission));
+                    if (!e.getPlayer().hasPermission(permission)) {
+                        e.setCancelled(true);
 
-                    if (notify) {
-                        CoreSystem.getInstance().getMessenger().sendError(e.getPlayer(), "Du darfst diesen Bereich nicht betreten");
-                        notify = false;
+                        if (notify) {
+                            CoreSystem.getInstance().getMessenger().sendError(e.getPlayer(), "Du darfst diesen Bereich nicht betreten");
+                            notify = false;
+                        }
                     }
                 }
             }

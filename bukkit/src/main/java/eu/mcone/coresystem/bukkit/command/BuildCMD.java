@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 
 public class  BuildCMD extends CorePlayerCommand {
 
-    private BuildSystem buildSystem;
+    private final BuildSystem buildSystem;
 
     public BuildCMD(BuildSystem buildSystem) {
         super("build", "system.bukkit.build", "b");

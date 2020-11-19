@@ -180,9 +180,9 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
                 if (vanish) {
                     BukkitCoreSystem.getSystem().getVanishManager().recalculateVanishes();
 
-                    for (Player t : Bukkit.getOnlinePlayers()) {
-                        if (t.hasPermission("system.bukkit.vanish.see") || t == p) {
-                            CoreScoreboard sb = CoreSystem.getInstance().getCorePlayer(t).getScoreboard();
+                    for (CorePlayer t : CoreSystem.getInstance().getOnlineCorePlayers()) {
+                        if (t.hasPermission("system.bukkit.vanish.see") || t.bukkit() == p) {
+                            CoreScoreboard sb = t.getScoreboard();
 
                             if (sb instanceof MainScoreboard) {
                                 sb.reload();

@@ -34,6 +34,16 @@ public class ChatListener implements Listener {
             Player p = e.getPlayer();
             CorePlayer cp = BukkitCoreSystem.getInstance().getCorePlayer(p);
 
+            if (p.hasPermission("group.team")) {
+                for (CorePlayer player : CoreSystem.getInstance().getOnlineCorePlayers()) {
+                    if (player.isVanished() && e.getMessage().contains(player.getName())) {
+                        BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "tc " + e.getMessage());
+                        e.setCancelled(true);
+                        return;
+                    }
+                }
+            }
+
             if (!cp.isVanished() || VanishChatCMD.chatEnabled.contains(p.getUniqueId())) {
                 if (
                         cooldown > 0
