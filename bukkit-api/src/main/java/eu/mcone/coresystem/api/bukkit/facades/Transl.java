@@ -6,7 +6,7 @@ import eu.mcone.coresystem.api.core.facades.TranslCore;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class Transl extends TranslCore {
+public final class Transl extends TranslCore {
 
     private static final TranslationManager MANAGER = CoreSystem.getInstance().getTranslationManager();
 

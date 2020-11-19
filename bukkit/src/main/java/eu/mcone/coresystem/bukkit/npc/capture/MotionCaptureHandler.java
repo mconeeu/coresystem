@@ -171,7 +171,7 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
 
         public void addNpc(final PlayerNpc playerNpc) {
             try {
-                if (playerNpc.getMotionPlayer() != null) {
+                if (playerNpc.getCapturePlayer() != null) {
                     npcs.put(playerNpc.getData().getName(), playerNpc);
                 } else {
                     throw new MotionCaptureNotDefinedException("NPC: " + playerNpc.getData().getName());
@@ -192,7 +192,7 @@ public class MotionCaptureHandler implements eu.mcone.coresystem.api.bukkit.npc.
             if (Bukkit.getOnlinePlayers().size() != 0) {
                 if (e.getState().equals(NpcAnimationStateChangeEvent.NpcAnimationState.END)) {
                     if (npcs.containsKey(playerNpc.getData().getName())) {
-                        playerNpc.getMotionPlayer().restart();
+                        playerNpc.getCapturePlayer().restart();
                     }
                 }
             }

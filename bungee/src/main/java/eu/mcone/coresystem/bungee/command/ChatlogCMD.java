@@ -73,7 +73,7 @@ public class ChatlogCMD extends CorePlayerCommand {
                 BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Der Spieler §c" + args[0] + " §4ist nicht online!");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(p, "§cBitte benutze /chatlog <Spieler>");
+            BungeeCoreSystem.getInstance().getMessenger().send(p, "§cBitte benutze /chatlog <Spieler>");
         }
     }
 

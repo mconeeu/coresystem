@@ -7,13 +7,13 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bukkit.facades.Sound;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.npc.capture.MotionRecorder;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -119,8 +119,8 @@ public class CaptureCMD extends CorePlayerCommand {
                         if (npc instanceof PlayerNpc) {
                             PlayerNpc playerNpc = (PlayerNpc) npc;
 
-                            if (playerNpc.getMotionPlayer() != null && playerNpc.getMotionPlayer().isPlaying()) {
-                                playerNpc.getMotionPlayer().playing(false);
+                            if (playerNpc.getCapturePlayer() != null && playerNpc.getCapturePlayer().isPlaying()) {
+                                playerNpc.getCapturePlayer().playing(false);
                                 CoreSystem.getInstance().getMessenger().send(p, "§aDie Aufnahme wurde §2gestopt!");
                             } else {
                                 CoreSystem.getInstance().getMessenger().send(p, "§cDer NPC §4" + npcName + " §cspielt momentan keine Aufnahme ab!");
@@ -145,8 +145,8 @@ public class CaptureCMD extends CorePlayerCommand {
                         if (npc instanceof PlayerNpc) {
                             PlayerNpc playerNpc = (PlayerNpc) npc;
 
-                            if (playerNpc.getMotionPlayer() != null && !playerNpc.getMotionPlayer().isPlaying()) {
-                                playerNpc.getMotionPlayer().playing(true);
+                            if (playerNpc.getCapturePlayer() != null && !playerNpc.getCapturePlayer().isPlaying()) {
+                                playerNpc.getCapturePlayer().playing(true);
                                 CoreSystem.getInstance().getMessenger().send(p, "§aDie Aufnahme wird §2fortgefahren!");
                             } else {
                                 CoreSystem.getInstance().getMessenger().send(p, "§cDer NPC §4" + npcName + " §cspielt momentan keine Aufnahme ab!");
@@ -171,8 +171,8 @@ public class CaptureCMD extends CorePlayerCommand {
                         if (npc instanceof PlayerNpc) {
                             PlayerNpc playerNpc = (PlayerNpc) npc;
 
-                            if (playerNpc.getMotionPlayer() != null && playerNpc.getMotionPlayer().isPlaying()) {
-                                playerNpc.getMotionPlayer().forward(true);
+                            if (playerNpc.getCapturePlayer() != null && playerNpc.getCapturePlayer().isPlaying()) {
+                                playerNpc.getCapturePlayer().forward(true);
                                 CoreSystem.getInstance().getMessenger().send(p, "§aDie Aufnahme wurde nun vorwährts abgespielt!");
                             } else {
                                 CoreSystem.getInstance().getMessenger().send(p, "§cDer NPC §4" + npcName + " §cspielt momentan keine Aufnahme ab!");
@@ -197,8 +197,8 @@ public class CaptureCMD extends CorePlayerCommand {
                         if (npc instanceof PlayerNpc) {
                             PlayerNpc playerNpc = (PlayerNpc) npc;
 
-                            if (playerNpc.getMotionPlayer() != null && playerNpc.getMotionPlayer().isPlaying()) {
-                                playerNpc.getMotionPlayer().forward(false);
+                            if (playerNpc.getCapturePlayer() != null && playerNpc.getCapturePlayer().isPlaying()) {
+                                playerNpc.getCapturePlayer().forward(false);
                                 CoreSystem.getInstance().getMessenger().send(p, "§aDie Aufnahme wurde nun ruckwärts abgespielt!");
                             } else {
                                 CoreSystem.getInstance().getMessenger().send(p, "§cDer NPC §4" + npcName + " §cspielt momentan keine Aufnahme ab!");
@@ -235,12 +235,12 @@ public class CaptureCMD extends CorePlayerCommand {
                     recorder.stop();
                     CoreSystem.getInstance().getNpcManager().getMotionCaptureHandler().saveMotionCapture(recorder);
                     CoreSystem.getInstance().getMessenger().send(p, "§2Die Aufnahme wurde erfolgreich unter dem Namen §a" + recorder.getName() + " §2gespeichert!");
-                    p.playSound(p.getLocation(), Sound.ANVIL_USE, 1, 1);
+                    Sound.done(p);
                     recording.remove(p);
                     return true;
                 } else {
                     CoreSystem.getInstance().getMessenger().send(p, "§cDu musst eine Aufnahme beginnen um diese speichern zu können!");
-                    p.playSound(p.getLocation(), Sound.ANVIL_BREAK, 1, 1);
+                    Sound.cancel(p);
                     return false;
                 }
             }

@@ -35,7 +35,7 @@ public class MsgCMD extends CorePlayerCommand implements TabExecutor {
         final CorePlayer p = CoreSystem.getInstance().getCorePlayer(bp);
 
         if (args.length < 1) {
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(bp, "§4Bitte Benutze: §c/msg §c<Player | toggle> §c[<Nachricht>]");
+            BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Bitte Benutze: §c/msg §c<Player | toggle> §c[<Nachricht>]");
         } else if (args.length == 1 && args[0].equalsIgnoreCase("toggle")) {
             if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY)) {
                 p.getSettings().setPrivateMessages(PlayerSettings.Sender.ALL);
@@ -54,14 +54,14 @@ public class MsgCMD extends CorePlayerCommand implements TabExecutor {
                 if (!p.equals(t)) {
                     if (!t.getFriendData().getBlocks().contains(p.getUuid()) || p.hasPermission("system.bungee.chat.private.bypass")) {
                         if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY) && !p.hasPermission("system.bungee.chat.private.bypass")) {
-                            BungeeCoreSystem.getInstance().getMessenger().sendSender(bp, "§c" + args[0] + "§4 hat private Nachrichten deaktiviert!");
+                            BungeeCoreSystem.getInstance().getMessenger().send(bp, "§c" + args[0] + "§4 hat private Nachrichten deaktiviert!");
                         } else if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !t.getFriendData().getFriends().containsKey(p.getUuid()) && !p.hasPermission("system.bungee.chat.private.bypass")) {
-                            BungeeCoreSystem.getInstance().getMessenger().sendSender(bp, "§c" + args[0] + "§4 hat private Nachrichten nur für Freunde aktiviert!");
+                            BungeeCoreSystem.getInstance().getMessenger().send(bp, "§c" + args[0] + "§4 hat private Nachrichten nur für Freunde aktiviert!");
                         } else {
                             if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY) && !t.hasPermission("system.bungee.chat.private.bypass")) {
-                                BungeeCoreSystem.getInstance().getMessenger().sendSender(bp, "§4Du hast private Nachrichten §cdeaktiviert§4!");
+                                BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Du hast private Nachrichten §cdeaktiviert§4!");
                             } else if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !p.getFriendData().getFriends().containsKey(t.getUuid()) && !t.hasPermission("system.bungee.chat.private.bypass")) {
-                                BungeeCoreSystem.getInstance().getMessenger().sendSender(bp, "§4Du hast private Nachrichten nur für Freunde aktiviert!");
+                                BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Du hast private Nachrichten nur für Freunde aktiviert!");
                             } else {
                                 StringBuilder msg = new StringBuilder();
                                 for (int i = 1; i < args.length; i++) {
@@ -74,13 +74,13 @@ public class MsgCMD extends CorePlayerCommand implements TabExecutor {
                             }
                         }
                     } else {
-                        BungeeCoreSystem.getInstance().getMessenger().sendSender(bp, "§c" + args[0] + "§4 hat dich blockiert!");
+                        BungeeCoreSystem.getInstance().getMessenger().send(bp, "§c" + args[0] + "§4 hat dich blockiert!");
                     }
                 } else {
-                    BungeeCoreSystem.getInstance().getMessenger().sendSender(bp, "§4Du kannst dich nicht selbst anschreiben, Dummkopf!");
+                    BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Du kannst dich nicht selbst anschreiben, Dummkopf!");
                 }
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().sendSender(bp, "§4Dieser Spieler ist nicht online!");
+                BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Dieser Spieler ist nicht online!");
             }
         }
     }

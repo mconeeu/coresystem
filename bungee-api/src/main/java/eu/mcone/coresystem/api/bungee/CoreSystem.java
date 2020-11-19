@@ -27,7 +27,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     protected CoreSystem() {
         super(
-                "bungeesystem",
+                "BungeeSystem",
                 ChatColor.DARK_AQUA,
                 "https://60310ff9f7874486af14718c51e62a80@o267551.ingest.sentry.io/5341158?stacktrace.app.packages=eu.mcone.coresystem"
         );

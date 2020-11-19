@@ -18,6 +18,7 @@ import eu.mcone.coresystem.api.bukkit.overwatch.Overwatch;
 import eu.mcone.coresystem.api.bukkit.player.*;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
+import eu.mcone.coresystem.api.bukkit.sound.SoundManager;
 import eu.mcone.coresystem.api.bukkit.stats.CoreStatsManager;
 import eu.mcone.coresystem.api.bukkit.util.*;
 import eu.mcone.coresystem.api.bukkit.vanish.VanishManager;
@@ -41,7 +42,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
 
     protected CoreSystem() {
         super(
-                "bukkitsystem",
+                "BukkitSystem",
                 ChatColor.WHITE,
                 "system.prefix.server",
                 "https://2edb2eff2d724190bb5be92f90cbcbfd@o267551.ingest.sentry.io/5341153?stacktrace.app.packages=eu.mcone.coresystem"
@@ -135,6 +136,13 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return VanishManager instance
      */
     public abstract VanishManager getVanishManager();
+
+    /**
+     * returns the BCS SoundManager
+     *
+     * @return SoundManager instance
+     */
+    public abstract SoundManager getSoundManager();
 
     /**
      * returns the bukkit Labymod API

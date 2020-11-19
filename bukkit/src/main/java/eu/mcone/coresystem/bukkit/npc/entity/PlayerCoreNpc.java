@@ -54,7 +54,7 @@ public class PlayerCoreNpc extends CoreNPC<EntityHumanNPC, PlayerNpcData> implem
     @Getter
     private GameProfile profile;
     @Getter
-    private MotionPlayer motionPlayer;
+    private MotionPlayer capturePlayer;
     private DataWatcher dataWatcher;
 
     public PlayerCoreNpc(NpcData data, ListMode visibilityMode, Player[] players) {
@@ -150,17 +150,17 @@ public class PlayerCoreNpc extends CoreNPC<EntityHumanNPC, PlayerNpcData> implem
     }
 
     public boolean playMotionCapture(final MotionCapture data) {
-        if (motionPlayer != null) {
-            if (motionPlayer.isPlaying()) {
+        if (capturePlayer != null) {
+            if (capturePlayer.isPlaying()) {
                 return false;
             } else {
-                motionPlayer = new MotionPlayer(this, data);
-                motionPlayer.play();
+                capturePlayer = new MotionPlayer(this, data);
+                capturePlayer.play();
                 return true;
             }
         } else {
-            motionPlayer = new MotionPlayer(this, data);
-            motionPlayer.play();
+            capturePlayer = new MotionPlayer(this, data);
+            capturePlayer.play();
             return true;
         }
     }

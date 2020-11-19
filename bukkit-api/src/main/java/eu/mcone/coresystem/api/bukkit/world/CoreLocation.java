@@ -66,11 +66,11 @@ public final class CoreLocation implements Serializable {
     public String toString() {
         return "CoreLocation{" +
                 "world='" + world + '\'' +
-                ", x=" + x +
-                ", y=" + y +
-                ", z=" + z +
-                ", yaw=" + yaw +
-                ", pitch=" + pitch +
+                ", x=" + (int) x +
+                ", y=" + (int) y +
+                ", z=" + (int) z +
+                ", yaw=..." +
+                ", pitch=..." +
                 '}';
     }
 

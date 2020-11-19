@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public abstract class Player {
+public abstract class CapturePlayer {
 
     @Getter
     protected boolean playing = true;
@@ -25,7 +25,7 @@ public abstract class Player {
 
     protected BukkitTask task;
 
-    public Player() {
+    public CapturePlayer() {
         tick = new AtomicInteger();
         viewer = new HashSet<>();
     }

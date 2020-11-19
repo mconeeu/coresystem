@@ -5,13 +5,13 @@
 
 package eu.mcone.coresystem.bukkit.inventory;
 
+import eu.mcone.coresystem.api.bukkit.facades.Sound;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventoryOption;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.player.Stats;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 class StatsCategoryInventory extends CoreInventory {
@@ -29,7 +29,7 @@ class StatsCategoryInventory extends CoreInventory {
 
         setItem(InventorySlot.ROW_3_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Stats Menü").create(), e -> {
             new StatsInventory(p);
-            p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
+            Sound.error(p);
         });
 
         openInventory();

@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bukkit.player;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.player.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.event.player.PlayerVanishEvent;
+import eu.mcone.coresystem.api.bukkit.facades.Sound;
 import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
@@ -15,6 +16,7 @@ import eu.mcone.coresystem.api.bukkit.scoreboard.CoreScoreboard;
 import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.api.bukkit.stats.CoreStats;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
+import eu.mcone.coresystem.api.bukkit.world.Region;
 import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
@@ -30,14 +32,12 @@ import lombok.Setter;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.Plugin;
 
 import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.combine;
@@ -190,7 +190,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
                         }
                     }
 
-                    p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
+                    Sound.done(p);
                     BukkitCoreSystem.getInstance().getMessenger().send(bukkit(), "§2Du bist nun im §aVanish Modus§2!");
                 } else {
                     BukkitCoreSystem.getSystem().getVanishManager().recalculateVanishes();
@@ -203,7 +203,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
                         }
                     }
 
-                    p.playSound(p.getLocation(), Sound.LEVEL_UP, 1, 1);
+                    Sound.done(p);
                     BukkitCoreSystem.getInstance().getMessenger().send(bukkit(), "§7Du bist nicht mehr im §fVanish Modus§7!");
                 }
 
@@ -219,6 +219,25 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
         } else {
             return false;
         }
+    }
+
+    public Set<Region> getApplicableRegions() {
+        List<Region> worldRegions = getWorld().getRegions();
+
+        if (worldRegions.size() > 0) {
+            Set<Region> regions = new HashSet<>();
+            Location loc = bukkit().getLocation();
+
+            for (Region region : worldRegions) {
+                if (region.isInRegion(loc)) {
+                    regions.add(region);
+                }
+            }
+
+            return regions;
+        }
+
+        return Collections.emptySet();
     }
 
     public void registerPacketListener(Player p) {

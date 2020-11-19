@@ -7,11 +7,13 @@ package eu.mcone.coresystem.api.bukkit.event.player;
 
 import eu.mcone.coresystem.api.core.player.PlayerState;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 @Getter
+@RequiredArgsConstructor
 public final class AfkEvent extends Event {
 
     @Getter
@@ -19,11 +21,6 @@ public final class AfkEvent extends Event {
 
     private final Player player;
     private final PlayerState state;
-
-    public AfkEvent(Player player, PlayerState state) {
-        this.player = player;
-        this.state = state;
-    }
 
     public HandlerList getHandlers() {
         return handlerList;

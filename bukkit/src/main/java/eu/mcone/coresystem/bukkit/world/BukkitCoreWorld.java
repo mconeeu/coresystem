@@ -14,6 +14,7 @@ import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.world.CoreBlockLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
+import eu.mcone.coresystem.api.bukkit.world.Region;
 import eu.mcone.coresystem.api.core.exception.RuntimeCoreException;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.core.annotation.DontObfuscate;
@@ -49,6 +50,7 @@ public class BukkitCoreWorld implements CoreWorld {
 
     private Map<String, CoreLocation> locations = new HashMap<>();
     private Map<String, CoreBlockLocation> blockLocations = new HashMap<>();
+    private List<Region> regions = new ArrayList<>();
     private List<NpcData> npcData = new ArrayList<>();
     private List<HologramData> hologramData = new ArrayList<>();
 
@@ -96,6 +98,17 @@ public class BukkitCoreWorld implements CoreWorld {
     }
 
     @Override
+    public Region getRegion(String name) {
+        for (Region region : regions) {
+            if (region.getName().equals(name)) {
+                return region;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
     public void setSpawnLocation(Location loc) {
         this.spawnLocation = new int[]{(int) loc.getX(), (int) loc.getY(), (int) loc.getZ()};
         bukkit().setSpawnLocation(spawnLocation[0], spawnLocation[1], spawnLocation[2]);
@@ -116,6 +129,14 @@ public class BukkitCoreWorld implements CoreWorld {
     }
 
     @Override
+    public BukkitCoreWorld setRegion(Region region) {
+        regions.removeIf(r -> r.getName().equals(region.getName()));
+        regions.add(region);
+
+        return this;
+    }
+
+    @Override
     public CoreWorld removeLocation(String name) {
         locations.remove(name);
         return this;
@@ -124,6 +145,12 @@ public class BukkitCoreWorld implements CoreWorld {
     @Override
     public CoreWorld removeBlockLocation(String name) {
         blockLocations.remove(name);
+        return this;
+    }
+
+    @Override
+    public CoreWorld removeRegion(String name) {
+        regions.removeIf(region -> region.getName().equals(name));
         return this;
     }
 

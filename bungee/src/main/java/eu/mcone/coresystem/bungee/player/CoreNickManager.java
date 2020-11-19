@@ -11,6 +11,9 @@ import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.NickManager;
 import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.bungee.command.NameCMD;
+import eu.mcone.coresystem.bungee.command.NickCMD;
+import eu.mcone.coresystem.bungee.command.UnnickCMD;
 import group.onegaming.networkmanager.core.api.database.Database;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.connection.Server;
@@ -31,6 +34,8 @@ public class CoreNickManager implements NickManager {
     public CoreNickManager(BungeeCoreSystem instance) {
         this.instance = instance;
         this.nicks = new HashMap<>();
+
+        instance.registerCommands(new NickCMD(this), new UnnickCMD(), new NameCMD());
 
         reload();
     }
@@ -121,6 +126,22 @@ public class CoreNickManager implements NickManager {
         nicks.put(cp.getCurrentNick(), null);
         ((BungeeCorePlayer) cp).setCurrentNick(null);
         ((BungeeCorePlayer) cp).setNicked(false);
+    }
+
+    @Override
+    public Nick getNick(String nickname) {
+        for (Nick nick : nicks.keySet()) {
+            if (nick.getName().equalsIgnoreCase(nickname)) {
+                return nick;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public ProxiedPlayer getNickedUser(Nick nick) {
+        return nicks.get(nick);
     }
 
     private static void sendNickRequest(ProxiedPlayer p, Nick nick, boolean notify) {

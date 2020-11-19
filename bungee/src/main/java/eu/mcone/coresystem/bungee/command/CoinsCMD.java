@@ -62,7 +62,7 @@ public class CoinsCMD extends CoreCommand {
 
             BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Bitte benutze: §c/coins <add|remove|set> <Spieler> <Anzahl>");
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "system.command.noperm");
+            BungeeCoreSystem.getInstance().getMessenger().sendSenderTransl(sender, "system.command.noperm");
         }
     }
 

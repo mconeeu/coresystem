@@ -30,6 +30,7 @@ import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.EnderchestManagerGetter;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
+import eu.mcone.coresystem.api.bukkit.sound.SoundManager;
 import eu.mcone.coresystem.api.bukkit.stats.CoreStatsManager;
 import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
 import eu.mcone.coresystem.api.bukkit.util.CoreProjectile;
@@ -51,6 +52,7 @@ import eu.mcone.coresystem.bukkit.listener.*;
 import eu.mcone.coresystem.bukkit.npc.CoreNpcManager;
 import eu.mcone.coresystem.bukkit.overwatch.Overwatch;
 import eu.mcone.coresystem.bukkit.player.*;
+import eu.mcone.coresystem.bukkit.sound.CoreSoundManager;
 import eu.mcone.coresystem.bukkit.util.*;
 import eu.mcone.coresystem.bukkit.vanish.CoreVanishManager;
 import eu.mcone.coresystem.bukkit.world.WorldManager;
@@ -135,6 +137,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private JsonParser jsonParser;
     @Getter
     private CorePacketManager packetManager;
+    @Getter
+    private SoundManager soundManager;
 
     @Getter
     private Map<UUID, BukkitCorePlayer> corePlayers;
@@ -241,6 +245,9 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
             sendConsoleMessage("§aStarting VanishManager...");
             vanishManager = new CoreVanishManager(this);
+
+            sendConsoleMessage("§aStarting SoundManager...");
+            soundManager = new CoreSoundManager(this);
 
             sendConsoleMessage("§aLoading Commands, Events, CoreInventories...");
             this.registerListener();

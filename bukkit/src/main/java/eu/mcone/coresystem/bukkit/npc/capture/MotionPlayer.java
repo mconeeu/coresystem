@@ -9,6 +9,7 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.codec.Codec;
 import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationProgressEvent;
 import eu.mcone.coresystem.api.bukkit.event.npc.NpcAnimationStateChangeEvent;
+import eu.mcone.coresystem.api.bukkit.npc.capture.CapturePlayer;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCapture;
 import eu.mcone.coresystem.api.bukkit.npc.entity.PlayerNpc;
 import lombok.Getter;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class MotionPlayer extends eu.mcone.coresystem.api.bukkit.npc.capture.Player {
+public class MotionPlayer extends CapturePlayer {
     @Getter
     public MotionCapture capture;
 

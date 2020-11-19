@@ -7,9 +7,11 @@ package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.command.CoreCommand;
 import eu.mcone.coresystem.api.bungee.overwatch.punish.Punish;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.api.core.player.Group;
+import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -24,6 +26,13 @@ public class WhoisCMD extends CoreCommand {
     public void onCommand(CommandSender sender, String[] args) {
         if (args.length == 1) {
             try {
+                Nick nick = BungeeCoreSystem.getSystem().getNickManager().getNick(args[0]);
+                ProxiedPlayer np = BungeeCoreSystem.getSystem().getNickManager().getNickedUser(nick);
+                if (np != null) {
+                    ProxyServer.getInstance().getPluginManager().dispatchCommand(sender, "whois "+np.getName());
+                    return;
+                }
+
                 OfflineCorePlayer p = BungeeCoreSystem.getInstance().getOfflineCorePlayer(args[0]);
                 ProxiedPlayer pp = ProxyServer.getInstance().getPlayer(args[0]);
                 StringBuilder message = new StringBuilder();
@@ -38,6 +47,7 @@ public class WhoisCMD extends CoreCommand {
                         "\n" +
                         "\n§8» §7UUID: §f" + p.getUuid() +
                         "\n§8» §7Gruppen: " + groups.toString() +
+                        (pp != null && ((CorePlayer) p).getCurrentNick() != null ? "\n§8» §7Nick: "+((CorePlayer) p).getCurrentNick().getName() : "")+
                         "\n";
 
                 String general = "";

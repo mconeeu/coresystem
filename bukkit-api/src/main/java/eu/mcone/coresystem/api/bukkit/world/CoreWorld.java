@@ -32,8 +32,18 @@ public interface CoreWorld {
      */
     String getName();
 
+    /**
+     * get the worlds current version
+     *
+     * @return name
+     */
     int[] getVersion();
 
+    /**
+     * get the worlds current version formatted as String
+     *
+     * @return name
+     */
     String getVersionString();
 
     /**
@@ -178,6 +188,8 @@ public interface CoreWorld {
 
     Location getBlockLocation(String name);
 
+    Region getRegion(String name);
+
     /**
      * set spawn location
      *
@@ -238,6 +250,13 @@ public interface CoreWorld {
     Map<String, CoreBlockLocation> getBlockLocations();
 
     /**
+     * get all saved regions
+     *
+     * @return Collection of all regions in this world
+     */
+    List<Region> getRegions();
+
+    /**
      * add location to the internal world storage
      *
      * @param name     location name
@@ -248,6 +267,8 @@ public interface CoreWorld {
 
     CoreWorld setBlockLocation(String name, Location loc);
 
+    CoreWorld setRegion(Region region);
+
     /**
      * remove location from the internal world storage
      *
@@ -257,6 +278,8 @@ public interface CoreWorld {
     CoreWorld removeLocation(String name);
 
     CoreWorld removeBlockLocation(String name);
+
+    CoreWorld removeRegion(String name);
 
     /**
      * returns all NPC that are registered for this world

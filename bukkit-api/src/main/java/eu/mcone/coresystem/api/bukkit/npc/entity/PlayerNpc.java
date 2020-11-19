@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.api.bukkit.npc.entity;
 
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
-import eu.mcone.coresystem.api.bukkit.npc.capture.Player;
+import eu.mcone.coresystem.api.bukkit.npc.capture.CapturePlayer;
 import eu.mcone.coresystem.api.bukkit.npc.capture.MotionCapture;
 import eu.mcone.coresystem.api.bukkit.npc.enums.EquipmentPosition;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
@@ -25,7 +25,7 @@ public interface PlayerNpc extends NPC {
      */
     UUID getUuid();
 
-    Player getMotionPlayer();
+    CapturePlayer getCapturePlayer();
 
     /**
      * Sets a specific item in the NPCs inventory and makes it visible for other players

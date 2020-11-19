@@ -9,7 +9,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import eu.mcone.cloud.core.api.world.CloudWorldManager;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.npc.data.PlayerNpcData;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
@@ -17,10 +16,10 @@ import eu.mcone.coresystem.api.bukkit.world.WorldCreateProperties;
 import eu.mcone.coresystem.api.core.player.SkinInfo;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.LocationCMD;
+import eu.mcone.coresystem.bukkit.command.RegionCMD;
 import eu.mcone.coresystem.bukkit.command.WorldCMD;
-import group.onegaming.networkmanager.core.api.database.Database;
+import eu.mcone.coresystem.bukkit.listener.WorldListener;
 import group.onegaming.networkmanager.core.api.util.Random;
-import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -36,7 +35,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldManager {
 
@@ -44,22 +42,16 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     final static String CONFIG_NAME = "core-config.json";
 
     private final static String CONFIG_VERSION_KEY = "configVersion";
-    final static int LATEST_CONFIG_VERSION = 6;
+    final static int LATEST_CONFIG_VERSION = 7;
 
-    private final WorldCMD worldCMD;
     List<BukkitCoreWorld> coreWorlds;
-
-    @Getter
-    private final CloudWorldManager cloudWorldManager;
 
     public WorldManager(BukkitCoreSystem instance) {
         this.randomWorldID = new Random(6);
-        this.worldCMD = new WorldCMD();
         this.coreWorlds = new ArrayList<>();
-        cloudWorldManager = new CloudWorldManager(BukkitCoreSystem.getSystem().getMongoDB(Database.CLOUD));
 
-        instance.getPluginManager().registerCoreCommand(worldCMD, CoreSystem.getInstance());
-        instance.getPluginManager().registerCoreCommand(new LocationCMD(instance), CoreSystem.getInstance());
+        instance.registerCommands(new WorldCMD(this), new LocationCMD(instance), new RegionCMD(this));
+        instance.registerEvents(new WorldListener(this));
 
         reload();
     }
@@ -158,11 +150,6 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     }
 
     @Override
-    public void enableUploadCommand(boolean enable) {
-        worldCMD.setEnableUploadCmd(enable);
-    }
-
-    @Override
     public boolean importWorld(String name, World.Environment environment) {
         if (new File(name).exists()) {
             try {
@@ -233,80 +220,6 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
         return world;
     }
 
-    @Override
-    public void download(final String id, Consumer<Boolean> succeeded) {
-        CoreSystem.getInstance().sendConsoleMessage("§aDownloading world...");
-        cloudWorldManager.download(Bukkit.getWorldContainer(), id, config -> {
-            if (config != null) {
-                try {
-                    CoreSystem.getInstance().sendConsoleMessage("§aImport world...");
-                    FileInputStream fis = new FileInputStream(config.getConfig());
-                    InputStreamReader reader = new InputStreamReader(fis, StandardCharsets.UTF_8);
-                    JsonElement json = BukkitCoreSystem.getSystem().getJsonParser().parse(reader);
-                    reader.close();
-                    fis.close();
-
-                    if (!json.getAsJsonObject().has(CONFIG_VERSION_KEY)) {
-                        json.getAsJsonObject().addProperty(CONFIG_VERSION_KEY, 0);
-                    }
-                    if (json.getAsJsonObject().get(CONFIG_VERSION_KEY).getAsInt() < LATEST_CONFIG_VERSION) {
-                        json = migrateConfig(json);
-                    }
-
-                    BukkitCoreWorld w = CoreSystem.getInstance().getGson().fromJson(json, BukkitCoreWorld.class);
-
-                    if (w.isLoadOnStartup()) {
-                        WorldCreator wc = new WorldCreator(w.getName())
-                                .environment(w.getEnvironment())
-                                .type(w.getWorldType())
-                                .generateStructures(w.isGenerateStructures());
-
-                        if (w.getGenerator() != null) {
-                            wc.generator(w.getGenerator());
-                            if (w.getGeneratorSettings() != null)
-                                wc.generatorSettings(w.getGeneratorSettings());
-                        }
-
-                        wc.createWorld();
-
-                        w.save();
-                        coreWorlds.add(w);
-                        BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + w.getName());
-                    }
-
-                    succeeded.accept(true);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                succeeded.accept(false);
-            }
-        });
-    }
-
-    @Override
-    public void upload(final CoreWorld world, Consumer<Boolean> succeeded) {
-        world.save();
-
-        World w = world.bukkit();
-        w.setAutoSave(false);
-        w.save();
-
-        cloudWorldManager.upload(w.getWorldFolder(), uploaded -> {
-            if (uploaded) {
-                w.setAutoSave(true);
-                succeeded.accept(true);
-            } else {
-                succeeded.accept(false);
-            }
-        });
-    }
-
-    @Override
-    public boolean existsWorldInDatabase(final String iD) {
-        return cloudWorldManager.existsWorld(iD);
-    }
-
     private BukkitCoreWorld constructNewCoreWorld(World world, String generator, String generatorSettings) {
         Location loc = world.getSpawnLocation();
         BukkitCoreWorld w = new BukkitCoreWorld(
@@ -331,6 +244,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                 new int[]{(int) loc.getX(), (int) loc.getY(), (int) loc.getZ()},
                 new HashMap<>(),
                 new HashMap<>(),
+                new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
                 LATEST_CONFIG_VERSION
@@ -410,6 +324,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                     }
                 }
             }
+            case 4:
             case 5: {
                 CoreSystem.getInstance().sendConsoleMessage("§7Updating Config from version 4/5 to 6...");
 
@@ -424,6 +339,10 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                 world.remove("iD");
                 world.addProperty("id", random.nextString());
                 world.add("version", version);
+            }
+            case 6: {
+                CoreSystem.getInstance().sendConsoleMessage("§7Updating Config from version 6 to 7...");
+                json.getAsJsonObject().add("regions", new JsonArray());
             }
         }
 

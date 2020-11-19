@@ -6,9 +6,11 @@
 package eu.mcone.coresystem.api.bukkit.world;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+@NoArgsConstructor
 public final class CoreBlockLocation {
 
     private transient Location bukkit;
@@ -17,6 +19,13 @@ public final class CoreBlockLocation {
     private String world;
     @Getter
     private int x, y, z;
+
+    public CoreBlockLocation(CoreWorld world, int x, int y, int z) {
+        this.world = world.getName();
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
 
     public CoreBlockLocation(Location location) {
         this.world = location.getWorld().getName();

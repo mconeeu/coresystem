@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bukkit.listener;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.facades.Sound;
 import eu.mcone.coresystem.api.bukkit.facades.Transl;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
@@ -14,7 +15,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -61,7 +61,7 @@ public class ChatListener implements Listener {
 
                             e.getRecipients().remove(receiver);
                             receiver.sendMessage((cp.isNicked() ? cp.getNick().getGroup().getPrefix() : cp.getMainGroup().getPrefix()) + Transl.get("system.chat").replaceAll("%Player%", p.getName()) + targetMessage);
-                            receiver.playSound(receiver.getLocation(), Sound.NOTE_BASS, 1.0F, 1.0F);
+                            Sound.done(p);
                         }
                     }
                 }

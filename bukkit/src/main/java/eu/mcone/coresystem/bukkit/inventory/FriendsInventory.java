@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bukkit.inventory;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.facades.Sound;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventoryOption;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
@@ -13,7 +14,6 @@ import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.item.Skull;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 class FriendsInventory extends CoreInventory {
@@ -29,14 +29,14 @@ class FriendsInventory extends CoreInventory {
                 String[] data = friend.split(":");
                 setItem(i, new Skull(data[1], 1).toItemBuilder().displayName("§f§l" + data[1]).lore(data[2], "", "§8» §f§nRechtsklick§8 | §7§oAktionen").create(), e -> {
                     new FriendInventory(p, data[1]);
-                    p.playSound(p.getLocation(), Sound.CHICKEN_EGG_POP, 1, 1);
+                    Sound.click(p);
                 });
 
                 i++;
             }
 
             setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
-                p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
+                Sound.error(p);
                 new ProfileInventory(CoreSystem.getInstance().getCorePlayer(p));
             });
 

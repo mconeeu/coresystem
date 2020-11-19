@@ -29,14 +29,14 @@ public class ReplyCMD extends CorePlayerCommand {
 
             if (t != null) {
                 if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY)) {
-                    BungeeCoreSystem.getInstance().getMessenger().sendSender(bp, "§c" + args[0] + "§4 hat private Nachrichten deaktiviert!");
+                    BungeeCoreSystem.getInstance().getMessenger().send(bp, "§c" + args[0] + "§4 hat private Nachrichten deaktiviert!");
                 } else if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !t.getFriendData().getFriends().containsKey(p.getUuid())) {
-                    BungeeCoreSystem.getInstance().getMessenger().sendSender(bp, "§c" + args[0] + "§4 hat private Nachrichten nur für Freunde aktiviert!");
+                    BungeeCoreSystem.getInstance().getMessenger().send(bp, "§c" + args[0] + "§4 hat private Nachrichten nur für Freunde aktiviert!");
                 } else {
                     if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY)) {
-                        BungeeCoreSystem.getInstance().getMessenger().sendSender(bp, "§4Du hast private Nachrichten §cdeaktiviert§4!");
+                        BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Du hast private Nachrichten §cdeaktiviert§4!");
                     } else if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !p.getFriendData().getFriends().containsKey(t.getUuid())) {
-                        BungeeCoreSystem.getInstance().getMessenger().sendSender(bp, "§4Du hast private Nachrichten nur für Freunde aktiviert!");
+                        BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Du hast private Nachrichten nur für Freunde aktiviert!");
                     } else {
                         StringBuilder msg = new StringBuilder();
                         for (String arg : args) {
@@ -50,10 +50,10 @@ public class ReplyCMD extends CorePlayerCommand {
                     }
                 }
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().sendSender(bp, "§4Dieser Spieler ist nicht online!");
+                BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Dieser Spieler ist nicht online!");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(bp, "§4Du hast keine offene Konversation!");
+            BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Du hast keine offene Konversation!");
         }
     }
 }

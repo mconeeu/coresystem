@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.bukkit.inventory;
 
+import eu.mcone.coresystem.api.bukkit.facades.Sound;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventoryOption;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
@@ -12,7 +13,6 @@ import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.item.Skull;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 class FriendInventory extends CoreInventory {
@@ -34,7 +34,7 @@ class FriendInventory extends CoreInventory {
             BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "friend remove " + friend);
         });
         setItem(InventorySlot.ROW_4_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Freundemenü").create(), e -> {
-            p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
+            Sound.error(p);
             new FriendsInventory(p);
         });
 

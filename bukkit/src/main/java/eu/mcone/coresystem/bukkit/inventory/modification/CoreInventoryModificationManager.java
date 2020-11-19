@@ -11,6 +11,7 @@ import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.ItemStackCodecProvider;
+import eu.mcone.coresystem.api.bukkit.facades.Sound;
 import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreItemStack;
 import eu.mcone.coresystem.api.bukkit.inventory.modification.InventoryModificationManager;
@@ -25,7 +26,6 @@ import lombok.Getter;
 import org.bson.Document;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bukkit.Bukkit;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -334,7 +334,7 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
             }
 
             saveModifications(player.getUniqueId());
-            player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
+            Sound.done(player);
             CoreSystem.getInstance().getMessenger().send(player, "§2Du hast das Inventar " + modifyInventory.getName() + " §2erfolgreich modifiziert!");
         } else {
             throw new RuntimeCoreException("No modifyInventory for inventory " + modifiedInventory.getName() + " registered!");

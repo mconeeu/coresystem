@@ -23,7 +23,7 @@ public class LobbyCMD extends CorePlayerCommand {
     public void onPlayerCommand(ProxiedPlayer p, String[] args) {
         for (Map.Entry<String, ServerInfo> s : ProxyServer.getInstance().getServers().entrySet()) {
             if (s.getKey().contains("Lobby")) {
-                CoreSystem.getInstance().getMessenger().sendSender(p, "§7Du wirst zur §fLobby §7gesendet...");
+                CoreSystem.getInstance().getMessenger().send(p, "§7Du wirst zur §fLobby §7gesendet...");
                 p.connect(s.getValue());
                 return;
             }

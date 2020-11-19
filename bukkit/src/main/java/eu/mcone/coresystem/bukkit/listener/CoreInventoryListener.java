@@ -117,6 +117,7 @@ public class CoreInventoryListener implements Listener {
 
             if (inventory != null && e.getInventory().equals(inventory)) {
                 inventory.clear();
+                return;
             }
         }
     }

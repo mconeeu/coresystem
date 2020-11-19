@@ -19,9 +19,9 @@ public class PingCMD extends CorePlayerCommand {
         if (!BungeeCoreSystem.getInstance().getCooldownSystem().addAndCheck(this.getClass(), p.getUniqueId())) return;
 
         if (args.length == 0) {
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(p, "§7Dein Ping: §f" + p.getPing() + "ms");
+            BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Dein Ping: §f" + p.getPing() + "ms");
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(p, "§4Bitte benutze: §c/ping");
+            BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/ping");
         }
     }
 }

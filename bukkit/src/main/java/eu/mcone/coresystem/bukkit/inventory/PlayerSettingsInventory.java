@@ -6,103 +6,96 @@
 package eu.mcone.coresystem.bukkit.inventory;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
-import eu.mcone.coresystem.api.bukkit.inventory.InventoryOption;
+import eu.mcone.coresystem.api.bukkit.facades.Sound;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
+import eu.mcone.coresystem.api.bukkit.inventory.settings.Setting;
+import eu.mcone.coresystem.api.bukkit.inventory.settings.SettingsInventory;
+import eu.mcone.coresystem.api.bukkit.inventory.settings.options.LanguageOption;
+import eu.mcone.coresystem.api.bukkit.inventory.settings.options.SenderOption;
+import eu.mcone.coresystem.api.bukkit.inventory.settings.settings.BooleanSetting;
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.item.Skull;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.api.core.player.PlayerSettings;
-import eu.mcone.coresystem.api.core.translation.Language;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-class PlayerSettingsInventory extends CoreInventory {
+class PlayerSettingsInventory extends SettingsInventory {
 
     PlayerSettingsInventory(Player p) {
-        super("§8» §c§lEinstellungen", p, InventorySlot.ROW_4, InventoryOption.FILL_EMPTY_SLOTS);
+        super("§8» §c§lEinstellungen", p);
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(p);
 
-        setItem(InventorySlot.ROW_2_SLOT_3, new ItemBuilder(Material.SKULL_ITEM, 1, 3).displayName("§f§lErhalte Freundschaftsanfragen").create());
-        setItem(InventorySlot.ROW_3_SLOT_3, cp.getSettings().isEnableFriendRequests() ?
-                        new ItemBuilder(Material.INK_SACK, 1, 10).displayName("§a§lAktiviert").lore("§7§oKlicke zum akzeptieren von", "§7§oFreundschaftsanfragen").create() :
-                        new ItemBuilder(Material.INK_SACK, 1, 1).displayName("§c§lDeaktiviert").lore("§7§oKlicke zum ablehnen von", "§7§oFreundschaftsanfragen").create(),
-                e -> {
-                    cp.getSettings().setEnableFriendRequests(!cp.getSettings().isEnableFriendRequests());
+        addSetting(new BooleanSetting(new ItemBuilder(Material.SKULL_ITEM, 1, 3).displayName("§f§lErhalte Freundschaftsanfragen").create(), "Freundschaftsanfragen")
+                .onChoose((player, result) -> {
+                    cp.getSettings().setEnableFriendRequests(result);
                     cp.updateSettings();
-                    new PlayerSettingsInventory(p);
-                }
-        );
+                })
+                .optionFinder(player -> cp.getSettings().isEnableFriendRequests())
+                .setEnabledDescription("§7§oKlicke zum akzeptieren von", "§7§oFreundschaftsanfragen")
+                .setDisabledDescription("§7§oKlicke zum ablehnen von", "§7§oFreundschaftsanfragen")
+                .create());
 
-        setItem(InventorySlot.ROW_2_SLOT_4, Skull.fromUrl("http://textures.minecraft.net/texture/6f74f58f541342393b3b16787dd051dfacec8cb5cd3229c61e5f73d63947ad", 1).toItemBuilder().displayName("§f§lSprache").create());
-        setItem(InventorySlot.ROW_3_SLOT_4, Skull.fromUrl(cp.getSettings().getLanguage().getTextureUrl(), 1).toItemBuilder().displayName("§f§l" + cp.getSettings().getLanguage().getName()).lore("§7§oKlicke zum ändern deiner Sprache").create(), e -> {
-            cp.getSettings().setLanguage(
-                    cp.getSettings().getLanguage().ordinal() >= Language.values().length - 1
-                            ? Language.values()[0]
-                            : Language.values()[cp.getSettings().getLanguage().ordinal() + 1]
-            );
-
-            cp.updateSettings();
-            new PlayerSettingsInventory(p);
-        });
+        addSetting(new Setting<>(
+                Skull.fromUrl("http://textures.minecraft.net/texture/6f74f58f541342393b3b16787dd051dfacec8cb5cd3229c61e5f73d63947ad").toItemBuilder().displayName("§f§lSprache").create(),
+                LanguageOption.LANGUAGE_OPTIONS)
+                .chooseListener((player, result) -> {
+                    cp.getSettings().setLanguage(result.getLanguage());
+                    cp.updateSettings();
+                })
+                .currentOptionFinder(player -> new LanguageOption(cp.getSettings().getLanguage())));
 
         if (p.hasPermission("system.bungee.nick")) {
-            setItem(InventorySlot.ROW_2_SLOT_5, new ItemBuilder(Material.NAME_TAG).displayName("§f§lAutomatisch Nicken").create());
-            setItem(InventorySlot.ROW_3_SLOT_5, cp.getSettings().isAutoNick() ?
-                            new ItemBuilder(Material.INK_SACK, 1, 10).displayName("§a§lAktiviert").lore("§7§oKlicke, um nicht mehr automatisch", "§7§ogenickt zu werden").create() :
-                            new ItemBuilder(Material.INK_SACK, 1, 1).displayName("§c§lDeaktiviert").lore("§7§oKlicke, um automatisch genickt", "§7§ozu werden").create(),
-                    e -> {
-                        cp.getSettings().setAutoNick(!cp.getSettings().isAutoNick());
+            addSetting(new BooleanSetting(new ItemBuilder(Material.NAME_TAG).displayName("§f§lAutomatisch Nicken").create(), "Automatischem Nicken")
+                    .onChoose((player, result) -> {
+                        cp.getSettings().setAutoNick(result);
                         cp.updateSettings();
-                        new PlayerSettingsInventory(p);
-                    }
-            );
+                    })
+                    .optionFinder(player -> cp.getSettings().isAutoNick())
+                    .setEnabledDescription("§7§oKlicke, um nicht mehr automatisch", "§7§ogenickt zu werden")
+                    .setDisabledDescription("§7§oKlicke, um automatisch genickt", "§7§ozu werden")
+                    .create());
         }
 
-        setItem(InventorySlot.ROW_2_SLOT_6, new ItemBuilder(Material.PAPER).displayName("§f§lPrivate Nachrichten erhalten").create());
-        setItem(InventorySlot.ROW_3_SLOT_6, getSenderItem(cp.getSettings().getPrivateMessages()).lore("§7§oKlicke um auszuwählen von wem", "§7§odu private Nachrichten erhalten", "§7möchtest.").create(), e -> {
-            cp.getSettings().setPrivateMessages(
-                    cp.getSettings().getPrivateMessages().ordinal() >= PlayerSettings.Sender.values().length - 1
-                            ? PlayerSettings.Sender.values()[0]
-                            : PlayerSettings.Sender.values()[cp.getSettings().getPrivateMessages().ordinal() + 1]
-            );
+        addSetting(new Setting<>(
+                new ItemBuilder(Material.PAPER)
+                        .displayName("§f§lPrivate Nachrichten erhalten")
+                        .lore("§7§oKlicke um auszuwählen von wem", "§7§odu private Nachrichten erhalten", "§7möchtest.")
+                        .create(),
+                SenderOption.makeSenderOptions("Private Nachrichten"))
+                .chooseListener((player, result) -> {
+                    cp.getSettings().setPrivateMessages(result.getSender());
+                    cp.updateSettings();
+                })
+                .currentOptionFinder(player -> new SenderOption(cp.getSettings().getPrivateMessages(), "Private Nachrichten")));
 
-            cp.updateSettings();
-            new PlayerSettingsInventory(p);
-        });
+        addSetting(new Setting<>(
+                new ItemBuilder(Material.CAKE)
+                        .displayName("§f§lPartyanfragenanfragen erhalten")
+                        .lore("§7§oWähle aus von wem du", "§7§oPartyanfragen erhalten", "§7möchtest.")
+                        .create(),
+                SenderOption.makeSenderOptions("Partyanfragen"))
+                .chooseListener((player, result) -> {
+                    cp.getSettings().setPartyInvites(result.getSender());
+                    cp.updateSettings();
+                })
+                .currentOptionFinder(player -> new SenderOption(cp.getSettings().getPartyInvites(), "Partyanfragen")));
 
-        setItem(InventorySlot.ROW_2_SLOT_7, new ItemBuilder(Material.CAKE).displayName("§f§lPartyanfragenanfragen erhalten").create());
-        setItem(InventorySlot.ROW_3_SLOT_7, getSenderItem(cp.getSettings().getPartyInvites()).lore("§7§oKlicke um auszuwählen von wem", "§7§odu Partyanfragen erhalten", "§7möchtest.").create(), e -> {
-            cp.getSettings().setPartyInvites(
-                    cp.getSettings().getPartyInvites().ordinal() >= PlayerSettings.Sender.values().length - 1
-                            ? PlayerSettings.Sender.values()[0]
-                            : PlayerSettings.Sender.values()[cp.getSettings().getPartyInvites().ordinal() + 1]
-            );
-
-            cp.updateSettings();
-            new PlayerSettingsInventory(p);
-        });
-
-        setItem(InventorySlot.ROW_4_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
+        addSetting(new BooleanSetting(new ItemBuilder(Material.NOTE_BLOCK).displayName("§f§lSounds abspielen").create(), "Sounds abspielen")
+                .onChoose((player, result) -> {
+                    cp.getSettings().setPlaySounds(result);
+                    cp.updateSettings();
+                })
+                .optionFinder(player -> cp.getSettings().isPlaySounds())
+                .setEnabledDescription("§7§oKlicke, um keine Sounds mehr", "§7§ozu hören")
+                .setDisabledDescription("§7§oKlicke, Sounds wieder zu", "§7§ohören")
+                .create());
+        
+        setItem(InventorySlot.ROW_5_SLOT_9, BACK_ITEM, e -> {
             new ProfileInventory(CoreSystem.getInstance().getCorePlayer(p));
-            p.playSound(p.getLocation(), Sound.NOTE_BASS, 1, 1);
+            Sound.error(p);
         });
 
         openInventory();
-    }
-
-    private ItemBuilder getSenderItem(PlayerSettings.Sender sender) {
-        switch (sender) {
-            case ALL:
-                return new ItemBuilder(Material.INK_SACK, 1, 10).displayName("§a§lVon Jedem");
-            case FRIENDS:
-                return new ItemBuilder(Material.INK_SACK, 1, 14).displayName("§e§lVon Freunden");
-            case NOBODY:
-                return new ItemBuilder(Material.INK_SACK, 1, 1).displayName("§c§lVon Niemandem");
-            default:
-                return new ItemBuilder(Material.INK_SACK);
-        }
     }
 
 }

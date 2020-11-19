@@ -20,8 +20,15 @@ public final class MainScoreboard extends CoreScoreboard {
                 : g.getScore()
         ).prefix(g.getPrefix());
 
+        StringBuilder suffix = new StringBuilder(" ");
         if (p.isVanished()) {
-            t.suffix(" §3§lⓋ");
+            suffix.append("§3§lⓋ");
+        }
+        if (p.isNicked() && owner.hasPermission("group.team")) {
+            suffix.append("§6§lⓃ");
+        }
+        if (suffix.length() > 1) {
+            t.suffix(suffix.toString());
         }
     }
 }

@@ -7,13 +7,18 @@ package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
+import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.bungee.player.CoreNickManager;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 public class NickCMD extends CorePlayerCommand {
 
-    public NickCMD() {
+    private final CoreNickManager manager;
+
+    public NickCMD(CoreNickManager manager) {
         super("nick", "system.bungee.nick");
+        this.manager = manager;
     }
 
     @Override
@@ -26,16 +31,29 @@ public class NickCMD extends CorePlayerCommand {
             } else {
                 BungeeCoreSystem.getInstance().getNickManager().unnick(p);
             }
-        } else if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-            if (p.hasPermission("group.developer")) {
-                BungeeCoreSystem.getInstance().getMessenger().send(p, "§aDie Nicks wurden erfolgreich neu geladen");
-                BungeeCoreSystem.getInstance().getNickManager().reload();
+
+            return;
+        } else if (args.length > 1) {
+            if (p.hasPermission("system.bungee.nick.check")) {
+                if (args.length == 2 && args[0].equalsIgnoreCase("check")) {
+                    Nick nick = manager.getNick(args[1]);
+
+                    if (nick != null) {
+                        ProxiedPlayer user = manager.getNickedUser(nick);
+                        BungeeCoreSystem.getInstance().getMessenger().sendSuccess(p, "Ein Nick mit dem Namen ![" + nick.getName() + "] existiert und wird von §f" + (user != null ? user.getName() : "niemandem") + "§2 benutzt.");
+                    } else {
+                        BungeeCoreSystem.getInstance().getMessenger().sendError(p, "Ein Nick mit dem Namen existiert nicht!");
+                    }
+
+                    return;
+                }
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du hast keine Berechtigung für diesen Befehl!");
+                BungeeCoreSystem.getInstance().getMessenger().sendTransl(p, "system.command.noperm");
+                return;
             }
-        } else {
-            BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/nick");
         }
+
+        BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/nick");
     }
 
 }

@@ -254,9 +254,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new ServerCMD(),
                 new SendCMD(),
 
-                new NickCMD(),
-                new UnnickCMD(),
-
                 new FriendCMD(),
                 new PartyCMD(),
                 new JumpCMD(),
