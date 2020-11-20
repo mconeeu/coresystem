@@ -55,7 +55,6 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     @Getter
     @Setter
     protected Set<String> permissions;
-    @Getter
     @Setter
     protected PlayerSettings settings;
     @Getter
@@ -278,6 +277,11 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
         this.emeralds -= amount;
         ((CoreModuleCoreSystem) instance).getMoneyUtil().setEmeralds(uuid, emeralds);
         return amount;
+    }
+
+    @Override
+    public PlayerSettings getSettings() {
+        return settings.clone();
     }
 
     @Override

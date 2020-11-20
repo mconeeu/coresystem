@@ -12,8 +12,6 @@ import eu.mcone.coresystem.api.bukkit.event.player.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
-import eu.mcone.coresystem.bukkit.hologram.CoreHologramManager;
-import eu.mcone.coresystem.bukkit.player.BukkitCorePlayer;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -71,17 +69,15 @@ public class CorePlayerUpdateListener implements Listener {
 
     @EventHandler
     public void onSettingsChange(PlayerSettingsChangeEvent e) {
-        if (!e.getPlayer().getSettings().getLanguage().equals(e.getSettings().getLanguage())) {
-            Bukkit.getPluginManager().callEvent(new LanguageChangeEvent(e.getPlayer(), e.getSettings().getLanguage()));
+        if (!e.getPlayer().getSettings().getLanguage().equals(e.getOldSettings().getLanguage())) {
+            Bukkit.getPluginManager().callEvent(new LanguageChangeEvent(e.getPlayer(), e.getOldSettings().getLanguage(), e.getPlayer().getSettings().getLanguage()));
         }
-
-        ((BukkitCorePlayer) e.getPlayer()).setSettings(e.getSettings());
     }
 
     @EventHandler
     public void onLanguageChange(LanguageChangeEvent e) {
         e.getPlayer().getScoreboard().reload();
-        ((CoreHologramManager) CoreSystem.getInstance().getHologramManager()).reload(e.getPlayer().bukkit());
+        CoreSystem.getInstance().getHologramManager().reload(e.getPlayer().bukkit());
     }
 
 }

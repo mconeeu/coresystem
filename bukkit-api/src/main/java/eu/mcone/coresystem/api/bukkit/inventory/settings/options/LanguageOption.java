@@ -21,7 +21,10 @@ public class LanguageOption implements Option {
 
     public LanguageOption(Language language) {
         this.language = language;
-        this.item = Skull.fromUrl(language.getTextureUrl()).toItemBuilder().displayName("§f§lSprache").lore("§7§oKlicke zum ändern deiner Sprache").create();
+        this.item = Skull.fromUrl(language.getTextureUrl())
+                .toItemBuilder()
+                .displayName(language.getLabel()).lore("§7§oKlicke, um deine Sprache auf", "§7§o"+language.getName()+" zu ändern")
+                .create();
     }
 
 }

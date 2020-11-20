@@ -24,8 +24,10 @@ public class WorldListener implements Listener {
     public void onMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
 
-        if (shouldMoveBeCancelled(p, e.getFrom(), e.getTo())) {
-            p.teleport(e.getFrom());
+        if (e.getFrom().getBlockX() != e.getTo().getBlockX() || e.getFrom().getBlockY() != e.getTo().getBlockY() || e.getFrom().getBlockZ() != e.getTo().getBlockZ()) {
+            if (shouldMoveBeCancelled(p, e.getFrom(), e.getTo())) {
+                p.teleport(e.getFrom());
+            }
         }
     }
 

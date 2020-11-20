@@ -86,11 +86,9 @@ public class CorePlayerUpdateListener implements Listener {
 
     @EventHandler
     public void onSettingsChange(PlayerSettingsChangeEvent e) {
-        if (!e.getPlayer().getSettings().getLanguage().equals(e.getSettings().getLanguage())) {
-            ProxyServer.getInstance().getPluginManager().callEvent(new LanguageChangeEvent(e.getPlayer(), e.getSettings().getLanguage()));
+        if (!e.getPlayer().getSettings().getLanguage().equals(e.getOldSettings().getLanguage())) {
+            ProxyServer.getInstance().getPluginManager().callEvent(new LanguageChangeEvent(e.getPlayer(), e.getOldSettings().getLanguage(), e.getPlayer().getSettings().getLanguage()));
         }
-
-        ((GlobalOfflineCorePlayer) e.getPlayer()).setSettings(e.getSettings());
     }
 
 }

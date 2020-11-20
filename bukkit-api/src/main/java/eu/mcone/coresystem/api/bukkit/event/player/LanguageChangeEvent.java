@@ -20,7 +20,7 @@ public final class LanguageChangeEvent extends Event {
     private static final HandlerList handlerList = new HandlerList();
 
     private final CorePlayer player;
-    private final Language language;
+    private final Language fromLanguage, toLanguage;
 
     public HandlerList getHandlers() {
         return handlerList;

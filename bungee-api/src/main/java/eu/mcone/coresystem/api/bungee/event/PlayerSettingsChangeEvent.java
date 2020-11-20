@@ -16,6 +16,6 @@ import net.md_5.bungee.api.plugin.Event;
 public final class PlayerSettingsChangeEvent extends Event {
 
     private final CorePlayer player;
-    private final PlayerSettings settings;
+    private final PlayerSettings oldSettings;
 
 }

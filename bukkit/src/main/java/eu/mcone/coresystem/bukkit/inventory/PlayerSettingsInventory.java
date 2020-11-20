@@ -16,6 +16,7 @@ import eu.mcone.coresystem.api.bukkit.inventory.settings.settings.BooleanSetting
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.item.Skull;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -24,13 +25,14 @@ class PlayerSettingsInventory extends SettingsInventory {
     PlayerSettingsInventory(Player p) {
         super("§8» §c§lEinstellungen", p);
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(p);
+        PlayerSettings settings = cp.getSettings();
 
         addSetting(new BooleanSetting(new ItemBuilder(Material.SKULL_ITEM, 1, 3).displayName("§f§lErhalte Freundschaftsanfragen").create(), "Freundschaftsanfragen")
                 .onChoose((player, result) -> {
-                    cp.getSettings().setEnableFriendRequests(result);
-                    cp.updateSettings();
+                    settings.setEnableFriendRequests(result);
+                    cp.updateSettings(settings);
                 })
-                .optionFinder(player -> cp.getSettings().isEnableFriendRequests())
+                .optionFinder(player -> settings.isEnableFriendRequests())
                 .setEnabledDescription("§7§oKlicke zum akzeptieren von", "§7§oFreundschaftsanfragen")
                 .setDisabledDescription("§7§oKlicke zum ablehnen von", "§7§oFreundschaftsanfragen")
                 .create());
@@ -39,18 +41,18 @@ class PlayerSettingsInventory extends SettingsInventory {
                 Skull.fromUrl("http://textures.minecraft.net/texture/6f74f58f541342393b3b16787dd051dfacec8cb5cd3229c61e5f73d63947ad").toItemBuilder().displayName("§f§lSprache").create(),
                 LanguageOption.LANGUAGE_OPTIONS)
                 .chooseListener((player, result) -> {
-                    cp.getSettings().setLanguage(result.getLanguage());
-                    cp.updateSettings();
+                    settings.setLanguage(result.getLanguage());
+                    cp.updateSettings(settings);
                 })
-                .currentOptionFinder(player -> new LanguageOption(cp.getSettings().getLanguage())));
+                .currentOptionFinder(player -> new LanguageOption(settings.getLanguage())));
 
         if (p.hasPermission("system.bungee.nick")) {
             addSetting(new BooleanSetting(new ItemBuilder(Material.NAME_TAG).displayName("§f§lAutomatisch Nicken").create(), "Automatischem Nicken")
                     .onChoose((player, result) -> {
-                        cp.getSettings().setAutoNick(result);
-                        cp.updateSettings();
+                        settings.setAutoNick(result);
+                        cp.updateSettings(settings);
                     })
-                    .optionFinder(player -> cp.getSettings().isAutoNick())
+                    .optionFinder(player -> settings.isAutoNick())
                     .setEnabledDescription("§7§oKlicke, um nicht mehr automatisch", "§7§ogenickt zu werden")
                     .setDisabledDescription("§7§oKlicke, um automatisch genickt", "§7§ozu werden")
                     .create());
@@ -63,10 +65,10 @@ class PlayerSettingsInventory extends SettingsInventory {
                         .create(),
                 SenderOption.makeSenderOptions("Private Nachrichten"))
                 .chooseListener((player, result) -> {
-                    cp.getSettings().setPrivateMessages(result.getSender());
-                    cp.updateSettings();
+                    settings.setPrivateMessages(result.getSender());
+                    cp.updateSettings(settings);
                 })
-                .currentOptionFinder(player -> new SenderOption(cp.getSettings().getPrivateMessages(), "Private Nachrichten")));
+                .currentOptionFinder(player -> new SenderOption(settings.getPrivateMessages(), "Private Nachrichten")));
 
         addSetting(new Setting<>(
                 new ItemBuilder(Material.CAKE)
@@ -75,17 +77,17 @@ class PlayerSettingsInventory extends SettingsInventory {
                         .create(),
                 SenderOption.makeSenderOptions("Partyanfragen"))
                 .chooseListener((player, result) -> {
-                    cp.getSettings().setPartyInvites(result.getSender());
-                    cp.updateSettings();
+                    settings.setPartyInvites(result.getSender());
+                    cp.updateSettings(settings);
                 })
-                .currentOptionFinder(player -> new SenderOption(cp.getSettings().getPartyInvites(), "Partyanfragen")));
+                .currentOptionFinder(player -> new SenderOption(settings.getPartyInvites(), "Partyanfragen")));
 
         addSetting(new BooleanSetting(new ItemBuilder(Material.NOTE_BLOCK).displayName("§f§lSounds abspielen").create(), "Sounds abspielen")
                 .onChoose((player, result) -> {
-                    cp.getSettings().setPlaySounds(result);
-                    cp.updateSettings();
+                    settings.setPlaySounds(result);
+                    cp.updateSettings(settings);
                 })
-                .optionFinder(player -> cp.getSettings().isPlaySounds())
+                .optionFinder(player -> settings.isPlaySounds())
                 .setEnabledDescription("§7§oKlicke, um keine Sounds mehr", "§7§ozu hören")
                 .setDisabledDescription("§7§oKlicke, Sounds wieder zu", "§7§ohören")
                 .create());

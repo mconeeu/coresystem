@@ -16,6 +16,6 @@ import net.md_5.bungee.api.plugin.Event;
 public final class LanguageChangeEvent extends Event {
 
     private final CorePlayer player;
-    private final Language language;
+    private final Language fromLanguage, toLanguage;
 
 }

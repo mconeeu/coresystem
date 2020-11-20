@@ -37,30 +37,35 @@ public class MsgCMD extends CorePlayerCommand implements TabExecutor {
         if (args.length < 1) {
             BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Bitte Benutze: §c/msg §c<Player | toggle> §c[<Nachricht>]");
         } else if (args.length == 1 && args[0].equalsIgnoreCase("toggle")) {
-            if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY)) {
-                p.getSettings().setPrivateMessages(PlayerSettings.Sender.ALL);
-                p.updateSettings();
+            PlayerSettings settings = p.getSettings();
+
+            if (settings.getPrivateMessages().equals(PlayerSettings.Sender.NOBODY)) {
+                settings.setPrivateMessages(PlayerSettings.Sender.ALL);
+                p.updateSettings(settings);
 
                 BungeeCoreSystem.getInstance().getMessenger().sendTransl(p.bungee(), "system.bungee.chat.private.see");
             } else {
-                p.getSettings().setPrivateMessages(PlayerSettings.Sender.NOBODY);
-                p.updateSettings();
+                settings.setPrivateMessages(PlayerSettings.Sender.NOBODY);
+                p.updateSettings(settings);
 
                 BungeeCoreSystem.getInstance().getMessenger().sendTransl(p.bungee(), "system.bungee.chat.private.dontsee");
             }
         } else {
             final CorePlayer t = BungeeCoreSystem.getInstance().getCorePlayer(args[0]);
+
             if (t != null) {
                 if (!p.equals(t)) {
                     if (!t.getFriendData().getBlocks().contains(p.getUuid()) || p.hasPermission("system.bungee.chat.private.bypass")) {
-                        if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY) && !p.hasPermission("system.bungee.chat.private.bypass")) {
+                        PlayerSettings playerSettings = p.getSettings(), targetSettings = t.getSettings();
+
+                        if (targetSettings.getPrivateMessages().equals(PlayerSettings.Sender.NOBODY) && !p.hasPermission("system.bungee.chat.private.bypass")) {
                             BungeeCoreSystem.getInstance().getMessenger().send(bp, "§c" + args[0] + "§4 hat private Nachrichten deaktiviert!");
-                        } else if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !t.getFriendData().getFriends().containsKey(p.getUuid()) && !p.hasPermission("system.bungee.chat.private.bypass")) {
+                        } else if (targetSettings.getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !t.getFriendData().getFriends().containsKey(p.getUuid()) && !p.hasPermission("system.bungee.chat.private.bypass")) {
                             BungeeCoreSystem.getInstance().getMessenger().send(bp, "§c" + args[0] + "§4 hat private Nachrichten nur für Freunde aktiviert!");
                         } else {
-                            if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY) && !t.hasPermission("system.bungee.chat.private.bypass")) {
+                            if (playerSettings.getPrivateMessages().equals(PlayerSettings.Sender.NOBODY) && !t.hasPermission("system.bungee.chat.private.bypass")) {
                                 BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Du hast private Nachrichten §cdeaktiviert§4!");
-                            } else if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !p.getFriendData().getFriends().containsKey(t.getUuid()) && !t.hasPermission("system.bungee.chat.private.bypass")) {
+                            } else if (playerSettings.getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !p.getFriendData().getFriends().containsKey(t.getUuid()) && !t.hasPermission("system.bungee.chat.private.bypass")) {
                                 BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Du hast private Nachrichten nur für Freunde aktiviert!");
                             } else {
                                 StringBuilder msg = new StringBuilder();

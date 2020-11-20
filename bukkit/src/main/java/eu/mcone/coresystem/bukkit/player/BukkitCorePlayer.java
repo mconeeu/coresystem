@@ -24,7 +24,6 @@ import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.channel.packet.PacketInListenerImpl;
 import eu.mcone.coresystem.bukkit.channel.packet.PacketOutListenerImpl;
 import eu.mcone.coresystem.bukkit.listener.CorePlayerListener;
-import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import group.onegaming.networkmanager.core.api.database.Database;
 import lombok.Getter;
@@ -155,10 +154,13 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     }
 
     @Override
-    public void updateSettings() {
-        Bukkit.getPluginManager().callEvent(new PlayerSettingsChangeEvent(this, settings));
+    public void updateSettings(PlayerSettings settings) {
+        PlayerSettings oldSettings = this.settings;
+        this.settings = settings;
+
+        Bukkit.getPluginManager().callEvent(new PlayerSettingsChangeEvent(this, oldSettings));
         CoreSystem.getInstance().getChannelHandler().createSetRequest(bukkit(), "PLAYER_SETTINGS", CoreSystem.getInstance().getGson().toJson(settings, PlayerSettings.class));
-        BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), set("player_settings", Document.parse(((CoreModuleCoreSystem) instance).getGson().toJson(settings, PlayerSettings.class))));
+        BukkitCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), set("player_settings", Document.parse(instance.getGson().toJson(settings, PlayerSettings.class))));
     }
 
     @Override

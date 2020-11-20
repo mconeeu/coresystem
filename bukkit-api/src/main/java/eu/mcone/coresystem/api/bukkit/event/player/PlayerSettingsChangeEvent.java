@@ -20,7 +20,7 @@ public final class PlayerSettingsChangeEvent extends Event {
     private static final HandlerList handlerList = new HandlerList();
 
     private final CorePlayer player;
-    private final PlayerSettings settings;
+    private final PlayerSettings oldSettings;
 
     public HandlerList getHandlers() {
         return handlerList;

@@ -15,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public final class PlayerSettings {
+public final class PlayerSettings implements Cloneable {
 
     private boolean enableFriendRequests = true, autoNick = false;
     private Language language = Language.GERMAN;
@@ -25,4 +25,14 @@ public final class PlayerSettings {
     public enum Sender {
         ALL, FRIENDS, NOBODY
     }
+
+    @Override
+    public PlayerSettings clone() {
+        try {
+            return (PlayerSettings) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException();
+        }
+    }
+
 }

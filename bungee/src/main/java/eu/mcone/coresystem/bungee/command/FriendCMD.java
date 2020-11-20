@@ -10,6 +10,7 @@ import eu.mcone.coresystem.api.bungee.facades.Transl;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.CoreException;
+import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.friend.FriendSystem;
 import net.md_5.bungee.api.CommandSender;
@@ -79,17 +80,17 @@ public class FriendCMD extends CorePlayerCommand implements TabExecutor {
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("req") || args[0].equalsIgnoreCase("request") || args[0].equalsIgnoreCase("requests")) {
                 if (args[1].equalsIgnoreCase("toggle")) {
-                    if (p.getSettings().isEnableFriendRequests()) {
-                        p.getSettings().setEnableFriendRequests(false);
-                        p.updateSettings();
+                    PlayerSettings settings = p.getSettings();
 
+                    if (settings.isEnableFriendRequests()) {
+                        settings.setEnableFriendRequests(false);
                         FriendSystem.getMessenger().send(bp, "§2Du hast Freundschaftsanfragen §aausgeschaltet!");
                     } else {
-                        p.getSettings().setEnableFriendRequests(true);
-                        p.updateSettings();
-
+                        settings.setEnableFriendRequests(true);
                         FriendSystem.getMessenger().send(bp, "§2Du hast Freundschaftsanfragen §aeingeschaltet!");
                     }
+
+                    p.updateSettings(settings);
                 }
                 return;
             } else if (!p.getName().equalsIgnoreCase(args[1])) {

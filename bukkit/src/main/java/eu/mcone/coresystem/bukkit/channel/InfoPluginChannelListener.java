@@ -17,6 +17,7 @@ import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.bukkit.player.BukkitCorePlayer;
 import eu.mcone.coresystem.core.player.GlobalOfflineCorePlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -81,9 +82,12 @@ public class InfoPluginChannelListener implements PluginMessageListener {
                     break;
                 }
                 case "PLAYER_SETTINGS": {
+                    PlayerSettings oldSettings = cp.getSettings();
+                    ((BukkitCorePlayer) cp).setSettings(CoreSystem.getInstance().getGson().fromJson(in.readUTF(), PlayerSettings.class));
+
                     Bukkit.getPluginManager().callEvent(new PlayerSettingsChangeEvent(
                             CoreSystem.getInstance().getCorePlayer(p.getUniqueId()),
-                            CoreSystem.getInstance().getGson().fromJson(in.readUTF(), PlayerSettings.class)
+                            oldSettings
                     ));
                     break;
                 }

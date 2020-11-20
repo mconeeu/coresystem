@@ -48,8 +48,9 @@ public interface GlobalCorePlayer extends GlobalOfflineCorePlayer {
 
     /**
      * updates the set changes to the playerSettings on both bungee & bukkit
+     * @param settings
      */
-    void updateSettings();
+    void updateSettings(PlayerSettings settings);
 
     /**
      * sends the player a message

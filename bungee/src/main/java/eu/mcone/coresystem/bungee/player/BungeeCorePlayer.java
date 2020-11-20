@@ -111,11 +111,14 @@ public class BungeeCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
     }
 
     @Override
-    public void updateSettings() {
-        ProxyServer.getInstance().getPluginManager().callEvent(new PlayerSettingsChangeEvent(this, settings));
+    public void updateSettings(PlayerSettings settings) {
+        PlayerSettings oldSettings = this.settings;
+        this.settings = settings;
+
+        ProxyServer.getInstance().getPluginManager().callEvent(new PlayerSettingsChangeEvent(this, oldSettings));
         CoreSystem.getInstance().getChannelHandler().createInfoRequest(bungee(), "PLAYER_SETTINGS", CoreSystem.getInstance().getGson().toJson(settings, PlayerSettings.class));
 
-        BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), set("player_settings", Document.parse(((CoreModuleCoreSystem) instance).getGson().toJson(settings, PlayerSettings.class))));
+        BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(eq("uuid", uuid.toString()), set("player_settings", Document.parse(instance.getGson().toJson(settings, PlayerSettings.class))));
     }
 
     @Override

@@ -131,9 +131,12 @@ public class PluginMessageListener implements Listener {
                     } else if (subch.equalsIgnoreCase("REFRESH_NICKS")) {
                         BungeeCoreSystem.getInstance().getNickManager().refreshNicks(p.getServer());
                     } else if (subch.equalsIgnoreCase("PLAYER_SETTINGS")) {
+                        PlayerSettings oldSettings = cp.getSettings();
+                        ((GlobalOfflineCorePlayer) cp).setSettings(CoreSystem.getInstance().getGson().fromJson(in.readUTF(), PlayerSettings.class));
+
                         ProxyServer.getInstance().getPluginManager().callEvent(new PlayerSettingsChangeEvent(
                                 CoreSystem.getInstance().getCorePlayer(p),
-                                CoreSystem.getInstance().getGson().fromJson(in.readUTF(), PlayerSettings.class)
+                                oldSettings
                         ));
                     } else if (subch.equalsIgnoreCase("MONEY_CHANGE")) {
                         Currency currency = Currency.valueOf(in.readUTF());
