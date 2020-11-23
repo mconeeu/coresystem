@@ -51,7 +51,7 @@ public class GeneralCodecListener {
                                     Codec codec = (Codec) codecClass.newInstance();
                                     Object[] args = codec.decode(player, packet);
                                     if (args != null) {
-                                        callListeners(codec, args);
+                                        callListeners(codec, packet, args);
                                     }
                                 }
                             }
@@ -71,7 +71,7 @@ public class GeneralCodecListener {
                                     Codec codec = (Codec) codecClass.newInstance();
                                     Object[] args = codec.decode(player, packet);
                                     if (args != null) {
-                                        callListeners(codec, args);
+                                        callListeners(codec, packet, args);
                                     }
                                 }
                             }
@@ -108,7 +108,7 @@ public class GeneralCodecListener {
                                     Codec codec = codecClass.newInstance();
                                     Object[] args = codec.decode(null, event);
                                     if (args != null && args.length > 0) {
-                                        callListeners(codec, args);
+                                        callListeners(codec, event, args);
                                     }
                                 }
                             } catch (InstantiationException | IllegalAccessException e) {
@@ -136,10 +136,10 @@ public class GeneralCodecListener {
         return null;
     }
 
-    private void callListeners(Codec<?, ?> codec, Object[] args) {
+    private void callListeners(Codec<?, ?> codec, Object event, Object[] args) {
         for (CodecListener listener : codecRegistry.getListeners()) {
-            System.out.println("Listener");
-            listener.onCodec(codec, args);
+            System.out.println("Codec: " + codec.getClass().getSimpleName());
+            listener.onCodec(codec, event, args);
         }
     }
 

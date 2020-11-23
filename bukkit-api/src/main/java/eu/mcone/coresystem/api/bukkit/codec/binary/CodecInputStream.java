@@ -56,7 +56,6 @@ public class CodecInputStream {
                     // write the codec id back
                     migratedDataOutput.writeByte(codecVersion);
 
-
                     if (codecStreamVersion == specificCodecVersion) {
                         // read codec first
                         codec.readObject(dataInputStream);
