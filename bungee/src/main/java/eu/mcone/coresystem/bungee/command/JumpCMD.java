@@ -5,13 +5,21 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import com.google.common.collect.ImmutableSet;
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.TabExecutor;
 
-public class JumpCMD extends CorePlayerCommand {
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
+public class JumpCMD extends CorePlayerCommand implements TabExecutor {
 
     public JumpCMD() {
         super("jump");
@@ -41,6 +49,29 @@ public class JumpCMD extends CorePlayerCommand {
         } else {
             BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte Benutze: §c/jump <Spieler>");
         }
+    }
+
+    @Override
+    public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+        if (sender instanceof ProxiedPlayer) {
+            CorePlayer cp = BungeeCoreSystem.getSystem().getCorePlayer((ProxiedPlayer) sender);
+
+            if (args.length == 1) {
+                String search = args[0];
+                Set<UUID> friends = cp.getFriendData().getFriends().keySet();
+                Set<String> matches = new HashSet<>();
+
+                for (CorePlayer friend : BungeeCoreSystem.getSystem().getOnlineCorePlayers()) {
+                    if (friend.getName().startsWith(search) && friends.contains(friend.getUuid())) {
+                        matches.add(friend.getName());
+                    }
+                }
+
+                return matches;
+            }
+        }
+
+        return ImmutableSet.of();
     }
 
 }

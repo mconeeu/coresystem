@@ -10,34 +10,28 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public class BungeeMessenger extends CoreMessenger<ProxiedPlayer, CommandSender> implements Messenger {
+public class BungeeMessenger extends CoreMessenger<CommandSender> implements Messenger {
 
     public BungeeMessenger(GlobalCoreSystem coreSystem, String prefixTranslation) {
         super(coreSystem, prefixTranslation);
     }
 
     @Override
-    protected void dispatchMessage(ProxiedPlayer player, String message) {
-        dispatchMessage(player, TextComponent.fromLegacyText(message));
+    protected GlobalCorePlayer getCorePlayer(CommandSender player) {
+        try {
+            return (BungeeCorePlayer) BungeeCoreSystem.getSystem().getCorePlayer((ProxiedPlayer) player);
+        } catch (ClassCastException e) {
+            return null;
+        }
     }
 
     @Override
-    protected void dispatchMessage(ProxiedPlayer player, BaseComponent... baseComponents) {
-        player.sendMessage(baseComponents);
+    protected void dispatchMessage(CommandSender sender, String message) {
+        dispatchMessage(sender, TextComponent.fromLegacyText(message));
     }
 
     @Override
-    protected GlobalCorePlayer getCorePlayer(ProxiedPlayer player) {
-        return (BungeeCorePlayer) BungeeCoreSystem.getSystem().getCorePlayer(player);
-    }
-
-    @Override
-    protected void dispatchSenderMessage(CommandSender sender, String message) {
-        dispatchSenderMessage(sender, TextComponent.fromLegacyText(message));
-    }
-
-    @Override
-    protected void dispatchSenderMessage(CommandSender sender, BaseComponent... baseComponents) {
+    protected void dispatchMessage(CommandSender sender, BaseComponent... baseComponents) {
         sender.sendMessage(baseComponents);
     }
 

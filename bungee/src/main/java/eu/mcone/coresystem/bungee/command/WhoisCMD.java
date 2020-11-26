@@ -83,13 +83,13 @@ public class WhoisCMD extends CoreCommand {
                     }
                 }
 
-                BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, message.append(permInfo).append(general).append(banInfo).append(muteInfo).toString());
+                BungeeCoreSystem.getInstance().getMessenger().send(sender, message.append(permInfo).append(general).append(banInfo).append(muteInfo).toString());
             } catch (CoreException e) {
-                BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
+                BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
             }
             return;
         }
 
-        BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Bitte benutze: §c/whois <Spieler>");
+        BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze: §c/whois <Spieler>");
     }
 }

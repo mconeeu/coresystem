@@ -52,7 +52,7 @@ public final class CoreBlockLocation {
 
     @Override
     public String toString() {
-        return "CoreBlockLocation{" +
+        return "CBLoc{" +
                 "world='" + world + '\'' +
                 ", x=" + x +
                 ", y=" + y +

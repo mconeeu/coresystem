@@ -6,6 +6,10 @@ import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class DebugCMD extends CorePlayerCommand {
 
     public DebugCMD() {
@@ -98,6 +102,35 @@ public class DebugCMD extends CorePlayerCommand {
         );
 
         return false;
+    }
+
+    @Override
+    public List<String> onPlayerTabComplete(Player p, String[] args) {
+        if (args.length == 1) {
+            String search = args[0];
+            List<String> matches = new ArrayList<>();
+
+            for (String arg : new String[]{"add", "remove", "show", "hide", "list"}) {
+                if (arg.startsWith(search)) {
+                    matches.add(arg);
+                }
+            }
+
+            return matches;
+        } else if (args.length >= 2) {
+            String search = args[args.length-1];
+            List<String> matches = new ArrayList<>();
+
+            for (String target : BukkitCoreSystem.getSystem().getDebugger().getTargets()) {
+                if (target.startsWith(search)) {
+                    matches.add(target);
+                }
+            }
+
+            return matches;
+        }
+
+        return Collections.emptyList();
     }
 
     private String buildText(int length) {

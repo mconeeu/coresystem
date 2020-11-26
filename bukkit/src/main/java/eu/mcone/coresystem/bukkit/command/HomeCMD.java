@@ -15,8 +15,7 @@ import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class HomeCMD extends CorePlayerCommand {
 
@@ -76,6 +75,24 @@ public class HomeCMD extends CorePlayerCommand {
 
         messager.send(p, "§4Bitte benutze; §c/home [<name> | list | set | delete]");
         return true;
+    }
+
+    @Override
+    public List<String> onPlayerTabComplete(Player p, String[] args) {
+        if (args.length == 1) {
+            String search = args[0];
+            List<String> matches = new ArrayList<>();
+
+            for (String home : apiGetter.getHomeManager(p).getHomes().keySet()) {
+                if (home.startsWith(search)) {
+                    matches.add(home);
+                }
+            }
+
+            return matches;
+        }
+
+        return Collections.emptyList();
     }
 
 }

@@ -24,6 +24,11 @@ public class AfkListener implements Listener {
     }
 
     @EventHandler
+    public void on(AsyncPlayerChatEvent e) {
+        manager.setAfk(e.getPlayer(), false);
+    }
+
+    @EventHandler
     public void on(PlayerInteractEvent e) {
         manager.setAfk(e.getPlayer(), false);
     }

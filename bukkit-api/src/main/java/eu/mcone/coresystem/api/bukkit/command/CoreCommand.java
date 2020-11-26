@@ -51,7 +51,9 @@ public abstract class CoreCommand extends Command {
 
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
-        return onTabComplete(sender, args);
+        if (permission == null || sender.hasPermission(permission)) {
+            return onTabComplete(sender, args);
+        } else return null;
     }
 
     public abstract boolean onCommand(CommandSender sender, String[] args);

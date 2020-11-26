@@ -19,7 +19,7 @@ public final class PlayerSettings implements Cloneable {
 
     private boolean enableFriendRequests = true, autoNick = false;
     private Language language = Language.GERMAN;
-    private Sender privateMessages = Sender.FRIENDS, partyInvites = Sender.ALL;
+    private Sender privateMessages = Sender.FRIENDS, partyInvites = Sender.ALL, joinMeMessages = Sender.ALL;
     private boolean inventoryAnimations = true, playSounds = true;
 
     public enum Sender {

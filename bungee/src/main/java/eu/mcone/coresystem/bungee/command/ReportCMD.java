@@ -5,15 +5,22 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import com.google.common.collect.ImmutableSet;
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.overwatch.report.Report;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.overwatch.Overwatch;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.TabExecutor;
 
-public class ReportCMD extends CorePlayerCommand {
+import java.util.HashSet;
+import java.util.Set;
+
+public class ReportCMD extends CorePlayerCommand implements TabExecutor {
 
     private final Overwatch overwatch;
 
@@ -70,4 +77,36 @@ public class ReportCMD extends CorePlayerCommand {
             BungeeCoreSystem.getInstance().getChannelHandler().createInfoRequest(p, "CMD", "report help");
         }
     }
+
+    @Override
+    public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+        if (sender.hasPermission("system.bungee.overwatch.report")) {
+            if (args.length == 1) {
+                String search = args[0];
+                Set<String> matches = new HashSet<>();
+
+                for (String arg : new String[]{"close", "accept"}) {
+                    if (arg.startsWith(search)) {
+                        matches.add(search);
+                    }
+                }
+
+                return matches;
+            } else if (args.length == 2) {
+                String search = args[1];
+                Set<String> matches = new HashSet<>();
+
+                for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+                    if (player != sender && !player.hasPermission("group.team") && player.getName().startsWith(search)) {
+                        matches.add(player.getName());
+                    }
+                }
+
+                return matches;
+            }
+        }
+
+        return ImmutableSet.of();
+    }
+
 }

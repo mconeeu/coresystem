@@ -36,10 +36,12 @@ public class ChatListener implements Listener {
 
             if (p.hasPermission("group.team")) {
                 for (CorePlayer player : CoreSystem.getInstance().getOnlineCorePlayers()) {
-                    if (player.isVanished() && e.getMessage().contains(player.getName())) {
-                        BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "tc " + e.getMessage());
-                        e.setCancelled(true);
-                        return;
+                    for (String part : e.getMessage().split(" ")) {
+                        if (player.hasPermission("group.team") && (player.isVanished() || player.isNicked()) && part.equalsIgnoreCase(player.getName())) {
+                            BukkitCoreSystem.getInstance().getChannelHandler().createSetRequest(p, "CMD", "tc " + e.getMessage());
+                            e.setCancelled(true);
+                            return;
+                        }
                     }
                 }
             }

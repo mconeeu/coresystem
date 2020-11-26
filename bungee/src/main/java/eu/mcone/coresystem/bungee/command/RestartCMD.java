@@ -35,20 +35,20 @@ public class RestartCMD extends CoreCommand {
                 t.cancel();
                 t=null;
 
-                BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§2Der Neustartvorgang wurde abgebrochen!");
+                BungeeCoreSystem.getInstance().getMessenger().send(sender, "§2Der Neustartvorgang wurde abgebrochen!");
             } else {
                 int cursor = Integer.parseInt(args[0]);
 
                 if (cursor >= 5) {
                     restart(sender, Integer.parseInt(args[0]));
                 } else {
-                    BungeeCoreSystem.getInstance().getMessenger().sendSenderError(sender, "Der minimale Countdown ist ![5 Sekunden]!");
+                    BungeeCoreSystem.getInstance().getMessenger().sendError(sender, "Der minimale Countdown ist ![5 Sekunden]!");
                 }
             }
             return;
         }
 
-        BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Bitte benutze: §c/restart [<Sekunden>]");
+        BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze: §c/restart [<Sekunden>]");
     }
 
     private void restart(CommandSender sender, int seconds) {
@@ -77,8 +77,8 @@ public class RestartCMD extends CoreCommand {
 				}, 0, 1, TimeUnit.SECONDS);
 			}, seconds - 5, TimeUnit.SECONDS);
 		} else {
-			BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "Der Neustartvorgang ist bereits eingeleitet! Benutze §c/restart cancel §4zum abbrechen!");
-			BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4§oDas Netzwerk wird in " + getTime(seconds) + "§4§o neustarten...");
+			BungeeCoreSystem.getInstance().getMessenger().send(sender, "Der Neustartvorgang ist bereits eingeleitet! Benutze §c/restart cancel §4zum abbrechen!");
+			BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4§oDas Netzwerk wird in " + getTime(seconds) + "§4§o neustarten...");
 		}
 	}
 

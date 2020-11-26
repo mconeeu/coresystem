@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import com.google.common.collect.ImmutableSet;
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
@@ -16,9 +17,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.*;
 
 public class PunishCMD extends CorePlayerCommand implements TabExecutor {
 
@@ -34,7 +33,7 @@ public class PunishCMD extends CorePlayerCommand implements TabExecutor {
             UUID t = BungeeCoreSystem.getInstance().getPlayerUtils().fetchUuid(args[1]);
 
             if (t != null) {
-                if (args[0].equalsIgnoreCase("unpunish")) {
+                if (args[0].equalsIgnoreCase("unban")) {
                     if (overwatch.getPunishManager().isBanned(t)) {
                         overwatch.getPunishManager().unBan(t);
                         overwatch.getMessenger().send(player, "§2Du hast den Spieler §f" + args[1] + "§2 entbannt!");
@@ -158,27 +157,52 @@ public class PunishCMD extends CorePlayerCommand implements TabExecutor {
                 "\n§8» §7Alle Infos zum Punishsystem und zu den verschiedenen Templates findest du (bald) im Team Wiki: §fhttps://wiki.onegaming.group/coresystem");
     }
 
+    @Override
     public Iterable<String> onTabComplete(final CommandSender sender, final String[] args) {
-        ArrayList<String> result = new ArrayList<>();
         if (args.length == 1) {
-            for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-                result.add(p.getName());
+            String search = args[0];
+            Set<String> matches = new HashSet<>();
+
+            for (String arg : new String[]{"unban", "unmute", "check"}) {
+                if (arg.startsWith(search)) {
+                    matches.add(arg);
+                }
+            }
+            for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+                if (player != sender && player.getName().startsWith(search)) {
+                    matches.add(player.getName());
+                }
             }
 
-            result.addAll(Arrays.asList("unpunish", "unmute", "check"));
+            return matches;
         } else if (args.length == 2) {
-            if (args[0].equalsIgnoreCase("unban") || args[0].equalsIgnoreCase("unmute") || args[0].equalsIgnoreCase("check")) {
-                for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-                    result.add(p.getName());
-                }
-            } else {
-                for (PunishTemplate t : PunishTemplate.values()) {
-                    result.add(t.getId());
+            String search = args[0];
+
+            for (String arg : new String[]{"unban", "unmute", "check"}) {
+                if (args[0].equalsIgnoreCase(arg)) {
+                    Set<String> matches = new HashSet<>();
+
+                    for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+                        if (player != sender && player.getName().startsWith(search)) {
+                            matches.add(player.getName());
+                        }
+                    }
+
+                    return matches;
                 }
             }
+
+            Set<String> matches = new HashSet<>();
+            for (PunishTemplate t : PunishTemplate.values()) {
+                if (t.getId().startsWith(search)) {
+                    matches.add(t.getId());
+                }
+            }
+
+            return matches;
         }
 
-        return result;
+        return ImmutableSet.of();
     }
 
 }

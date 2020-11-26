@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import com.google.common.collect.ImmutableSet;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.command.CoreCommand;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
@@ -12,8 +13,31 @@ import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.TabExecutor;
 
-public class BungeecordCMD extends CoreCommand {
+import java.util.HashSet;
+import java.util.Set;
+
+public class BungeecordCMD extends CoreCommand implements TabExecutor {
+
+    private enum ReloadType {
+        TRANSLATIONS("TranslationManager", () -> BungeeCoreSystem.getInstance().getTranslationManager().reload()),
+        PERMISSIONS("Permissions", () -> {
+            BungeeCoreSystem.getInstance().getPermissionManager().reload();
+            for (CorePlayer p : CoreSystem.getInstance().getOnlineCorePlayers()) {
+                p.reloadPermissions();
+            }
+        }),
+        NICKS("NickManager", () -> BungeeCoreSystem.getInstance().getNickManager().reload());
+
+        private final String name;
+        private final Runnable runnable;
+
+        ReloadType(String name, Runnable runnable) {
+            this.name = name;
+            this.runnable = runnable;
+        }
+    }
 
     public BungeecordCMD() {
         super("bungeecord", null, "bungee");
@@ -40,29 +64,47 @@ public class BungeecordCMD extends CoreCommand {
             }
 
             if (args.length == 1) {
-                BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§aTranslation-Manager wird neu geladen...");
-                BungeeCoreSystem.getInstance().getTranslationManager().reload();
-
-                BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§aPermissions werden neu geladen...");
-                BungeeCoreSystem.getInstance().getPermissionManager().reload();
-                for (CorePlayer p : CoreSystem.getInstance().getOnlineCorePlayers()) {
-                    p.reloadPermissions();
+                for (ReloadType reload : ReloadType.values()) {
+                    reload(sender, reload);
                 }
-
-                BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§aNicks werden neu geladen...");
-                BungeeCoreSystem.getInstance().getNickManager().reload();
             } else if (args.length == 2) {
-                if (args[1].equalsIgnoreCase("translations")) {
-                    BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§aTranslation-Manager wird neu geladen...");
-                    BungeeCoreSystem.getInstance().getTranslationManager().reload();
-                } else if (args[1].equalsIgnoreCase("permissions")) {
-                    BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§aPermissions werden neu geladen...");
-                    BungeeCoreSystem.getInstance().getPermissionManager().reload();
-                } else if (args[1].equalsIgnoreCase("nicks")) {
-                    BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§aNicks werden neu geladen...");
-                    BungeeCoreSystem.getInstance().getNickManager().reload();
+                for (ReloadType reload : ReloadType.values()) {
+                    if (args[1].equalsIgnoreCase(reload.name().toLowerCase())) {
+                        reload(sender, reload);
+                        return;
+                    }
                 }
+
+                BungeeCoreSystem.getSystem().getMessenger().sendError(sender, "Bitte benutze: ![/bungee reload <translations|permissions|nicks>]");
             }
         }
     }
+
+    @Override
+    public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+        if (args.length == 1) {
+            if (sender.hasPermission("system.bungee.reload")) {
+                return ImmutableSet.of("reload");
+            }
+        } else if (args.length == 2) {
+            String search = args[1];
+            Set<String> matches = new HashSet<>();
+
+            for (ReloadType reloadType : ReloadType.values()) {
+                if (reloadType.name().toLowerCase().startsWith(search)) {
+                    matches.add(reloadType.name().toLowerCase());
+                }
+            }
+
+            return matches;
+        }
+
+        return ImmutableSet.of();
+    }
+
+    private void reload(CommandSender sender, ReloadType reloadType) {
+        BungeeCoreSystem.getSystem().getMessenger().sendSuccess(sender, "!["+reloadType.name+"] wird neu geladen...");
+        reloadType.runnable.run();
+    }
+
 }

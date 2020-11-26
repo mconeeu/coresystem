@@ -248,7 +248,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new PrivacyCMD(),
                 new CoinsCMD(),
                 new EmeraldsCMD(),
-                new PayCMD(),
+                new JoinMeCMD(),
+                new JoinCMD(),
 
                 new LobbyCMD(),
                 new ServerCMD(),
@@ -268,7 +269,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                 new ApplyCMD(),
                 new TeamCMD(),
                 new VoteCMD(),
-                new PremiumCMD(),
                 new BugreportCMD()
         );
     }

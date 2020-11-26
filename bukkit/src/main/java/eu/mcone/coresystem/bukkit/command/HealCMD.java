@@ -11,6 +11,9 @@ import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HealCMD extends CorePlayerCommand {
 
     public HealCMD() {
@@ -27,8 +30,8 @@ public class HealCMD extends CorePlayerCommand {
         } else if (args.length == 1) {
             Player t = Bukkit.getPlayer(args[0]);
             if (t != null) {
-                t.setHealth(20.0D);
-                t.setFoodLevel(20);
+                t.setHealth(20);
+                t.setFoodLevel(40);
                 BukkitCoreSystem.getInstance().getMessenger().send(t, "§2Du hast nun §avolles Leben§3!");
                 Sound.play(t, org.bukkit.Sound.EAT);
                 t.setFireTicks(1);
@@ -41,4 +44,19 @@ public class HealCMD extends CorePlayerCommand {
 
         return false;
     }
+
+    @Override
+    public List<String> onPlayerTabComplete(Player p, String[] args) {
+        String search = args[0];
+        List<String> matches = new ArrayList<>();
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player != p && player.getName().startsWith(search)) {
+                matches.add(player.getName());
+            }
+        }
+
+        return matches;
+    }
+
 }

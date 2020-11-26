@@ -15,6 +15,7 @@ import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.npc.CoreNpcManager;
+import eu.mcone.coresystem.bukkit.npc.NpcType;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -22,6 +23,8 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class NpcCMD extends CorePlayerCommand {
@@ -209,8 +212,8 @@ public class NpcCMD extends CorePlayerCommand {
                 "\n§c/npc add <entity-type> <name> <display-name> §4oder " +
                 "\n§c/npc update <name> <display-name> §4oder " +
                 "\n§c/npc updateData <name> <{} JSON-Data> §4oder " +
-                "\n§c/npc list [world-name] §4oder " +
-                "\n§c/npc tp [world-name] <name> §4oder " +
+                "\n§c/npc list [<world>] §4oder " +
+                "\n§c/npc tp [<world>] <name> §4oder " +
                 "\n§c/npc remove <name> §4oder " +
                 "\n§c/npc animation <name> <animation> §4oder" +
                 "\n§c/npc reload §4oder "
@@ -218,4 +221,73 @@ public class NpcCMD extends CorePlayerCommand {
 
         return true;
     }
+
+    @Override
+    public List<String> onPlayerTabComplete(Player p, String[] args) {
+        if (args.length == 1) {
+            String search = args[0];
+            List<String> matches = new ArrayList<>();
+
+            for (String arg : new String[]{"add", "update", "updateData", "list", "tp", "remove", "animation", "reload"}) {
+                if (arg.startsWith(search)) {
+                    matches.add(arg);
+                }
+            }
+
+            return matches;
+        } else if (args.length == 2) {
+            String search = args[1];
+            List<String> matches = new ArrayList<>();
+
+            for (String arg : new String[]{"update", "updateData", "remove", "animation", "tp"}) {
+                if (args[0].equalsIgnoreCase(arg)) {
+                    for (NPC npc : api.getNpcs()) {
+                        if (npc.getData().getName().startsWith(search)) {
+                            matches.add(npc.getData().getName());
+                        }
+                    }
+
+                    if (args[0].equalsIgnoreCase("tp")) {
+                        for (CoreWorld world : CoreSystem.getInstance().getWorldManager().getWorlds()) {
+                            if (world.getName().startsWith(search)) {
+                                matches.add(world.getName());
+                            }
+                        }
+                    }
+
+                    return matches;
+                }
+            }
+
+            if (args[0].equalsIgnoreCase("add")) {
+                for (NpcType type : NpcType.values()) {
+                    if (type.getType().name().startsWith(search)) {
+                        matches.add(type.getType().name());
+                    }
+                }
+            } else if (args[0].equalsIgnoreCase("list")) {
+                for (CoreWorld world : CoreSystem.getInstance().getWorldManager().getWorlds()) {
+                    if (world.getName().startsWith(search)) {
+                        matches.add(world.getName());
+                    }
+                }
+            }
+
+            return matches;
+        } else if (args.length == 3 && args[2].equalsIgnoreCase("animation")) {
+            String search = args[1];
+            List<String> matches = new ArrayList<>();
+
+            for (NpcAnimation animation : NpcAnimation.values()) {
+                if (animation.name().startsWith(search)) {
+                    matches.add(animation.name());
+                }
+            }
+
+            return matches;
+        }
+
+        return Collections.emptyList();
+    }
+
 }

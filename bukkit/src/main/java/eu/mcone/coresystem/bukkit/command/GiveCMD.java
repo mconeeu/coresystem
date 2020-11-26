@@ -14,6 +14,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GiveCMD extends CoreCommand {
 
     public GiveCMD() {
@@ -27,7 +30,7 @@ public class GiveCMD extends CoreCommand {
                 Player p = (Player) sender;
                 givePlayerItem(sender, p, args[0]);
             } else {
-                CoreSystem.getInstance().getMessenger().sendSenderTransl(sender, "system.command.consolesender");
+                CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.consolesender");
                 return false;
             }
         } else if (args.length == 2) {
@@ -36,11 +39,33 @@ public class GiveCMD extends CoreCommand {
             if (t != null) {
                 givePlayerItem(sender, t, args[1]);
             } else {
-                BukkitCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Der Spieler §c" + args[0] + " §4konnte nicht gefunden werden!");
+                BukkitCoreSystem.getInstance().getMessenger().send(sender, "§4Der Spieler §c" + args[0] + " §4konnte nicht gefunden werden!");
             }
         }
 
         return false;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        String search = args[args.length-1];
+        List<String> matches = new ArrayList<>();
+
+        if (args.length == 1) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player != sender && player.getName().startsWith(search)) {
+                    matches.add(player.getName());
+                }
+            }
+        }
+
+        for (Material mat : Material.values()) {
+            if (mat.name().toLowerCase().startsWith(search)) {
+                matches.add(mat.name().toLowerCase());
+            }
+        }
+
+        return matches;
     }
 
     private static void givePlayerItem(CommandSender sender, Player p, String arg) {
@@ -48,9 +73,9 @@ public class GiveCMD extends CoreCommand {
 
         if (material != null) {
             p.getInventory().addItem(new ItemStack(material));
-            BukkitCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§2Du hast das Item §a" + material.toString() + " §2erhalten!");
+            BukkitCoreSystem.getInstance().getMessenger().send(sender, "§2Du hast das Item §a" + material.toString() + " §2erhalten!");
         } else {
-            BukkitCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Das Item §c" + arg + " §4konnte nicht gefunden werden!");
+            BukkitCoreSystem.getInstance().getMessenger().send(sender, "§4Das Item §c" + arg + " §4konnte nicht gefunden werden!");
         }
     }
 
@@ -59,7 +84,7 @@ public class GiveCMD extends CoreCommand {
             int id = Integer.parseInt(arg);
             return Material.getMaterial(id);
         } catch (NumberFormatException ignored) {
-            return Material.getMaterial(arg.toUpperCase());
+            return Material.getMaterial(arg.replace("minecraft.", "").toUpperCase());
         }
     }
 

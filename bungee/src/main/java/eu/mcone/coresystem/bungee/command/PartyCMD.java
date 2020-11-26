@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import com.google.common.collect.ImmutableSet;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
@@ -15,9 +16,10 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class PartyCMD extends CorePlayerCommand implements TabExecutor {
 
@@ -216,22 +218,64 @@ public class PartyCMD extends CorePlayerCommand implements TabExecutor {
                 }
             }
 
-            Party.getMessenger().send(p, "§4Bitte benutze: §c/party <create | invite | msg | kick | promote | delete | leave> [<Player>]");
+            Party.getMessenger().send(p, "§4Bitte benutze: §c/party <create | invite | msg | kick | promote | delete | accept | leave> [<Player>]");
         }
     }
 
     public Iterable<String> onTabComplete(final CommandSender sender, final String[] args) {
-        List<String> result = new ArrayList<>();
-        if (args.length == 1) {
-            result.addAll(Arrays.asList("create", "invite", "msg", "kick", "promote", "delete", "leave"));
-        } else if (args.length == 2) {
-            if (!args[0].equalsIgnoreCase("msg")) {
-                for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-                    result.add(p.getName());
+        if (sender instanceof ProxiedPlayer) {
+            if (args.length == 1) {
+                String search = args[0];
+                Set<String> matches = new HashSet<>();
+
+                for (String arg : new String[]{"create", "invite", "msg", "kick", "promote", "accept", "delete", "leave"}) {
+                    if (arg.startsWith(search)) {
+                        matches.add(arg);
+                    }
+                }
+
+                return matches;
+            } else if (args.length == 2) {
+                for (String arg : new String[]{"invite", "kick", "promote", "accept"}) {
+                    if (args[0].equalsIgnoreCase(arg)) {
+                        String search = args[1];
+                        Set<String> matches = new HashSet<>();
+                        ProxiedPlayer p = (ProxiedPlayer) sender;
+
+                        if (args[0].equalsIgnoreCase("invite")) {
+                            for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+                                if (player != p && player.getName().startsWith(search)) {
+                                    matches.add(player.getName());
+                                }
+                            }
+                        } else if (args[0].equalsIgnoreCase("accept")) {
+                            for (Party party : Party.parties.values()) {
+                                if (party.getInvites().contains(p)) {
+                                    for (Map.Entry<String, Party> entry : Party.parties.entrySet()) {
+                                        if (entry.getValue().equals(party) && entry.getKey().startsWith(search)) {
+                                            matches.add(entry.getKey());
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            Party party = Party.getParty(p);
+
+                            if (party != null) {
+                                for (ProxiedPlayer player : party.getMember()) {
+                                    if (player.getName().startsWith(search)) {
+                                        matches.add(player.getName());
+                                    }
+                                }
+                            }
+                        }
+
+                        return matches;
+                    }
                 }
             }
         }
 
-        return result;
+        return ImmutableSet.of();
     }
 }

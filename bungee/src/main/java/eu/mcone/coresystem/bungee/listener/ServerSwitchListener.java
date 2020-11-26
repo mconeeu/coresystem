@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bungee.listener;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.bungee.command.JoinMeCMD;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -30,6 +31,7 @@ public class ServerSwitchListener implements Listener {
             BungeeCoreSystem.getSystem().getNickManager().serverSwitched(p);
         }
 
+        JoinMeCMD.invalidateJoinMe(p.getUniqueId());
         PostLoginListener.updateTabHeader(p);
     }
 

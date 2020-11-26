@@ -18,8 +18,7 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class RegionCMD extends CorePlayerCommand {
 
@@ -93,9 +92,9 @@ public class RegionCMD extends CorePlayerCommand {
 
                 if (region != null) {
                     w.removeRegion(args[1]).save();
-                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Die Location wurde erfolgreich gelöscht");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Die Region wurde erfolgreich gelöscht");
                 } else {
-                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die angegebene Location existiert nicht in deiner aktuellen Welt! Benutze §c/location remove <world-name> <location-name>§4 zum Löschen einer Location von einer anderen Welt!");
+                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die angegebene Region existiert nicht in deiner aktuellen Welt! Benutze §c/region remove <world-name> <region-name>§4 zum Löschen einer Region von einer anderen Welt!");
                 }
 
                 return true;
@@ -109,9 +108,9 @@ public class RegionCMD extends CorePlayerCommand {
 
                     if (region != null) {
                         w.removeRegion(args[2]).save();
-                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Die Location wurde erfolgreich gelöscht");
+                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Die Region wurde erfolgreich gelöscht");
                     } else {
-                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die angegebene Location existiert nicht!");
+                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die angegebene Region existiert nicht!");
                     }
                 } else {
                     BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die angegebene Welt existiert nicht!");
@@ -129,8 +128,56 @@ public class RegionCMD extends CorePlayerCommand {
             }
         }
 
-        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/region <remove|list> [<world-name>] [<region-name>]\n§4oder: §c/region <setCube|setRect|setSphere|setCircle> <x1> <y1> [<z1>] <x2> <y2> [<z2>]");
+        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/region <remove|list> [<world-name>] [<region-name>]\n§4oder: §c/region <setCube|setRect|setSphere|setCircle> <name> <x1> <y1> [<z1>] <x2> <y2> [<z2>]");
         return false;
+    }
+
+    @Override
+    public List<String> onPlayerTabComplete(Player p, String[] args) {
+        if (args.length == 1) {
+            String search = args[0];
+            List<String> matches = new ArrayList<>();
+
+            for (String arg : new String[]{"setCube", "setRect", "setSphere", "setCircle", "list", "remove"}) {
+                if (arg.startsWith(search)) {
+                    matches.add(arg);
+                }
+            }
+
+            return matches;
+        } else if (args.length == 2 && (args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("remove"))) {
+            String search = args[1];
+            List<String> matches = new ArrayList<>();
+
+            for (CoreWorld world : CoreSystem.getInstance().getWorldManager().getWorlds()) {
+                if (world.getName().startsWith(search)) {
+                    matches.add(world.getName());
+                }
+            }
+
+            if (args[0].equalsIgnoreCase("remove")) {
+                for (Region region : CoreSystem.getInstance().getCorePlayer(p).getWorld().getRegions()) {
+                    if (region.getName().startsWith(search)) {
+                        matches.add(region.getName());
+                    }
+                }
+            }
+
+            return matches;
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("remove")) {
+            String search = args[1];
+            List<String> matches = new ArrayList<>();
+
+            for (Region region : CoreSystem.getInstance().getCorePlayer(p).getWorld().getRegions()) {
+                if (region.getName().startsWith(search)) {
+                    matches.add(region.getName());
+                }
+            }
+
+            return matches;
+        }
+
+        return Collections.emptyList();
     }
 
     private void setRegion(CoreWorld world, Region.Selection selection, String[] args) {

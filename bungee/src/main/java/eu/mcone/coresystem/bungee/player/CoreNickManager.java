@@ -144,6 +144,19 @@ public class CoreNickManager implements NickManager {
         return nicks.get(nick);
     }
 
+    @Override
+    public Map<Nick, ProxiedPlayer> getPlayerNicks() {
+        Map<Nick, ProxiedPlayer> nicks = new HashMap<>();
+
+        for (Map.Entry<Nick, ProxiedPlayer> entry : this.nicks.entrySet()) {
+            if (entry.getValue() != null) {
+                nicks.put(entry.getKey(), entry.getValue());
+            }
+        }
+
+        return nicks;
+    }
+
     private static void sendNickRequest(ProxiedPlayer p, Nick nick, boolean notify) {
         CoreSystem.getInstance().getChannelHandler().createInfoRequest(p,
                 "NICK",

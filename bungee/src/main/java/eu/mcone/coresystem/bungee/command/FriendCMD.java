@@ -5,6 +5,8 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import com.google.common.collect.ImmutableSet;
+import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bungee.facades.Transl;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
@@ -256,19 +258,67 @@ public class FriendCMD extends CorePlayerCommand implements TabExecutor {
         FriendSystem.getMessenger().send(bp, "§4Bitte benutze: §c/friend <list | requests | accept | deny | add | remove | block | unblock> §c[<name>] §4oder §c/friend request toggle");
     }
 
+    @Override
     public Iterable<String> onTabComplete(final CommandSender sender, final String[] args) {
-        List<String> result = new ArrayList<>();
-        if (args.length == 1) {
-            result.addAll(Arrays.asList("list", "requests", "accept", "deny", "add", "remove", "block", "unblock"));
-        } else if (args.length == 2) {
-            if (!(args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("requests") || args[0].equalsIgnoreCase("req") || args[0].equalsIgnoreCase("request"))) {
-                for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-                    result.add(p.getName());
+        if (sender instanceof ProxiedPlayer) {
+            if (args.length == 1) {
+                String search = args[0];
+                Set<String> matches = new HashSet<>();
+
+                for (String arg : new String[]{"list", "requests", "accept", "deny", "add", "remove", "block", "unblock"}) {
+                    if (arg.startsWith(search)) {
+                        matches.add(arg);
+                    }
+                }
+
+                return matches;
+            } else if (args.length == 2) {
+                for (String arg : new String[]{"accept", "deny", "add", "remove", "block", "unblock"}) {
+                    if (args[0].equalsIgnoreCase(arg)) {
+                        String search = args[1];
+                        Set<String> matches = new HashSet<>();
+                        ProxiedPlayer p = (ProxiedPlayer) sender;
+                        CorePlayer cp = CoreSystem.getInstance().getCorePlayer(p);
+
+                        if (arg.equalsIgnoreCase("remove")) {
+                            Set<UUID> friends = cp.getFriendData().getFriends().keySet();
+
+                            for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+                                if (player != p && friends.contains(player.getUniqueId()) && player.getName().startsWith(search)) {
+                                    matches.add(player.getName());
+                                }
+                            }
+                        } else if (arg.equalsIgnoreCase("unblock")) {
+                            List<UUID> friends = cp.getFriendData().getBlocks();
+
+                            for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+                                if (player != p && friends.contains(player.getUniqueId()) && player.getName().startsWith(search)) {
+                                    matches.add(player.getName());
+                                }
+                            }
+                        } else if (arg.equalsIgnoreCase("deny")) {
+                            Set<UUID> friends = cp.getFriendData().getRequests().keySet();
+
+                            for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+                                if (player != p && friends.contains(player.getUniqueId()) && player.getName().startsWith(search)) {
+                                    matches.add(player.getName());
+                                }
+                            }
+                        } else {
+                            for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
+                                if (player != p && player.getName().startsWith(search)) {
+                                    matches.add(player.getName());
+                                }
+                            }
+                        }
+
+                        return matches;
+                    }
                 }
             }
         }
 
-        return result;
+        return ImmutableSet.of();
     }
 
     private void appendListToStringBuilder(StringBuilder sb, Collection<String> list) {

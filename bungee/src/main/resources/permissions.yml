@@ -1,0 +1,67 @@
+permissions:
+  system:
+    description: Bypass all MCONE-System Permissions
+    children:
+      system.bungee:
+        description: Basic BungeeCord Permission
+        children:
+          system.bungee.cooldown:
+            description: Allows to bypass the CooldownSystem
+          system.bungee.coins:
+            description: Allows to change coins of everyone
+          system.bungee.emeralds:
+            description: Allows to change emeralds of everyone
+          system.bungee.maintenance:
+            description: Wartungsmodus verändern
+            children:
+              system.bungee.maintenance.join:
+                desciption: Join during maintanance
+          system.bungee.reload:
+            desciption: reload BCS managers (translations, nicks, ...)
+          system.bungee.nick:
+            description: Nicken
+          system.bungee.perms:
+            description: Zugiff auf /perms
+            children:
+              system.bungee.perms.user:
+                desciption: Change users permissions
+                children:
+                  system.bungee.perms.user.group:
+                    description: Change user groups
+                    children:
+                      system.bungee.perms.group.modify:
+                        description: Gruppen an User vergeben, die einen niedrigeren Rang haben als der eigene
+              system.bungee.perms.user.modify:
+                description: Permissions von Usern verändern
+              system.bungee.perms.group:
+                description: modify groups
+                  system.bungee.perms.group.modify:
+                    description: Permissions von Gruppen verändern
+          system.bungee.chat:
+            description: Chat permissions
+            children:
+              system.bungee.chat.bypass:
+                description: /msg an Spieler die private Nachrichten ausgestellt haben
+          system.bungee.server:
+            desciption: Connect to other servers
+          system.bungee.send:
+            desciption: Send users to other servers
+          system.bungee.teamchat:
+            description: Write in teamchat
+          system.bungee.cmd:
+            description: Enables command functions
+            children:
+              system.bungee.cmd.bypass:
+                description: Allow usage of /pl
+          system.bungee.overwatch:
+            description: Overwatch System
+            children:
+              system.bungee.overwatch.report:
+                description: Access to reports
+              system.bungee.overwatch.punish:
+                description: Access to /punish
+          system.bungee.joinme:
+            desciption: use /joinme
+            children:
+              system.bungee.joinme.cooldown:
+                description: bypass cooldown

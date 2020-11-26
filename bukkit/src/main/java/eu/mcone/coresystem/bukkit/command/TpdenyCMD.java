@@ -11,6 +11,10 @@ import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public class TpdenyCMD extends CorePlayerCommand {
 
     private final Messenger messager;
@@ -42,6 +46,20 @@ public class TpdenyCMD extends CorePlayerCommand {
 
         messager.send(p, "§4Bitte benutze: §c/tpdeny <Spieler>");
         return true;
+    }
+
+    @Override
+    public List<String> onPlayerTabComplete(Player p, String[] args) {
+        String search = args[0];
+        List<String> matches = new ArrayList<>();
+
+        for (Map.Entry<String, List<String>> entry : TpaCMD.players.entrySet()) {
+            if (entry.getValue().contains(p.getName()) && entry.getKey().startsWith(search)) {
+                matches.add(entry.getKey());
+            }
+        }
+
+        return matches;
     }
 
 }

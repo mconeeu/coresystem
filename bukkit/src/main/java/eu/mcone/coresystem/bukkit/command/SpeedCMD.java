@@ -18,7 +18,7 @@ public class SpeedCMD extends CorePlayerCommand {
     @Override
     public boolean onPlayerCommand(Player p, String[] args) {
         if (args.length == 1) {
-            float speed = Float.valueOf(args[0]);
+            float speed = Float.parseFloat(args[0]);
 
             if (speed > -1 && speed < 1) {
                 if (p.isFlying()) {
@@ -31,8 +31,10 @@ public class SpeedCMD extends CorePlayerCommand {
             } else {
                 BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du kannst nur Geschwindigkeiten zwischen -1 und 1 setzen!");
             }
+            return true;
         }
 
+        BukkitCoreSystem.getSystem().getMessenger().sendError(p, "Bitte benutze: ![/speed <-1..1>]");
         return true;
     }
 

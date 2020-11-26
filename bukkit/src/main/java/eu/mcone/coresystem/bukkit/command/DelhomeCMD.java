@@ -13,6 +13,9 @@ import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGette
 import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DelhomeCMD extends CorePlayerCommand {
 
     private final Messenger messager;
@@ -43,4 +46,18 @@ public class DelhomeCMD extends CorePlayerCommand {
         return false;
     }
 
+    @Override
+    public List<String> onPlayerTabComplete(Player p, String[] args) {
+        HomeManager api = apiGetter.getHomeManager(p);
+        String search = args[0];
+        List<String> matches = new ArrayList<>();
+
+        for (String home : api.getHomes().keySet()) {
+            if (home.startsWith(search)) {
+                matches.add(home);
+            }
+        }
+
+        return matches;
+    }
 }

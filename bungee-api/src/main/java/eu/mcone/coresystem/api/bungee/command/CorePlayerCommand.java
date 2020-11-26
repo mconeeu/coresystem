@@ -19,7 +19,7 @@ public abstract class CorePlayerCommand extends CoreCommand {
         if (sender instanceof ProxiedPlayer) {
             onPlayerCommand((ProxiedPlayer) sender, args);
         } else {
-            CoreSystem.getInstance().getMessenger().sendSenderTransl(sender, "system.command.consolesender");
+            CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.consolesender");
         }
     }
 

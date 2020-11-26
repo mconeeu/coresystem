@@ -11,6 +11,10 @@ import eu.mcone.coresystem.bukkit.world.BuildSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class  BuildCMD extends CorePlayerCommand {
 
     private final BuildSystem buildSystem;
@@ -22,28 +26,41 @@ public class  BuildCMD extends CorePlayerCommand {
 
     @Override
     public boolean onPlayerCommand(Player p, String[] args) {
-        if (p.hasPermission("system.bukkit.build")) {
-            if (args.length == 0) {
-                buildSystem.changeBuildMode(p);
-                return true;
-            } else if (args.length == 1) {
-                Player t = Bukkit.getPlayer(args[0]);
+        if (args.length == 0) {
+            buildSystem.changeBuildMode(p);
+            return true;
+        } else if (args.length == 1) {
+            Player t = Bukkit.getPlayer(args[0]);
 
-                if (t != null) {
-                    buildSystem.changeBuildMode(t);
-                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du hast den Build-Modus von §a" + args[0] + "§2 verändert!");
-                } else {
-                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Dieser Spieler ist nicht online!");
-                }
-                return true;
+            if (t != null) {
+                buildSystem.changeBuildMode(t);
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du hast den Build-Modus von §a" + args[0] + "§2 verändert!");
+            } else {
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Dieser Spieler ist nicht online!");
             }
-        } else {
-            BukkitCoreSystem.getInstance().getMessenger().sendTransl(p, "system.command.noperm");
             return true;
         }
 
         BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/build [<Spieler>]");
         return true;
+    }
+
+    @Override
+    public List<String> onPlayerTabComplete(Player p, String[] args) {
+        if (args.length == 1) {
+            String search = args[0];
+            List<String> matches = new ArrayList<>();
+
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player != p && player.getName().startsWith(search)) {
+                    matches.add(player.getName());
+                }
+            }
+
+            return matches;
+        }
+
+        return Collections.emptyList();
     }
 
 }

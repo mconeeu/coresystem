@@ -23,12 +23,37 @@ import org.bukkit.WorldType;
 import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WorldCMD extends CorePlayerCommand {
 
+    private enum WorldKey {
+        NAME("name"),
+        ALIAS("alias"),
+        SEED("seed"),
+        WORLD_TYPE("worldType", "NORMAL", "FLAT", "LARGE_BIOMES", "AMPLIFIED", "CUSTOMIZED"),
+        ENVIRONMENT("environment", "NORMAL", "NETHER", "THE_END"),
+        DIFFICULTY("difficulty", "NORMAL", "NETHER", "THE_END"),
+        GENERATOR("generator"),
+        GENERATOR_SETTINGS("generatorSettings"),
+        GENERATE_STRUCUTRES("generateStructures", "true", "false"),
+        AUTO_SAVE("autoSave", "true", "false"),
+        PVP("pvp", "true", "false"),
+        ALLOW_ANIMALS("allowAnimals", "true", "false"),
+        ALLOW_MONSTERS("allowMonsters", "true", "false"),
+        SPAWN_ANIMALS("spawnAnimals", "true", "false"),
+        SPAWN_MONSTERS("spawnMonsters", "true", "false"),
+        KEEP_SPAWN_IN_MEMORY("keepSpawnInMemory", "true", "false"),
+        LOAD_ON_STARTUP("loadOnStartup", "true", "false");
+
+        private final String key;
+        private final String[] values;
+
+        WorldKey(String key, String... values) {
+            this.key = key;
+            this.values = values;
+        }
+    }
     private final WorldManager manager;
 
     public WorldCMD(WorldManager manager) {
@@ -66,26 +91,12 @@ public class WorldCMD extends CorePlayerCommand {
                 }
                 return true;
             } else if (args[0].equalsIgnoreCase("keys")) {
-                BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Diese Keys können bei §a/world set <key> <value>§2 oder bei §a/world create [<key>=<value>]... §2verwendet werden:" +
-                        "\n§7§oname §8: §f§o{name}" +
-                        "\n§7§oalias §8: §f§o{alias}" +
-                        "\n§7§oseed §8: §f§o{seed}" +
-                        "\n§7§oworldType §8: §f{NORMAL, FLAT, LARGE_BIOMES, AMPLIFIED, CUSTOMIZED}" +
-                        "\n§7§oenvironment §8: §f{NORMAL, NETHER, THE_END}" +
-                        "\n§7§odifficulty §8: §f{NORMAL, NETHER, THE_END}" +
-                        "\n§7§ogenerator §8: §f§o{name}" +
-                        "\n§7§ogeneratorSettings §8: §f§o{settings}" +
-                        "\n§7§ogenerateStructures §8: §f{true, false}" +
-                        "\n§7§oautoSave §8: §f{true, false}" +
-                        "\n§7§opvp §8: §f{true, false}" +
-                        "\n§7§oallowAnimals §8: §f{true, false}" +
-                        "\n§7§oallowMonsters §8: §f{true, false}" +
-                        "\n§7§ospawnAnimals §8: §f{true, false}" +
-                        "\n§7§ospawnMonsters §8: §f{true, false}" +
-                        "\n§7§okeepSpawnInMemory §8: §f{true, false}" +
-                        "\n§7§oloadOnStartup §8: §f{true, false}" +
-                        "\n§7§otemplateName §8: §f{name}"
-                );
+                StringBuilder sb = new StringBuilder("§2Diese Keys können bei §a/world set <key> <value>§2 oder bei §a/world create [<key>=<value>]... §2verwendet werden:");
+                for (WorldKey key : WorldKey.values()) {
+                    sb.append("\n§7§o").append(key.key).append(" §8: §f§o{").append(key.values.length > 0 ? Arrays.toString(key.values) : key.key).append("}");
+                }
+
+                BukkitCoreSystem.getInstance().getMessenger().send(p, sb.toString());
                 return true;
             } else if (args[0].equalsIgnoreCase("reload")) {
                 manager.reload();
@@ -321,7 +332,7 @@ public class WorldCMD extends CorePlayerCommand {
         BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: " +
                 "\n§c/world <name> " +
                 "\n§c/world list §4oder " +
-                "\n§c/world <info | upload | unload | delete | tp> <world-name> §4oder " +
+                "\n§c/world <info | unload | delete | tp> <world-name> §4oder " +
                 "\n§c/world purge <animals | monsters> §4oder " +
                 "\n§c/world set <key> <value> §4oder " +
                 "\n§c/world import <name> <NORMAL | NETHER | THE_END>" +
@@ -332,4 +343,88 @@ public class WorldCMD extends CorePlayerCommand {
         return true;
     }
 
+    @Override
+    public List<String> onPlayerTabComplete(Player p, String[] args) {
+        if (args.length == 1) {
+            String search = args[0];
+            List<String> matches = new ArrayList<>();
+
+            for (String arg : new String[]{"list", "info", "unload", "delete", "tp", "purge", "set", "import", "create", "keys"}) {
+                if (arg.startsWith(search)) {
+                    matches.add(arg);
+                }
+            }
+            for (CoreWorld world : manager.getWorlds()) {
+                if (world.getName().startsWith(search)) {
+                    matches.add(world.getName());
+                }
+            }
+
+            return matches;
+        } else if (args.length == 2) {
+            String search = args[1];
+            List<String> matches = new ArrayList<>();
+
+            for (String arg : new String[]{"info", "unload", "delete", "tp"}) {
+                if (args[0].equalsIgnoreCase(arg)) {
+                    for (CoreWorld world : manager.getWorlds()) {
+                        if (world.getName().startsWith(search)) {
+                            matches.add(world.getName());
+                        }
+                    }
+
+                    return matches;
+                }
+            }
+
+            if (args[0].equalsIgnoreCase("purge")) {
+                for (String arg : new String[]{"animals", "monsters"}) {
+                    if (arg.startsWith(search)) {
+                        matches.add(arg);
+                    }
+                }
+            } else if (args[0].equalsIgnoreCase("set")) {
+                for (WorldKey key : WorldKey.values()) {
+                    if (key.key.startsWith(search)) {
+                        matches.add(key.key);
+                    }
+                }
+            }
+
+            return matches;
+        } else if (args.length == 3) {
+            String search = args[2];
+            List<String> matches = new ArrayList<>();
+
+            if (args[0].equalsIgnoreCase("set")) {
+                for (WorldKey key : WorldKey.values()) {
+                    if (key.key.equals(args[1])) {
+                        for (String value : key.values) {
+                            if (value.startsWith(search)) {
+                                matches.add(value);
+                            }
+                        }
+
+                        break;
+                    }
+                }
+            } else if (args[0].equalsIgnoreCase("import")) {
+                for (World.Environment env : World.Environment.values()) {
+                    if (env.name().startsWith(search)) {
+                        matches.add(env.name());
+                    }
+                }
+            } else if (args[0].equalsIgnoreCase("create")) {
+                for (WorldKey key : WorldKey.values()) {
+                    if (key.key.startsWith(search)) {
+                        matches.add(key.key+"=");
+                    }
+                }
+            }
+
+            return matches;
+        }
+
+        return Collections.emptyList();
+    }
 }

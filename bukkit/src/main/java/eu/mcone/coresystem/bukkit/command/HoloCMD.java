@@ -21,6 +21,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class HoloCMD extends CorePlayerCommand {
@@ -256,4 +257,44 @@ public class HoloCMD extends CorePlayerCommand {
         return true;
     }
 
+    @Override
+    public List<String> onPlayerTabComplete(Player p, String[] args) {
+        if (args.length == 1) {
+            String search = args[0];
+            List<String> matches = new ArrayList<>();
+
+            for (String arg : new String[]{"add", "remove", "setline", "addline", "removeline", "setlocation", "list", "tp", "reload"}) {
+                if (arg.startsWith(search)) {
+                    matches.add(arg);
+                }
+            }
+
+            return matches;
+        } else if (args.length == 2) {
+            String search = args[1];
+            List<String> matches = new ArrayList<>();
+
+            for (String arg : new String[]{"add", "remove", "setline", "addline", "removeline", "setlocation"}) {
+                if (args[0].equalsIgnoreCase(arg)) {
+                    for (Hologram hologram : api.getHolograms()) {
+                        if (hologram.getData().getName().startsWith(search)) {
+                            matches.add(hologram.getData().getName());
+                        }
+                    }
+
+                    return matches;
+                }
+            }
+
+            for (CoreWorld world : CoreSystem.getInstance().getWorldManager().getWorlds()) {
+                if (world.getName().startsWith(search)) {
+                    matches.add(world.getName());
+                }
+            }
+
+            return matches;
+        }
+
+        return Collections.emptyList();
+    }
 }

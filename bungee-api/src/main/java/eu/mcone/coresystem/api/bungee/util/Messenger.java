@@ -7,8 +7,7 @@ package eu.mcone.coresystem.api.bungee.util;
 
 import eu.mcone.coresystem.api.core.player.GlobalMessenger;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public interface Messenger extends GlobalMessenger<ProxiedPlayer, CommandSender> {
+public interface Messenger extends GlobalMessenger<CommandSender> {
 
 }

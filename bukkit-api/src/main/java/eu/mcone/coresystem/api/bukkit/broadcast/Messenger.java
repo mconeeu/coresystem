@@ -7,9 +7,8 @@ package eu.mcone.coresystem.api.bukkit.broadcast;
 
 import eu.mcone.coresystem.api.core.player.GlobalMessenger;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-public interface Messenger extends GlobalMessenger<Player, CommandSender> {
+public interface Messenger extends GlobalMessenger<CommandSender> {
 
     void broadcast(Broadcast broadcast);
 

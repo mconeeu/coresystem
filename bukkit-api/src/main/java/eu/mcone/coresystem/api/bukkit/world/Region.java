@@ -56,7 +56,7 @@ public final class Region {
     public String toString() {
         return "Region{" +
                 "name='" + name + '\'' +
-                ", selection=" + selection +
+                ", sel=" + selection +
                 ", pos1=" + pos1 +
                 ", pos2=" + pos2 +
                 '}';

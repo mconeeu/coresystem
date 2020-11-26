@@ -8,7 +8,7 @@ import eu.mcone.coresystem.api.core.translation.CoreTranslationManager;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public abstract class CoreMessenger<P, Cs> implements GlobalMessenger<P, Cs> {
+public abstract class CoreMessenger<S> implements GlobalMessenger<S> {
 
     protected final GlobalCoreSystem system;
     private final String prefixTranslation;
@@ -18,139 +18,17 @@ public abstract class CoreMessenger<P, Cs> implements GlobalMessenger<P, Cs> {
         this.prefixTranslation = prefixTranslation;
     }
 
-    /*
-     * Player
-     */
-
     //Default
     @Override
     @Deprecated
-    public void send(P player, String message) {
-        send(player, TextLevel.INFO, message);
+    public void send(S sender, String message) {
+        send(sender, TextLevel.INFO, message);
     }
 
     @Override
     @Deprecated
-    public void send(P player, BaseComponent... baseComponents) {
-        TextComponent tc = new TextComponent(system.getTranslationManager().get(prefixTranslation, getCorePlayer(player)));
-        for (BaseComponent bc : baseComponents) {
-            tc.addExtra(bc);
-        }
-
-        dispatchMessage(player, tc);
-    }
-
-    @Override
-    @Deprecated
-    public void sendSuccess(P player, String message) {
-        send(player, TextLevel.SUCCESS, message);
-    }
-
-    @Override
-    @Deprecated
-    public void sendInfo(P player, String message) {
-        send(player, TextLevel.INFO, message);
-    }
-
-    @Override
-    @Deprecated
-    public void sendWarning(P player, String message) {
-        send(player, TextLevel.WARNING, message);
-    }
-
-    @Override
-    @Deprecated
-    public void sendError(P player, String message) {
-        send(player, TextLevel.ERROR, message);
-    }
-
-    @Override
-    @Deprecated
-    public void send(P player, TextLevel level, String message) {
-        GlobalCorePlayer cp = getCorePlayer(player);
-
-        dispatchMessage(player, new TextComponent(TextComponent.fromLegacyText(system.getTranslationManager().get(
-                prefixTranslation,
-                cp != null ? cp.getSettings().getLanguage() : CoreTranslationManager.DEFAULT_LANGUAGE
-        ) + (!level.equals(TextLevel.NONE) ? MarkdownParser.parseMarkdown(message, level) : message))));
-    }
-
-    @Override
-    @Deprecated
-    public void sendSimple(P player, String message) {
-        dispatchMessage(player, message);
-    }
-
-    @Override
-    @Deprecated
-    public void sendSimple(P player, BaseComponent... baseComponents) {
-        dispatchMessage(player, baseComponents);
-    }
-
-    //Translations
-    @Override
-    public void sendTransl(final P player, String... translation) {
-        GlobalCorePlayer cp = getCorePlayer(player);
-
-        StringBuilder sb = new StringBuilder(system.getTranslationManager().get(prefixTranslation, cp));
-        for (String s : translation) {
-            sb.append(system.getTranslationManager().get(s, cp));
-        }
-
-        dispatchMessage(player, sb.toString());
-    }
-
-    @Override
-    public void sendTransl(final P player, String translationKey, Object... replacements) {
-        GlobalCorePlayer cp = getCorePlayer(player);
-        String translation = system.getTranslationManager().get(prefixTranslation, cp, replacements)
-                + system.getTranslationManager().get(translationKey, cp, replacements);
-
-        dispatchMessage(player, translation);
-    }
-
-    @Override
-    public void sendSimpleTransl(final P player, String... translation) {
-        GlobalCorePlayer cp = getCorePlayer(player);
-
-        StringBuilder sb = new StringBuilder();
-        for (String s : translation) {
-            sb.append(system.getTranslationManager().get(s, cp));
-        }
-
-        dispatchMessage(player, sb.toString());
-    }
-
-    @Override
-    public void sendSimpleTransl(final P player, String translationKey, Object... replacements) {
-        GlobalCorePlayer cp = getCorePlayer(player);
-        String translation = system.getTranslationManager().get(translationKey, cp, replacements);
-
-        dispatchMessage(player, translation);
-    }
-
-    protected abstract void dispatchMessage(P player, String message);
-
-    protected abstract void dispatchMessage(P player, BaseComponent... baseComponents);
-
-    protected abstract GlobalCorePlayer getCorePlayer(P player);
-
-
-    /*
-     * Command Sender
-     */
-
-    //Default
-    @Override
-    @Deprecated
-    public void sendSender(Cs sender, String message) {
-        sendSender(sender, TextLevel.NONE, message);
-    }
-
-    @Override
-    @Deprecated
-    public void sendSender(Cs sender, BaseComponent... baseComponents) {
-        GlobalCorePlayer cp = getCorePlayerFromSender(sender);
+    public void send(S sender, BaseComponent... baseComponents) {
+        GlobalCorePlayer cp = getCorePlayer(sender);
 
         TextComponent tc = new TextComponent(system.getTranslationManager().get(
                 prefixTranslation,
@@ -160,39 +38,39 @@ public abstract class CoreMessenger<P, Cs> implements GlobalMessenger<P, Cs> {
             tc.addExtra(bc);
         }
 
-        dispatchSenderMessage(sender, tc);
+        dispatchMessage(sender, tc);
     }
 
     @Override
     @Deprecated
-    public void sendSenderInfo(Cs sender, String message) {
-        sendSender(sender, TextLevel.INFO, message);
+    public void sendSuccess(S sender, String message) {
+        send(sender, TextLevel.SUCCESS, message);
     }
 
     @Override
     @Deprecated
-    public void sendSenderSuccess(Cs sender, String message) {
-        sendSender(sender, TextLevel.SUCCESS, message);
+    public void sendInfo(S sender, String message) {
+        send(sender, TextLevel.INFO, message);
     }
 
     @Override
     @Deprecated
-    public void sendSenderWarning(Cs sender, String message) {
-        sendSender(sender, TextLevel.WARNING, message);
+    public void sendWarning(S sender, String message) {
+        send(sender, TextLevel.WARNING, message);
     }
 
     @Override
     @Deprecated
-    public void sendSenderError(Cs sender, String message) {
-        sendSender(sender, TextLevel.ERROR, message);
+    public void sendError(S sender, String message) {
+        send(sender, TextLevel.ERROR, message);
     }
 
     @Override
     @Deprecated
-    public void sendSender(Cs sender, TextLevel level, String message) {
-        GlobalCorePlayer cp = getCorePlayerFromSender(sender);
+    public void send(S sender, TextLevel level, String message) {
+        GlobalCorePlayer cp = getCorePlayer(sender);
 
-        dispatchSenderMessage(sender, system.getTranslationManager().get(
+        dispatchMessage(sender, system.getTranslationManager().get(
                 prefixTranslation,
                 cp != null ? cp.getSettings().getLanguage() : CoreTranslationManager.DEFAULT_LANGUAGE)
                 + (!level.equals(TextLevel.NONE) ? MarkdownParser.parseMarkdown(message, level) : message)
@@ -201,34 +79,30 @@ public abstract class CoreMessenger<P, Cs> implements GlobalMessenger<P, Cs> {
 
     @Override
     @Deprecated
-    public void sendSenderSimple(Cs sender, String message) {
-        dispatchSenderMessage(sender, message);
+    public void sendSimple(S sender, String message) {
+        dispatchMessage(sender, message);
     }
 
     @Override
     @Deprecated
-    public void sendSenderSimple(final Cs sender, final BaseComponent... baseComponents) {
-        dispatchSenderMessage(sender, baseComponents);
+    public void sendSimple(S sender, BaseComponent... baseComponents) {
+        dispatchMessage(sender, baseComponents);
+    }
+
+    //Translations
+    @Override
+    public void sendTransl(S sender, String translation) {
+        GlobalCorePlayer cp = getCorePlayer(sender);
+
+        dispatchMessage(
+                sender,
+                system.getTranslationManager().get(prefixTranslation, cp) + system.getTranslationManager().get(translation, cp)
+        );
     }
 
     @Override
-    public void sendSenderTransl(final Cs sender, String... translation) {
-        GlobalCorePlayer cp = getCorePlayerFromSender(sender);
-
-        StringBuilder sb = new StringBuilder(system.getTranslationManager().get(
-                prefixTranslation,
-                cp != null ? cp.getSettings().getLanguage() : CoreTranslationManager.DEFAULT_LANGUAGE
-        ));
-        for (String s : translation) {
-            sb.append(system.getTranslationManager().get(s, cp != null ? cp.getSettings().getLanguage() : CoreTranslationManager.DEFAULT_LANGUAGE));
-        }
-
-        dispatchSenderMessage(sender, sb.toString());
-    }
-
-    @Override
-    public void sendSenderTransl(final Cs sender, String translationKey, Object... replacements) {
-        GlobalCorePlayer cp = getCorePlayerFromSender(sender);
+    public void sendTransl(S sender, String translationKey, Object... replacements) {
+        GlobalCorePlayer cp = getCorePlayer(sender);
 
         String translation = system.getTranslationManager().get(
                 prefixTranslation,
@@ -239,24 +113,23 @@ public abstract class CoreMessenger<P, Cs> implements GlobalMessenger<P, Cs> {
                 replacements
         );
 
-        dispatchSenderMessage(sender, translation);
+        dispatchMessage(sender, translation);
     }
 
     @Override
-    public void sendSenderSimpleTransl(final Cs sender, String... translation) {
-        GlobalCorePlayer cp = getCorePlayerFromSender(sender);
+    public void sendSimpleTransl(S sender, String translation) {
+        GlobalCorePlayer cp = getCorePlayer(sender);
 
-        StringBuilder sb = new StringBuilder();
-        for (String s : translation) {
-            sb.append(system.getTranslationManager().get(s, cp != null ? cp.getSettings().getLanguage() : CoreTranslationManager.DEFAULT_LANGUAGE));
-        }
-
-        dispatchSenderMessage(sender, sb.toString());
+        String sb = system.getTranslationManager().get(
+                prefixTranslation,
+                cp != null ? cp.getSettings().getLanguage() : CoreTranslationManager.DEFAULT_LANGUAGE
+        ) + system.getTranslationManager().get(translation, cp != null ? cp.getSettings().getLanguage() : CoreTranslationManager.DEFAULT_LANGUAGE);
+        dispatchMessage(sender, sb);
     }
 
     @Override
-    public void sendSenderSimpleTransl(final Cs sender, String translationKey, Object... replacements) {
-        GlobalCorePlayer cp = getCorePlayerFromSender(sender);
+    public void sendSimpleTransl(final S sender, String translationKey, Object... replacements) {
+        GlobalCorePlayer cp = getCorePlayer(sender);
 
         String translation = system.getTranslationManager().get(
                 translationKey,
@@ -264,22 +137,13 @@ public abstract class CoreMessenger<P, Cs> implements GlobalMessenger<P, Cs> {
                 replacements
         );
 
-        dispatchSenderMessage(sender, translation);
+        dispatchMessage(sender, translation);
     }
 
-    protected abstract void dispatchSenderMessage(Cs sender, String message);
+    protected abstract void dispatchMessage(S sender, String message);
 
-    protected abstract void dispatchSenderMessage(Cs sender, BaseComponent... baseComponents);
+    protected abstract void dispatchMessage(S sender, BaseComponent... baseComponents);
 
-    private GlobalCorePlayer getCorePlayerFromSender(Cs sender) {
-        GlobalCorePlayer cp;
-        try {
-            cp = getCorePlayer((P) sender);
-        } catch (ClassCastException e) {
-            cp = null;
-        }
-
-        return cp;
-    }
+    protected abstract GlobalCorePlayer getCorePlayer(S sender);
 
 }

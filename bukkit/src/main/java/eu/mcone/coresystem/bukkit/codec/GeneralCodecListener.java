@@ -138,7 +138,7 @@ public class GeneralCodecListener {
 
     private void callListeners(Codec<?, ?> codec, Object[] args) {
         for (CodecListener listener : codecRegistry.getListeners()) {
-            System.out.println("Listener");
+//            System.out.println("Listener");
             listener.onCodec(codec, args);
         }
     }

@@ -44,4 +44,14 @@ public class SenderOption implements Option {
         return senderOptions;
     }
 
+    public static SenderOption get(PlayerSettings.Sender sender, SenderOption... options) {
+        for (SenderOption option : options) {
+            if (option.sender == sender) {
+                return option;
+            }
+        }
+
+        return null;
+    }
+
 }

@@ -19,38 +19,32 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class BukkitMessenger extends CoreMessenger<Player, CommandSender> implements Messenger {
+public class BukkitMessenger extends CoreMessenger<CommandSender> implements Messenger {
 
     public BukkitMessenger(GlobalCoreSystem coreSystem, String prefixTranslation) {
         super(coreSystem, prefixTranslation);
     }
 
     @Override
-    protected void dispatchMessage(Player player, String message) {
-        player.sendMessage(message);
+    protected GlobalCorePlayer getCorePlayer(CommandSender player) {
+        try {
+            return (BukkitCorePlayer) BukkitCoreSystem.getSystem().getCorePlayer((Player) player);
+        } catch (ClassCastException e) {
+            return null;
+        }
     }
 
     @Override
-    protected void dispatchMessage(Player player, BaseComponent... baseComponents) {
-        player.spigot().sendMessage(baseComponents);
-    }
-
-    @Override
-    protected GlobalCorePlayer getCorePlayer(Player player) {
-        return (BukkitCorePlayer) BukkitCoreSystem.getSystem().getCorePlayer(player);
-    }
-
-    @Override
-    protected void dispatchSenderMessage(CommandSender sender, String message) {
+    protected void dispatchMessage(CommandSender sender, String message) {
         sender.sendMessage(message);
     }
 
     @Override
-    protected void dispatchSenderMessage(CommandSender sender, BaseComponent... baseComponents) {
+    protected void dispatchMessage(CommandSender sender, BaseComponent... baseComponents) {
         if (sender instanceof Player) {
             ((Player) sender).spigot().sendMessage(baseComponents);
         } else {
-            dispatchSenderMessage(sender, TextComponent.toLegacyText(baseComponents));
+            dispatchMessage(sender, TextComponent.toLegacyText(baseComponents));
         }
     }
 

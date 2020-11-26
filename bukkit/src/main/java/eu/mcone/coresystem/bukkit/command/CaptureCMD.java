@@ -16,9 +16,7 @@ import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.npc.capture.MotionRecorder;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CaptureCMD extends CorePlayerCommand {
 
@@ -259,5 +257,34 @@ public class CaptureCMD extends CorePlayerCommand {
         );
 
         return true;
+    }
+
+    @Override
+    public List<String> onPlayerTabComplete(Player p, String[] args) {
+        if (args.length == 1) {
+            String search = args[0];
+            List<String> matches = new ArrayList<>();
+
+            for (String arg : new String[]{"play", "record", "save", "delete", "start", "stop", "forward", "backward", "list"}) {
+                if (arg.startsWith(search)) {
+                    matches.add(arg);
+                }
+            }
+
+            return matches;
+        } else if (args.length == 2 || args.length == 3) {
+            String search = args[args.length-1];
+            List<String> matches = new ArrayList<>();
+
+            for (NPC npc : CoreSystem.getInstance().getCorePlayer(p).getWorld().getNPCs()) {
+                if (npc.getData().getName().startsWith(search)) {
+                    matches.add(npc.getData().getName());
+                }
+            }
+
+            return matches;
+        }
+
+        return Collections.emptyList();
     }
 }

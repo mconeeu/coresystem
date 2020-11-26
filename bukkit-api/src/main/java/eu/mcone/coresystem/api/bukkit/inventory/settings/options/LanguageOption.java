@@ -19,7 +19,7 @@ public class LanguageOption implements Option {
     private final Language language;
     private final ItemStack item;
 
-    public LanguageOption(Language language) {
+    private LanguageOption(Language language) {
         this.language = language;
         this.item = Skull.fromUrl(language.getTextureUrl())
                 .toItemBuilder()
@@ -27,4 +27,13 @@ public class LanguageOption implements Option {
                 .create();
     }
 
+    public static LanguageOption get(Language language) {
+        for (LanguageOption option : LANGUAGE_OPTIONS) {
+            if (option.language == language) {
+                return option;
+            }
+        }
+
+        return null;
+    }
 }

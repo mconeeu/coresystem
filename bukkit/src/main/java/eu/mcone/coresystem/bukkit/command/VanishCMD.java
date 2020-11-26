@@ -11,6 +11,9 @@ import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class VanishCMD extends CorePlayerCommand {
 
     public VanishCMD() {
@@ -37,17 +40,30 @@ public class VanishCMD extends CorePlayerCommand {
         return false;
     }
 
-    private static boolean setVanished(CorePlayer cp) {
+    @Override
+    public List<String> onPlayerTabComplete(Player p, String[] args) {
+        String search = args[0];
+        List<String> matches = new ArrayList<>();
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player != p && player.getName().startsWith(search)) {
+                matches.add(player.getName());
+            }
+        }
+
+        return matches;
+    }
+
+    private static void setVanished(CorePlayer cp) {
         if (!cp.isVanished()) {
-            boolean vanished = cp.setVanished(true);
+            cp.setVanished(true);
 
             if (VanishChatCMD.chatEnabled.contains(cp.getUuid())) {
                 BukkitCoreSystem.getInstance().getMessenger().sendInfo(cp.bukkit(), "![Achtung]: Der Vanish Chat ist aktiviert!");
             }
 
-            return vanished;
         } else {
-            return cp.setVanished(false);
+            cp.setVanished(false);
         }
     }
 

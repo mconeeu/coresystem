@@ -9,6 +9,8 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 public abstract class CorePlayerCommand extends CoreCommand {
 
     public CorePlayerCommand(String name) {
@@ -24,11 +26,22 @@ public abstract class CorePlayerCommand extends CoreCommand {
         if (sender instanceof Player) {
             return onPlayerCommand((Player) sender, args);
         } else {
-            CoreSystem.getInstance().getMessenger().sendSenderTransl(sender, "system.command.consolesender");
+            CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.consolesender");
             return false;
         }
     }
 
     public abstract boolean onPlayerCommand(Player p, String[] args);
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        if (sender instanceof Player) {
+            return onPlayerTabComplete((Player) sender, args);
+        } else return null;
+    }
+
+    public List<String> onPlayerTabComplete(Player p, String[] args) {
+        return null;
+    }
 
 }

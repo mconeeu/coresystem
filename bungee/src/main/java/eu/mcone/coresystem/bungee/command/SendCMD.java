@@ -28,12 +28,12 @@ public class SendCMD extends CoreCommand implements TabExecutor {
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         if (args.length != 2) {
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Bitte benutze §c/send <server|player|all|current> <target>");
+            BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze §c/send <server|player|all|current> <target>");
         } else {
             final ServerInfo target = ProxyServer.getInstance().getServerInfo(args[1]);
 
             if (target == null) {
-                BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Der Server §c"+args[1]+" §4existiert nicht!");
+                BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Der Server §c"+args[1]+" §4existiert nicht!");
                 return;
             }
 
@@ -43,7 +43,7 @@ public class SendCMD extends CoreCommand implements TabExecutor {
                 }
             } else if (args[0].equalsIgnoreCase("current")) {
                 if (!(sender instanceof ProxiedPlayer)) {
-                    BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Nur ein Spieler kann diesen Befehl benutzen!");
+                    BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Nur ein Spieler kann diesen Befehl benutzen!");
                     return;
                 }
 
@@ -61,14 +61,14 @@ public class SendCMD extends CoreCommand implements TabExecutor {
                 } else {
                     final ProxiedPlayer player2 = ProxyServer.getInstance().getPlayer(args[0]);
                     if (player2 == null) {
-                        BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§4Der Spieler §c"+args[0]+" §4ist nicht online!");
+                        BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Der Spieler §c"+args[0]+" §4ist nicht online!");
                         return;
                     }
                     this.summon(player2, target, sender);
                 }
             }
 
-            BungeeCoreSystem.getInstance().getMessenger().sendSender(sender, "§2Spieler wurden erfolgreich gesendet!");
+            BungeeCoreSystem.getInstance().getMessenger().send(sender, "§2Spieler wurden erfolgreich gesendet!");
         }
     }
 
@@ -79,6 +79,7 @@ public class SendCMD extends CoreCommand implements TabExecutor {
         }
     }
 
+    @Override
     public Iterable<String> onTabComplete(final CommandSender sender, final String[] args) {
         if (args.length > 2 || args.length == 0) {
             return Collections.emptySet();

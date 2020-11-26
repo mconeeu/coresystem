@@ -11,15 +11,22 @@ import eu.mcone.coresystem.api.bukkit.event.player.PermissionChangeEvent;
 import eu.mcone.coresystem.api.bukkit.event.player.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
+import eu.mcone.coresystem.api.core.translation.Language;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.bukkit.inventory.PlayerSettingsInventory;
 import eu.mcone.coresystem.core.player.GlobalCorePlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class CorePlayerUpdateListener implements Listener {
+
+    private static final Set<CorePlayer> LANGUAGE_UPDATES = new HashSet<>();
 
     @EventHandler
     public void onPermissionChange(PermissionChangeEvent e) {
@@ -70,7 +77,7 @@ public class CorePlayerUpdateListener implements Listener {
     @EventHandler
     public void onSettingsChange(PlayerSettingsChangeEvent e) {
         if (!e.getPlayer().getSettings().getLanguage().equals(e.getOldSettings().getLanguage())) {
-            Bukkit.getPluginManager().callEvent(new LanguageChangeEvent(e.getPlayer(), e.getOldSettings().getLanguage(), e.getPlayer().getSettings().getLanguage()));
+            LANGUAGE_UPDATES.add(e.getPlayer());
         }
     }
 
@@ -78,6 +85,21 @@ public class CorePlayerUpdateListener implements Listener {
     public void onLanguageChange(LanguageChangeEvent e) {
         e.getPlayer().getScoreboard().reload();
         CoreSystem.getInstance().getHologramManager().reload(e.getPlayer().bukkit());
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent e) {
+        CorePlayer cp = CoreSystem.getInstance().getCorePlayer((Player) e.getPlayer());
+
+        if (e.getInventory().getTitle().equals(PlayerSettingsInventory.TITLE) && LANGUAGE_UPDATES.contains(cp)) {
+            Language language = cp.getSettings().getLanguage();
+            Bukkit.getPluginManager().callEvent(new LanguageChangeEvent(cp, language));
+            LANGUAGE_UPDATES.remove(cp);
+
+            if (!BukkitCoreSystem.getSystem().getTranslationManager().getLoadedLanguages().contains(language)) {
+                BukkitCoreSystem.getSystem().getTranslationManager().loadAdditionalLanguages(language);
+            }
+        }
     }
 
 }

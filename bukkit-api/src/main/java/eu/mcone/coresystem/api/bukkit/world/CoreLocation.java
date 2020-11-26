@@ -64,7 +64,7 @@ public final class CoreLocation implements Serializable {
 
     @Override
     public String toString() {
-        return "CoreLocation{" +
+        return "CLoc{" +
                 "world='" + world + '\'' +
                 ", x=" + (int) x +
                 ", y=" + (int) y +

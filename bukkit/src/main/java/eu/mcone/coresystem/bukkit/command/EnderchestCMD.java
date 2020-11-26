@@ -11,6 +11,10 @@ import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class EnderchestCMD extends CorePlayerCommand {
 
     public EnderchestCMD() {
@@ -46,4 +50,21 @@ public class EnderchestCMD extends CorePlayerCommand {
         return true;
     }
 
+    @Override
+    public List<String> onPlayerTabComplete(Player p, String[] args) {
+        if (p.hasPermission("system.bukkit.ecsee.other") && args.length == 1) {
+            String search = args[0];
+            List<String> matches = new ArrayList<>();
+
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player != p && player.getName().startsWith(search)) {
+                    matches.add(player.getName());
+                }
+            }
+
+            return matches;
+        }
+
+        return Collections.emptyList();
+    }
 }

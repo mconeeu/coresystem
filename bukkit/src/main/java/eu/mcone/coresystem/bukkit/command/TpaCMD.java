@@ -57,7 +57,7 @@ public class TpaCMD extends CorePlayerCommand {
                             .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(p.getName() + " ablehnen").color(ChatColor.GRAY).create()))
                             .create()
                     );
-                    messager.send(p, "§2Du hast §a" + args[0] + "§2 eine Teleportanfrage geschickt!");
+                    messager.send(p, "§2Du hast §a" + t.getName() + "§2 eine Teleportanfrage geschickt!");
                 }
             } else {
                 messager.send(p, "§4Dieser Spieler ist nicht online!");
@@ -68,6 +68,20 @@ public class TpaCMD extends CorePlayerCommand {
 
         messager.send(p, "§4Bitte benutze: §c/tpa <Spieler>");
         return true;
+    }
+
+    @Override
+    public List<String> onPlayerTabComplete(Player p, String[] args) {
+        String search = args[0];
+        List<String> matches = new ArrayList<>();
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player != p && player.getName().startsWith(search)) {
+                matches.add(player.getName());
+            }
+        }
+
+        return matches;
     }
 
 }

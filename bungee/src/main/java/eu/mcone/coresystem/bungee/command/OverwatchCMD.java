@@ -1,12 +1,18 @@
 package eu.mcone.coresystem.bungee.command;
 
+import com.google.common.collect.ImmutableSet;
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.overwatch.Overwatch;
+import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.TabExecutor;
 
-public class OverwatchCMD extends CorePlayerCommand {
+import java.util.HashSet;
+import java.util.Set;
+
+public class OverwatchCMD extends CorePlayerCommand implements TabExecutor {
 
     private final Overwatch overwatch;
 
@@ -48,7 +54,7 @@ public class OverwatchCMD extends CorePlayerCommand {
                     }
                 }
 
-                overwatch.getMessenger().send(p, "§7Folgende(r) Spieler ist/sind momentan eingelogt:");
+                overwatch.getMessenger().send(p, "§7Folgende(r) Spieler ist/sind momentan eingeloggt:");
                 for (ProxiedPlayer loggedIn : overwatch.getLoggedIn()) {
                     if (loggedIn != p) {
                         CorePlayer corePlayer = BungeeCoreSystem.getSystem().getCorePlayer(loggedIn);
@@ -66,4 +72,23 @@ public class OverwatchCMD extends CorePlayerCommand {
                 "\n§c/overwatch list"
         );
     }
+
+    @Override
+    public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+        if (args.length == 1) {
+            String search = args[0];
+            Set<String> matches = new HashSet<>();
+
+            for (String arg : new String[]{"login", "logout", "list"}) {
+                if (arg.startsWith(search)) {
+                    matches.add(arg);
+                }
+            }
+
+            return matches;
+        }
+
+        return ImmutableSet.of();
+    }
+
 }

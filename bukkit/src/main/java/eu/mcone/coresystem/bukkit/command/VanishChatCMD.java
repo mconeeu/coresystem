@@ -7,7 +7,6 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
-import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.entity.Player;
 
@@ -46,12 +45,23 @@ public class VanishChatCMD extends CorePlayerCommand {
         return false;
     }
 
-    private static void setVanished(CorePlayer cp) {
-        if (!cp.isVanished()) {
-            cp.setVanished(true);
-        } else {
-            cp.setVanished(false);
+    @Override
+    public List<String> onPlayerTabComplete(Player p, String[] args) {
+        if (args.length == 1) {
+            String search = args[0];
+            List<String> matches = new ArrayList<>();
+
+            if ("on".startsWith(search)) {
+                matches.add("on");
+            }
+            if ("off".startsWith(search)) {
+                matches.add("off");
+            }
+
+            return matches;
         }
+
+        return Collections.emptyList();
     }
 
 }

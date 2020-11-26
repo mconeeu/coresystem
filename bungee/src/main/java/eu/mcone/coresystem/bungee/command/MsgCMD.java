@@ -18,10 +18,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class MsgCMD extends CorePlayerCommand implements TabExecutor {
 
@@ -91,10 +88,14 @@ public class MsgCMD extends CorePlayerCommand implements TabExecutor {
     }
 
     public Iterable<String> onTabComplete(final CommandSender sender, final String[] args) {
-        List<String> result = new ArrayList<>();
-        if (args.length == 1) {
+        String search = args[0];
+        Set<String> result = new HashSet<>();
+
+        for (UUID friend : CoreSystem.getInstance().getCorePlayer((ProxiedPlayer) sender).getFriendData().getFriends().keySet()) {
             for (ProxiedPlayer p : ProxyServer.getInstance().getPlayers()) {
-                result.add(p.getName());
+                if (p != sender && p.getUniqueId().equals(friend) && p.getName().startsWith(search)) {
+                    result.add(p.getName());
+                }
             }
         }
 

@@ -14,6 +14,9 @@ import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GamemodeCMD extends CoreCommand {
 
     public GamemodeCMD() {
@@ -26,64 +29,66 @@ public class GamemodeCMD extends CoreCommand {
             if (sender instanceof Player) {
                 Player p = (Player) sender;
 
-                if (args[0].equalsIgnoreCase("0")) {
-                    p.setGameMode(GameMode.SURVIVAL);
-                    p.setAllowFlight(false);
-                } else if (args[0].equalsIgnoreCase("1")) {
-                    p.setGameMode(GameMode.CREATIVE);
-                    p.setAllowFlight(true);
-                } else if (args[0].equalsIgnoreCase("2")) {
-                    p.setGameMode(GameMode.ADVENTURE);
-                    p.setAllowFlight(false);
-                } else if (args[0].equalsIgnoreCase("3")) {
-                    p.setGameMode(GameMode.SPECTATOR);
-                    p.setAllowFlight(true);
-                } else {
-                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/gm §4oder §c/gamemode <Gamemode>");
-                    Sound.error(p);
-                    return true;
+                for (GameMode gamemode : GameMode.values()) {
+                    if (args[0].equalsIgnoreCase(gamemode.name()) || args[0].equalsIgnoreCase(String.valueOf(gamemode.getValue()))) {
+                        setGamemode(p, gamemode);
+                        return true;
+                    }
                 }
 
-                BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du hast deinen Spielmodus auf §f" + p.getGameMode() + " §2gesetzt!");
-                Sound.change(p);
+                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/gm §4oder §c/gamemode <Gamemode>");
+                Sound.error(p);
+                return false;
             } else {
-                CoreSystem.getInstance().getMessenger().sendSenderTransl(sender, "system.command.consolesender");
+                CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.consolesender");
             }
         } else if (args.length == 2) {
-            try {
-                Player t = Bukkit.getPlayer(args[1]);
+            Player t = Bukkit.getPlayer(args[1]);
 
-                if (args[0].equalsIgnoreCase("1")) {
-                    t.setGameMode(GameMode.CREATIVE);
-                    t.setAllowFlight(true);
-                } else if (args[0].equalsIgnoreCase("0")) {
-                    t.setGameMode(GameMode.SURVIVAL);
-                    t.setAllowFlight(false);
-                } else if (args[0].equalsIgnoreCase("2")) {
-                    t.setGameMode(GameMode.ADVENTURE);
-                    t.setAllowFlight(false);
-                } else if (args[0].equalsIgnoreCase("3")) {
-                    t.setGameMode(GameMode.SPECTATOR);
-                    t.setAllowFlight(true);
-                } else {
-                    BukkitCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Bitte benutze: §c/gm §4oder §c/gamemode <Gamemode> [<Spieler>]");
-                    return true;
+            if (t != null) {
+                for (GameMode gamemode : GameMode.values()) {
+                    if (args[0].equalsIgnoreCase(gamemode.name()) || args[0].equalsIgnoreCase(String.valueOf(gamemode.getValue()))) {
+                        setGamemode(t, gamemode);
+                        BukkitCoreSystem.getInstance().getMessenger().send(sender, "§2Du hast den Spielmodus von §f" + t.getName() + " §2auf §a" + t.getGameMode() + "§2 gesetzt.");
+                        return true;
+                    }
                 }
-
-                BukkitCoreSystem.getInstance().getMessenger().send(t, "§7Dein Spielmodus wurde auf §f" + t.getGameMode() + " §7gesetzt.");
-                BukkitCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§2Du hast den Spielmodus von §f" + t.getName() + " §2auf §a" + t.getGameMode() + "§2 gesetzt.");
-                Sound.change(t);
-
-                if (sender instanceof Player) {
-                    Sound.change((Player) sender);
-                }
-            } catch (NullPointerException d) {
-                BukkitCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Dieser Spieler ist nicht Online oder existiert nicht!");
             }
         } else {
-            BukkitCoreSystem.getInstance().getMessenger().sendSenderSimple(sender, "§4Bitte benutze: §c/gm §4oder §c/gamemode <GamemodeCMD> [<Spieler>]");
+            BukkitCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze: §c/gm §4oder §c/gamemode <0|1|2|3> [<player>]");
         }
 
         return true;
     }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
+        String search = args[args.length-1];
+        List<String> matches = new ArrayList<>();
+
+        if (args.length == 1) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (player != sender && player.getName().startsWith(search)) {
+                    matches.add(player.getName());
+                }
+            }
+        }
+
+        for (GameMode gamemode : GameMode.values()) {
+            if (gamemode.name().toLowerCase().startsWith(search)) {
+                matches.add(gamemode.name().toLowerCase());
+            }
+        }
+
+        return matches;
+    }
+
+    private void setGamemode(Player p, GameMode gamemode) {
+        p.setGameMode(gamemode);
+        p.setAllowFlight(gamemode.equals(GameMode.CREATIVE) || gamemode.equals(GameMode.SPECTATOR));
+
+        Sound.change(p);
+        BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du hast deinen Spielmodus auf §f" + p.getGameMode() + " §2gesetzt!");
+    }
+
 }

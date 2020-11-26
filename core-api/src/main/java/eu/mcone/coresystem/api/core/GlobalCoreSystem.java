@@ -53,7 +53,7 @@ public interface GlobalCoreSystem {
      * @param prefixTranslation translation that will be used for the prefix
      * @return nwe BukkitMessenger instance
      */
-    GlobalMessenger<?, ?> initializeMessenger(String prefixTranslation);
+    GlobalMessenger<?> initializeMessenger(String prefixTranslation);
 
     /**
      * returns the BCS TranslationManager
@@ -74,7 +74,7 @@ public interface GlobalCoreSystem {
      *
      * @return Messenger instance
      */
-    GlobalMessenger<?, ?> getMessenger();
+    GlobalMessenger<?> getMessenger();
 
     /**
      * returns the BCS PlayerUtils

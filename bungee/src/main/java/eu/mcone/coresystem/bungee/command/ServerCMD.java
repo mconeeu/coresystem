@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.bungee.command;
 
+import com.google.common.collect.ImmutableSet;
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.ChatColor;
@@ -18,8 +19,9 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class ServerCMD extends CorePlayerCommand implements TabExecutor {
 
@@ -59,15 +61,22 @@ public class ServerCMD extends CorePlayerCommand implements TabExecutor {
         }
     }
 
+    @Override
     public Iterable<String> onTabComplete(final CommandSender sender, final String[] args) {
-        ArrayList<String> result = new ArrayList<>();
         if (args.length == 1) {
-            for (ServerInfo si : ProxyServer.getInstance().getServers().values()) {
-                result.add(si.getName());
+            String search = args[0];
+            Set<String> matches = new HashSet<>();
+
+            for (ServerInfo server : ProxyServer.getInstance().getServers().values()) {
+                if (server.getName().startsWith(search)) {
+                    matches.add(server.getName());
+                }
             }
+
+            return matches;
         }
 
-        return result;
+        return ImmutableSet.of();
     }
 
 }
