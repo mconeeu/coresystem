@@ -8,10 +8,7 @@ package eu.mcone.coresystem.core.labymod;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import eu.mcone.coresystem.api.core.labymod.LabyModAPI;
-import eu.mcone.coresystem.api.core.labymod.LabyModAddon;
-import eu.mcone.coresystem.api.core.labymod.LabyModMiddleClickAction;
-import eu.mcone.coresystem.api.core.labymod.LabyModPermission;
+import eu.mcone.coresystem.api.core.labymod.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.DecoderException;
@@ -26,6 +23,8 @@ public abstract class LMCUtils<P> implements LabyModAPI<P> {
     public static final String DOMAIN = "play.mcone.eu";
 
     protected abstract void sendLMCMessage(P player, byte[] message);
+
+    protected abstract boolean keepSettingsOnServerSwitch();
 
     @Override
     public void sendPermissions(P player, Map<LabyModPermission, Boolean> permissions) {
@@ -151,6 +150,98 @@ public abstract class LMCUtils<P> implements LabyModAPI<P> {
         }
 
         sendServerMessage(player, "user_menu_actions", actions);
+    }
+
+    @Override
+    public void setBalanceDisplay(P player, LabyModBalanceType balanceType, int balance) {
+        setBalanceDisplay(player, balanceType, balance, true);
+    }
+
+    @Override
+    public void unsetBalanceDisplay(P player) {
+        setBalanceDisplay(player, LabyModBalanceType.values()[0], 0, false);
+    }
+
+    private void setBalanceDisplay(P player, LabyModBalanceType balanceType, int balance, boolean visible) {
+        JsonObject economyObject = new JsonObject();
+        JsonObject cashObject = new JsonObject();
+
+        cashObject.addProperty("visible", visible);
+        cashObject.addProperty("balance", balance);
+        economyObject.add(balanceType.getKey(), cashObject);
+
+        sendServerMessage(player, "economy", economyObject);
+    }
+
+    @Override
+    public void setCineScopes(P player, int coveragePercent, long duration) {
+        setCineScopes(player, coveragePercent, duration, true);
+    }
+
+    @Override
+    public void unsetCineScopes(P player) {
+        setCineScopes(player, 0, 0, false);
+    }
+
+    private void setCineScopes(P player, int coveragePercent, long duration, boolean visible) {
+        JsonObject object = new JsonObject();
+
+        object.addProperty("visible", visible);
+        object.addProperty("coverage", coveragePercent);
+        object.addProperty("duration", duration);
+
+        sendServerMessage(player, "cinescopes", object);
+    }
+
+    @Override
+    public void setWatermark(P player, boolean visible) {
+        JsonObject object = new JsonObject();
+
+        object.addProperty("visible", visible);
+
+        sendServerMessage(player, "watermark", object);
+    }
+
+    @Override
+    public void setVoiceChatAllowed(P player, boolean allowed) {
+        JsonObject object = new JsonObject();
+        object.addProperty("allowed", allowed);
+
+        sendServerMessage(player, "voicechat", object);
+    }
+
+    @Override
+    public void setVoiceChatSettings(P player, boolean required, boolean enabled, int microphoneVolume, int surroundRange, int surroundVolume, boolean continuousTransmission) {
+        JsonObject voicechatObject = new JsonObject();
+        voicechatObject.addProperty("keep_settings_on_server_switch", keepSettingsOnServerSwitch());
+
+        JsonObject requestSettingsObject = new JsonObject();
+        requestSettingsObject.addProperty("required", required);
+
+        JsonObject settingsObject = new JsonObject();
+        settingsObject.addProperty("enabled", enabled);
+        settingsObject.addProperty("microphoneVolume", microphoneVolume);
+        settingsObject.addProperty("surroundRange", surroundRange);
+        settingsObject.addProperty("surroundVolume", surroundVolume);
+        settingsObject.addProperty("continuousTransmission", continuousTransmission);
+
+        requestSettingsObject.add("settings", settingsObject);
+        voicechatObject.add("request_settings", requestSettingsObject);
+
+        sendServerMessage( player, "voicechat", voicechatObject);
+    }
+
+    @Override
+    public void setPlayerMutedFor(P player, UUID mutedPlayer, boolean muted) {
+        JsonObject voicechatObject = new JsonObject();
+        JsonObject mutePlayerObject = new JsonObject();
+
+        mutePlayerObject.addProperty("mute", muted);
+        mutePlayerObject.addProperty("target", mutedPlayer.toString());
+
+        voicechatObject.add("mute_player", mutePlayerObject);
+
+        sendServerMessage( player, "voicechat", voicechatObject );
     }
 
     @Override

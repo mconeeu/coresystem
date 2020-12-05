@@ -35,6 +35,11 @@ public class LabyModManager extends LMCUtils<Player> implements LabyModBukkitAPI
     }
 
     @Override
+    protected boolean keepSettingsOnServerSwitch() {
+        return false;
+    }
+
+    @Override
     protected void sendLMCMessage(Player player, byte[] message) {
         ((CraftPlayer) player).getHandle().playerConnection.sendPacket(
                 new PacketPlayOutCustomPayload("LMC", new PacketDataSerializer(Unpooled.wrappedBuffer(message)))

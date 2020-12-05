@@ -22,4 +22,8 @@ public class LabyModManager extends LMCUtils<ProxiedPlayer> {
         player.unsafe().sendPacket(new PluginMessage("LMC", message, false));
     }
 
+    @Override
+    protected boolean keepSettingsOnServerSwitch() {
+        return true;
+    }
 }

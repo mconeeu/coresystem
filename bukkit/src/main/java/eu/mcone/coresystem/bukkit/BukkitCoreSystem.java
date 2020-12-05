@@ -381,6 +381,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
         );
 
         if (!Boolean.parseBoolean(System.getProperty("EnableWorldGrow"))) {
+            sendConsoleMessage("§2Registered WorldGrowCanceller");
             registerEvents(new WorldGrowCanceller());
         }
     }

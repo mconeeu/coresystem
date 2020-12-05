@@ -38,6 +38,22 @@ public interface LabyModAPI<P> {
 
     void setMiddleClickActions(P player, LabyModMiddleClickAction... actionList);
 
+    void setBalanceDisplay(P player, LabyModBalanceType balanceType, int balance);
+
+    void unsetBalanceDisplay(P player);
+
+    void setCineScopes(P player, int coveragePercent, long duration);
+
+    void unsetCineScopes(P player);
+
+    void setWatermark(P player, boolean visible);
+
+    void setVoiceChatAllowed(P player, boolean allowed);
+
+    void setVoiceChatSettings(P player, boolean required, boolean enabled, int microphoneVolume, int surroundRange, int surroundVolume, boolean continuousTransmission);
+
+    void setPlayerMutedFor(P player, UUID mutedPlayer, boolean muted);
+
     /**
      * sends a specific message to the LabyMod client that can be read i.e. with a LabyMod AddOn
      *

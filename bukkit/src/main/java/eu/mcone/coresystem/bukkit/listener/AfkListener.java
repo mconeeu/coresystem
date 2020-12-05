@@ -1,5 +1,8 @@
 package eu.mcone.coresystem.bukkit.listener;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.event.player.AfkEvent;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.bukkit.player.CoreAfkManager;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
@@ -48,6 +51,15 @@ public class AfkListener implements Listener {
     @EventHandler
     public void on(PlayerDropItemEvent e) {
         manager.setAfk(e.getPlayer(), false);
+    }
+
+    @EventHandler
+    public void on(AfkEvent e) {
+        for (CorePlayer cp : CoreSystem.getInstance().getOnlineCorePlayers()) {
+            if (cp.hasPermission("group.team") || cp.bukkit().equals(e.getPlayer())) {
+                cp.getScoreboard().reload();
+            }
+        }
     }
 
 }

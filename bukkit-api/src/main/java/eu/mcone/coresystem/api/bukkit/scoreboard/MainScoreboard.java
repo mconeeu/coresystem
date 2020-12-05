@@ -27,6 +27,10 @@ public final class MainScoreboard extends CoreScoreboard {
         if (p.isNicked() && owner.hasPermission("group.team")) {
             suffix.append("§6§lⓃ");
         }
+        if (p.isAfk() && (owner.hasPermission("group.team") || owner.equals(p))) {
+            suffix.append("§2§lⒶ");
+        }
+
         if (suffix.length() > 1) {
             t.suffix(suffix.toString());
         }

@@ -32,42 +32,44 @@ public class JoinMeCMD extends CorePlayerCommand {
     @Override
     public void onPlayerCommand(ProxiedPlayer p, String[] args) {
         if (!hasCooldown(p.getUniqueId()) || p.hasPermission("system.bungee.cooldown.joinme.cooldown")) {
-            JOIN_MES.put(p.getUniqueId(), new JoinMeEntry());
+            if (p.getServer() != null) {
+                JOIN_MES.put(p.getUniqueId(), new JoinMeEntry());
 
-            BaseComponent[] message = new ComponentBuilder("§8[§7§l!§8]§7 JoinMe §8> ")
-                    .append(p.getName())
-                    .color(ChatColor.AQUA)
-                    .bold(true)
-                    .append(" spielt auf ")
-                    .bold(false)
-                    .color(ChatColor.DARK_AQUA)
-                    .append(p.getServer().getInfo().getName())
-                    .underlined(true)
-                    .append("!")
-                    .underlined(false)
-                    .append("\n  ")
-                    .append("Jetzt beitreten")
-                    .color(ChatColor.GREEN)
-                    .bold(true)
-                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§7§oKlicke zum Server wechseln")))
-                    .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join "+p.getName()))
-                    .create();
+                BaseComponent[] message = new ComponentBuilder("§8[§7§l!§8]§7 JoinMe §8> ")
+                        .append(p.getName())
+                        .color(ChatColor.AQUA)
+                        .bold(true)
+                        .append(" spielt auf ")
+                        .bold(false)
+                        .color(ChatColor.DARK_AQUA)
+                        .append(p.getServer().getInfo().getName())
+                        .underlined(true)
+                        .append("!")
+                        .underlined(false)
+                        .append("\n  ")
+                        .append("Jetzt beitreten")
+                        .color(ChatColor.GREEN)
+                        .bold(true)
+                        .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§7§oKlicke zum Server wechseln")))
+                        .event(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join "+p.getName()))
+                        .create();
 
-            for (CorePlayer cp : CoreSystem.getInstance().getOnlineCorePlayers()) {
-                if (!cp.bungee().getServer().getInfo().equals(p.getServer().getInfo()) || cp.bungee() == p) {
-                    switch (cp.getSettings().getJoinMeMessages()) {
-                        case NOBODY: {
-                            if (cp.bungee() != p) {
-                                continue;
+                for (CorePlayer cp : CoreSystem.getInstance().getOnlineCorePlayers()) {
+                    if (cp.bungee().getServer() == null || !cp.bungee().getServer().getInfo().equals(p.getServer().getInfo()) || cp.bungee() == p) {
+                        switch (cp.getSettings().getJoinMeMessages()) {
+                            case NOBODY: {
+                                if (cp.bungee() != p) {
+                                    continue;
+                                }
                             }
-                        }
-                        case FRIENDS: {
-                            if (!cp.getFriendData().getFriends().containsKey(p.getUniqueId()) && cp.bungee() != p) {
-                                continue;
+                            case FRIENDS: {
+                                if (!cp.getFriendData().getFriends().containsKey(p.getUniqueId()) && cp.bungee() != p) {
+                                    continue;
+                                }
                             }
-                        }
-                        case ALL: {
-                            CoreSystem.getInstance().getMessenger().sendSimple(cp.bungee(), message);
+                            case ALL: {
+                                CoreSystem.getInstance().getMessenger().sendSimple(cp.bungee(), message);
+                            }
                         }
                     }
                 }
