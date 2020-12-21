@@ -5,7 +5,6 @@
 
 package eu.mcone.coresystem.api.core.overwatch.report;
 
-import group.onegaming.networkmanager.core.api.util.Random;
 import lombok.Getter;
 import lombok.Setter;
 import org.bson.codecs.pojo.annotations.BsonCreator;
@@ -19,7 +18,7 @@ import java.util.*;
 @BsonDiscriminator
 public class Report {
 
-    private final String ID;
+    private String ID;
     private final long timestamp;
 
     @Setter
@@ -44,7 +43,7 @@ public class Report {
     private String chatLogID;
 
     public Report(UUID reported, UUID reporter, ReportReason reason, int points) {
-        this.ID = new Random(6).nextString();
+//        this.ID = new Random(6).nextString();
         this.timestamp = System.currentTimeMillis() / 1000;
         this.reported = reported;
         this.reporter = new ArrayList<UUID>() {{
@@ -59,7 +58,7 @@ public class Report {
     }
 
     public Report(UUID reported, UUID reporter, ReportReason reason, int points, String replayID) {
-        this.ID = new Random(6).nextString();
+//        this.ID = new Random(6).nextString();
         this.timestamp = System.currentTimeMillis() / 1000;
         this.reported = reported;
         this.reporter = new ArrayList<UUID>() {{
