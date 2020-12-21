@@ -63,6 +63,7 @@ import eu.mcone.coresystem.core.util.CoreCooldownSystem;
 import eu.mcone.coresystem.core.util.MoneyUtil;
 import group.onegaming.networkmanager.core.api.database.Database;
 import group.onegaming.networkmanager.core.database.MongoConnection;
+import group.onegaming.networkmanager.core.random.NetworkUniqueIdUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import lombok.Getter;
@@ -139,6 +140,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private CorePacketManager packetManager;
     @Getter
     private SoundManager soundManager;
+    @Getter
+    private NetworkUniqueIdUtil uniqueIdUtil;
 
     @Getter
     private Map<UUID, BukkitCorePlayer> corePlayers;
@@ -248,6 +251,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
             sendConsoleMessage("§aStarting SoundManager...");
             soundManager = new CoreSoundManager(this);
+
+            uniqueIdUtil = new NetworkUniqueIdUtil(getMongoDB(Database.SYSTEM));
 
             sendConsoleMessage("§aLoading Commands, Events, CoreInventories...");
             this.registerListener();

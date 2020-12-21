@@ -19,7 +19,6 @@ import eu.mcone.coresystem.bukkit.command.LocationCMD;
 import eu.mcone.coresystem.bukkit.command.RegionCMD;
 import eu.mcone.coresystem.bukkit.command.WorldCMD;
 import eu.mcone.coresystem.bukkit.listener.WorldListener;
-import group.onegaming.networkmanager.core.api.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -38,7 +37,7 @@ import java.util.Map;
 
 public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldManager {
 
-    private final Random randomWorldID;
+    private final String randomWorldID;
     final static String CONFIG_NAME = "core-config.json";
 
     private final static String CONFIG_VERSION_KEY = "configVersion";
@@ -47,7 +46,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     List<BukkitCoreWorld> coreWorlds;
 
     public WorldManager(BukkitCoreSystem instance) {
-        this.randomWorldID = new Random(6);
+        this.randomWorldID = CoreSystem.getInstance().getUniqueIdUtil().getUniqueKey("world");
         this.coreWorlds = new ArrayList<>();
 
         instance.registerCommands(new WorldCMD(this), new LocationCMD(instance), new RegionCMD(this));
@@ -102,7 +101,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
 
                             w.save();
                             coreWorlds.add(w);
-                            BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + w.getName() + " "+w.getVersionString()+" (" + w.getId()+") ");
+                            BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + w.getName() + " " + w.getVersionString() + " (" + w.getId() + ") ");
                         }
                     } else {
                         if (world != null) {
@@ -223,7 +222,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     private BukkitCoreWorld constructNewCoreWorld(World world, String generator, String generatorSettings) {
         Location loc = world.getSpawnLocation();
         BukkitCoreWorld w = new BukkitCoreWorld(
-                randomWorldID.nextString(),
+                randomWorldID,
                 world.getName(),
                 world.getName(),
                 generator,
@@ -328,7 +327,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
             case 5: {
                 CoreSystem.getInstance().sendConsoleMessage("§7Updating Config from version 4/5 to 6...");
 
-                Random random = new Random(6);
+                String random = CoreSystem.getInstance().getUniqueIdUtil().getUniqueKey("world");
                 JsonObject world = json.getAsJsonObject();
                 JsonArray version = new JsonArray();
                 version.add(new JsonPrimitive(0));
@@ -337,7 +336,7 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
 
                 world.remove("ID");
                 world.remove("iD");
-                world.addProperty("id", random.nextString());
+                world.addProperty("id", random);
                 world.add("version", version);
             }
             case 6: {

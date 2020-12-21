@@ -27,6 +27,7 @@ import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.WorldManager;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
+import group.onegaming.networkmanager.core.api.random.UniqueIdUtil;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -143,6 +144,13 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return SoundManager instance
      */
     public abstract SoundManager getSoundManager();
+
+    /**
+     * returns the BCS UniqueIdUtil
+     *
+     * @return NetworkUniqueIdUtil instance
+     */
+    public abstract UniqueIdUtil getUniqueIdUtil();
 
     /**
      * returns the bukkit Labymod API
