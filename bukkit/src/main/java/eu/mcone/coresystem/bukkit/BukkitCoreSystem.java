@@ -38,6 +38,7 @@ import eu.mcone.coresystem.api.bukkit.util.CoreTablistInfo;
 import eu.mcone.coresystem.api.bukkit.util.CoreTitle;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
+import eu.mcone.coresystem.api.bukkit.world.schematic.SchematicManager;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.player.Currency;
 import eu.mcone.coresystem.api.core.player.GlobalCorePlayer;
@@ -460,6 +461,11 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Override
     public Messenger initializeMessenger(String prefixTranslation) {
         return new BukkitMessenger(this, prefixTranslation);
+    }
+
+    @Override
+    public SchematicManager initializeSchematicManager(boolean cache) {
+        return new eu.mcone.coresystem.bukkit.world.schematic.SchematicManager(cache);
     }
 
     @Override

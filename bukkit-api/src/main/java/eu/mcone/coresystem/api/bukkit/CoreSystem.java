@@ -25,6 +25,7 @@ import eu.mcone.coresystem.api.bukkit.vanish.VanishManager;
 import eu.mcone.coresystem.api.bukkit.world.BuildSystem;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.WorldManager;
+import eu.mcone.coresystem.api.bukkit.world.schematic.SchematicManager;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import group.onegaming.networkmanager.core.api.random.UniqueIdUtil;
@@ -226,6 +227,14 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      * @return nwe BukkitMessenger instance
      */
     public abstract Messenger initializeMessenger(String prefixTranslation);
+
+    /**
+     * creates a new instance of SchematicManager
+     *
+     * @param cache activates the local cache
+     * @return nwe SchematicManager instance
+     */
+    public abstract SchematicManager initializeSchematicManager(boolean cache);
 
     /**
      * creates a new player title
