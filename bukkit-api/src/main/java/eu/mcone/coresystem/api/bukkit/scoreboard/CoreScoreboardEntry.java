@@ -15,8 +15,6 @@ import org.bukkit.scoreboard.Team;
 @Getter
 public class CoreScoreboardEntry {
 
-    private static final String TEAM_RANDOM = CoreSystem.getInstance().getUniqueIdUtil().getTmpUniqueKey(UniqueIdType.STRING, false);
-
     private final CorePlayer player;
     private int priority;
     private String name, prefix, suffix;
@@ -46,7 +44,7 @@ public class CoreScoreboardEntry {
     }
 
     Team setTeam(Scoreboard scoreboard) {
-        Team team = scoreboard.registerNewTeam(priority + "_" + TEAM_RANDOM);
+        Team team = scoreboard.registerNewTeam(priority + "_" + CoreSystem.getInstance().getUniqueIdUtil().getTmpUniqueKey(UniqueIdType.STRING, false));
         if (name != null) {
             team.setDisplayName(name);
         }

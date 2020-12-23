@@ -97,17 +97,21 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
 
     @Override
     public SkinInfo getSkinInfo(UUID uuid) {
-        if (skinCache.containsKey(uuid)) {
-            return skinCache.get(uuid);
-        } else {
-            Document entry = database.getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
-
-            if (entry != null) {
-                uuidCache.put(entry.getString("name"), uuid);
-                return constructSkinInfo(entry.getString("name"), entry.getString("texture_value"), entry.getString("texture_signature"));
+        if (uuid != null) {
+            if (skinCache.containsKey(uuid)) {
+                return skinCache.get(uuid);
             } else {
-                return fetchSkinFromMojangAPI(uuid);
+                Document entry = database.getCollection("userinfo").find(eq("uuid", uuid.toString())).first();
+
+                if (entry != null) {
+                    uuidCache.put(entry.getString("name"), uuid);
+                    return constructSkinInfo(entry.getString("name"), entry.getString("texture_value"), entry.getString("texture_signature"));
+                } else {
+                    return fetchSkinFromMojangAPI(uuid);
+                }
             }
+        } else {
+            throw new NullPointerException("No UUID could be found for the transferred player!");
         }
     }
 
@@ -177,23 +181,26 @@ public class PlayerUtils implements eu.mcone.coresystem.api.core.player.PlayerUt
             }
             String result = sb.toString();
 
-            JsonElement element = new JsonParser().parse(result);
-            try {
-                JsonObject obj = element.getAsJsonObject();
-                String rightName = obj.get("name").getAsString();
-                String uuid = obj.get("id").getAsString();
+            if (!result.isEmpty()) {
+                JsonElement element = new JsonParser().parse(result);
+                try {
+                    JsonObject obj = element.getAsJsonObject();
+                    String rightName = obj.get("name").getAsString();
+                    String uuid = obj.get("id").getAsString();
 
-                UUID uuidResult = UUID.fromString(fromTrimmed(uuid));
-                uuidCache.put(rightName, uuidResult);
-                instance.runAsync(() -> updateDatabase(uuidResult, set("name", rightName)));
+                    UUID uuidResult = UUID.fromString(fromTrimmed(uuid));
+                    uuidCache.put(rightName, uuidResult);
+                    instance.runAsync(() -> updateDatabase(uuidResult, set("name", rightName)));
 
-                return uuidResult;
-            } catch (IllegalStateException e) {
-                return null;
+                    return uuidResult;
+                } catch (IllegalStateException e) {
+                    return null;
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return null;
     }
 

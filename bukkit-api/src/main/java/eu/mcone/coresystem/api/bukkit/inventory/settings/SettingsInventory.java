@@ -108,10 +108,10 @@ public class SettingsInventory extends CoreInventory {
 
     private <T extends Option> CoreItemEvent makeChooseItemEvent(Player p, int slot, Setting<T> setting, T currentOption) {
         return e -> {
-            T choosedSetting = setting.getNextOption(currentOption);
-            setting.getListener().onChoosed(p, choosedSetting);
+            T chosenSetting = setting.getNextOption(currentOption);
+            setting.getListener().onChosen(p, chosenSetting);
 
-            setItem(slot, choosedSetting.getItem(), makeChooseItemEvent(p, slot, setting, choosedSetting));
+            setItem(slot, chosenSetting.getItem(), makeChooseItemEvent(p, slot, setting, chosenSetting));
             p.updateInventory();
         };
     }

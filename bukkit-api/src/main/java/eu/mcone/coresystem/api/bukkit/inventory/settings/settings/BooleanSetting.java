@@ -71,7 +71,7 @@ public class BooleanSetting {
         };
 
         return new Setting<>(item, options)
-                .chooseListener((p, result) -> listener.onChoosed(p, result.value))
+                .chooseListener((p, result) -> listener.onChosen(p, result.value))
                 .currentOptionFinder(p -> options[optionFinder.getCurrentOption(p) ? 0 : 1]);
     }
 

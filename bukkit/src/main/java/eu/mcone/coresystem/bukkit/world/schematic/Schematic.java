@@ -9,10 +9,8 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 import javax.management.openmbean.KeyAlreadyExistsException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Consumer;
 
 @NoArgsConstructor
 @Getter
@@ -23,7 +21,7 @@ public class Schematic implements eu.mcone.coresystem.api.bukkit.world.schematic
 
     private String name;
     private UUID author;
-    private HashSet<String> categories;
+    private Set<String> categories;
     private byte[] schematicData;
     private long created;
 
@@ -31,7 +29,7 @@ public class Schematic implements eu.mcone.coresystem.api.bukkit.world.schematic
         this.id = CoreSystem.getInstance().getUniqueIdUtil().getUniqueKey("schematic");
         this.name = name;
         this.author = author;
-        this.categories = new HashSet<>();
+        this.categories = new HashSet<>(Collections.singletonList("undefined"));
         this.created = System.currentTimeMillis() / 1000;
     }
 
@@ -47,14 +45,15 @@ public class Schematic implements eu.mcone.coresystem.api.bukkit.world.schematic
      * @throws NullPointerException      If the file doesn't exists.
      * @throws KeyAlreadyExistsException If a schematic with the same id already exists in the database.
      */
-    public void upload(String path) {
+    public void upload(String path, Consumer<Boolean> succeeded) {
         try {
             if (!SchematicManager.getInstance().existsSchematic(name)) {
                 File file = new File(path);
 
                 if (file.exists()) {
                     this.schematicData = FileUtils.readFileToByteArray(file);
-                    SchematicManager.getInstance().insertSchematic(this);
+                    SchematicManager.getInstance().createSchematic(this);
+                    succeeded.accept(true);
                 } else {
                     throw new NullPointerException("Could not find file " + path);
                 }
@@ -62,6 +61,7 @@ public class Schematic implements eu.mcone.coresystem.api.bukkit.world.schematic
                 throw new KeyAlreadyExistsException("The id " + name + " already exists in the database!");
             }
         } catch (IOException e) {
+            succeeded.accept(false);
             e.printStackTrace();
         }
     }

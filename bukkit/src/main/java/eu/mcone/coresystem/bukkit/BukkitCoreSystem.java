@@ -197,6 +197,8 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             dataDB = mongoConnection.getDatabase(Database.DATA);
             cloudDB = mongoConnection.getDatabase(Database.CLOUD);
 
+            uniqueIdUtil = new NetworkUniqueIdUtil(getMongoDB(Database.SYSTEM));
+
             packetManager = new CorePacketManager();
             pluginManager = new PluginManager(this);
             moneyUtil = new MoneyUtil(this, systemDB) {
@@ -252,8 +254,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
             sendConsoleMessage("§aStarting SoundManager...");
             soundManager = new CoreSoundManager(this);
-
-            uniqueIdUtil = new NetworkUniqueIdUtil(getMongoDB(Database.SYSTEM));
 
             sendConsoleMessage("§aLoading Commands, Events, CoreInventories...");
             this.registerListener();

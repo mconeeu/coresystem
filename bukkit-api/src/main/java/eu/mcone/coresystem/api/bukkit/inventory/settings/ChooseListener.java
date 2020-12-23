@@ -4,6 +4,6 @@ import org.bukkit.entity.Player;
 
 public interface ChooseListener<T> {
 
-    void onChoosed(Player p, T choosed);
+    void onChosen(Player p, T chosen);
 
 }

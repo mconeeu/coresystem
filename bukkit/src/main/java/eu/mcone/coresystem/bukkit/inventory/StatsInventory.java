@@ -44,5 +44,4 @@ public class StatsInventory extends CoreInventory {
 
         openInventory();
     }
-
 }
