@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.command.CommandSender;
@@ -72,12 +73,12 @@ public class BukkitCMD extends CoreCommand {
                     }
                 }
             } else {
-                BukkitCoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.noperm");
+                Msg.sendTransl(sender, "system.command.noperm");
                 return false;
             }
         }
 
-        BukkitCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze: §c/bukkit [reload] [<permissions | worlds | translations | scoreboard | npcs | holograms>]");
+        Msg.send(sender, "§4Bitte benutze: §c/bukkit [reload] [<permissions | worlds | translations | scoreboard | npcs | holograms>]");
         return false;
     }
 
@@ -104,7 +105,7 @@ public class BukkitCMD extends CoreCommand {
     }
 
     private void reload(CommandSender sender, ReloadType reloadType) {
-        BukkitCoreSystem.getSystem().getMessenger().sendSuccess(sender, "!["+reloadType.name+"] wird neu geladen...");
+        Msg.sendSuccess(sender, "!["+reloadType.name+"] wird neu geladen...");
         reloadType.runnable.run();
     }
 

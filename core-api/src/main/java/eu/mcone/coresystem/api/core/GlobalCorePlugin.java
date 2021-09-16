@@ -6,7 +6,15 @@
 package eu.mcone.coresystem.api.core;
 
 
+import eu.mcone.coresystem.api.core.player.GlobalMessenger;
+
 public interface GlobalCorePlugin {
+
+    /**
+     * returns the Messenger of the plugin
+     * @return messenger instance
+     */
+    GlobalMessenger<?> getMessenger();
 
     /**
      * returns the plugin name

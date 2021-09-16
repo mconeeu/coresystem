@@ -8,22 +8,16 @@ package eu.mcone.coresystem.api.bukkit.util;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.inventory.modify.CoreInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.modification.InventoryModificationManager;
-import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import eu.mcone.coresystem.api.core.util.CooldownSystem;
+import eu.mcone.coresystem.api.core.util.GlobalPluginManager;
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
+import java.util.Set;
 
-public interface CorePluginManager {
-
-    /**
-     * returns the Cooldownsystem to register or check for custom cooldowns
-     *
-     * @return CooldownSystem
-     */
-    CooldownSystem getCooldownSystem();
+public interface PluginManager extends GlobalPluginManager {
 
     /**
      * returns the registered inventoryModificationManager for the specified CorePlugin
@@ -47,13 +41,6 @@ public interface CorePluginManager {
      * @return list of all CoreInventories
      */
     CoreInventory getCurrentCoreInventory(Player player);
-
-    /**
-     * register a new GameProfile
-     *
-     * @param gameProfile GameProfile
-     */
-    void registerGameProfile(final GameProfile gameProfile);
 
     /**
      * registers a new CoreCommand
@@ -96,12 +83,11 @@ public interface CorePluginManager {
      */
     Collection<CoreCommand> getCoreCommands(CorePlugin plugin);
 
-    /**
-     * returns a list of all loaded GameProfiles from any plugin
-     *
-     * @return GameProfile List
-     */
-    Collection<GameProfile> getGameProfiles();
+    boolean registerCoreInventoryModifier(Class<?> inventoryClass, CoreInventoryModifier modifier);
+
+    Set<CoreInventoryModifier> getCoreInventoryModifiers(Class<?> inventoryClass);
+
+    boolean unregisterCoreInventoryModifier(Class<?> inventoryClass, CoreInventoryModifier modifier);
 
     /**
      * sets the default world for all GameProfiles (might not be necessary)

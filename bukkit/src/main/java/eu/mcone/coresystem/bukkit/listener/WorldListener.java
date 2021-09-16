@@ -14,6 +14,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.world.WorldLoadEvent;
 
 @RequiredArgsConstructor
 public class WorldListener implements Listener {
@@ -34,6 +35,15 @@ public class WorldListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onTp(PlayerTeleportEvent e) {
         e.setCancelled(shouldMoveBeCancelled(e.getPlayer(), e.getFrom(), e.getTo()));
+    }
+
+    @EventHandler
+    public void on(WorldLoadEvent e) {
+        if (WorldManager.DYNAMIC_WORLD_LOADING) {
+            manager.getDynamicWorldLoader().resetTimer(
+                    manager.getWorld(e.getWorld())
+            );
+        }
     }
 
     private boolean shouldMoveBeCancelled(Player p, Location from, Location to) {

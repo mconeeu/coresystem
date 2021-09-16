@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bungee.command;
 import com.google.common.collect.ImmutableSet;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.command.CoreCommand;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
@@ -75,7 +76,7 @@ public class BungeecordCMD extends CoreCommand implements TabExecutor {
                     }
                 }
 
-                BungeeCoreSystem.getSystem().getMessenger().sendError(sender, "Bitte benutze: ![/bungee reload <translations|permissions|nicks>]");
+                Msg.sendError(sender, "Bitte benutze: ![/bungee reload <translations|permissions|nicks>]");
             }
         }
     }
@@ -103,7 +104,7 @@ public class BungeecordCMD extends CoreCommand implements TabExecutor {
     }
 
     private void reload(CommandSender sender, ReloadType reloadType) {
-        BungeeCoreSystem.getSystem().getMessenger().sendSuccess(sender, "!["+reloadType.name+"] wird neu geladen...");
+        Msg.sendSuccess(sender, "!["+reloadType.name+"] wird neu geladen...");
         reloadType.runnable.run();
     }
 

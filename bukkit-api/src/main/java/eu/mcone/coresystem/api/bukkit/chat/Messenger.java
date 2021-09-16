@@ -3,7 +3,7 @@
  * You are not allowed to decompile the code
  */
 
-package eu.mcone.coresystem.api.bukkit.broadcast;
+package eu.mcone.coresystem.api.bukkit.chat;
 
 import eu.mcone.coresystem.api.core.player.GlobalMessenger;
 import org.bukkit.command.CommandSender;

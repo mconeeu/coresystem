@@ -2,6 +2,7 @@ package eu.mcone.coresystem.api.bukkit.player;
 
 import eu.mcone.coresystem.api.core.translation.CoreTranslationManager;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 public interface TranslationManager extends CoreTranslationManager {
@@ -14,4 +15,5 @@ public interface TranslationManager extends CoreTranslationManager {
 
     String get(String key, CommandSender sender, Object... replace);
 
+    void registerTranslationKeys(FileConfiguration config, String pluginSlug);
 }

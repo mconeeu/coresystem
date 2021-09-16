@@ -7,12 +7,16 @@ package eu.mcone.coresystem.bukkit.listener;
 
 import eu.mcone.coresystem.api.bukkit.event.npc.NpcInteractEvent;
 import eu.mcone.coresystem.api.bukkit.event.player.CorePlayerLoadedEvent;
+import eu.mcone.coresystem.api.bukkit.event.world.CoreWorldLoadEvent;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
+import eu.mcone.coresystem.api.bukkit.npc.NpcData;
 import eu.mcone.coresystem.api.bukkit.util.PacketListener;
 import eu.mcone.coresystem.api.bukkit.util.ReflectionManager;
+import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.npc.CoreNPC;
 import eu.mcone.coresystem.bukkit.npc.CoreNpcManager;
+import eu.mcone.coresystem.bukkit.world.BukkitCoreWorld;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayInUseEntity;
@@ -24,59 +28,61 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.PluginEnableEvent;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.event.world.WorldUnloadEvent;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RequiredArgsConstructor
 public class NpcListener implements Listener, PacketListener {
 
-    private final Plugin plugin;
-    private final CoreNpcManager api;
+    private final BukkitCoreSystem system;
+    private final CoreNpcManager manager;
 
     @EventHandler
-    public void on(PluginEnableEvent e) {
-        for (CoreNPC<?, ?> npc : api.getNpcSet()) {
+    public void onEnable(PluginEnableEvent e) {
+        for (CoreNPC<?, ?> npc : manager.getNpcSet()) {
             npc.playerJoined(Bukkit.getOnlinePlayers().toArray(new Player[0]));
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void on(CorePlayerLoadedEvent e) {
+    public void onCorePlayerLoaded(CorePlayerLoadedEvent e) {
         Player p = e.getBukkitPlayer();
 
-        Bukkit.getScheduler().runTask(BukkitCoreSystem.getSystem(), () -> {
-            for (CoreNPC<?, ?> npc : api.getNpcSet()) {
+        Bukkit.getScheduler().runTask(system, () -> {
+            for (CoreNPC<?, ?> npc : manager.getNpcSet()) {
                 npc.playerJoined(p);
             }
         });
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void on(PlayerQuitEvent e) {
-        for (CoreNPC<?, ?> npc : api.getNpcSet()) {
+    public void onQuit(PlayerQuitEvent e) {
+        for (CoreNPC<?, ?> npc : manager.getNpcSet()) {
             npc.playerLeaved(e.getPlayer());
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void on(PlayerTeleportEvent e) {
+    public void onTeleport(PlayerTeleportEvent e) {
         Player p = e.getPlayer();
 
-        for (CoreNPC<?, ?> npc : api.getNpcSet()) {
+        for (CoreNPC<?, ?> npc : manager.getNpcSet()) {
             if (!npc.canBeSeenBy(p) || !npc.isVisibleFor(p)) {
                 npc.despawn(p);
             } else if (npc.canBeSeenBy(p) && npc.isVisibleFor(p)) {
-                Bukkit.getScheduler().runTaskLaterAsynchronously(BukkitCoreSystem.getSystem(), () -> npc.spawn(p), 1L);
+                Bukkit.getScheduler().runTaskLaterAsynchronously(system, () -> npc.spawn(p), 1L);
             }
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void on(PlayerMoveEvent e) {
+    public void onMove(PlayerMoveEvent e) {
         Player p = e.getPlayer();
 
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        Bukkit.getScheduler().runTaskAsynchronously(system, () -> {
             if (!checkLocation(e.getFrom(), e.getTo())) {
-                for (CoreNPC<?, ?> npc : api.getNpcSet()) {
+                for (CoreNPC<?, ?> npc : manager.getNpcSet()) {
                     if (!npc.canBeSeenBy(p) || !npc.isVisibleFor(p)) {
                         npc.despawn(p);
                     } else if (npc.canBeSeenBy(p) && npc.isVisibleFor(p)) {
@@ -87,26 +93,49 @@ public class NpcListener implements Listener, PacketListener {
         });
     }
 
-//    @EventHandler(priority = EventPriority.MONITOR)
-//    public void on(PlayerDeathEvent e) {
-//
-//    }
-
     @EventHandler(priority = EventPriority.MONITOR)
-    public void on(PlayerRespawnEvent e) {
-        for (CoreNPC<?, ?> npc : api.getNpcSet()) {
+    public void onRespawn(PlayerRespawnEvent e) {
+        for (CoreNPC<?, ?> npc : manager.getNpcSet()) {
             npc.despawn(e.getPlayer());
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void on(PlayerChangedWorldEvent e) {
+    public void onChangdeWorld(PlayerChangedWorldEvent e) {
         Player p = e.getPlayer();
 
-        for (CoreNPC<?, ?> npc : api.getNpcSet()) {
+        for (CoreNPC<?, ?> npc : manager.getNpcSet()) {
             if (!npc.getData().getLocation().getWorld().equals(p.getWorld().getName())) {
                 npc.despawn(p);
             }
+        }
+    }
+
+    @EventHandler
+    public void onWorldLoad(CoreWorldLoadEvent e) {
+        CoreWorld w = e.getWorld();
+
+        int loaded = 0;
+        for (NpcData data : ((BukkitCoreWorld) w).getNpcData()) {
+            manager.addNPC(data);
+            loaded++;
+        }
+
+        if (loaded > 0) {
+            system.sendConsoleMessage("§2Loaded "+loaded+" NPCs");
+        }
+    }
+
+    @EventHandler
+    public void onWorldUnload(WorldUnloadEvent e) {
+        AtomicInteger unloaded = new AtomicInteger();
+        manager.getNpcSet().removeIf(npc -> {
+            unloaded.incrementAndGet();
+            return npc.getLocation().getWorld().equals(e.getWorld());
+        });
+
+        if (unloaded.get() > 0) {
+            system.sendConsoleMessage("§2Unloaded "+unloaded.get()+" NPCs");
         }
     }
 
@@ -121,7 +150,7 @@ public class NpcListener implements Listener, PacketListener {
 
                     if (npc != null) {
                         Bukkit.getScheduler().runTask(
-                                BukkitCoreSystem.getSystem(),
+                                system,
                                 () -> Bukkit.getPluginManager().callEvent(new NpcInteractEvent(player, npc, packet.a()))
                         );
                     }

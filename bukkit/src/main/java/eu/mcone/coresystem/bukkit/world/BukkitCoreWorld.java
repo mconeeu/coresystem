@@ -5,8 +5,14 @@
 
 package eu.mcone.coresystem.bukkit.world;
 
+import eu.mcone.cloud.core.api.world.CloudWorld;
+import eu.mcone.cloud.core.api.world.WorldVersion;
+import eu.mcone.cloud.core.api.world.WorldVersionType;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.config.CoreJsonConfig;
+import eu.mcone.coresystem.api.bukkit.event.world.CoreWorldLoadEvent;
+import eu.mcone.coresystem.api.bukkit.event.world.WorldDeleteEvent;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.hologram.HologramData;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
@@ -28,10 +34,7 @@ import org.bukkit.entity.*;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -56,6 +59,9 @@ public class BukkitCoreWorld implements CoreWorld {
 
     private int configVersion = WorldManager.LATEST_CONFIG_VERSION;
 
+    private transient boolean loaded;
+    private transient File directory;
+
     @Override
     public World bukkit() {
         return Bukkit.getWorld(name);
@@ -63,20 +69,26 @@ public class BukkitCoreWorld implements CoreWorld {
 
     @Override
     public void teleport(Player p, String locationName) {
-        Location loc = getLocation(locationName);
-
-        if (loc != null) {
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du wirst teleportiert...");
-            p.teleport(loc);
-        } else {
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Dieser Ort existiert nicht.");
-        }
+        teleport(p, locationName, true);
     }
 
     @Override
     public void teleportSilently(Player p, String locationName) {
+        teleport(p, locationName, false);
+    }
+
+    private void teleport(Player p, String locationName, boolean notify) {
+        if (!isLoaded()) {
+            load();
+            WorldManager.LOADING_BAR.send(p);
+        }
+
         Location loc = getLocation(locationName);
-        if (getLocation(locationName) != null) {
+        if (loc != null) {
+            if (notify) {
+                Msg.send(p, "§2Du wirst teleportiert...");
+            }
+
             p.teleport(loc);
         } else {
             throw new RuntimeCoreException("Could not teleport Player " + p.getName() + " to location " + locationName + ". Location does not exist!");
@@ -188,10 +200,24 @@ public class BukkitCoreWorld implements CoreWorld {
 
     @Override
     public void changeName(String name) {
-        File folder = bukkit().getWorldFolder();
+        File directory = getDirectory();
         unload(true);
 
-        if (folder.renameTo(new File(folder.getParent() + File.separator + name))) {
+        if (directory.renameTo(new File(directory.getParent() + File.separator + name))) {
+            this.name = name;
+            load();
+        } else {
+            throw new UnsupportedOperationException("Target world folder could not be renamed!");
+        }
+    }
+
+    @Override
+    public boolean load() {
+        boolean alreadyLoaded = bukkit() != null;
+
+        if (!alreadyLoaded) {
+            BukkitCoreSystem.getInstance().sendConsoleMessage("§fLoading World " + name + "...");
+
             WorldCreator wc = new WorldCreator(name)
                     .environment(environment)
                     .type(worldType)
@@ -199,39 +225,53 @@ public class BukkitCoreWorld implements CoreWorld {
 
             if (generator != null) {
                 wc.generator(generator);
-                if (generatorSettings != null) wc.generatorSettings(generatorSettings);
+                if (generatorSettings != null)
+                    wc.generatorSettings(generatorSettings);
             }
 
-            wc.createWorld();
-            this.name = name;
-            save();
-        } else {
-            throw new UnsupportedOperationException("Target world folder could not be renamed!");
+            World w = wc.createWorld();
+            Bukkit.getPluginManager().callEvent(new CoreWorldLoadEvent(this, w));
         }
+
+        loaded = true;
+        return !alreadyLoaded;
     }
 
     @Override
-    public void unload(boolean save) {
-        World safeWorld = Bukkit.getWorlds().get(0);
+    public boolean unload(boolean save) {
+        boolean loaded = bukkit() != null;
 
-        if (!safeWorld.equals(bukkit())) {
-            for (Player p : bukkit().getPlayers()) {
-                p.teleport(safeWorld.getSpawnLocation());
-                BukkitCoreSystem.getInstance().getMessenger().send(p, "§7§oDeine aktuelle Welt ist nicht mehr zugänglich. Du wurdest auf die Hauptwelt verschoben.");
+        if (loaded) {
+            World safeWorld = Bukkit.getWorlds().get(0);
+
+            if (!safeWorld.equals(bukkit())) {
+                for (Player p : bukkit().getPlayers()) {
+                    p.teleport(safeWorld.getSpawnLocation());
+                    Msg.send(p, "§7§oDeine aktuelle Welt ist nicht mehr zugänglich. Du wurdest auf die Hauptwelt verschoben.");
+                }
             }
+
+            CoreSystem.getInstance().sendConsoleMessage("§fUnloading world " + name + "...");
+            Bukkit.unloadWorld(bukkit(), save);
         }
 
-        Bukkit.unloadWorld(bukkit(), save);
-        BukkitCoreSystem.getSystem().getWorldManager().coreWorlds.remove(this);
+        this.loaded = false;
+        return loaded;
     }
 
     @Override
     public boolean delete() {
-        File worldFolder = bukkit().getWorldFolder();
+        return delete(null);
+    }
+
+    @Override
+    public boolean delete(Player p) {
         unload(false);
 
         try {
-            FileUtils.deleteDirectory(worldFolder);
+            FileUtils.deleteDirectory(getDirectory());
+            BukkitCoreSystem.getSystem().getWorldManager().getCoreWorlds().remove(this);
+            Bukkit.getPluginManager().callEvent(new WorldDeleteEvent(this, p));
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -244,7 +284,7 @@ public class BukkitCoreWorld implements CoreWorld {
         setupWorld();
 
         try {
-            File config = new File(bukkit().getWorldFolder(), WorldManager.CONFIG_NAME);
+            File config = new File(getDirectory(), WorldManager.CONFIG_NAME);
             if (!config.exists() && !config.createNewFile()) {
                 throw new FileNotFoundException("Config File could not be created!");
             }
@@ -262,19 +302,23 @@ public class BukkitCoreWorld implements CoreWorld {
     void setupWorld() {
         World w = bukkit();
 
-        w.setDifficulty(difficulty);
-        w.setSpawnLocation(spawnLocation[0], spawnLocation[1], spawnLocation[2]);
-        w.setPVP(pvp);
-        w.setKeepSpawnInMemory(keepSpawnInMemory);
-        w.setAutoSave(autoSave);
-        w.setSpawnFlags(allowAnimals, allowMonsters);
+        if (w != null) {
+            w.setDifficulty(difficulty);
+            w.setSpawnLocation(spawnLocation[0], spawnLocation[1], spawnLocation[2]);
+            w.setPVP(pvp);
+            w.setKeepSpawnInMemory(keepSpawnInMemory);
+            w.setAutoSave(autoSave);
+            w.setSpawnFlags(allowAnimals, allowMonsters);
 
-        if (!spawnAnimals) {
-            w.setAnimalSpawnLimit(0);
-            w.setWaterAnimalSpawnLimit(0);
-        }
-        if (!spawnMonsters) {
-            w.setMonsterSpawnLimit(0);
+            if (!spawnAnimals) {
+                w.setAnimalSpawnLimit(0);
+                w.setWaterAnimalSpawnLimit(0);
+            }
+            if (!spawnMonsters) {
+                w.setMonsterSpawnLimit(0);
+            }
+        } else if (loaded) {
+            throw new IllegalStateException("Could not setupWorld " + name + ". World is not loaded but loaded==true! [DynamicWorldLoading==" + WorldManager.DYNAMIC_WORLD_LOADING);
         }
     }
 
@@ -297,8 +341,45 @@ public class BukkitCoreWorld implements CoreWorld {
     }
 
     @Override
+    public boolean isTracked() {
+        return getCloudWorld() != null;
+    }
+
+    @Override
+    public CloudWorld getCloudWorld() {
+        return CoreSystem.getInstance().getWorldManager().getCloudWorldManager().getWorld(id);
+    }
+
+    @Override
+    public CloudWorld track(UUID initiator) {
+        if (!isTracked()) {
+            try {
+                return CoreSystem.getInstance().getWorldManager().getCloudWorldManager().trackWorld(id, name, initiator);
+            } catch (IOException e) {
+                throw new IllegalStateException("Could not initiate track of world " + name + " in CloudWorldManager!", e);
+            }
+        } else throw new IllegalStateException("Could not initiate track of world " + name + ". World is already tracked!");
+    }
+
+    @Override
+    public WorldVersion commit(WorldVersionType versionType, UUID author, String message) throws IOException {
+        CloudWorld world = getCloudWorld();
+
+        if (world != null) {
+            WorldVersion newVersion = getCloudWorld().commit(versionType, bukkit().getWorldFolder(), author, message);
+            version = newVersion.getVersion();
+
+            return newVersion;
+        } else throw new IllegalStateException("Could not commit world " + name + ". This World is not currently tracked with storage backend! Please use CoreWorld#track first.");
+    }
+
+    public File getDirectory() {
+        return directory != null ? directory : (directory = new File(Bukkit.getWorldContainer(), name));
+    }
+
+    @Override
     public String getVersionString() {
-        return "v"+version[0]+"."+version[1]+"."+version[2];
+        return "v" + version[0] + "." + version[1] + "." + version[2];
     }
 
     @Override

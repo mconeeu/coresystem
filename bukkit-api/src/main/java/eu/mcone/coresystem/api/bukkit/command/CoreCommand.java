@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.api.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.facades.Transl;
 import eu.mcone.coresystem.api.core.translation.CoreTranslationManager;
 import lombok.Getter;
@@ -44,7 +45,7 @@ public abstract class CoreCommand extends Command {
             return onCommand(sender, args);
         } else {
             if (sender instanceof Player)
-                CoreSystem.getInstance().getMessenger().sendTransl((Player) sender, "system.command.noperm");
+                Msg.sendTransl(sender, "system.command.noperm");
             return false;
         }
     }

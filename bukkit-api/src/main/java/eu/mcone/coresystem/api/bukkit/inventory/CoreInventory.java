@@ -6,6 +6,8 @@
 package eu.mcone.coresystem.api.bukkit.inventory;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.inventory.modify.CoreInventoryInitializeEntry;
+import eu.mcone.coresystem.api.bukkit.inventory.modify.CoreInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.item.Skull;
 import lombok.Getter;
@@ -16,9 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class CoreInventory implements ItemEventStore {
 
@@ -45,6 +45,8 @@ public class CoreInventory implements ItemEventStore {
     protected Map<Integer, CoreItemStack> items;
     @Getter
     private final boolean allowModification;
+    @Getter
+    private final Set<CoreInventoryModifier> modifiers;
 
     /**
      * creates new CoreInventory
@@ -54,6 +56,19 @@ public class CoreInventory implements ItemEventStore {
      * @param options options
      */
     public CoreInventory(String title, Player player, int size, InventoryOption... options) {
+        this.modifiers = CoreSystem.getInstance().getPluginManager().getCoreInventoryModifiers(getClass());
+        if (modifiers.size() > 0) {
+            CoreInventoryInitializeEntry initializeEntry = new CoreInventoryInitializeEntry(title, size, new HashSet<>(Arrays.asList(options)));
+
+            for (CoreInventoryModifier modifier : modifiers) {
+                modifier.onInitialize(initializeEntry);
+            }
+
+            title = initializeEntry.getTitle();
+            size = initializeEntry.getSize();
+            options = initializeEntry.getOptions().toArray(new InventoryOption[0]);
+        }
+
         this.player = player;
         this.inventory = Bukkit.createInventory(null, size, title);
         this.items = new HashMap<>();
@@ -93,6 +108,17 @@ public class CoreInventory implements ItemEventStore {
      * opens the inventory
      */
     public Inventory openInventory() {
+        modifyInventory();
+        return createInventory();
+    }
+
+    protected void modifyInventory() {
+        for (CoreInventoryModifier modifier : modifiers) {
+            modifier.onCreate(this, player);
+        }
+    }
+
+    protected Inventory createInventory() {
         CoreSystem.getInstance().getPluginManager().registerCoreInventory(player, this);
 
         player.openInventory(inventory);
@@ -101,6 +127,14 @@ public class CoreInventory implements ItemEventStore {
 
     public static ItemStack makePlaceholderItem(DyeColor color) {
         return new ItemBuilder(Material.STAINED_GLASS_PANE, 1, color.getWoolData()).displayName(PLACEHOLDER_ITEM_DISPLAYNAME).create();
+    }
+
+    public boolean registerModifier(CoreInventoryModifier modifier) {
+        return modifiers.add(modifier);
+    }
+
+    public boolean unregisterModifier(CoreInventoryModifier modifier) {
+        return modifiers.remove(modifier);
     }
 
 }

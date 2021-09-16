@@ -47,8 +47,8 @@ public class CoreYamlConfig {
         if (!file.exists()) {
             try {
                 file.createNewFile();
-            } catch (IOException var6) {
-                var6.printStackTrace();
+            } catch (IOException e) {
+                throw new IllegalStateException("Could not create new config "+fileName, e);
             }
         }
 

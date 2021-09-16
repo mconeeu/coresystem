@@ -1,6 +1,6 @@
 package eu.mcone.coresystem.api.bungee.command;
 
-import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -19,7 +19,7 @@ public abstract class CorePlayerCommand extends CoreCommand {
         if (sender instanceof ProxiedPlayer) {
             onPlayerCommand((ProxiedPlayer) sender, args);
         } else {
-            CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.consolesender");
+            Msg.sendTransl(sender, "system.command.consolesender");
         }
     }
 

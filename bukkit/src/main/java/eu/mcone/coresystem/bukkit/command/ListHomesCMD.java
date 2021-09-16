@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
-import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
+import eu.mcone.coresystem.api.bukkit.chat.Messenger;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManager;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;

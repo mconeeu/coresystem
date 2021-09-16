@@ -12,6 +12,7 @@ import eu.mcone.coresystem.api.bukkit.npc.data.AbstractNpcData;
 import eu.mcone.coresystem.api.bukkit.npc.entity.EntityProjectile;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcAnimation;
 import eu.mcone.coresystem.api.bukkit.npc.enums.NpcState;
+import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.spawnable.ListMode;
 import eu.mcone.coresystem.api.bukkit.util.CoreProjectile;
 import eu.mcone.coresystem.api.bukkit.world.CoreLocation;
@@ -188,11 +189,17 @@ public abstract class CoreNPC<E extends Entity, T extends AbstractNpcData> exten
     }
 
     protected void sendPackets(Player p, Packet<?>... packets) {
+        CorePlayer cp;
+        try {
+            cp = CoreSystem.getInstance().getCorePlayer(p);
+        } catch (NullPointerException e) {
+            cp = null;
+        }
         boolean multipleInfoSend = false;
 
         for (Packet<?> packet : packets) {
             if (packet != null) {
-                if (packet instanceof PacketPlayOutPlayerInfo) {
+                if (packet instanceof PacketPlayOutPlayerInfo && (cp == null || !cp.isLabyModPlayer())) {
                     if (multipleInfoSend) {
                         Bukkit.getScheduler().scheduleSyncDelayedTask(BukkitCoreSystem.getInstance(), () ->
                                 ((CraftPlayer) p).getHandle().playerConnection.sendPacket(packet), 50);

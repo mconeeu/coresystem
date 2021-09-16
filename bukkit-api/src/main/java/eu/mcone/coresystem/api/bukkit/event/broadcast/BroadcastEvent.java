@@ -5,7 +5,7 @@
 
 package eu.mcone.coresystem.api.bukkit.event.broadcast;
 
-import eu.mcone.coresystem.api.bukkit.broadcast.Broadcast;
+import eu.mcone.coresystem.api.bukkit.chat.Broadcast;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

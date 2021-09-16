@@ -5,9 +5,9 @@
 
 package eu.mcone.coresystem.bukkit.player;
 
-import eu.mcone.coresystem.api.bukkit.broadcast.Broadcast;
-import eu.mcone.coresystem.api.bukkit.broadcast.BroadcastMessage;
-import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
+import eu.mcone.coresystem.api.bukkit.chat.Broadcast;
+import eu.mcone.coresystem.api.bukkit.chat.BroadcastMessage;
+import eu.mcone.coresystem.api.bukkit.chat.Messenger;
 import eu.mcone.coresystem.api.bukkit.event.broadcast.BroadcastEvent;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;

@@ -5,7 +5,7 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,7 +25,7 @@ public class CoreCommandListener implements Listener {
 
             HelpTopic topic = Bukkit.getServer().getHelpMap().getHelpTopic(cmd);
             if (topic == null) {
-                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Der Befehl §c" + cmd + "§4 existiert nicht!");
+                Msg.send(p, "§4Der Befehl §c" + cmd + "§4 existiert nicht!");
                 e.setCancelled(true);
             }
         }

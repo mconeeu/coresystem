@@ -5,11 +5,10 @@
 
 package eu.mcone.coresystem.api.bukkit;
 
-import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
 import eu.mcone.coresystem.api.bukkit.channel.ChannelHandler;
 import eu.mcone.coresystem.api.bukkit.channel.PacketManager;
+import eu.mcone.coresystem.api.bukkit.chat.Messenger;
 import eu.mcone.coresystem.api.bukkit.codec.CodecRegistry;
-import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
 import eu.mcone.coresystem.api.bukkit.npc.NpcManager;
@@ -52,11 +51,9 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     }
 
     protected void setInstance(CoreSystem instance) {
-        if (instance == null) {
-            System.err.println("BukkitCoreSystem instance cannot be set twice!");
-        } else {
+        if (CoreSystem.instance == null) {
             CoreSystem.instance = instance;
-        }
+        } else throw new IllegalStateException("Could not set CoreSystem instance. Instance already set!");
     }
 
     public abstract BukkitDebugger getDebugger();
@@ -64,9 +61,9 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     /**
      * returns the BCS PluginManager
      *
-     * @return CorePluginManager instance
+     * @return PluginManager instance
      */
-    public abstract CorePluginManager getPluginManager();
+    public abstract PluginManager getPluginManager();
 
     /**
      * returns the Translation manager System
@@ -309,13 +306,6 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     public abstract void setPlayerChatEnabled(boolean disabled);
 
     /**
-     * allows you to add items to the ProfileInventory
-     *
-     * @param modifier ProfileInventoryModifier
-     */
-    public abstract void modifyProfileInventory(ProfileInventoryModifier modifier);
-
-    /**
      * allows you to change the size of the ProfileInventory
      *
      * @param enabled if custom enderchest (with variable size) should be enabled
@@ -361,11 +351,7 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
      */
     public abstract void enableTpaSystem(CorePlugin plugin, int cooldown);
 
-    /**
-     * allows you to change the size of the ProfileInventory
-     *
-     * @param inventorySize size of the ProfileInventory
-     */
-    public abstract void setProfileInventorySize(int inventorySize);
+    public abstract void openProfileInventory(Player p);
 
+    public abstract void openProfileInventory(Player p, Player t);
 }

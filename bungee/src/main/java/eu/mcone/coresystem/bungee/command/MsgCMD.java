@@ -7,6 +7,7 @@ package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.api.bungee.facades.Transl;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
@@ -18,7 +19,10 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 public class MsgCMD extends CorePlayerCommand implements TabExecutor {
 
@@ -32,7 +36,7 @@ public class MsgCMD extends CorePlayerCommand implements TabExecutor {
         final CorePlayer p = CoreSystem.getInstance().getCorePlayer(bp);
 
         if (args.length < 1) {
-            BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Bitte Benutze: §c/msg §c<Player | toggle> §c[<Nachricht>]");
+            Msg.send(bp, "§4Bitte Benutze: §c/msg §c<Player | toggle> §c[<Nachricht>]");
         } else if (args.length == 1 && args[0].equalsIgnoreCase("toggle")) {
             PlayerSettings settings = p.getSettings();
 
@@ -40,12 +44,12 @@ public class MsgCMD extends CorePlayerCommand implements TabExecutor {
                 settings.setPrivateMessages(PlayerSettings.Sender.ALL);
                 p.updateSettings(settings);
 
-                BungeeCoreSystem.getInstance().getMessenger().sendTransl(p.bungee(), "system.bungee.chat.private.see");
+                Msg.sendTransl(p.bungee(), "system.bungee.chat.private.see");
             } else {
                 settings.setPrivateMessages(PlayerSettings.Sender.NOBODY);
                 p.updateSettings(settings);
 
-                BungeeCoreSystem.getInstance().getMessenger().sendTransl(p.bungee(), "system.bungee.chat.private.dontsee");
+                Msg.sendTransl(p.bungee(), "system.bungee.chat.private.dontsee");
             }
         } else {
             final CorePlayer t = BungeeCoreSystem.getInstance().getCorePlayer(args[0]);
@@ -56,14 +60,14 @@ public class MsgCMD extends CorePlayerCommand implements TabExecutor {
                         PlayerSettings playerSettings = p.getSettings(), targetSettings = t.getSettings();
 
                         if (targetSettings.getPrivateMessages().equals(PlayerSettings.Sender.NOBODY) && !p.hasPermission("system.bungee.chat.private.bypass")) {
-                            BungeeCoreSystem.getInstance().getMessenger().send(bp, "§c" + args[0] + "§4 hat private Nachrichten deaktiviert!");
+                            Msg.send(bp, "§c" + args[0] + "§4 hat private Nachrichten deaktiviert!");
                         } else if (targetSettings.getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !t.getFriendData().getFriends().containsKey(p.getUuid()) && !p.hasPermission("system.bungee.chat.private.bypass")) {
-                            BungeeCoreSystem.getInstance().getMessenger().send(bp, "§c" + args[0] + "§4 hat private Nachrichten nur für Freunde aktiviert!");
+                            Msg.send(bp, "§c" + args[0] + "§4 hat private Nachrichten nur für Freunde aktiviert!");
                         } else {
                             if (playerSettings.getPrivateMessages().equals(PlayerSettings.Sender.NOBODY) && !t.hasPermission("system.bungee.chat.private.bypass")) {
-                                BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Du hast private Nachrichten §cdeaktiviert§4!");
+                                Msg.send(bp, "§4Du hast private Nachrichten §cdeaktiviert§4!");
                             } else if (playerSettings.getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !p.getFriendData().getFriends().containsKey(t.getUuid()) && !t.hasPermission("system.bungee.chat.private.bypass")) {
-                                BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Du hast private Nachrichten nur für Freunde aktiviert!");
+                                Msg.send(bp, "§4Du hast private Nachrichten nur für Freunde aktiviert!");
                             } else {
                                 StringBuilder msg = new StringBuilder();
                                 for (int i = 1; i < args.length; i++) {
@@ -76,13 +80,13 @@ public class MsgCMD extends CorePlayerCommand implements TabExecutor {
                             }
                         }
                     } else {
-                        BungeeCoreSystem.getInstance().getMessenger().send(bp, "§c" + args[0] + "§4 hat dich blockiert!");
+                        Msg.send(bp, "§c" + args[0] + "§4 hat dich blockiert!");
                     }
                 } else {
-                    BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Du kannst dich nicht selbst anschreiben, Dummkopf!");
+                    Msg.send(bp, "§4Du kannst dich nicht selbst anschreiben, Dummkopf!");
                 }
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Dieser Spieler ist nicht online!");
+                Msg.send(bp, "§4Dieser Spieler ist nicht online!");
             }
         }
     }

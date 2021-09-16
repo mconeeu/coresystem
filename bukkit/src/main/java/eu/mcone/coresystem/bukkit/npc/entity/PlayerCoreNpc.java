@@ -114,7 +114,7 @@ public class PlayerCoreNpc extends CoreNPC<EntityHumanNPC, PlayerNpcData> implem
 
                 setSkin(skin);
             } catch (SkinNotFoundException e) {
-                e.printStackTrace();
+                throw new IllegalArgumentException("Could not update PlayerData!", e);
             }
         }
 

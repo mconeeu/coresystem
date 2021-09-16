@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.command.CoreCommand;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.api.bungee.overwatch.punish.Punish;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
@@ -83,13 +84,13 @@ public class WhoisCMD extends CoreCommand {
                     }
                 }
 
-                BungeeCoreSystem.getInstance().getMessenger().send(sender, message.append(permInfo).append(general).append(banInfo).append(muteInfo).toString());
+                Msg.send(sender, message.append(permInfo).append(general).append(banInfo).append(muteInfo).toString());
             } catch (CoreException e) {
-                BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
+                Msg.send(sender, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
             }
             return;
         }
 
-        BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze: §c/whois <Spieler>");
+        Msg.send(sender, "§4Bitte benutze: §c/whois <Spieler>");
     }
 }

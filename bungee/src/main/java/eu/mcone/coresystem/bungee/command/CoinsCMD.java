@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bungee.command;
 import com.google.common.collect.ImmutableSet;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.command.CoreCommand;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
@@ -31,17 +32,17 @@ public class CoinsCMD extends CoreCommand implements TabExecutor {
     public void onCommand(CommandSender sender, String[] args) {
         if (args.length == 0) {
             if (sender instanceof ProxiedPlayer) {
-                BungeeCoreSystem.getInstance().getMessenger().send(sender, "§7Du hast momentan §a" + CoreSystem.getInstance().getCorePlayer(((ProxiedPlayer) sender)).getFormattedCoins() + " Coins!");
+                Msg.send(sender, "§7Du hast momentan §a" + CoreSystem.getInstance().getCorePlayer(((ProxiedPlayer) sender)).getFormattedCoins() + " Coins!");
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.consolesender");
+                Msg.sendTransl(sender, "system.command.consolesender");
             }
         } else if (sender.hasPermission("system.bungee.coins")) {
             if (args.length == 1) {
                 try {
                     OfflineCorePlayer t = CoreSystem.getInstance().getOfflineCorePlayer(args[0]);
-                    BungeeCoreSystem.getInstance().getMessenger().send(sender, "§7Der Spieler §f" + t.getName() + "§7 hat momentan §a" + t.getFormattedCoins() + " Coins§7!");
+                    Msg.send(sender, "§7Der Spieler §f" + t.getName() + "§7 hat momentan §a" + t.getFormattedCoins() + " Coins§7!");
                 } catch (PlayerNotResolvedException e) {
-                    BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Der Minecraftaccount mit dem Namen §c" + args[0] + "§4konnte nicht gefunden werden: \n§f§o" + e.getMessage());
+                    Msg.send(sender, "§4Der Minecraftaccount mit dem Namen §c" + args[0] + "§4konnte nicht gefunden werden: \n§f§o" + e.getMessage());
                 }
 
                 return;
@@ -53,24 +54,24 @@ public class CoinsCMD extends CoreCommand implements TabExecutor {
 
                     if (args[0].equalsIgnoreCase("add")) {
                         o.addCoins(coins);
-                        BungeeCoreSystem.getInstance().getMessenger().send(sender, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins§2 hinzugefügt");
+                        Msg.send(sender, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins§2 hinzugefügt");
                     } else if (args[0].equalsIgnoreCase("remove")) {
                         o.removeCoins(coins);
-                        BungeeCoreSystem.getInstance().getMessenger().send(sender, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins §2abgezogen");
+                        Msg.send(sender, "§2Du hast §f" + name + "§2 erfolgreich §a" + coins + " Coins §2abgezogen");
                     } else if (args[0].equalsIgnoreCase("set")) {
                         o.setCoins(coins);
-                        BungeeCoreSystem.getInstance().getMessenger().send(sender, "§f" + name + "§2 hat nun §a" + coins + " Coins§2!");
+                        Msg.send(sender, "§f" + name + "§2 hat nun §a" + coins + " Coins§2!");
                     }
                 } catch (PlayerNotResolvedException e) {
-                    BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Der Minecraftaccount mit dem Namen §c" + args[0] + "§4konnte nicht gefunden werden: \n§f§o" + e.getMessage());
+                    Msg.send(sender, "§4Der Minecraftaccount mit dem Namen §c" + args[0] + "§4konnte nicht gefunden werden: \n§f§o" + e.getMessage());
                 }
 
                 return;
             }
 
-            BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze: §c/coins <add|remove|set> <Spieler> <Anzahl>");
+            Msg.send(sender, "§4Bitte benutze: §c/coins <add|remove|set> <Spieler> <Anzahl>");
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.noperm");
+            Msg.sendTransl(sender, "system.command.noperm");
         }
     }
 

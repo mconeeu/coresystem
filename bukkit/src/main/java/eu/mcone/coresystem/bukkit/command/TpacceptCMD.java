@@ -7,7 +7,7 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
+import eu.mcone.coresystem.api.bukkit.chat.Messenger;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

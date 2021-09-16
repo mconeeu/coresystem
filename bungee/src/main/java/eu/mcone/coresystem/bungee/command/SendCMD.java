@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.command.CoreCommand;
-import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -28,12 +28,12 @@ public class SendCMD extends CoreCommand implements TabExecutor {
     @Override
     public void onCommand(CommandSender sender, String[] args) {
         if (args.length != 2) {
-            BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze §c/send <server|player|all|current> <target>");
+            Msg.send(sender, "§4Bitte benutze §c/send <server|player|all|current> <target>");
         } else {
             final ServerInfo target = ProxyServer.getInstance().getServerInfo(args[1]);
 
             if (target == null) {
-                BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Der Server §c"+args[1]+" §4existiert nicht!");
+                Msg.send(sender, "§4Der Server §c"+args[1]+" §4existiert nicht!");
                 return;
             }
 
@@ -43,7 +43,7 @@ public class SendCMD extends CoreCommand implements TabExecutor {
                 }
             } else if (args[0].equalsIgnoreCase("current")) {
                 if (!(sender instanceof ProxiedPlayer)) {
-                    BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Nur ein Spieler kann diesen Befehl benutzen!");
+                    Msg.send(sender, "§4Nur ein Spieler kann diesen Befehl benutzen!");
                     return;
                 }
 
@@ -61,21 +61,21 @@ public class SendCMD extends CoreCommand implements TabExecutor {
                 } else {
                     final ProxiedPlayer player2 = ProxyServer.getInstance().getPlayer(args[0]);
                     if (player2 == null) {
-                        BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Der Spieler §c"+args[0]+" §4ist nicht online!");
+                        Msg.send(sender, "§4Der Spieler §c"+args[0]+" §4ist nicht online!");
                         return;
                     }
                     this.summon(player2, target, sender);
                 }
             }
 
-            BungeeCoreSystem.getInstance().getMessenger().send(sender, "§2Spieler wurden erfolgreich gesendet!");
+            Msg.send(sender, "§2Spieler wurden erfolgreich gesendet!");
         }
     }
 
     private void summon(final ProxiedPlayer player, final ServerInfo target, final CommandSender sender) {
         if (player.getServer() != null && !player.getServer().getInfo().equals(target)) {
             player.connect(target, ServerConnectEvent.Reason.COMMAND);
-            BungeeCoreSystem.getInstance().getMessenger().send(player, "§7Du wurdest von §o"+sender.getName()+"§7 zum Server §f"+target.getName()+"§7 gesendet!");
+            Msg.send(player, "§7Du wurdest von §o"+sender.getName()+"§7 zum Server §f"+target.getName()+"§7 gesendet!");
         }
     }
 

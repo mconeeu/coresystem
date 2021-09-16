@@ -5,6 +5,9 @@
 
 package eu.mcone.coresystem.api.bukkit.world;
 
+import eu.mcone.cloud.core.api.world.CloudWorld;
+import eu.mcone.cloud.core.api.world.WorldVersion;
+import eu.mcone.cloud.core.api.world.WorldVersionType;
 import eu.mcone.coresystem.api.bukkit.hologram.Hologram;
 import eu.mcone.coresystem.api.bukkit.npc.NPC;
 import org.bukkit.Difficulty;
@@ -13,8 +16,10 @@ import org.bukkit.World;
 import org.bukkit.WorldType;
 import org.bukkit.entity.Player;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public interface CoreWorld {
 
@@ -38,6 +43,14 @@ public interface CoreWorld {
      * @return name
      */
     int[] getVersion();
+
+    boolean isTracked();
+
+    CloudWorld getCloudWorld();
+
+    CloudWorld track(UUID initiator);
+
+    WorldVersion commit(WorldVersionType versionType, UUID author, String message) throws IOException;
 
     /**
      * get the worlds current version formatted as String
@@ -328,12 +341,17 @@ public interface CoreWorld {
      */
     void purgeMonsters();
 
+    boolean isLoaded();
+
+    boolean load();
+
     /**
      * unloads the world from Bukkit
      *
      * @param save should the world be saved before unloading?
+     * @return
      */
-    void unload(boolean save);
+    boolean unload(boolean save);
 
     /**
      * ATTENTION: this deletes the world without making a backup. Be careful!
@@ -341,6 +359,8 @@ public interface CoreWorld {
      * @return delete successful
      */
     boolean delete();
+
+    boolean delete(Player p);
 
     /**
      * save latest changes to bukkit

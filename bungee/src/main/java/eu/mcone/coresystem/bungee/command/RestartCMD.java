@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.command.CoreCommand;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -35,26 +36,26 @@ public class RestartCMD extends CoreCommand {
                 t.cancel();
                 t=null;
 
-                BungeeCoreSystem.getInstance().getMessenger().send(sender, "§2Der Neustartvorgang wurde abgebrochen!");
+                Msg.send(sender, "§2Der Neustartvorgang wurde abgebrochen!");
             } else {
                 int cursor = Integer.parseInt(args[0]);
 
                 if (cursor >= 5) {
                     restart(sender, Integer.parseInt(args[0]));
                 } else {
-                    BungeeCoreSystem.getInstance().getMessenger().sendError(sender, "Der minimale Countdown ist ![5 Sekunden]!");
+                    Msg.sendError(sender, "Der minimale Countdown ist ![5 Sekunden]!");
                 }
             }
             return;
         }
 
-        BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze: §c/restart [<Sekunden>]");
+        Msg.send(sender, "§4Bitte benutze: §c/restart [<Sekunden>]");
     }
 
     private void restart(CommandSender sender, int seconds) {
 		if (t==null) {
 			for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
-				BungeeCoreSystem.getInstance().getMessenger().send(player, "§4§oDas Netzwerk wird in " + getTime(seconds) + "§4§o neustarten...");
+				Msg.send(player, "§4§oDas Netzwerk wird in " + getTime(seconds) + "§4§o neustarten...");
 				Title title = ProxyServer.getInstance().createTitle();
 				title.title(TextComponent.fromLegacyText("§fWillkommen auf §3§lMC ONE"));
 				title.subTitle(TextComponent.fromLegacyText("§7§oDein Nummer 1 Minecraftnetzwerk"));
@@ -71,14 +72,14 @@ public class RestartCMD extends CoreCommand {
 					if (i.get() == 0) ProxyServer.getInstance().stop();
 
 					for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
-						BungeeCoreSystem.getInstance().getMessenger().send(player, "§4§oDas Netzwerk startet in §f" + i + "§c Sekunden§4 neu!");
+						Msg.send(player, "§4§oDas Netzwerk startet in §f" + i + "§c Sekunden§4 neu!");
 					}
 					i.getAndDecrement();
 				}, 0, 1, TimeUnit.SECONDS);
 			}, seconds - 5, TimeUnit.SECONDS);
 		} else {
-			BungeeCoreSystem.getInstance().getMessenger().send(sender, "Der Neustartvorgang ist bereits eingeleitet! Benutze §c/restart cancel §4zum abbrechen!");
-			BungeeCoreSystem.getInstance().getMessenger().send(sender, "§4§oDas Netzwerk wird in " + getTime(seconds) + "§4§o neustarten...");
+			Msg.send(sender, "Der Neustartvorgang ist bereits eingeleitet! Benutze §c/restart cancel §4zum abbrechen!");
+			Msg.send(sender, "§4§oDas Netzwerk wird in " + getTime(seconds) + "§4§o neustarten...");
 		}
 	}
 

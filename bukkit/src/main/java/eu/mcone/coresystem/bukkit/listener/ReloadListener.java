@@ -1,8 +1,8 @@
 package eu.mcone.coresystem.bukkit.listener;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,7 +24,7 @@ public class ReloadListener implements Listener {
                 CorePlayer cp = CoreSystem.getInstance().getCorePlayer(p);
 
                 e.setCancelled(true);
-                BukkitCoreSystem.getSystem().getMessenger().send(p, "§7Der Server wird gereloadet...");
+                Msg.send(p, "§7Der Server wird gereloadet...");
 
                 List<Player> notifiable = new ArrayList<>();
                 for (Player player : Bukkit.getOnlinePlayers()) {
@@ -34,18 +34,18 @@ public class ReloadListener implements Listener {
                 }
 
                 for (Player player : notifiable) {
-                    BukkitCoreSystem.getSystem().getMessenger().send(player, "§f§o" + cp.getName() + "§7§o reloadet den Server...");
+                    Msg.send(player, "§f§o" + cp.getName() + "§7§o reloadet den Server...");
                 }
 
                 Bukkit.reload();
 
                 notifiable.add(p);
                 for (Player player : notifiable) {
-                    BukkitCoreSystem.getSystem().getMessenger().send(player, "§2§oDer Server wurde erfolgreich gereloadet!");
+                    Msg.send(player, "§2§oDer Server wurde erfolgreich gereloadet!");
                 }
             } else {
                 e.setCancelled(true);
-                CoreSystem.getInstance().getMessenger().sendTransl(p, "system.command.noperm");
+                Msg.sendTransl(p, "system.command.noperm");
             }
         }
     }

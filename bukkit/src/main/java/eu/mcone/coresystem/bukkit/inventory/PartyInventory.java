@@ -5,7 +5,6 @@
 
 package eu.mcone.coresystem.bukkit.inventory;
 
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.facades.Sound;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventoryOption;
@@ -13,6 +12,7 @@ import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.item.Skull;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.bukkit.inventory.profile.CoreProfileInventory;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-class PartyInventory extends CoreInventory {
+public class PartyInventory extends CoreInventory {
 
-    PartyInventory(Player p) {
+    public PartyInventory(Player p) {
         super("§8» §5§lMeine Party", p, InventorySlot.ROW_6, InventoryOption.FILL_EMPTY_SLOTS);
 
         BukkitCoreSystem.getInstance().getChannelHandler().createGetRequest(p, member -> {
@@ -49,7 +49,7 @@ class PartyInventory extends CoreInventory {
 
                 setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
                     Sound.error(p);
-                    new ProfileInventory(CoreSystem.getInstance().getCorePlayer(p));
+                    new CoreProfileInventory(p);
                 });
 
                 if (isPartyLeader)
@@ -70,7 +70,7 @@ class PartyInventory extends CoreInventory {
 
                 setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
                     Sound.error(p);
-                    new ProfileInventory(CoreSystem.getInstance().getCorePlayer(p));
+                    new CoreProfileInventory(p);
                 });
             }
 

@@ -8,11 +8,13 @@ package eu.mcone.coresystem.bukkit.inventory.anvil;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilSlot;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
+import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.ChatMessage;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutOpenWindow;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -23,6 +25,8 @@ import java.util.Map;
 
 @Getter
 public class AnvilInventory implements CoreAnvilInventory {
+
+    private static final ItemStack RENAME_ITEM = new ItemBuilder(Material.NAME_TAG).displayName(" ").create();
 
     @Getter
     private AnvilClickEventHandler handler;
@@ -50,7 +54,7 @@ public class AnvilInventory implements CoreAnvilInventory {
         Inventory inventory = container.getBukkitView().getTopInventory();
 
         for (AnvilSlot slot : items.keySet()) {
-            inventory.setItem(slot.getSlot(), items.get(slot));
+            inventory.setItem(slot.getSlot(), !slot.equals(AnvilSlot.INPUT_LEFT) || items.get(slot) != null ? items.get(slot) : RENAME_ITEM);
         }
 
         int c = p.nextContainerCounter();

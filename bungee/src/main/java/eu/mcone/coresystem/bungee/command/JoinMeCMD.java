@@ -2,6 +2,7 @@ package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.*;
@@ -68,14 +69,14 @@ public class JoinMeCMD extends CorePlayerCommand {
                                 }
                             }
                             case ALL: {
-                                CoreSystem.getInstance().getMessenger().sendSimple(cp.bungee(), message);
+                                Msg.sendSimple(cp.bungee(), message);
                             }
                         }
                     }
                 }
             }
         } else {
-            CoreSystem.getInstance().getMessenger().sendError(p, "Du kannst nur alle 15 Minuten JoinMe benutzen!");
+            Msg.sendError(p, "Du kannst nur alle 15 Minuten JoinMe benutzen!");
         }
     }
 

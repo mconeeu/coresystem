@@ -7,6 +7,7 @@ package eu.mcone.coresystem.bukkit.player;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.util.ReflectionManager;
 import eu.mcone.coresystem.api.core.player.Nick;
@@ -51,7 +52,7 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
         }
 
         if (notify) {
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Dein Nickname ist nun §a" + nick.getName());
+            Msg.send(p, "§2Dein Nickname ist nun §a" + nick.getName());
         }
     }
 
@@ -69,9 +70,9 @@ public class CoreNickManager implements eu.mcone.coresystem.api.bukkit.player.Ni
             } else {
                 setNick(p, ((CraftPlayer) p).getProfile(), cp.getName(), cp.getUuid());
             }
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "Du bist nun nicht mehr genickt!");
+            Msg.send(p, "Du bist nun nicht mehr genickt!");
         } else {
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du bist nicht genickt!");
+            Msg.send(p, "§4Du bist nicht genickt!");
         }
     }
 

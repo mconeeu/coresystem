@@ -13,7 +13,7 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
+import eu.mcone.coresystem.api.bukkit.chat.Messenger;
 import eu.mcone.coresystem.api.bukkit.codec.CodecRegistry;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.ItemStackCodecProvider;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.LocationCodecProvider;
@@ -21,9 +21,9 @@ import eu.mcone.coresystem.api.bukkit.config.typeadapter.gson.CraftItemStackType
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.gson.LocationTypeAdapter;
 import eu.mcone.coresystem.api.bukkit.event.player.CorePlayerLoadedEvent;
 import eu.mcone.coresystem.api.bukkit.event.player.MoneyChangeEvent;
-import eu.mcone.coresystem.api.bukkit.inventory.ProfileInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.AnvilClickEventHandler;
 import eu.mcone.coresystem.api.bukkit.inventory.anvil.CoreAnvilInventory;
+import eu.mcone.coresystem.api.bukkit.listener.WeatherChangeCanceller;
 import eu.mcone.coresystem.api.bukkit.listener.WorldGrowCanceller;
 import eu.mcone.coresystem.api.bukkit.npc.entity.EntityProjectile;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
@@ -47,8 +47,9 @@ import eu.mcone.coresystem.bukkit.channel.*;
 import eu.mcone.coresystem.bukkit.channel.packet.CorePacketManager;
 import eu.mcone.coresystem.bukkit.command.*;
 import eu.mcone.coresystem.bukkit.hologram.CoreHologramManager;
-import eu.mcone.coresystem.bukkit.inventory.ProfileInventory;
 import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
+import eu.mcone.coresystem.bukkit.inventory.profile.CoreProfileInventory;
+import eu.mcone.coresystem.bukkit.inventory.profile.CoreProfilePlayerInventory;
 import eu.mcone.coresystem.bukkit.listener.*;
 import eu.mcone.coresystem.bukkit.npc.CoreNpcManager;
 import eu.mcone.coresystem.bukkit.overwatch.Overwatch;
@@ -108,7 +109,9 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Getter
     private PermissionManager permissionManager;
     @Getter
-    private PluginManager pluginManager;
+    private CoreCooldownSystem cooldownSystem;
+    @Getter
+    private CorePluginManager pluginManager;
     @Getter
     private Overwatch overwatch;
     @Getter
@@ -199,8 +202,10 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
             uniqueIdUtil = new NetworkUniqueIdUtil(getMongoDB(Database.SYSTEM));
 
+            uniqueIdUtil = new NetworkUniqueIdUtil(systemDB);
             packetManager = new CorePacketManager();
-            pluginManager = new PluginManager(this);
+            cooldownSystem = new CoreCooldownSystem(this);
+            pluginManager = new CorePluginManager();
             moneyUtil = new MoneyUtil(this, systemDB) {
                 @Override
                 protected void fireEvent(GlobalCorePlayer player, Currency currency) {
@@ -329,14 +334,14 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
             npcManager.disable();
             hologramManager.disable();
+            worldManager.disable();
             afkManager.disable();
             labyModAPI.disable();
             pluginManager.disable();
 
             try {
                 mongoConnection.disconnect();
-            } catch (NoClassDefFoundError ignored) {
-            }
+            } catch (NoClassDefFoundError ignored) {}
 
             getServer().getMessenger().unregisterIncomingPluginChannel(this);
             getServer().getMessenger().unregisterOutgoingPluginChannel(this);
@@ -388,7 +393,7 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
 
         if (!Boolean.parseBoolean(System.getProperty("EnableWorldGrow"))) {
             sendConsoleMessage("§2Registered WorldGrowCanceller");
-            registerEvents(new WorldGrowCanceller());
+            registerEvents(new WorldGrowCanceller(), new WeatherChangeCanceller());
         }
     }
 
@@ -466,11 +471,6 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     @Override
     public SchematicManager initializeSchematicManager(boolean cache) {
         return new eu.mcone.coresystem.bukkit.world.schematic.SchematicManager(cache);
-    }
-
-    @Override
-    public CoreCooldownSystem getCooldownSystem() {
-        return pluginManager.getCooldownSystem();
     }
 
     @Override
@@ -558,17 +558,18 @@ public class BukkitCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     }
 
     @Override
-    public void modifyProfileInventory(ProfileInventoryModifier modifier) {
-        ProfileInventory.addModifier(modifier);
+    public void openProfileInventory(Player p) {
+        new CoreProfileInventory(p);
     }
 
     @Override
-    public void setProfileInventorySize(int inventorySize) {
-        ProfileInventory.setSize(inventorySize);
+    public void openProfileInventory(Player p, Player t) {
+        new CoreProfilePlayerInventory(p, t);
     }
 
     @Override
     public void runAsync(Runnable runnable) {
         getServer().getScheduler().runTaskAsynchronously(this, runnable);
     }
+
 }

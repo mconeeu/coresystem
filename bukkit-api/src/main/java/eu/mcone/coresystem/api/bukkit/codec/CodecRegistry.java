@@ -43,9 +43,7 @@ public interface CodecRegistry {
         try {
             return clazz.getField("CODEC_VERSION").getByte(null);
         } catch (IllegalAccessException | NoSuchFieldException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException("Could not get CodecVersion from class "+clazz.getName(), e);
         }
-
-        return 0;
     }
 }

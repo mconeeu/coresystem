@@ -7,6 +7,7 @@ package eu.mcone.coresystem.bungee.command;
 
 import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.listener.ChatListener;
 import group.onegaming.networkmanager.core.api.database.Database;
@@ -40,7 +41,7 @@ public class ChatlogCMD extends CorePlayerCommand {
                         Set<Map.Entry<Integer, Map<Long, String>>> playerhashmap = ChatListener.playerTreeMap.get(t).descendingMap().entrySet();
 
                         if (playerhashmap.size() >= 1) {
-                            BungeeCoreSystem.getInstance().getMessenger().send(p, "§2Dein Chatlog wird unter §fhttps://www.mcone.eu/chatlog.php?uuid=" + p.getUniqueId() + "&time=" + millis + "§2 erstellt!");
+                            Msg.send(p, "§2Dein Chatlog wird unter §fhttps://www.mcone.eu/chatlog.php?uuid=" + p.getUniqueId() + "&time=" + millis + "§2 erstellt!");
                             ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getInstance(), () -> {
                                 Map<Integer, Map<Long, String>> messages = new HashMap<>();
 
@@ -61,19 +62,19 @@ public class ChatlogCMD extends CorePlayerCommand {
                                 );
                             });
                         } else {
-                            BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Der Spieler muss mindestens eine Nachricht geschrieben haben!");
+                            Msg.send(p, "§4Der Spieler muss mindestens eine Nachricht geschrieben haben!");
                         }
                     } else {
-                        BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du darfst keinen Chatlog von Teammitgliedern erstellen!");
+                        Msg.send(p, "§4Du darfst keinen Chatlog von Teammitgliedern erstellen!");
                     }
                 } else {
-                    BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du kannst keine Chatlog über dich selbst erstellen");
+                    Msg.send(p, "§4Du kannst keine Chatlog über dich selbst erstellen");
                 }
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Der Spieler §c" + args[0] + " §4ist nicht online!");
+                Msg.send(p, "§4Der Spieler §c" + args[0] + " §4ist nicht online!");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().send(p, "§cBitte benutze /chatlog <Spieler>");
+            Msg.send(p, "§cBitte benutze /chatlog <Spieler>");
         }
     }
 

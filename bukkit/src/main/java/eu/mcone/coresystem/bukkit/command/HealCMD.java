@@ -6,8 +6,8 @@
 package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.facades.Sound;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -24,7 +24,7 @@ public class HealCMD extends CorePlayerCommand {
         if (args.length == 0) {
             p.setHealth(p.getMaxHealth());
             p.setFoodLevel(20);
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du hast nun wieder §avolles Leben§3!");
+            Msg.send(p, "§2Du hast nun wieder §avolles Leben§3!");
             Sound.play(p, org.bukkit.Sound.EAT);
             p.setFireTicks(1);
         } else if (args.length == 1) {
@@ -32,14 +32,14 @@ public class HealCMD extends CorePlayerCommand {
             if (t != null) {
                 t.setHealth(20);
                 t.setFoodLevel(40);
-                BukkitCoreSystem.getInstance().getMessenger().send(t, "§2Du hast nun §avolles Leben§3!");
+                Msg.send(t, "§2Du hast nun §avolles Leben§3!");
                 Sound.play(t, org.bukkit.Sound.EAT);
                 t.setFireTicks(1);
             } else {
-                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Dieser Spieler ist nicht online!");
+                Msg.send(p, "§4Dieser Spieler ist nicht online!");
             }
         } else {
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/heal [<Spieler>]");
+            Msg.send(p, "§4Bitte benutze: §c/heal [<Spieler>]");
         }
 
         return false;

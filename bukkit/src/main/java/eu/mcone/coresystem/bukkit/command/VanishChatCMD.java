@@ -7,7 +7,7 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -26,20 +26,20 @@ public class VanishChatCMD extends CorePlayerCommand {
             if (args.length == 1 && (args[0].equalsIgnoreCase("on") || args[0].equalsIgnoreCase("off"))) {
                 if (args[0].equalsIgnoreCase("on")) {
                     chatEnabled.add(p.getUniqueId());
-                    BukkitCoreSystem.getInstance().getMessenger().sendSuccess(p, "Du hast den ![Vanish Chat] aktiviert!");
+                    Msg.sendSuccess(p, "Du hast den ![Vanish Chat] aktiviert!");
 
                     return true;
                 } else if (args[0].equalsIgnoreCase("off")) {
                     chatEnabled.remove(p.getUniqueId());
-                    BukkitCoreSystem.getInstance().getMessenger().sendSuccess(p, "Du hast den ![Vanish Chat] deaktiviert!");
+                    Msg.sendSuccess(p, "Du hast den ![Vanish Chat] deaktiviert!");
 
                     return true;
                 }
             }
 
-            BukkitCoreSystem.getInstance().getMessenger().sendError(p, "Bitte benutze: ![/vc <on|off>]");
+            Msg.sendError(p, "Bitte benutze: ![/vc <on|off>]");
         } else {
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Benutze §c/vanish§4 um in den Vanish-Modus zu wechseln!");
+            Msg.send(p, "§4Benutze §c/vanish§4 um in den Vanish-Modus zu wechseln!");
         }
 
         return false;

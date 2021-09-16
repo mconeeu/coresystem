@@ -7,6 +7,7 @@ package eu.mcone.coresystem.bungee.player;
 
 import com.mongodb.client.MongoCollection;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.NickManager;
 import eu.mcone.coresystem.api.core.player.Nick;
@@ -85,7 +86,7 @@ public class CoreNickManager implements NickManager {
             ((BungeeCorePlayer) cp).setCurrentNick(nick);
             ((BungeeCorePlayer) cp).setNicked(true);
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Es ist kein Nickname mehr verfügbar!");
+            Msg.send(p, "§4Es ist kein Nickname mehr verfügbar!");
         }
     }
 

@@ -11,6 +11,7 @@ import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.config.typeadapter.bson.ItemStackCodecProvider;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.facades.Sound;
 import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreItemStack;
@@ -335,7 +336,7 @@ public class CoreInventoryModificationManager implements InventoryModificationMa
 
             saveModifications(player.getUniqueId());
             Sound.done(player);
-            CoreSystem.getInstance().getMessenger().send(player, "§2Du hast das Inventar " + modifyInventory.getName() + " §2erfolgreich modifiziert!");
+            Msg.send(player, "§2Du hast das Inventar " + modifyInventory.getName() + " §2erfolgreich modifiziert!");
         } else {
             throw new RuntimeCoreException("No modifyInventory for inventory " + modifiedInventory.getName() + " registered!");
         }

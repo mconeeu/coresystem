@@ -13,6 +13,7 @@ import eu.mcone.coresystem.api.bungee.util.Messenger;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.api.core.exception.PlayerNotResolvedException;
 import eu.mcone.coresystem.api.core.labymod.LabyModAPI;
+import eu.mcone.coresystem.api.core.util.GlobalPluginManager;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -28,20 +29,26 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     protected CoreSystem() {
         super(
                 "BungeeSystem",
-                ChatColor.DARK_AQUA,
+                ChatColor.WHITE,
+                "system.prefix",
                 "https://60310ff9f7874486af14718c51e62a80@o267551.ingest.sentry.io/5341158?stacktrace.app.packages=eu.mcone.coresystem"
         );
     }
 
     protected void setInstance(CoreSystem instance) {
-        if (instance == null) {
-            System.err.println("BungeeCoreSystem instance cannot be set twice!");
-        } else {
+        if (CoreSystem.instance == null) {
             CoreSystem.instance = instance;
-        }
+        } else throw new IllegalStateException("Could not set CoreSystem instance. Instance already set!");
     }
 
     public abstract BungeeDebugger getDebugger();
+
+    /**
+     * returns the BCS PluginManager
+     *
+     * @return PluginManager instance
+     */
+    public abstract GlobalPluginManager getPluginManager();
 
     public abstract Overwatch getOverwatch();
 
@@ -84,8 +91,6 @@ public abstract class CoreSystem extends CorePlugin implements GlobalCoreSystem 
     public abstract Messenger initializeMessenger(String prefixTranslation);
 
     public abstract TranslationManager getTranslationManager();
-
-    public abstract Messenger getMessenger();
 
     /**
      * returns an registered CorePlugin

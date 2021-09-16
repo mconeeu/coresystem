@@ -61,7 +61,7 @@ public class AntiCrashListener implements PacketListener {
             }
         } else if (packet instanceof PacketPlayInSetCreativeSlot) {
             if (p.getInventory().firstEmpty() == -1 && p.getGameMode().equals(GameMode.CREATIVE)) {
-                CoreSystem.getInstance().getMessenger().sendError(p, "Dein Inventar ist voll. Lösche zuerst erst ein Item aus deinem Inventar!");
+                Msg.sendError(p, "Dein Inventar ist voll. Lösche zuerst erst ein Item aus deinem Inventar!");
             }
         }*/
     }

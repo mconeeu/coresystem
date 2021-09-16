@@ -1,4 +1,4 @@
-package eu.mcone.coresystem.api.bukkit.broadcast;
+package eu.mcone.coresystem.api.bukkit.chat;
 
 import lombok.Getter;
 import lombok.Setter;

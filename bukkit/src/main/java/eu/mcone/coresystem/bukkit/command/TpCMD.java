@@ -7,7 +7,7 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -32,14 +32,14 @@ public class TpCMD extends CoreCommand {
 
                 if (t != null) {
                     p.teleport(t.getLocation());
-                    BukkitCoreSystem.getInstance().getMessenger().sendSuccess(p, "§2Du wirst zu ![" + t.getName() + "] teleportiert!");
+                    Msg.sendSuccess(p, "§2Du wirst zu ![" + t.getName() + "] teleportiert!");
                 } else {
-                    BukkitCoreSystem.getInstance().getMessenger().sendError(p, "Der Spieler ![" + args[0] + "] konnte nicht gefunden werden!");
+                    Msg.sendError(p, "Der Spieler ![" + args[0] + "] konnte nicht gefunden werden!");
                 }
 
                 return true;
             } else {
-                CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.consolesender");
+                Msg.sendTransl(sender, "system.command.consolesender");
                 return false;
             }
         } else if (args.length == 2) {
@@ -48,15 +48,15 @@ public class TpCMD extends CoreCommand {
                 Player t2 = Bukkit.getServer().getPlayer(args[1]);
 
                 if (t1 == null) {
-                    BukkitCoreSystem.getInstance().getMessenger().sendError(sender, "Der Spieler ![" + args[0] + "] konnte nicht gefunden werden!");
+                    Msg.sendError(sender, "Der Spieler ![" + args[0] + "] konnte nicht gefunden werden!");
                 } else if (t2 == null) {
-                    BukkitCoreSystem.getInstance().getMessenger().sendError(sender, "Der Spieler ![" + args[1] + "] konnte nicht gefunden werden!");
+                    Msg.sendError(sender, "Der Spieler ![" + args[1] + "] konnte nicht gefunden werden!");
                 } else {
                     t1.teleport(t2.getLocation());
-                    BukkitCoreSystem.getInstance().getMessenger().sendSuccess(sender, "Der Spieler ![" + t1.getName() + "] wird zu +[" + t2.getName() + "] teleportiert!");
+                    Msg.sendSuccess(sender, "Der Spieler ![" + t1.getName() + "] wird zu +[" + t2.getName() + "] teleportiert!");
                 }
             } else {
-                BukkitCoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.noperm");
+                Msg.sendTransl(sender, "system.command.noperm");
             }
         } else if (args.length == 3) {
             if (sender.hasPermission("system.bukkit.tp.pos")) {
@@ -66,16 +66,16 @@ public class TpCMD extends CoreCommand {
                         Location loc = getTpCoords(p.getLocation(), args, 0);
 
                         p.teleport(loc);
-                        BukkitCoreSystem.getInstance().getMessenger().sendSuccess(p, "Du wirst zu ![" + (int) loc.getX() + " " + (int) loc.getY() + " " + (int) loc.getZ() + "] teleportiert!");
+                        Msg.sendSuccess(p, "Du wirst zu ![" + (int) loc.getX() + " " + (int) loc.getY() + " " + (int) loc.getZ() + "] teleportiert!");
                     } catch (NumberFormatException e) {
-                        BukkitCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze nur Zahlen oder ~ als Koordinaten");
+                        Msg.send(sender, "§4Bitte benutze nur Zahlen oder ~ als Koordinaten");
                     }
                 } else {
-                    CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.consolesender");
+                    Msg.sendTransl(sender, "system.command.consolesender");
                     return false;
                 }
             } else {
-                BukkitCoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.noperm");
+                Msg.sendTransl(sender, "system.command.noperm");
             }
         } else if (args.length == 4) {
             if (sender.hasPermission("system.bukkit.tp.others.pos")) {
@@ -89,15 +89,15 @@ public class TpCMD extends CoreCommand {
                     );
 
                     t.teleport(loc);
-                    BukkitCoreSystem.getInstance().getMessenger().sendSuccess(sender, "Du hast ![" + t.getName() + "] zu +[" + (int) loc.getX() + " " + (int) loc.getY() + " " + (int) loc.getZ() + "] teleportiert!");
+                    Msg.sendSuccess(sender, "Du hast ![" + t.getName() + "] zu +[" + (int) loc.getX() + " " + (int) loc.getY() + " " + (int) loc.getZ() + "] teleportiert!");
                 } else {
-                    BukkitCoreSystem.getInstance().getMessenger().sendError(sender, "Der Spieler ![" + args[0] + "] konnte nicht gefunden werden!");
+                    Msg.sendError(sender, "Der Spieler ![" + args[0] + "] konnte nicht gefunden werden!");
                 }
             } else {
-                BukkitCoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.noperm");
+                Msg.sendTransl(sender, "system.command.noperm");
             }
         } else {
-            BukkitCoreSystem.getInstance().getMessenger().send(sender, "Bitte benutze §c/tp [<Spieler>] <Zielspieler> §4oder §c/tp <x> <y> <z>");
+            Msg.send(sender, "Bitte benutze §c/tp [<Spieler>] <Zielspieler> §4oder §c/tp <x> <y> <z>");
         }
 
         return true;

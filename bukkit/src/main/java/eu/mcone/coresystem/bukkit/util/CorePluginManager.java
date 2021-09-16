@@ -8,14 +8,13 @@ package eu.mcone.coresystem.bukkit.util;
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
+import eu.mcone.coresystem.api.bukkit.inventory.modify.CoreInventoryModifier;
 import eu.mcone.coresystem.api.bukkit.inventory.modification.InventoryModificationManager;
-import eu.mcone.coresystem.api.bukkit.player.profile.GameProfile;
-import eu.mcone.coresystem.api.bukkit.util.CorePluginManager;
+import eu.mcone.coresystem.api.bukkit.util.PluginManager;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.inventory.anvil.AnvilInventory;
 import eu.mcone.coresystem.bukkit.inventory.modification.CoreInventoryModificationManager;
-import eu.mcone.coresystem.core.util.CoreCooldownSystem;
+import eu.mcone.coresystem.core.util.GlobalCorePluginManager;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
@@ -27,17 +26,15 @@ import org.bukkit.plugin.SimplePluginManager;
 import java.lang.reflect.Field;
 import java.util.*;
 
-public class PluginManager implements CorePluginManager {
+public class CorePluginManager extends GlobalCorePluginManager implements PluginManager {
 
     private static CommandMap commandMap;
 
-    @Getter
-    private final CoreCooldownSystem cooldownSystem;
     private final Map<CorePlugin, List<CoreCommand>> commands;
     private final Map<Player, CoreInventory> coreInventories;
+    private final Map<Class<?>, Set<CoreInventoryModifier>> coreInventoryModifiers;
     private final Map<CorePlugin, InventoryModificationManager> inventoryModificationManagers;
     private final List<AnvilInventory> anvilInventories;
-    private final List<GameProfile> gameProfiles;
     @Getter
     private String gameProfileWorld;
 
@@ -52,47 +49,40 @@ public class PluginManager implements CorePluginManager {
         }
     }
 
-    public PluginManager(BukkitCoreSystem system) {
-        this.cooldownSystem = new CoreCooldownSystem(system);
+    public CorePluginManager() {
         this.commands = new HashMap<>();
         this.coreInventories = new HashMap<>();
+        this.coreInventoryModifiers = new HashMap<>();
         this.inventoryModificationManagers = new HashMap<>();
         this.anvilInventories = new ArrayList<>();
-        this.gameProfiles = new ArrayList<>();
         this.gameProfileWorld = Bukkit.getWorlds().get(0).getName();
     }
 
     public void disable() {
-        commands.clear();
-        inventoryModificationManagers.clear();
-        gameProfiles.clear();
+        commandMap.clearCommands();
     }
 
+    @Override
     public void registerCoreInventory(Player player, CoreInventory inv) {
         coreInventories.put(player, inv);
     }
 
+    @Override
     public CoreInventory getCurrentCoreInventory(Player player) {
         return coreInventories.getOrDefault(player, null);
     }
 
     @Override
     public InventoryModificationManager getInventoryModificationManager(final CorePlugin plugin) {
-        if (inventoryModificationManagers.containsKey(plugin)) {
-            return inventoryModificationManagers.get(plugin);
-        } else {
+        if (!inventoryModificationManagers.containsKey(plugin)) {
             inventoryModificationManagers.put(plugin, new CoreInventoryModificationManager(plugin));
-            return inventoryModificationManagers.get(plugin);
         }
+
+        return inventoryModificationManagers.get(plugin);
     }
 
     public void registerCoreAnvilInventory(AnvilInventory inventory) {
         anvilInventories.add(inventory);
-    }
-
-    @Override
-    public void registerGameProfile(final GameProfile gameProfile) {
-        gameProfiles.add(gameProfile);
     }
 
     public Collection<AnvilInventory> getCoreAnvilInventories() {
@@ -159,8 +149,35 @@ public class PluginManager implements CorePluginManager {
     }
 
     @Override
-    public Collection<GameProfile> getGameProfiles() {
-        return gameProfiles;
+    public boolean registerCoreInventoryModifier(Class<?> inventoryClass, CoreInventoryModifier modifier) {
+        Set<CoreInventoryModifier> modifiers = coreInventoryModifiers.getOrDefault(inventoryClass, null);
+
+        if (modifiers != null) {
+            return modifiers.add(modifier);
+        } else {
+            coreInventoryModifiers.put(inventoryClass, new HashSet<>(Collections.singleton(modifier)));
+            return true;
+        }
+    }
+
+    @Override
+    public Set<CoreInventoryModifier> getCoreInventoryModifiers(Class<?> inventoryClass) {
+        for (Map.Entry<Class<?>, Set<CoreInventoryModifier>> classSetEntry : coreInventoryModifiers.entrySet()) {
+            if (classSetEntry.getKey().isAssignableFrom(inventoryClass)) {
+                return classSetEntry.getValue();
+            }
+        }
+
+        return Collections.emptySet();
+    }
+
+    @Override
+    public boolean unregisterCoreInventoryModifier(Class<?> inventoryClass, CoreInventoryModifier modifier) {
+        Set<CoreInventoryModifier> modifiers = coreInventoryModifiers.getOrDefault(inventoryClass, null);
+
+        if (modifiers != null) {
+            return modifiers.remove(modifier);
+        } else return true;
     }
 
     @Override

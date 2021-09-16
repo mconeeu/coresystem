@@ -1,7 +1,7 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
-import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -20,20 +20,20 @@ public class JoinCMD extends CorePlayerCommand {
                 if (JoinMeCMD.hasValidJoinMe(t.getUniqueId())) {
                     if (!p.getServer().getInfo().equals(t.getServer().getInfo())) {
                         p.connect(t.getServer().getInfo());
-                        BungeeCoreSystem.getSystem().getMessenger().sendSuccess(p, "Du hast du Einladung von "+t.getName()+" für den Server !["+t.getServer().getInfo().getName()+"] angenommen!");
+                        Msg.sendSuccess(p, "Du hast du Einladung von "+t.getName()+" für den Server !["+t.getServer().getInfo().getName()+"] angenommen!");
                     } else {
-                        BungeeCoreSystem.getSystem().getMessenger().sendWarning(p, "Du bist bereits auf diesem Server!");
+                        Msg.sendWarning(p, "Du bist bereits auf diesem Server!");
                     }
                 } else {
-                    BungeeCoreSystem.getSystem().getMessenger().sendError(p, "Diese Einladung ist abgelaufen!");
+                    Msg.sendError(p, "Diese Einladung ist abgelaufen!");
                 }
             } else {
-                BungeeCoreSystem.getSystem().getMessenger().sendError(p, "Der Spieler "+args[0]+" ist nicht online.");
+                Msg.sendError(p, "Der Spieler "+args[0]+" ist nicht online.");
             }
             return;
         }
 
-        BungeeCoreSystem.getSystem().getMessenger().sendError(p, "Bitte benutze: ![/join <name>]");
+        Msg.sendError(p, "Bitte benutze: ![/join <name>]");
     }
 
 }

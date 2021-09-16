@@ -9,7 +9,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import eu.mcone.cloud.core.api.world.CloudWorldManager;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.event.world.WorldCreateEvent;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.npc.data.PlayerNpcData;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.WorldCreateProperties;
@@ -19,11 +22,15 @@ import eu.mcone.coresystem.bukkit.command.LocationCMD;
 import eu.mcone.coresystem.bukkit.command.RegionCMD;
 import eu.mcone.coresystem.bukkit.command.WorldCMD;
 import eu.mcone.coresystem.bukkit.listener.WorldListener;
+import group.onegaming.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.api.random.UniqueIdType;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,20 +44,30 @@ import java.util.Map;
 
 public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldManager {
 
-    private final String randomWorldID;
-    final static String CONFIG_NAME = "core-config.json";
+    private static final String CONFIG_VERSION_KEY = "configVersion";
+    static final String CONFIG_NAME = "core-config.json";
+    static final int LATEST_CONFIG_VERSION = 8;
 
-    private final static String CONFIG_VERSION_KEY = "configVersion";
-    final static int LATEST_CONFIG_VERSION = 7;
-
-    List<BukkitCoreWorld> coreWorlds;
+    @Getter
+    private final CoreDynamicWorldLoader dynamicWorldLoader;
+    @Getter
+    private final CloudWorldManager cloudWorldManager;
+    @Getter
+    private final List<BukkitCoreWorld> coreWorlds;
 
     public WorldManager(BukkitCoreSystem instance) {
-        this.randomWorldID = CoreSystem.getInstance().getUniqueIdUtil().getUniqueKey("world");
         this.coreWorlds = new ArrayList<>();
+        this.cloudWorldManager = new CloudWorldManager(instance.getMongoDB(Database.CLOUD), "https://storage.mcone.eu", instance.getJsonParser());
 
         instance.registerCommands(new WorldCMD(this), new LocationCMD(instance), new RegionCMD(this));
         instance.registerEvents(new WorldListener(this));
+
+        if (DYNAMIC_WORLD_LOADING) {
+            instance.sendConsoleMessage("§2Enabling DynamicWorldLoader...");
+            this.dynamicWorldLoader = new CoreDynamicWorldLoader(instance, this);
+        } else {
+            this.dynamicWorldLoader = null;
+        }
 
         reload();
     }
@@ -62,65 +79,69 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
         try {
             File[] dirs = Bukkit.getWorldContainer().listFiles(file -> file.isDirectory() && new File(file, "uid.dat").exists());
 
-            if (dirs != null) {
-                for (File dir : dirs) {
-                    File config = new File(dir, CONFIG_NAME);
-                    World world = Bukkit.getWorld(dir.getName());
+            for (File dir : dirs) {
+                File config = new File(dir, CONFIG_NAME);
+                World world = Bukkit.getWorld(dir.getName());
 
-                    if (config.exists()) {
-                        FileInputStream fis = new FileInputStream(config);
-                        InputStreamReader reader = new InputStreamReader(fis, StandardCharsets.UTF_8);
-                        JsonElement json = BukkitCoreSystem.getSystem().getJsonParser().parse(reader);
-                        reader.close();
-                        fis.close();
+                if (config.exists()) {
+                    FileInputStream fis = new FileInputStream(config);
+                    InputStreamReader reader = new InputStreamReader(fis, StandardCharsets.UTF_8);
+                    JsonElement json = BukkitCoreSystem.getSystem().getJsonParser().parse(reader);
+                    reader.close();
+                    fis.close();
 
-                        if (!json.getAsJsonObject().has(CONFIG_VERSION_KEY)) {
-                            json.getAsJsonObject().addProperty(CONFIG_VERSION_KEY, 0);
-                        }
+                    if (json.getAsJsonObject().has(CONFIG_VERSION_KEY)) {
                         if (json.getAsJsonObject().get(CONFIG_VERSION_KEY).getAsInt() < LATEST_CONFIG_VERSION) {
+                            System.out.println("current config version: "+json.getAsJsonObject().get(CONFIG_VERSION_KEY).getAsInt());
                             json = migrateConfig(json);
                         }
 
                         BukkitCoreWorld w = CoreSystem.getInstance().getGson().fromJson(json, BukkitCoreWorld.class);
 
-                        if (w.isLoadOnStartup()) {
-                            if (world == null) {
-                                WorldCreator wc = new WorldCreator(w.getName())
-                                        .environment(w.getEnvironment())
-                                        .type(w.getWorldType())
-                                        .generateStructures(w.isGenerateStructures());
+                        if (w.getName().equals(dir.getName())) {
+                            w.save();
 
-                                if (w.getGenerator() != null) {
-                                    wc.generator(w.getGenerator());
-                                    if (w.getGeneratorSettings() != null)
-                                        wc.generatorSettings(w.getGeneratorSettings());
+                            if (w.isLoadOnStartup()) {
+                                if (!DYNAMIC_WORLD_LOADING) {
+                                    w.load();
                                 }
 
-                                wc.createWorld();
+                                coreWorlds.add(w);
+                                BukkitCoreSystem.getInstance().sendConsoleMessage("§2" + (w.isLoaded() ? "Loaded" : "Recognized") + " World " + w.getName() + " " + w.getVersionString() + " (" + w.getId() + ") ");
                             }
-
-                            w.save();
-                            coreWorlds.add(w);
-                            BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + w.getName() + " " + w.getVersionString() + " (" + w.getId() + ") ");
-                        }
-                    } else {
-                        if (world != null) {
-                            coreWorlds.add(constructNewCoreWorld(world, null, null));
-                            BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + world.getName());
                         } else {
-                            BukkitCoreSystem.getInstance().sendConsoleMessage("Recognized world " + dir.getName() + " but has no config! Import manually (/world import " + dir.getName() + ")");
+                            BukkitCoreSystem.getInstance().sendConsoleMessage("§cCould not load World "+dir.getName()+". World name in core-config ("+w.getName()+") does not match!");
                         }
+
+                        continue;
                     }
+                }
+
+                if (world != null) {
+                    coreWorlds.add(constructNewCoreWorld(world, null, null));
+                    BukkitCoreSystem.getInstance().sendConsoleMessage("§2Loaded World " + world.getName());
+                } else {
+                    BukkitCoreSystem.getInstance().sendConsoleMessage("Recognized world " + dir.getName() + " but has no config! Import manually (/world import " + dir.getName() + ")");
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalStateException("Could not reload Worlds", e);
         }
     }
 
     @Override
     public List<CoreWorld> getWorlds() {
         return new ArrayList<>(coreWorlds);
+    }
+
+    @Override
+    public CoreWorld getWorldById(String id) {
+        for (BukkitCoreWorld w : coreWorlds) {
+            if (w.getId().equals(id)) {
+                return w;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -150,6 +171,11 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
 
     @Override
     public boolean importWorld(String name, World.Environment environment) {
+        return importWorld(name, environment, null);
+    }
+
+    @Override
+    public boolean importWorld(String name, World.Environment environment, Player p) {
         if (new File(name).exists()) {
             try {
                 File uid = new File(name, "uid.dat");
@@ -189,17 +215,33 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
     }
 
     @Override
-    public World createWorld(String name, WorldCreateProperties properties) throws IllegalArgumentException {
+    public World createWorld(String name, WorldCreateProperties properties) {
+        return createWorld(name, properties, null);
+    }
+
+    @Override
+    public World createWorld(String name, WorldCreateProperties properties, Player p) throws IllegalArgumentException {
         WorldCreator wc = new WorldCreator(name);
 
         if (properties.getSeed() != 0) wc.seed(properties.getSeed());
         if (properties.getWorldType() != null) wc.type(properties.getWorldType());
         if (properties.getEnvironment() != null) wc.environment(properties.getEnvironment());
-        if (properties.getGenerator() != null) {
-            wc.generator(properties.getGenerator());
-            if (properties.getGeneratorSettings() != null) wc.generatorSettings(properties.getGeneratorSettings());
-        }
+        if (properties.getGenerator() != null) wc.generator(properties.getGenerator());
+        if (properties.getGeneratorSettings() != null) wc.generatorSettings(properties.getGeneratorSettings());
         wc.generateStructures(properties.isGenerateStructures());
+
+        if (p != null) {
+            Msg.sendSuccess(p, "Die Welt !["+name+"] wird erstellt! Dies kann ein paar Sekunden dauern...");
+        }
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player != p) {
+                if (player.hasPermission("group.team")) {
+                    Msg.sendWarning(player, "!["+(p != null ? p.getName() : "Der Server")+"] erstellt eine Neue Welt! Dadurch können Lags entstehen...");
+                } else {
+                    Msg.sendWarning(player, "Der Server bearbeitet in den nächsten Sekunden eine leistungsintensive Aufgabe, wodurch Lags verursacht werden können!");
+                }
+            }
+        }
 
         World world = wc.createWorld();
         if (properties.getDifficulty() != null) world.setDifficulty(properties.getDifficulty());
@@ -215,14 +257,22 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
         }
         world.setKeepSpawnInMemory(properties.isKeepSpawnInMemory());
 
-        coreWorlds.add(constructNewCoreWorld(world, properties.getGenerator(), properties.getGeneratorSettings()));
+        BukkitCoreWorld w = constructNewCoreWorld(world, properties.getGenerator(), properties.getGeneratorSettings());
+        coreWorlds.add(w);
+        Bukkit.getPluginManager().callEvent(new WorldCreateEvent(w, p));
         return world;
+    }
+
+    public void disable() {
+        if (DYNAMIC_WORLD_LOADING) {
+            this.dynamicWorldLoader.disable();
+        }
     }
 
     private BukkitCoreWorld constructNewCoreWorld(World world, String generator, String generatorSettings) {
         Location loc = world.getSpawnLocation();
         BukkitCoreWorld w = new BukkitCoreWorld(
-                randomWorldID,
+                getUniqueWorldId(),
                 world.getName(),
                 world.getName(),
                 generator,
@@ -246,7 +296,9 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
-                LATEST_CONFIG_VERSION
+                LATEST_CONFIG_VERSION,
+                true,
+                new File(Bukkit.getWorldContainer(), world.getName())
         );
         w.save();
 
@@ -327,7 +379,6 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
             case 5: {
                 CoreSystem.getInstance().sendConsoleMessage("§7Updating Config from version 4/5 to 6...");
 
-                String random = CoreSystem.getInstance().getUniqueIdUtil().getUniqueKey("world");
                 JsonObject world = json.getAsJsonObject();
                 JsonArray version = new JsonArray();
                 version.add(new JsonPrimitive(0));
@@ -336,12 +387,15 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
 
                 world.remove("ID");
                 world.remove("iD");
-                world.addProperty("id", random);
                 world.add("version", version);
             }
             case 6: {
                 CoreSystem.getInstance().sendConsoleMessage("§7Updating Config from version 6 to 7...");
                 json.getAsJsonObject().add("regions", new JsonArray());
+            }
+            case 7: {
+                CoreSystem.getInstance().sendConsoleMessage("§7Updating Config from version 7 to 8...");
+                json.getAsJsonObject().addProperty("id", getUniqueWorldId());
             }
         }
 
@@ -358,6 +412,10 @@ public class WorldManager implements eu.mcone.coresystem.api.bukkit.world.WorldM
         }
 
         return result;
+    }
+
+    private static String getUniqueWorldId() {
+        return BukkitCoreSystem.getSystem().getUniqueIdUtil().getUniqueKey("world", UniqueIdType.STRING);
     }
 
 }

@@ -21,13 +21,14 @@ import org.bson.Document;
 
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Updates.*;
 
 public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api.core.player.GlobalOfflineCorePlayer {
 
-    private static final NumberFormat NUMBERFORMAT = NumberFormat.getInstance();
+    public static final NumberFormat NUMBERFORMAT = NumberFormat.getInstance();
 
     static {
         NUMBERFORMAT.setGroupingUsed(true);
@@ -221,6 +222,11 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     }
 
     @Override
+    public String getFormattedOnlinetime() {
+        return formatOnlineTime(getOnlinetime());
+    }
+
+    @Override
     public void setCoins(int coins) {
         if (coins < 0) {
             throw new IllegalArgumentException("Cannot set negative coin amount!");
@@ -310,6 +316,13 @@ public abstract class GlobalOfflineCorePlayer implements eu.mcone.coresystem.api
     @Override
     public boolean hasLinkedOneGamingAccount() {
         return ((CoreModuleCoreSystem) instance).getMongoDB(Database.ONEGAMING).getCollection("users").find(eq("links.minecraft.identifier", uuid.toString())).first() != null;
+    }
+
+    public static String formatOnlineTime(long onlinetime) {
+        long hours = TimeUnit.SECONDS.toHours(onlinetime);
+        long minutes = TimeUnit.SECONDS.toMinutes(onlinetime) - (hours * 60);
+
+        return hours+":"+minutes+"h";
     }
 
 }

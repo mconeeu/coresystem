@@ -74,6 +74,8 @@ public interface GlobalOfflineCorePlayer {
      */
     String getFormattedCoins();
 
+    String getFormattedOnlinetime();
+
     /**
      * sets the given coin amount
      *

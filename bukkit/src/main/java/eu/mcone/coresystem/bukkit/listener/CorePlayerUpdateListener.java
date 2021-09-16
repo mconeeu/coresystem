@@ -9,6 +9,7 @@ import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.player.LanguageChangeEvent;
 import eu.mcone.coresystem.api.bukkit.event.player.PermissionChangeEvent;
 import eu.mcone.coresystem.api.bukkit.event.player.PlayerSettingsChangeEvent;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.api.core.translation.Language;
@@ -44,7 +45,7 @@ public class CorePlayerUpdateListener implements Listener {
                     for (Group g : player.getGroups()) {
                         if (groups.contains(g)) {
                             player.reloadPermissions();
-                            BukkitCoreSystem.getInstance().getMessenger().send(player.bukkit(), "§7§oDeine Permissions wurden upgedated!");
+                            Msg.send(player.bukkit(), "§7§oDeine Permissions wurden upgedated!");
                             break;
                         }
                     }
@@ -55,7 +56,7 @@ public class CorePlayerUpdateListener implements Listener {
                 Bukkit.getScheduler().runTaskAsynchronously(BukkitCoreSystem.getInstance(), () -> {
                     BukkitCoreSystem.getInstance().getPermissionManager().reload();
                     p.reloadPermissions();
-                    BukkitCoreSystem.getInstance().getMessenger().send(p.bukkit(), "§7§oDeine Permissions wurden upgedated!");
+                    Msg.send(p.bukkit(), "§7§oDeine Permissions wurden upgedated!");
                 });
             }
         } else if (e.getType() == PermissionChangeEvent.Type.GROUP_CHANGE) {
@@ -66,7 +67,7 @@ public class CorePlayerUpdateListener implements Listener {
                 StringBuilder sb = new StringBuilder();
                 e.getGroups().forEach(g -> sb.append(g.getLabel()).append(" "));
 
-                BukkitCoreSystem.getInstance().getMessenger().send(p.bukkit(), "§7Deine Permissions wurden geändert! Du besitzt nun folgende Permissions-Gruppen: "+sb.toString());
+                Msg.send(p.bukkit(), "§7Deine Permissions wurden geändert! Du besitzt nun folgende Permissions-Gruppen: "+sb.toString());
                 for (CorePlayer player : BukkitCoreSystem.getInstance().getOnlineCorePlayers()) {
                     player.getScoreboard().reload();
                 }

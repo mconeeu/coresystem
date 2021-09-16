@@ -6,11 +6,11 @@
 package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CorePlugin;
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.chat.Messenger;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManager;
 import eu.mcone.coresystem.api.bukkit.player.profile.interfaces.HomeManagerGetter;
-import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class DelhomeCMD extends CorePlayerCommand {
             return true;
         }
 
-        CoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/delhome <name>");
+        Msg.send(p, "§4Bitte benutze: §c/delhome <name>");
         return false;
     }
 

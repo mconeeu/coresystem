@@ -5,7 +5,6 @@
 
 package eu.mcone.coresystem.bukkit.inventory;
 
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.facades.Sound;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.InventoryOption;
@@ -13,12 +12,13 @@ import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.item.Skull;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.bukkit.inventory.profile.CoreProfileInventory;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-class FriendsInventory extends CoreInventory {
+public class FriendsInventory extends CoreInventory {
 
-    FriendsInventory(Player p) {
+    public FriendsInventory(Player p) {
         super("§8» §9§lMeine Freunde", p, InventorySlot.ROW_6, InventoryOption.FILL_EMPTY_SLOTS);
 
         BukkitCoreSystem.getInstance().getChannelHandler().createGetRequest(p, friends -> {
@@ -37,7 +37,7 @@ class FriendsInventory extends CoreInventory {
 
             setItem(InventorySlot.ROW_6_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
                 Sound.error(p);
-                new ProfileInventory(CoreSystem.getInstance().getCorePlayer(p));
+                new CoreProfileInventory(p);
             });
 
             openInventory();

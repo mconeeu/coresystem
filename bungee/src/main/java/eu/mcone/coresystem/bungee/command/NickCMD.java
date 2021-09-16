@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bungee.command;
 import com.google.common.collect.ImmutableSet;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.Nick;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
@@ -47,20 +48,20 @@ public class NickCMD extends CorePlayerCommand implements TabExecutor {
 
                     if (nick != null) {
                         ProxiedPlayer user = manager.getNickedUser(nick);
-                        BungeeCoreSystem.getInstance().getMessenger().sendSuccess(p, "Ein Nick mit dem Namen ![" + nick.getName() + "] existiert und wird von §f" + (user != null ? user.getName() : "niemandem") + "§2 benutzt.");
+                        Msg.sendSuccess(p, "Ein Nick mit dem Namen ![" + nick.getName() + "] existiert und wird von §f" + (user != null ? user.getName() : "niemandem") + "§2 benutzt.");
                     } else {
-                        BungeeCoreSystem.getInstance().getMessenger().sendError(p, "Ein Nick mit dem Namen existiert nicht!");
+                        Msg.sendError(p, "Ein Nick mit dem Namen existiert nicht!");
                     }
 
                     return;
                 }
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().sendTransl(p, "system.command.noperm");
+                Msg.sendTransl(p, "system.command.noperm");
                 return;
             }
         }
 
-        BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/nick");
+        Msg.send(p, "§4Bitte benutze: §c/nick");
     }
 
     @Override

@@ -214,12 +214,10 @@ public class TranslationManager implements CoreTranslationManager {
     }
 
     private String replace(String translation, Object... replace) {
-        List<Object> replaces = Arrays.asList(replace);
-
         if (translation != null) {
             int i = 0;
-            while (translation.contains("{" + i + "}") && replaces.get(i) != null) {
-                translation = translation.replaceAll("\\{" + i + "}", String.valueOf(replaces.get(i)));
+            while (translation.contains("{" + i + "}") && replace[i] != null) {
+                translation = translation.replace("{" + i + "}", String.valueOf(replace[i]));
                 i++;
             }
         }

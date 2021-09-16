@@ -7,6 +7,7 @@ package eu.mcone.coresystem.bungee.command;
 
 import com.google.common.collect.ImmutableSet;
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
@@ -36,18 +37,18 @@ public class JumpCMD extends CorePlayerCommand implements TabExecutor {
                     if (t.getServer().getInfo() != p.getServer().getInfo()) {
                         p.connect(tserver);
 
-                        BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Du bist zu §f" + t.getName() + "§7 gesprungen!");
+                        Msg.send(p, "§7Du bist zu §f" + t.getName() + "§7 gesprungen!");
                     } else {
-                        BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du bist bereits auf diesem Server!");
+                        Msg.send(p, "§4Du bist bereits auf diesem Server!");
                     }
                 } else {
-                    BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du kannst nur zu Spielern springen die deine Freunde sind!");
+                    Msg.send(p, "§4Du kannst nur zu Spielern springen die deine Freunde sind!");
                 }
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().sendTransl(p, "system.player.notonline");
+                Msg.sendTransl(p, "system.player.notonline");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte Benutze: §c/jump <Spieler>");
+            Msg.send(p, "§4Bitte Benutze: §c/jump <Spieler>");
         }
     }
 

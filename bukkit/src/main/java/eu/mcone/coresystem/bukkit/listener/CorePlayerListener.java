@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bukkit.listener;
 import com.mojang.authlib.properties.Property;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.player.CorePlayerLoadedEvent;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.bukkit.scoreboard.MainScoreboard;
 import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
@@ -115,7 +116,7 @@ public class CorePlayerListener implements Listener {
             TELEPORTS.get(p.getUniqueId()).cancel();
             TELEPORTS.remove(p.getUniqueId());
 
-            BukkitCoreSystem.getSystem().getMessenger().send(p, "§4Der Teleportvorgang wurde abgebrochen, weil du dich bewegt hast!");
+            Msg.send(p, "§4Der Teleportvorgang wurde abgebrochen, weil du dich bewegt hast!");
         }
     }
 

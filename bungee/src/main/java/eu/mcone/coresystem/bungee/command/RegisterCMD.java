@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bungee.command;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.UpdateOptions;
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.api.core.exception.CoreException;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import group.onegaming.networkmanager.core.api.database.Database;
@@ -36,7 +37,7 @@ public class RegisterCMD extends CorePlayerCommand {
     public void onPlayerCommand(ProxiedPlayer p, String[] args) {
         try {
             String code = createAndGetNewCode(p.getUniqueId());
-            BungeeCoreSystem.getInstance().getMessenger().send(p,
+            Msg.send(p,
                     new ComponentBuilder("Danke, dass du eine OneGaming ID erstellst!\nDein Register Code lautet: ")
                             .color(ChatColor.GRAY)
                             .append(code)
@@ -52,7 +53,7 @@ public class RegisterCMD extends CorePlayerCommand {
                             .create()
             );
         } catch (CoreException ingored) {
-            BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du hast dich bereits registriert!");
+            Msg.send(p, "§4Du hast dich bereits registriert!");
         }
     }
 

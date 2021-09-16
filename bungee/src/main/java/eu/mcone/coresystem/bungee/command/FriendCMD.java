@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bungee.command;
 import com.google.common.collect.ImmutableSet;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.api.bungee.facades.Transl;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.bungee.player.OfflineCorePlayer;
@@ -246,7 +247,7 @@ public class FriendCMD extends CorePlayerCommand implements TabExecutor {
                         }
                     }
                 } catch (CoreException e) {
-                    BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
+                    Msg.send(bp, "§4Der Spielername §c" + args[0] + "§4 existiert nicht!");
                     return;
                 }
             } else {

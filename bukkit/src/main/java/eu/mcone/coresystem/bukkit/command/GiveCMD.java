@@ -7,7 +7,7 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -30,7 +30,7 @@ public class GiveCMD extends CoreCommand {
                 Player p = (Player) sender;
                 givePlayerItem(sender, p, args[0]);
             } else {
-                CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.consolesender");
+                Msg.sendTransl(sender, "system.command.consolesender");
                 return false;
             }
         } else if (args.length == 2) {
@@ -39,7 +39,7 @@ public class GiveCMD extends CoreCommand {
             if (t != null) {
                 givePlayerItem(sender, t, args[1]);
             } else {
-                BukkitCoreSystem.getInstance().getMessenger().send(sender, "§4Der Spieler §c" + args[0] + " §4konnte nicht gefunden werden!");
+                Msg.send(sender, "§4Der Spieler §c" + args[0] + " §4konnte nicht gefunden werden!");
             }
         }
 
@@ -73,9 +73,9 @@ public class GiveCMD extends CoreCommand {
 
         if (material != null) {
             p.getInventory().addItem(new ItemStack(material));
-            BukkitCoreSystem.getInstance().getMessenger().send(sender, "§2Du hast das Item §a" + material.toString() + " §2erhalten!");
+            Msg.send(sender, "§2Du hast das Item §a" + material.toString() + " §2erhalten!");
         } else {
-            BukkitCoreSystem.getInstance().getMessenger().send(sender, "§4Das Item §c" + arg + " §4konnte nicht gefunden werden!");
+            Msg.send(sender, "§4Das Item §c" + arg + " §4konnte nicht gefunden werden!");
         }
     }
 

@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bungee.listener;
 import eu.mcone.cloud.api.plugin.CloudAPI;
 import eu.mcone.cloud.api.plugin.bungee.BungeeCloudPlugin;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.api.bungee.facades.Transl;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import eu.mcone.coresystem.bungee.friend.Party;
@@ -77,7 +78,7 @@ public class ServerConnectListener implements Listener {
 
                                             if (cloudSystemAvailable) {
                                                 kick.connect(((BungeeCloudPlugin) CloudAPI.getInstance().getPlugin()).getFallbackServer());
-                                                BungeeCoreSystem.getInstance().getMessenger().sendTransl(kick, "system.bungee.kick.premium");
+                                                Msg.sendTransl(kick, "system.bungee.kick.premium");
                                             } else {
                                                 kick.disconnect(TextComponent.fromLegacyText(
                                                         Transl.get("system.bungee.kick.premium", CoreSystem.getInstance().getCorePlayer(p))
@@ -117,7 +118,7 @@ public class ServerConnectListener implements Listener {
                                 //If is someone suitable for kick
                                 if ((kickable.size() + free) < 1) {
                                     e.setCancelled(true);
-                                    BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Der Server §c" + target.getName() + "§4 ist bereits voll!");
+                                    Msg.send(p, "§4Der Server §c" + target.getName() + "§4 ist bereits voll!");
                                     return;
                                 }
 
@@ -128,7 +129,7 @@ public class ServerConnectListener implements Listener {
 
                                     if (cloudSystemAvailable) {
                                         kick.connect(((BungeeCloudPlugin) CloudAPI.getInstance().getPlugin()).getFallbackServer());
-                                        BungeeCoreSystem.getInstance().getMessenger().sendTransl(kick, "system.bungee.kick.premium");
+                                        Msg.sendTransl(kick, "system.bungee.kick.premium");
                                     } else {
                                         kick.disconnect(TextComponent.fromLegacyText(
                                                 Transl.get("system.bungee.kick.premium", CoreSystem.getInstance().getCorePlayer(p))
@@ -138,7 +139,7 @@ public class ServerConnectListener implements Listener {
                                 }
                             } else {
                                 e.setCancelled(true);
-                                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Der Server §c" + target.getName() + "§4 ist bereits voll!" +
+                                Msg.send(p, "§4Der Server §c" + target.getName() + "§4 ist bereits voll!" +
                                         "\n§7Hol' dir den §6Premium Rang §7um um andere aus der Runde zu kicken! Benutze §f/premium §7 für mehr Infos!");
                             }
                         }

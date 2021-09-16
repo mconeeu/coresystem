@@ -47,6 +47,13 @@ public interface GlobalCorePlayer extends GlobalOfflineCorePlayer {
     LabyModConnection getLabyModConnection();
 
     /**
+     * returns true if the player uses the LabyMod client
+     *
+     * @return true if LabyMod is used
+     */
+    boolean isLabyModPlayer();
+
+    /**
      * updates the set changes to the playerSettings on both bungee & bukkit
      * @param settings
      */

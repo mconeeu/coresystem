@@ -7,6 +7,7 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.world.CoreBlockLocation;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.Region;
@@ -40,7 +41,7 @@ public class RegionCMD extends CorePlayerCommand {
     @Override
     public boolean onPlayerCommand(Player p, String[] args) {
         if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("list"))) {
-            CoreSystem.getInstance().getMessenger().send(p, "§7Folgende Regionen existieren auf diesem Server: ");
+            Msg.send(p, "§7Folgende Regionen existieren auf diesem Server: ");
 
             for (CoreWorld w : manager.getWorlds()) {
                 if (w.getRegions().size() > 0) {
@@ -79,10 +80,10 @@ public class RegionCMD extends CorePlayerCommand {
 
                         p.spigot().sendMessage(componentBuilder.create());
                     } else {
-                        BukkitCoreSystem.getInstance().getMessenger().sendError(p, "Die Welt hat keine abgespeicherten Regionen!");
+                        Msg.sendError(p, "Die Welt hat keine abgespeicherten Regionen!");
                     }
                 } else {
-                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die angegebene Welt existiert nicht. Bitte benutze §c/world");
+                    Msg.send(p, "§4Die angegebene Welt existiert nicht. Bitte benutze §c/world");
                 }
 
                 return true;
@@ -92,9 +93,9 @@ public class RegionCMD extends CorePlayerCommand {
 
                 if (region != null) {
                     w.removeRegion(args[1]).save();
-                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Die Region wurde erfolgreich gelöscht");
+                    Msg.send(p, "§2Die Region wurde erfolgreich gelöscht");
                 } else {
-                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die angegebene Region existiert nicht in deiner aktuellen Welt! Benutze §c/region remove <world-name> <region-name>§4 zum Löschen einer Region von einer anderen Welt!");
+                    Msg.send(p, "§4Die angegebene Region existiert nicht in deiner aktuellen Welt! Benutze §c/region remove <world-name> <region-name>§4 zum Löschen einer Region von einer anderen Welt!");
                 }
 
                 return true;
@@ -108,12 +109,12 @@ public class RegionCMD extends CorePlayerCommand {
 
                     if (region != null) {
                         w.removeRegion(args[2]).save();
-                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Die Region wurde erfolgreich gelöscht");
+                        Msg.send(p, "§2Die Region wurde erfolgreich gelöscht");
                     } else {
-                        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die angegebene Region existiert nicht!");
+                        Msg.send(p, "§4Die angegebene Region existiert nicht!");
                     }
                 } else {
-                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Die angegebene Welt existiert nicht!");
+                    Msg.send(p, "§4Die angegebene Welt existiert nicht!");
                 }
 
                 return true;
@@ -122,13 +123,13 @@ public class RegionCMD extends CorePlayerCommand {
             for (Map.Entry<String, Region.Selection> rule : SELECTION_RULES.entrySet()) {
                 if (rule.getKey().equalsIgnoreCase(args[0])) {
                     setRegion(BukkitCoreSystem.getSystem().getCorePlayer(p).getWorld(), rule.getValue(), args);
-                    CoreSystem.getInstance().getMessenger().sendSuccess(p, "Region !["+args[1]+"] erfolgreich erstellt!");
+                    Msg.sendSuccess(p, "Region !["+args[1]+"] erfolgreich erstellt!");
                     return true;
                 }
             }
         }
 
-        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/region <remove|list> [<world-name>] [<region-name>]\n§4oder: §c/region <setCube|setRect|setSphere|setCircle> <name> <x1> <y1> [<z1>] <x2> <y2> [<z2>]");
+        Msg.send(p, "§4Bitte benutze: §c/region <remove|list> [<world-name>] [<region-name>]\n§4oder: §c/region <setCube|setRect|setSphere|setCircle> <name> <x1> <y1> [<z1>] <x2> <y2> [<z2>]");
         return false;
     }
 

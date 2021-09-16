@@ -20,6 +20,7 @@ import eu.mcone.coresystem.bukkit.world.BukkitCoreWorld;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class CoreHologramManager implements HologramManager {
     private Set<CoreHologram> hologramSet;
 
     public CoreHologramManager(BukkitCoreSystem instance) {
-        instance.registerEvents(new HologramListener(this));
+        instance.registerEvents(new HologramListener(instance, this));
         instance.registerCommands(new HoloCMD(this));
 
         reload();
@@ -50,8 +51,10 @@ public class CoreHologramManager implements HologramManager {
         }
 
         hologramSet.clear();
-        for (CoreWorld w : CoreSystem.getInstance().getWorldManager().getWorlds()) {
-            for (HologramData data : ((BukkitCoreWorld) w).getHologramData()) {
+        for (World w : Bukkit.getWorlds()) {
+            CoreWorld cw = CoreSystem.getInstance().getWorldManager().getWorld(w);
+
+            for (HologramData data : ((BukkitCoreWorld) cw).getHologramData()) {
                 addHologram(data);
             }
         }

@@ -5,11 +5,18 @@
 
 package eu.mcone.coresystem.api.bukkit.world;
 
+import eu.mcone.cloud.core.api.world.CloudWorldManager;
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.util.CoreActionBar;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
 public interface WorldManager {
+
+    CoreActionBar LOADING_BAR = CoreSystem.getInstance().createActionBar().message("§f§oWelt wird geladen...");
+    boolean DYNAMIC_WORLD_LOADING = Boolean.parseBoolean(System.getProperty("DynamicWorldLoading"));
 
     /**
      * returns all loaded worlds
@@ -17,6 +24,8 @@ public interface WorldManager {
      * @return Collection of CoreWorlds
      */
     List<CoreWorld> getWorlds();
+
+    CoreWorld getWorldById(String id);
 
     /**
      * @param name name of the world
@@ -47,6 +56,10 @@ public interface WorldManager {
      */
     boolean importWorld(String name, World.Environment environment);
 
+    boolean importWorld(String name, World.Environment environment, Player p);
+
+    World createWorld(String name, WorldCreateProperties properties);
+
     /**
      * To use for new non-existing worlds
      *
@@ -55,7 +68,15 @@ public interface WorldManager {
      * @return boolean created
      * @throws IllegalArgumentException thrown if one setting was formatted false, but world was created though
      */
-    World createWorld(String name, WorldCreateProperties properties) throws IllegalArgumentException;
+    World createWorld(String name, WorldCreateProperties properties, Player p) throws IllegalArgumentException;
+
+    /**
+     * returns the CloudWorldManager instance
+     * @return CloudWorldManager
+     */
+    CloudWorldManager getCloudWorldManager();
+
+    DynamicWorldLoader getDynamicWorldLoader();
 
     /**
      * reloads all world configs

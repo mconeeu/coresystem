@@ -7,10 +7,10 @@ package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.api.bungee.facades.Transl;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
-import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -29,14 +29,14 @@ public class ReplyCMD extends CorePlayerCommand {
 
             if (t != null) {
                 if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY)) {
-                    BungeeCoreSystem.getInstance().getMessenger().send(bp, "§c" + args[0] + "§4 hat private Nachrichten deaktiviert!");
+                    Msg.send(bp, "§c" + args[0] + "§4 hat private Nachrichten deaktiviert!");
                 } else if (t.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !t.getFriendData().getFriends().containsKey(p.getUuid())) {
-                    BungeeCoreSystem.getInstance().getMessenger().send(bp, "§c" + args[0] + "§4 hat private Nachrichten nur für Freunde aktiviert!");
+                    Msg.send(bp, "§c" + args[0] + "§4 hat private Nachrichten nur für Freunde aktiviert!");
                 } else {
                     if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.NOBODY)) {
-                        BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Du hast private Nachrichten §cdeaktiviert§4!");
+                        Msg.send(bp, "§4Du hast private Nachrichten §cdeaktiviert§4!");
                     } else if (p.getSettings().getPrivateMessages().equals(PlayerSettings.Sender.FRIENDS) && !p.getFriendData().getFriends().containsKey(t.getUuid())) {
-                        BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Du hast private Nachrichten nur für Freunde aktiviert!");
+                        Msg.send(bp, "§4Du hast private Nachrichten nur für Freunde aktiviert!");
                     } else {
                         StringBuilder msg = new StringBuilder();
                         for (String arg : args) {
@@ -50,10 +50,10 @@ public class ReplyCMD extends CorePlayerCommand {
                     }
                 }
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Dieser Spieler ist nicht online!");
+                Msg.send(bp, "§4Dieser Spieler ist nicht online!");
             }
         } else {
-            BungeeCoreSystem.getInstance().getMessenger().send(bp, "§4Du hast keine offene Konversation!");
+            Msg.send(bp, "§4Du hast keine offene Konversation!");
         }
     }
 }

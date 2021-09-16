@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -31,12 +31,12 @@ public class TpallCMD extends CorePlayerCommand {
                 if (target != null) {
                     p1.teleport(target.getLocation());
                 } else {
-                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Der Spieler §f" + args[0] + "§4 konnte nicht gefunden werden!");
+                    Msg.send(p, "§4Der Spieler §f" + args[0] + "§4 konnte nicht gefunden werden!");
                 }
             }
         }
 
-        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze §c/tpall <Spieler>");
+        Msg.send(p, "§4Bitte benutze §c/tpall <Spieler>");
 
         return true;
     }

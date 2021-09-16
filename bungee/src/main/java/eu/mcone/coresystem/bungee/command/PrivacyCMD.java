@@ -7,6 +7,7 @@ package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -24,7 +25,7 @@ public class PrivacyCMD extends CorePlayerCommand {
     public void onPlayerCommand(ProxiedPlayer bp, String[] args) {
         CorePlayer p = CoreSystem.getInstance().getCorePlayer(bp);
 
-        CoreSystem.getInstance().getMessenger().send(p.bungee(),
+        Msg.send(p.bungee(),
                 new ComponentBuilder("§7§oMit dem Spielen auf MC ONE akzeptierst du unsere Datenschutzvereinbarung!\n")
                         .append("[DATENSCHUTZERKLÄRUNG ÖFFNEN]", ComponentBuilder.FormatRetention.NONE)
                         .color(ChatColor.GREEN)

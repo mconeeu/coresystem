@@ -41,7 +41,8 @@ public class CoreJsonConfig<T> {
 
     /**
      * construct a JSON config from the 'plugins/plugin-name' directory
-     * @param plugin plugin
+     *
+     * @param plugin   plugin
      * @param fileName filename i.e. config.json
      */
     public CoreJsonConfig(CorePlugin plugin, String fileName) {
@@ -50,9 +51,10 @@ public class CoreJsonConfig<T> {
 
     /**
      * construct the JSON config with a custom path
-     * @param plugin plugin
+     *
+     * @param plugin    plugin
      * @param configDir custom file path
-     * @param fileName filename i.e config.json
+     * @param fileName  filename i.e config.json
      */
     public CoreJsonConfig(CorePlugin plugin, File configDir, String fileName) {
         this(plugin, null, configDir, fileName);
@@ -60,8 +62,9 @@ public class CoreJsonConfig<T> {
 
     /**
      * construct a JSON config from the 'plugins/plugin-name' directory
-     * @param plugin plugin
-     * @param tClass the class to|from where this json config is (de-)serializable (might be null)
+     *
+     * @param plugin   plugin
+     * @param tClass   the class to|from where this json config is (de-)serializable (might be null)
      * @param fileName filename i.e. config.json
      */
     public CoreJsonConfig(CorePlugin plugin, Class<T> tClass, String fileName) {
@@ -70,10 +73,11 @@ public class CoreJsonConfig<T> {
 
     /**
      * construct the JSON config with a custom path
-     * @param plugin plugin
-     * @param tClass the class to|from where this json config is (de-)serializable (might be null)
+     *
+     * @param plugin    plugin
+     * @param tClass    the class to|from where this json config is (de-)serializable (might be null)
      * @param configDir custom file path
-     * @param fileName filename i.e config.json
+     * @param fileName  filename i.e config.json
      */
     public CoreJsonConfig(CorePlugin plugin, Class<T> tClass, File configDir, String fileName) {
         this.plugin = plugin;
@@ -90,7 +94,6 @@ public class CoreJsonConfig<T> {
                 try {
                     updateConfig(tClass.newInstance());
                 } catch (InstantiationException | IllegalAccessException e) {
-                    e.printStackTrace();
                     FileUtils.writeStringToFile(file, "{}");
                 }
             }
@@ -98,14 +101,15 @@ public class CoreJsonConfig<T> {
             reloadFile();
             plugin.sendConsoleMessage("§aLoaded Config §f" + fileName);
         } catch (IOException e) {
-            plugin.sendConsoleMessage("§cError loading Config §f" + fileName);
-            e.printStackTrace();
+            plugin.sendConsoleMessage("§cCould not load Config " + fileName + ": §f" + e.getMessage());
+            throw new IllegalArgumentException("Could not load Config " + fileName, e);
         }
     }
 
     /**
      * reloads the json packets from file
      * Attention! this overrides all existing changes on the CoreJsonConfig#getJson() object
+     *
      * @throws CoreConfigException thrown if an IOException occurs
      */
     public void reloadFile() throws CoreConfigException {
@@ -118,7 +122,7 @@ public class CoreJsonConfig<T> {
             fis.close();
         } catch (IOException e) {
             plugin.sendConsoleMessage("§cError reloading Config §f" + file.getName());
-            throw new CoreConfigException("Cannot reload JsonConfig "+file.getName(), e);
+            throw new CoreConfigException("Cannot reload JsonConfig " + file.getName(), e);
         }
     }
 
@@ -135,12 +139,13 @@ public class CoreJsonConfig<T> {
             fos.close();
         } catch (IOException e) {
             plugin.sendConsoleMessage("§cError saving Config §f" + file.getName());
-            throw new CoreConfigException("Cannot save JsonConfig "+file.getName(), e);
+            throw new CoreConfigException("Cannot save JsonConfig " + file.getName(), e);
         }
     }
 
     /**
      * parses the json object to the given Type. Only works if a type was set via constructor
+     *
      * @return serialized object of given type
      * @throws IllegalStateException thrown if type was not set via constructor
      */
@@ -154,6 +159,7 @@ public class CoreJsonConfig<T> {
 
     /**
      * parses an object of a specific type if type was set via constructor
+     *
      * @param config serialized object of given type
      * @throws IllegalStateException thrown if type was not set via constructor
      */

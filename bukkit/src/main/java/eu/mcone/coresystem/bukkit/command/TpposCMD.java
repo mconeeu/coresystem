@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -20,12 +20,12 @@ public class TpposCMD extends CorePlayerCommand {
     @Override
     public boolean onPlayerCommand(Player p, String[] args) {
         if (args.length == 0) {
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze §c/tppos <x> <y> <z>");
+            Msg.send(p, "§4Bitte benutze §c/tppos <x> <y> <z>");
         } else {
             World myworld = p.getWorld();
             Location yourlocation = new Location(myworld, Double.parseDouble(args[0]), Double.parseDouble(args[1]), Double.parseDouble(args[2]));
             p.teleport(yourlocation);
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "§7Du wurdest teleportiert!");
+            Msg.send(p, "§7Du wurdest teleportiert!");
         }
 
         return true;

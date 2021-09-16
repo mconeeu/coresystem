@@ -40,6 +40,8 @@ public class SettingsInventory extends CoreInventory {
     }
 
     public Inventory openInventory(int page) {
+        modifyInventory();
+
         if (settings.size() >= (((page - 1) * MAX_ITEMS) + 1)) {
             boolean lastPage = (((page) * MAX_ITEMS) + 1) > settings.size();
             int firstOption = ((page - 1) * MAX_ITEMS);
@@ -81,7 +83,7 @@ public class SettingsInventory extends CoreInventory {
                 });
             }
 
-            return super.openInventory();
+            return createInventory();
         } else throw new IllegalArgumentException("Could not open Settingsinventory. Page " + page + " does not exist for " + settings.size() + " items!");
     }
 

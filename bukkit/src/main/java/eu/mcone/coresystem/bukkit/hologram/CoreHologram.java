@@ -96,10 +96,13 @@ public class CoreHologram extends PlayerListModeToggleUtil implements eu.mcone.c
             entity.setCustomNameVisible(true);
             entity.setInvisible(true);
             entity.setGravity(false);
+            entity.noclip = true;
+
             this.entitylist.add(entity);
             loc.subtract(0.0, DISTANCE, 0.0);
             ++count;
         }
+
         for (int i = 0; i < count; ++i) {
             loc.add(0.0, DISTANCE, 0.0);
         }

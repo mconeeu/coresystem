@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.command.CoreCommand;
-import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import net.md_5.bungee.api.CommandSender;
 
 public class HelpCMD extends CoreCommand {
@@ -16,7 +16,7 @@ public class HelpCMD extends CoreCommand {
 	}
 	
 	public void onCommand(CommandSender sender, String[] args){
-		BungeeCoreSystem.getInstance().getMessenger().sendSimpleTransl(sender, "system.bungee.command.help");
+		Msg.sendSimpleTransl(sender, "system.bungee.command.help");
 	}
 
 }

@@ -5,7 +5,7 @@
 
 package eu.mcone.coresystem.api.bukkit.command;
 
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -26,7 +26,7 @@ public abstract class CorePlayerCommand extends CoreCommand {
         if (sender instanceof Player) {
             return onPlayerCommand((Player) sender, args);
         } else {
-            CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.consolesender");
+            Msg.sendTransl(sender, "system.command.consolesender");
             return false;
         }
     }

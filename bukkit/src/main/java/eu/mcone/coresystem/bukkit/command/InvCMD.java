@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -28,13 +28,13 @@ public class InvCMD extends CorePlayerCommand {
                 if (p != t) {
                     p.openInventory(t.getInventory());
                 } else {
-                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§7Drücke §fE §7um dein eigenes Inventar zu öffnen!");
+                    Msg.send(p, "§7Drücke §fE §7um dein eigenes Inventar zu öffnen!");
                 }
             } else {
-                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Der Spieler §c" + args[0] + "§4 ist nicht online!");
+                Msg.send(p, "§4Der Spieler §c" + args[0] + "§4 ist nicht online!");
             }
         } else {
-            BukkitCoreSystem.getInstance().getMessenger().send(p,
+            Msg.send(p,
                     p.hasPermission("system.bukkit.invsee.other") ? "§4Bitte benutze: §c/inv <player>" : "§4Bitte benutze: §c/inv"
             );
         }

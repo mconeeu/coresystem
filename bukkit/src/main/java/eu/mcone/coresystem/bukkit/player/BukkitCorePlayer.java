@@ -8,6 +8,7 @@ package eu.mcone.coresystem.bukkit.player;
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.player.PlayerSettingsChangeEvent;
 import eu.mcone.coresystem.api.bukkit.event.player.PlayerVanishEvent;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.facades.Sound;
 import eu.mcone.coresystem.api.bukkit.gamemode.Gamemode;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
@@ -132,7 +133,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
         Player p = bukkit();
 
         if (cooldown > 0) {
-            BukkitCoreSystem.getSystem().getMessenger().send(p, "§7Du wirst in §f" + cooldown + " Sekunden§7 teleportiert! Bewege dich nicht!");
+            Msg.send(p, "§7Du wirst in §f" + cooldown + " Sekunden§7 teleportiert! Bewege dich nicht!");
             CorePlayerListener.TELEPORTS.put(uuid, Bukkit.getScheduler().runTaskLater(BukkitCoreSystem.getSystem(), () -> {
                 CorePlayerListener.TELEPORTS.remove(uuid);
 
@@ -193,7 +194,7 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
                     }
 
                     Sound.done(p);
-                    BukkitCoreSystem.getInstance().getMessenger().send(bukkit(), "§2Du bist nun im §aVanish Modus§2!");
+                    Msg.send(bukkit(), "§2Du bist nun im §aVanish Modus§2!");
                 } else {
                     BukkitCoreSystem.getSystem().getVanishManager().recalculateVanishes();
 
@@ -206,14 +207,14 @@ public class BukkitCorePlayer extends GlobalCorePlayer implements CorePlayer, Of
                     }
 
                     Sound.done(p);
-                    BukkitCoreSystem.getInstance().getMessenger().send(bukkit(), "§7Du bist nicht mehr im §fVanish Modus§7!");
+                    Msg.send(bukkit(), "§7Du bist nicht mehr im §fVanish Modus§7!");
                 }
 
                 return true;
             } else {
                 vanished = !vanish;
                 if (!vanishEvent.getCancelCause().isEmpty()) {
-                    BukkitCoreSystem.getInstance().getMessenger().send(bukkit(), vanishEvent.getCancelCause());
+                    Msg.send(bukkit(), vanishEvent.getCancelCause());
                 }
 
                 return false;

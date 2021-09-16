@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
@@ -29,12 +30,12 @@ public class VanishCMD extends CorePlayerCommand {
 
             if (t != null) {
                 setVanished(BukkitCoreSystem.getSystem().getCorePlayer(t));
-                BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Der Vanish Modus von §a" + t.getName() + "§2 wurde geändert!");
+                Msg.send(p, "§2Der Vanish Modus von §a" + t.getName() + "§2 wurde geändert!");
             } else {
-                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Der Spieler ist nicht online!");
+                Msg.send(p, "§4Der Spieler ist nicht online!");
             }
         } else {
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze §c/vanish [<name>]");
+            Msg.send(p, "§4Bitte benutze §c/vanish [<name>]");
         }
 
         return false;
@@ -59,7 +60,7 @@ public class VanishCMD extends CorePlayerCommand {
             cp.setVanished(true);
 
             if (VanishChatCMD.chatEnabled.contains(cp.getUuid())) {
-                BukkitCoreSystem.getInstance().getMessenger().sendInfo(cp.bukkit(), "![Achtung]: Der Vanish Chat ist aktiviert!");
+                Msg.sendInfo(cp.bukkit(), "![Achtung]: Der Vanish Chat ist aktiviert!");
             }
 
         } else {

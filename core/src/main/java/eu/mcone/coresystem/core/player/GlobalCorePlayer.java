@@ -79,4 +79,8 @@ public abstract class GlobalCorePlayer extends GlobalOfflineCorePlayer implement
         return result;
     }
 
+    @Override
+    public boolean isLabyModPlayer() {
+        return labyModConnection != null;
+    }
 }

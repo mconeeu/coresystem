@@ -35,10 +35,12 @@ import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.player.PermissionManager;
 import eu.mcone.coresystem.core.player.PlayerUtils;
 import eu.mcone.coresystem.core.util.CoreCooldownSystem;
+import eu.mcone.coresystem.core.util.GlobalCorePluginManager;
 import eu.mcone.coresystem.core.util.MoneyUtil;
 import eu.mcone.coresystem.core.util.PreferencesManager;
 import group.onegaming.networkmanager.core.api.database.Database;
 import group.onegaming.networkmanager.core.database.MongoConnection;
+import group.onegaming.networkmanager.core.random.NetworkUniqueIdUtil;
 import lombok.Getter;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ListenerInfo;
@@ -68,13 +70,13 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private MongoConnection mongoConnection;
 
     @Getter
-    private Messenger messenger;
-    @Getter
     private BungeeTranslationManager translationManager;
     @Getter
     private PreferencesManager preferences;
     @Getter
     private PermissionManager permissionManager;
+    @Getter
+    private GlobalCorePluginManager pluginManager;
     @Getter
     private Overwatch overwatch;
     @Getter
@@ -97,6 +99,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
     private Gson gson;
     @Getter
     private JsonParser jsonParser;
+    @Getter
+    private NetworkUniqueIdUtil uniqueIdUtil;
 
     @Getter
     private Map<UUID, BungeeCorePlayer> corePlayers;
@@ -157,7 +161,9 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
                     )
             ).connect();
 
+            uniqueIdUtil = new NetworkUniqueIdUtil(getMongoDB());
             cooldownSystem = new CoreCooldownSystem(this);
+            pluginManager = new GlobalCorePluginManager();
             channelHandler = new ChannelHandler();
             preferences = new PreferencesManager(getMongoDB(), new HashMap<String, Object>() {{
                 put("maintenance", false);
@@ -186,8 +192,6 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             sendConsoleMessage("§aLoading Translations...");
             translationManager = new BungeeTranslationManager(this, "bungeesystem");
             translationManager.loadAdditionalLanguages(Language.values());
-            translationManager.loadAdditionalCategories("bukkitsystem");
-            messenger = new BungeeMessenger(this, "system.prefix");
 
             sendConsoleMessage("§aLoading Permissions & Groups...");
             permissionManager = new PermissionManager("Proxy", getMongoDB());
@@ -212,6 +216,8 @@ public class BungeeCoreSystem extends CoreSystem implements CoreModuleCoreSystem
             sendConsoleMessage("§aRegistering Plugin Messaging Channel...");
             getProxy().registerChannel("MC_ONE_RETURN");
             getProxy().registerChannel("MC_ONE_INFO");
+
+            super.onEnable();
 
             sendConsoleMessage("§aVersion: §f" + this.getDescription().getVersion() + "§a enabled!");
         });

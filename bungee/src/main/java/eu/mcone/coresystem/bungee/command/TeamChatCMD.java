@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bungee.command;
 
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.api.bungee.facades.Transl;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.ProxyServer;
@@ -19,7 +20,7 @@ public class TeamChatCMD extends CorePlayerCommand {
 
     public void onPlayerCommand(ProxiedPlayer p, String[] args) {
         if (args.length == 0) {
-            BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/tc <Nachricht>");
+            Msg.send(p, "§4Bitte benutze: §c/tc <Nachricht>");
         } else {
             StringBuilder message = new StringBuilder();
             for (String arg : args) {
@@ -27,7 +28,7 @@ public class TeamChatCMD extends CorePlayerCommand {
             }
             for (ProxiedPlayer player : ProxyServer.getInstance().getPlayers()) {
                 if (player.hasPermission("system.bungee.teamchat")) {
-                    BungeeCoreSystem.getInstance().getMessenger().sendSimple(
+                    Msg.sendSimple(
                             player,
                             Transl.get("system.prefix.teamchat", p)
                                     .replaceAll(

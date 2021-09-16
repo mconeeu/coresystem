@@ -2,6 +2,7 @@ package eu.mcone.coresystem.api.bukkit.listener;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.event.world.RegionEnterEvent;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import eu.mcone.coresystem.api.bukkit.world.Region;
 import org.bukkit.World;
@@ -47,7 +48,7 @@ public class RegionEnterPermissionCanceller implements Listener {
                         e.setCancelled(true);
 
                         if (notify) {
-                            CoreSystem.getInstance().getMessenger().sendError(e.getPlayer(), "Du darfst diesen Bereich nicht betreten!");
+                            Msg.sendError(e.getPlayer(), "Du darfst diesen Bereich nicht betreten!");
                             notify = false;
                         }
                     }

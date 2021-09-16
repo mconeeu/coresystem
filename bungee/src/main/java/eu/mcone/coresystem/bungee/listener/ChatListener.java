@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.bungee.listener;
 
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -34,11 +35,11 @@ public class ChatListener implements Listener {
             return;
         } else if (e.getMessage().startsWith("/")) {
             if (new ArrayList<>(Arrays.asList("/plugins", "/pl", "/bukkit:pl", "bukkit:pl")).contains(msg)) {
-                BungeeCoreSystem.getInstance().getMessenger().sendSimple(p, "§fPlugins (6): §aDa§f, §amusst§f, §adu§f, §afrüher§f, §aaufstehen§f, §a" + p.getName());
+                Msg.sendSimple(p, "§fPlugins (6): §aDa§f, §amusst§f, §adu§f, §afrüher§f, §aaufstehen§f, §a" + p.getName());
                 e.setCancelled(true);
                 return;
             } else if (cmds.contains(msg)) {
-                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Du hast keine Berechtigung für den Befehl §c" + msg + "§4!");
+                Msg.send(p, "§4Du hast keine Berechtigung für den Befehl §c" + msg + "§4!");
                 e.setCancelled(true);
                 return;
             } else {
@@ -59,7 +60,7 @@ public class ChatListener implements Listener {
             }
 
             if (canelled) {
-                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Bitte achte auf deine Ausdrucksweise!");
+                Msg.send(p, "§4Bitte achte auf deine Ausdrucksweise!");
                 e.setCancelled(true);
                 return;
             } else {

@@ -5,6 +5,8 @@
 
 package eu.mcone.coresystem.api.bukkit.config.typeadapter.bson;
 
+import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.world.CoreWorld;
 import org.bson.BSONException;
 import org.bson.BsonReader;
 import org.bson.BsonWriter;
@@ -13,9 +15,7 @@ import org.bson.codecs.Codec;
 import org.bson.codecs.DecoderContext;
 import org.bson.codecs.EncoderContext;
 import org.bson.codecs.configuration.CodecRegistry;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 
 public class LocationCodec implements Codec<Location> {
 
@@ -39,12 +39,16 @@ public class LocationCodec implements Codec<Location> {
             throw new BSONException("Malformed location BSON string!");
         }
 
-        World bukkitWorld = Bukkit.getWorld(world);
-        if (bukkitWorld == null) {
+        CoreWorld w = CoreSystem.getInstance().getWorldManager().getWorld(world);
+        if (w == null) {
             throw new IllegalArgumentException("Unknown/not loaded world");
         }
 
-        return new Location(bukkitWorld, x, y, z, yaw.floatValue(), pitch.floatValue());
+        if (!w.isLoaded()) {
+            w.load();
+        }
+
+        return new Location(w.bukkit(), x, y, z, yaw.floatValue(), pitch.floatValue());
     }
 
     @Override

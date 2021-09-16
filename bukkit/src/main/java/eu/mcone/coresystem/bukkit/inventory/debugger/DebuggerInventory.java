@@ -1,6 +1,6 @@
 package eu.mcone.coresystem.bukkit.inventory.debugger;
 
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreItemEvent;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
@@ -91,10 +91,10 @@ public class DebuggerInventory extends CoreInventory {
         return e -> {
             if (debugger.hasViewerTarget(player, target)) {
                 debugger.removeViewerTargets(player, target);
-                CoreSystem.getInstance().getMessenger().sendError(player, "Du erhälst nun von dem debug target §f§l " + target + " §4keine Debug Nachrichten mehr!");
+                Msg.sendError(player, "Du erhälst nun von dem debug target §f§l " + target + " §4keine Debug Nachrichten mehr!");
             } else {
                 debugger.registerViewerTargets(player, target);
-                CoreSystem.getInstance().getMessenger().sendSuccess(player, "Du erhälst nun alle Debug Nachrichten von dem debug target §f§l" + target);
+                Msg.sendSuccess(player, "Du erhälst nun alle Debug Nachrichten von dem debug target §f§l" + target);
             }
 
             update();

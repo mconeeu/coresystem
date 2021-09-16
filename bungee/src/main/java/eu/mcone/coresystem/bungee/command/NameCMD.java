@@ -3,8 +3,8 @@ package eu.mcone.coresystem.bungee.command;
 import com.google.common.collect.ImmutableSet;
 import eu.mcone.coresystem.api.bungee.CoreSystem;
 import eu.mcone.coresystem.api.bungee.command.CoreCommand;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.api.core.player.Nick;
-import eu.mcone.coresystem.bungee.BungeeCoreSystem;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.TabExecutor;
@@ -23,7 +23,7 @@ public class NameCMD extends CoreCommand implements TabExecutor {
         if (args.length == 1) {
             ProxyServer.getInstance().getPluginManager().dispatchCommand(sender, "nick check "+args[0]);
         } else {
-            BungeeCoreSystem.getSystem().getMessenger().send(sender, "Bitte benutze: ![/name <name>]");
+            Msg.send(sender, "Bitte benutze: ![/name <name>]");
         }
     }
 

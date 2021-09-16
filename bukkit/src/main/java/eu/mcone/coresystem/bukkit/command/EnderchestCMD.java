@@ -7,7 +7,7 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -27,7 +27,7 @@ public class EnderchestCMD extends CorePlayerCommand {
             p.openInventory(p.getEnderChest());
 
             if (p.hasPermission("system.bukkit.ecsee.other")) {
-                BukkitCoreSystem.getInstance().getMessenger().send(p, "§f§oTipp: §7Benutze §f/ec <player>§7 um die Enderkiste eines anderen Spielers zu sehen!");
+                Msg.send(p, "§f§oTipp: §7Benutze §f/ec <player>§7 um die Enderkiste eines anderen Spielers zu sehen!");
             }
         } else if (args.length == 1) {
             if (p.hasPermission("system.bukkit.ecsee.other")) {
@@ -36,13 +36,13 @@ public class EnderchestCMD extends CorePlayerCommand {
                 if (t != null) {
                     p.openInventory(t.getEnderChest());
                 } else {
-                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Der Spieler §c" + args[0] + "§4 ist nicht online!");
+                    Msg.send(p, "§4Der Spieler §c" + args[0] + "§4 ist nicht online!");
                 }
             } else {
-                CoreSystem.getInstance().getMessenger().sendTransl(p, "system.command.noperm");
+                Msg.sendTransl(p, "system.command.noperm");
             }
         } else {
-            BukkitCoreSystem.getInstance().getMessenger().send(p,
+            Msg.send(p,
                     p.hasPermission("system.bukkit.ecsee.other") ? "§4Bitte benutze: §c/ec [<player>]" : "§4Bitte benutze: §c/ec"
             );
         }

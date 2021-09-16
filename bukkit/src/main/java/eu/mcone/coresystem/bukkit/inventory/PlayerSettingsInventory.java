@@ -15,6 +15,7 @@ import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.item.Skull;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
 import eu.mcone.coresystem.api.core.player.PlayerSettings;
+import eu.mcone.coresystem.bukkit.inventory.profile.CoreProfileInventory;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -22,8 +23,8 @@ public class PlayerSettingsInventory extends SettingsInventory {
 
     public static final String TITLE = "§8» §c§lEinstellungen";
 
-    PlayerSettingsInventory(Player p) {
-        super(TITLE, p, e -> new ProfileInventory(CoreSystem.getInstance().getCorePlayer(p)));
+    public PlayerSettingsInventory(Player p) {
+        super(TITLE, p, e -> new CoreProfileInventory(p));
         CorePlayer cp = CoreSystem.getInstance().getCorePlayer(p);
         PlayerSettings settings = cp.getSettings();
 

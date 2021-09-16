@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bungee.listener;
 
 import eu.mcone.coresystem.api.bungee.CoreSystem;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import eu.mcone.coresystem.api.bungee.player.CorePlayer;
 import eu.mcone.coresystem.api.core.labymod.LabyModPermission;
 import eu.mcone.coresystem.bungee.BungeeCoreSystem;
@@ -33,10 +34,10 @@ public class PostLoginListener implements Listener {
         final ProxiedPlayer p = e.getPlayer();
         final CorePlayer cp = BungeeCoreSystem.getInstance().getCorePlayer(p.getUniqueId());
 
-        BungeeCoreSystem.getInstance().getMessenger().sendSimple(p, "\n\n\n\n§8[§7§l!§8] §3MC ONE §8» §7§o" + getRandomWelcomeMSG(p, cp.isNew()) + ", §f§o" + p.getName() + "§7§o!");
+        Msg.sendSimple(p, "\n\n\n\n§8[§7§l!§8] §3MC ONE §8» §7§o" + getRandomWelcomeMSG(p, cp.isNew()) + ", §f§o" + p.getName() + "§7§o!");
         if (cp.isNew()) {
             ProxyServer.getInstance().getPluginManager().dispatchCommand(p, "privacy");
-            BungeeCoreSystem.getInstance().getMessenger().sendSimple(p, "§8[§7§l!§8] §3MC ONE §8» §2Als kleines Willkommensgeschenk bekommst du 20 Coins gutgeschrieben!");
+            Msg.sendSimple(p, "§8[§7§l!§8] §3MC ONE §8» §2Als kleines Willkommensgeschenk bekommst du 20 Coins gutgeschrieben!");
         } else {
             ProxyServer.getInstance().getScheduler().runAsync(BungeeCoreSystem.getSystem(), () ->
                     BungeeCoreSystem.getSystem().getMongoDB(Database.SYSTEM).getCollection("userinfo").updateOne(
@@ -52,9 +53,9 @@ public class PostLoginListener implements Listener {
 
         Map<UUID, String> requests = cp.getFriendData().getRequests();
         if (requests.size() >= 1) {
-            BungeeCoreSystem.getInstance().getMessenger().sendSimple(p, "");
-            BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Du hast noch §f" + requests.size() + " §7offene Freundschaftsanfrage(n)!");
-            BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Benutze §f/friend req §7zum einsehen!");
+            Msg.sendSimple(p, "");
+            Msg.send(p, "§7Du hast noch §f" + requests.size() + " §7offene Freundschaftsanfrage(n)!");
+            Msg.send(p, "§7Benutze §f/friend req §7zum einsehen!");
         }
 
         Title title = ProxyServer.getInstance().createTitle();

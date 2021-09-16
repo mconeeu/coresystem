@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -21,11 +21,11 @@ public class TphereCMD extends CorePlayerCommand {
 
     public boolean onPlayerCommand(Player p, String[] args) {
         if (args.length == 0) {
-            BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze §c/tphere <Spieler>");
+            Msg.send(p, "§4Bitte benutze §c/tphere <Spieler>");
         } else {
             Player target = Bukkit.getServer().getPlayer(args[0]);
             if (target == null) {
-                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Der Spieler §f" + args[0] + "§4 konnte nicht gefunden werden!");
+                Msg.send(p, "§4Der Spieler §f" + args[0] + "§4 konnte nicht gefunden werden!");
             } else {
                 target.teleport(p.getLocation());
             }

@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.bukkit.world.BuildSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class  BuildCMD extends CorePlayerCommand {
+public class BuildCMD extends CorePlayerCommand {
 
     private final BuildSystem buildSystem;
 
@@ -34,14 +34,14 @@ public class  BuildCMD extends CorePlayerCommand {
 
             if (t != null) {
                 buildSystem.changeBuildMode(t);
-                BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du hast den Build-Modus von §a" + args[0] + "§2 verändert!");
+                Msg.send(p, "§2Du hast den Build-Modus von §a" + args[0] + "§2 verändert!");
             } else {
-                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Dieser Spieler ist nicht online!");
+                Msg.send(p, "§4Dieser Spieler ist nicht online!");
             }
             return true;
         }
 
-        BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/build [<Spieler>]");
+        Msg.send(p, "§4Bitte benutze: §c/build [<Spieler>]");
         return true;
     }
 

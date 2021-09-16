@@ -7,8 +7,8 @@ package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.command.CoreCommand;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.facades.Sound;
-import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
@@ -36,11 +36,11 @@ public class GamemodeCMD extends CoreCommand {
                     }
                 }
 
-                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze: §c/gm §4oder §c/gamemode <Gamemode>");
+                Msg.send(p, "§4Bitte benutze: §c/gm §4oder §c/gamemode <Gamemode>");
                 Sound.error(p);
                 return false;
             } else {
-                CoreSystem.getInstance().getMessenger().sendTransl(sender, "system.command.consolesender");
+                Msg.sendTransl(sender, "system.command.consolesender");
             }
         } else if (args.length == 2) {
             Player t = Bukkit.getPlayer(args[1]);
@@ -49,13 +49,13 @@ public class GamemodeCMD extends CoreCommand {
                 for (GameMode gamemode : GameMode.values()) {
                     if (args[0].equalsIgnoreCase(gamemode.name()) || args[0].equalsIgnoreCase(String.valueOf(gamemode.getValue()))) {
                         setGamemode(t, gamemode);
-                        BukkitCoreSystem.getInstance().getMessenger().send(sender, "§2Du hast den Spielmodus von §f" + t.getName() + " §2auf §a" + t.getGameMode() + "§2 gesetzt.");
+                        Msg.send(sender, "§2Du hast den Spielmodus von §f" + t.getName() + " §2auf §a" + t.getGameMode() + "§2 gesetzt.");
                         return true;
                     }
                 }
             }
         } else {
-            BukkitCoreSystem.getInstance().getMessenger().send(sender, "§4Bitte benutze: §c/gm §4oder §c/gamemode <0|1|2|3> [<player>]");
+            Msg.send(sender, "§4Bitte benutze: §c/gm §4oder §c/gamemode <0|1|2|3> [<player>]");
         }
 
         return true;
@@ -88,7 +88,7 @@ public class GamemodeCMD extends CoreCommand {
         p.setAllowFlight(gamemode.equals(GameMode.CREATIVE) || gamemode.equals(GameMode.SPECTATOR));
 
         Sound.change(p);
-        BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Du hast deinen Spielmodus auf §f" + p.getGameMode() + " §2gesetzt!");
+        Msg.send(p, "§2Du hast deinen Spielmodus auf §f" + p.getGameMode() + " §2gesetzt!");
     }
 
 }

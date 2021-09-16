@@ -6,19 +6,30 @@
 package eu.mcone.coresystem.bukkit.listener;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.facades.Sound;
 import eu.mcone.coresystem.api.bukkit.facades.Transl;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.api.bukkit.player.TranslationManager;
+import eu.mcone.coresystem.api.core.player.Group;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.VanishChatCMD;
 import lombok.Getter;
 import lombok.Setter;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class ChatListener implements Listener {
 
@@ -28,7 +39,18 @@ public class ChatListener implements Listener {
     @Getter
     private static int cooldown = 0;
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onChatLow(AsyncPlayerChatEvent e) {
+        Player p = e.getPlayer();
+        CorePlayer cp = CoreSystem.getInstance().getCorePlayer(p);
+        Group g = cp.isNicked() ? cp.getNick().getGroup() : cp.getMainGroup();
+
+        e.setFormat(
+                Transl.get("system.bukkit.chat", TranslationManager.DEFAULT_LANGUAGE, g.getPrefix() + "%1$s", "%2$s")
+        );
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
     public void onChat(AsyncPlayerChatEvent e) {
         if (enabled && !e.isCancelled()) {
             Player p = e.getPlayer();
@@ -52,42 +74,76 @@ public class ChatListener implements Listener {
                                 && !CoreSystem.getInstance().getCooldownSystem().addAndCheck(getClass(), p.getUniqueId())
                                 && !p.hasPermission("system.bukkit.chat.cooldown.bypass")
                 ) {
-                    CoreSystem.getInstance().getMessenger().send(p, "Bitte warte " + cooldown + " Sekunden bevor du eine neue Nachricht schreibst!");
+                    Msg.send(p, "Bitte warte " + cooldown + " Sekunden bevor du eine neue Nachricht schreibst!");
                     e.setCancelled(true);
                     return;
                 }
 
-                String playerMessage = e.getMessage();
-                for (Player receiver : Bukkit.getOnlinePlayers()) {
-                    if (receiver != p) {
-                        String targetMessage;
+                String message = e.getMessage();
+                LinkedHashMap<TextComponent, Boolean> parts = new LinkedHashMap<>();
 
-                        if (e.getMessage().contains(receiver.getName())) {
-                            if (e.getMessage().contains("@" + receiver.getName())) {
-                                targetMessage = e.getMessage().replaceAll("@" + receiver.getName(), "§b@" + receiver.getName() + "§7");
-                                playerMessage = playerMessage.replaceAll("@" + receiver.getName(), ChatColor.AQUA + "@" + receiver.getName() + ChatColor.GRAY);
-                            } else {
-                                targetMessage = e.getMessage().replaceAll(receiver.getName(), "§b@" + receiver.getName() + "§7");
-                                playerMessage = playerMessage.replaceAll(receiver.getName(), "§b@" + receiver.getName() + "§7");
-                            }
+                String[] words = message.split(" ");
+                boolean first = true;
+                wordLoop:
+                for (String word : words) {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        if (word.equalsIgnoreCase(player.getName()) || word.equalsIgnoreCase("@"+player.getName())) {
+                            TextComponent component = new TextComponent((!first ? " " : "") + "@"+player.getName());
+                            component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/profile "+player.getName()));
+                            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText("§7§oProfil anzeigen")));
 
-                            e.getRecipients().remove(receiver);
-                            receiver.sendMessage((cp.isNicked() ? cp.getNick().getGroup().getPrefix() : cp.getMainGroup().getPrefix()) + Transl.get("system.chat").replaceAll("%Player%", p.getName()) + targetMessage);
-                            Sound.done(p);
+                            parts.put(component, true);
+                            first = false;
+                            continue wordLoop;
                         }
                     }
+
+                    Map.Entry<TextComponent, Boolean> lastEntry = null;
+                    if (parts.size() > 0) {
+                        lastEntry = new ArrayList<>(parts.entrySet()).get(parts.size()-1);
+                    }
+
+                    if (lastEntry != null && !lastEntry.getValue()) {
+                        lastEntry.getKey().setText(lastEntry.getKey().getText() + " " + word);
+                    } else {
+                        TextComponent component = new TextComponent((!first ? " " : "") + word);
+                        component.setColor(net.md_5.bungee.api.ChatColor.GRAY);
+
+                        parts.put(component, false);
+                    }
+
+                    first = false;
                 }
 
-                e.setFormat(
-                        (cp.isNicked() ? cp.getNick().getGroup().getPrefix() : cp.getMainGroup().getPrefix()) + Transl.get("system.chat").replaceAll("%Player%", p.getName())
-                                + "%2$s"
-                );
+                Set<Player> recipients = e.getRecipients();
+                for (Player recipient : recipients) {
+                    TextComponent messageComponent = new TextComponent(String.format(e.getFormat(), p.getName(), ""));
 
-                e.getRecipients().remove(p);
-                p.sendMessage((cp.isNicked() ? cp.getNick().getGroup().getPrefix() : cp.getMainGroup().getPrefix()) + Transl.get("system.chat", p).replaceAll("%Player%", p.getName()) + playerMessage);
+                    for (Map.Entry<TextComponent, Boolean> partEntry : parts.entrySet()) {
+                        TextComponent component = partEntry.getKey();
+
+                        if (partEntry.getValue()) {
+                            System.out.println("name: "+component.getText().substring(2) + " == "+recipient.getName());
+                            if (component.getText().substring(2).equals(recipient.getName())) {
+                                System.out.println("true");
+                                component.setColor(net.md_5.bungee.api.ChatColor.AQUA);
+                                Sound.done(recipient);
+                            } else {
+                                System.out.println("false");
+                                component.setColor(net.md_5.bungee.api.ChatColor.DARK_AQUA);
+                            }
+                        }
+
+                        messageComponent.addExtra(component);
+                    }
+
+                    recipient.spigot().sendMessage(messageComponent);
+                }
+
+                e.getRecipients().clear();
             } else {
                 e.setCancelled(true);
-                CoreSystem.getInstance().getMessenger().send(p, "§4Bitte benutze §c/vc on§4 um eine Chatnachricht zu schreiben während du im Vanish-Modus bist!");
+                Msg.send(p, "§4Bitte benutze §c/vc on§4 um eine Chatnachricht zu schreiben während du im Vanish-Modus bist!");
             }
         }
     }

@@ -24,6 +24,7 @@ import eu.mcone.coresystem.bukkit.world.BukkitCoreWorld;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
@@ -63,8 +64,10 @@ public class CoreNpcManager implements NpcManager {
         }
 
         npcSet.clear();
-        for (CoreWorld w : CoreSystem.getInstance().getWorldManager().getWorlds()) {
-            for (NpcData data : ((BukkitCoreWorld) w).getNpcData()) {
+        for (World w : Bukkit.getWorlds()) {
+            CoreWorld cw = CoreSystem.getInstance().getWorldManager().getWorld(w);
+
+            for (NpcData data : ((BukkitCoreWorld) cw).getNpcData()) {
                 addNPC(data);
             }
         }

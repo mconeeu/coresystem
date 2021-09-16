@@ -6,7 +6,7 @@
 package eu.mcone.coresystem.bukkit.overwatch;
 
 import eu.mcone.coresystem.api.bukkit.CoreSystem;
-import eu.mcone.coresystem.api.bukkit.broadcast.Messenger;
+import eu.mcone.coresystem.api.bukkit.chat.Messenger;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import eu.mcone.coresystem.bukkit.command.ReportCMD;
 import eu.mcone.coresystem.bukkit.overwatch.report.ReportManager;

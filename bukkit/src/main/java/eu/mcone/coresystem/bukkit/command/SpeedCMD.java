@@ -6,6 +6,7 @@
 package eu.mcone.coresystem.bukkit.command;
 
 import eu.mcone.coresystem.api.bukkit.command.CorePlayerCommand;
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.bukkit.BukkitCoreSystem;
 import org.bukkit.entity.Player;
 
@@ -23,18 +24,18 @@ public class SpeedCMD extends CorePlayerCommand {
             if (speed > -1 && speed < 1) {
                 if (p.isFlying()) {
                     p.setFlySpeed(speed);
-                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Deine Fluggeschwindigkeit wurde auf §f" + speed + "§2 gesetzt!");
+                    Msg.send(p, "§2Deine Fluggeschwindigkeit wurde auf §f" + speed + "§2 gesetzt!");
                 } else {
                     p.setWalkSpeed(speed);
-                    BukkitCoreSystem.getInstance().getMessenger().send(p, "§2Deine Laufgeschwindigkeit wurde auf §f" + speed + "§2 gesetzt!");
+                    Msg.send(p, "§2Deine Laufgeschwindigkeit wurde auf §f" + speed + "§2 gesetzt!");
                 }
             } else {
-                BukkitCoreSystem.getInstance().getMessenger().send(p, "§4Du kannst nur Geschwindigkeiten zwischen -1 und 1 setzen!");
+                Msg.send(p, "§4Du kannst nur Geschwindigkeiten zwischen -1 und 1 setzen!");
             }
             return true;
         }
 
-        BukkitCoreSystem.getSystem().getMessenger().sendError(p, "Bitte benutze: ![/speed <-1..1>]");
+        Msg.sendError(p, "Bitte benutze: ![/speed <-1..1>]");
         return true;
     }
 

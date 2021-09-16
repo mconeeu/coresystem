@@ -5,6 +5,7 @@
 
 package eu.mcone.coresystem.bukkit.listener;
 
+import eu.mcone.coresystem.api.bukkit.facades.Msg;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreInventory;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreItemEvent;
 import eu.mcone.coresystem.api.bukkit.inventory.CoreItemStack;
@@ -41,14 +42,14 @@ public class CoreInventoryListener implements Listener {
                         e.setCancelled(false);
                     } else {
                         e.setCancelled(true);
-                        BukkitCoreSystem.getSystem().getMessenger().send(p, "§4Du hast keine Berechtigung um andere Inventare zu modifizieren!");
+                        Msg.send(p, "§4Du hast keine Berechtigung um andere Inventare zu modifizieren!");
                     }
                 } else if (inv.getType().equals(InventoryType.ENDER_CHEST) || inv.getTitle().equals(PlayerInventoryProfile.ENDERCHEST_TITLE)) {
                     if (p.hasPermission("system.bukkit.ecsee.modify.other")) {
                         e.setCancelled(false);
                     } else {
                         e.setCancelled(true);
-                        BukkitCoreSystem.getSystem().getMessenger().send(p, "§4Du hast keine Berechtigung um andere Enderchests zu modifizieren!");
+                        Msg.send(p, "§4Du hast keine Berechtigung um andere Enderchests zu modifizieren!");
                     }
                 } else if (inv.getType().equals(InventoryType.ANVIL)) {
                     for (AnvilInventory anvilInv : BukkitCoreSystem.getSystem().getPluginManager().getCoreAnvilInventories()) {
@@ -61,7 +62,7 @@ public class CoreInventoryListener implements Listener {
                             String name = "";
 
                             if (i.hasItemMeta() && i.getItemMeta().hasDisplayName()) {
-                                name = i.getItemMeta().getDisplayName();
+                                name = i.getItemMeta().getDisplayName().replace(" ", "");
                             }
 
                             AnvilClickEvent event = new AnvilClickEvent(p, e, inventory, AnvilSlot.bySlot(e.getRawSlot()), name);

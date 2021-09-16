@@ -35,7 +35,7 @@ public class EntityHumanNPC extends EntityPlayer {
             conn.a(this.playerConnection);
             socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalStateException("Could not create fake socket connection for HumanNPC!", e);
         }
 
         AttributeInstance range = getAttributeInstance(GenericAttributes.FOLLOW_RANGE);

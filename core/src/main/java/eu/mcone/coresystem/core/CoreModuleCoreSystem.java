@@ -11,6 +11,7 @@ import com.mongodb.client.MongoDatabase;
 import eu.mcone.coresystem.api.core.GlobalCoreSystem;
 import eu.mcone.coresystem.core.util.MoneyUtil;
 import group.onegaming.networkmanager.core.api.database.Database;
+import group.onegaming.networkmanager.core.random.NetworkUniqueIdUtil;
 
 public interface CoreModuleCoreSystem extends GlobalCoreSystem {
 
@@ -37,5 +38,7 @@ public interface CoreModuleCoreSystem extends GlobalCoreSystem {
     JsonParser getJsonParser();
 
     MoneyUtil getMoneyUtil();
+
+    NetworkUniqueIdUtil getUniqueIdUtil();
 
 }

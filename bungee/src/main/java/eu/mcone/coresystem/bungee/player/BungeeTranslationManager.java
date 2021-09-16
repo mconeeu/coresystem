@@ -5,6 +5,9 @@ import eu.mcone.coresystem.core.CoreModuleCoreSystem;
 import eu.mcone.coresystem.core.translation.TranslationManager;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.config.Configuration;
+
+import java.util.List;
 
 public class BungeeTranslationManager extends TranslationManager implements eu.mcone.coresystem.api.bungee.player.TranslationManager {
 
@@ -38,6 +41,15 @@ public class BungeeTranslationManager extends TranslationManager implements eu.m
         }
 
         return get(key, DEFAULT_LANGUAGE, replace);
+    }
+
+    @Override
+    public void registerTranslationKeys(Configuration config, String pluginSlug) {
+        List<String> list = (List<String>) config.getList("translations");
+
+        if (list != null && !list.isEmpty()) {
+            CoreSystem.getInstance().getTranslationManager().registerKeys(pluginSlug, list);
+        }
     }
 
 }

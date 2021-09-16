@@ -13,6 +13,7 @@ import eu.mcone.coresystem.api.bukkit.inventory.InventoryOption;
 import eu.mcone.coresystem.api.bukkit.inventory.InventorySlot;
 import eu.mcone.coresystem.api.bukkit.item.ItemBuilder;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
+import eu.mcone.coresystem.bukkit.inventory.profile.CoreProfileInventory;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -38,7 +39,7 @@ public class StatsInventory extends CoreInventory {
         });
 
         setItem(InventorySlot.ROW_3_SLOT_1, new ItemBuilder(Material.IRON_DOOR, 1, 0).displayName("§7§l↩ Zurück zum Profil").create(), e -> {
-            new ProfileInventory(CoreSystem.getInstance().getCorePlayer(p));
+            new CoreProfileInventory(p);
             Sound.error(p);
         });
 

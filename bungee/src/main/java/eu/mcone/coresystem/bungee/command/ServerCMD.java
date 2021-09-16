@@ -7,7 +7,7 @@ package eu.mcone.coresystem.bungee.command;
 
 import com.google.common.collect.ImmutableSet;
 import eu.mcone.coresystem.api.bungee.command.CorePlayerCommand;
-import eu.mcone.coresystem.bungee.BungeeCoreSystem;
+import eu.mcone.coresystem.api.bungee.facades.Msg;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -32,7 +32,7 @@ public class ServerCMD extends CorePlayerCommand implements TabExecutor {
     @Override
     public void onPlayerCommand(ProxiedPlayer p, String[] args) {
         if (args.length == 0) {
-            BungeeCoreSystem.getInstance().getMessenger().send(p, "§7Du befindest dich gerade auf dem Server: §f" + p.getServer().getInfo().getName());
+            Msg.send(p, "§7Du befindest dich gerade auf dem Server: §f" + p.getServer().getInfo().getName());
             Map<String, ServerInfo> servers = ProxyServer.getInstance().getServers();
 
             ComponentBuilder cb = new ComponentBuilder(ChatColor.GRAY + "Du kannst dich jetzt mit folgenden Servern verbinden: ");
@@ -56,7 +56,7 @@ public class ServerCMD extends CorePlayerCommand implements TabExecutor {
             if (si != null) {
                 p.connect(si);
             } else {
-                BungeeCoreSystem.getInstance().getMessenger().send(p, "§4Dieser Server existiert nicht!");
+                Msg.send(p, "§4Dieser Server existiert nicht!");
             }
         }
     }

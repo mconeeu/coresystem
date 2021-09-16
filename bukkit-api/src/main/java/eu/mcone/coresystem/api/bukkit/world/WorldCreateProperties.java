@@ -33,12 +33,18 @@ public final class WorldCreateProperties {
 
     public static WorldCreateProperties fromMap(Map<String, String> map) throws IllegalArgumentException {
         WorldCreateProperties builder = new WorldCreateProperties();
+        if (!map.containsKey("worldType")) {
+            map.put("worldType", "VOID");
+        }
 
         try {
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 Field f = WorldCreateProperties.class.getDeclaredField(entry.getKey());
 
-                if (f.getType().isEnum()) {
+                if (f.getType().equals(WorldType.class) && entry.getValue().equalsIgnoreCase("VOID")) {
+                    builder.worldType = WorldType.FLAT;
+                    builder.generatorSettings = "2;0;1;";
+                } else if (f.getType().isEnum()) {
                     try {
                         setField(f, builder, f.getType().getMethod("valueOf", String.class).invoke(null, entry.getValue()));
                     } catch (InvocationTargetException e) {

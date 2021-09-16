@@ -68,7 +68,14 @@ public abstract class CategoryInventory extends CoreInventory {
 
     protected abstract void openCategoryInventory(ItemStack categoryItem, Player player);
 
+    @Override
+    public Inventory openInventory() {
+        return openInventory(1);
+    }
+
     public Inventory openInventory(int itemPage) {
+        modifyInventory();
+
         items.clear();
         inventory.clear();
         setPlaceholders();
@@ -131,16 +138,11 @@ public abstract class CategoryInventory extends CoreInventory {
             setItem(item.getKey(), item.getValue().itemStack, item.getValue().itemEvent);
         }
 
-        return super.openInventory();
+        return createInventory();
     }
 
     public int setPaginatedItems(int skip, int limit, List<CategoryInvItem> items) {
         return categoryInvItems.size();
-    }
-
-    @Override
-    public Inventory openInventory() {
-        return openInventory(1);
     }
 
     private List<ItemStack> getCategoryPageItems(int allPages, int currentPage) {
