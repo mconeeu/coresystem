@@ -5,15 +5,16 @@
 
 package eu.mcone.coresystem.api.bukkit.scoreboard;
 
-import eu.mcone.coresystem.api.bukkit.CoreSystem;
 import eu.mcone.coresystem.api.bukkit.player.CorePlayer;
-import group.onegaming.networkmanager.core.api.random.UniqueIdType;
+import group.onegaming.networkmanager.core.api.random.Random;
 import lombok.Getter;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 @Getter
 public class CoreScoreboardEntry {
+
+    private static final Random TEAM_RANDOM = new Random(6);
 
     private final CorePlayer player;
     private int priority;
@@ -44,7 +45,7 @@ public class CoreScoreboardEntry {
     }
 
     Team setTeam(Scoreboard scoreboard) {
-        Team team = scoreboard.registerNewTeam(priority + "_" + CoreSystem.getInstance().getUniqueIdUtil().getTmpUniqueKey(UniqueIdType.STRING, false));
+        Team team = scoreboard.registerNewTeam(priority + "_" + TEAM_RANDOM.nextString());
         if (name != null) {
             team.setDisplayName(name);
         }
