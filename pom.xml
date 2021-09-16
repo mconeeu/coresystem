@@ -83,19 +83,15 @@
 
     <repositories>
         <repository>
-            <id>onegaming-gitlab-applications</id>
-            <url>https://gitlab.onegaming.group/api/v4/groups/applications/-/packages/maven</url>
-        </repository>
-        <repository>
-            <id>onegaming-gitlab-systems</id>
-            <url>https://gitlab.onegaming.group/api/v4/groups/systems/-/packages/maven</url>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/mconeeu/artifacts</url>
         </repository>
     </repositories>
 
     <distributionManagement>
         <repository>
-            <id>onegaming-gitlab</id>
-            <url>https://gitlab.onegaming.group/api/v4/projects/36/packages/maven</url>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/mconeeu/coresystem</url>
         </repository>
     </distributionManagement>
 
