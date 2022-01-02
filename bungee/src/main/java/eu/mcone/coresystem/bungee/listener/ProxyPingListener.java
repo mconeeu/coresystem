@@ -20,7 +20,7 @@ import java.util.UUID;
 
 public class ProxyPingListener implements Listener {
 
-    private static final int MIN_VERSION = 47, MAX_VERSION = 578;
+    private static final int MIN_VERSION = 47;
 
     private static final ServerPing.PlayerInfo[] PLAYER_INFOS_OUTDATED = new ServerPing.PlayerInfo[]{
             new ServerPing.PlayerInfo("§3§lMC ONE §7ist momentan nur über die Minecraft", UUID.randomUUID()),
@@ -73,16 +73,7 @@ public class ProxyPingListener implements Listener {
             version.setName("§4Alte Minecraft-Version!");
 
             players.setSample(PLAYER_INFOS_OUTDATED);
-        } else if (con.getVersion() > MAX_VERSION) {
-            ping.setDescriptionComponent(new TextComponent(TextComponent.fromLegacyText(
-                    Transl.get("system.bungee.ping.outdated", CoreTranslationManager.DEFAULT_LANGUAGE)
-            )));
-
-            version.setProtocol(2);
-            version.setName("§4Zu neue Minecraft-Version!");
-
-            players.setSample(PLAYER_INFOS_OUTDATED);
-        } else if (!con.isOnlineMode()) {
+        }else if (!con.isOnlineMode()) {
             version.setName("§c§oDu benutzt einen Offline Account");
             version.setProtocol(2);
 
